@@ -1,0 +1,16 @@
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\bin\Release\net8.0-windows\Data\game-catalog.json
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\bin\Release\net8.0-windows\TornekoIjiriNext.exe
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\bin\Release\net8.0-windows\TornekoIjiriNext.deps.json
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\bin\Release\net8.0-windows\TornekoIjiriNext.runtimeconfig.json
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\bin\Release\net8.0-windows\TornekoIjiriNext.dll
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\bin\Release\net8.0-windows\TornekoIjiriNext.pdb
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.AssemblyInfoInputs.cache
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.AssemblyInfo.cs
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.csproj.CoreCompileInputs.cache
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.dll
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\refint\TornekoIjiriNext.dll
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.pdb
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoIjiriNext.genruntimeconfig.cache
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\ref\TornekoIjiriNext.dll
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext_update_02\TornekoIjiriNext\obj\Release\net8.0-windows\TornekoI.DBA2CBDB.Up2Date
