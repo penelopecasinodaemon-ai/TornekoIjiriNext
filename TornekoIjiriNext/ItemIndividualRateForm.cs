@@ -85,7 +85,7 @@ internal sealed class ItemIndividualRateForm : Form
 
     private void OpenData()
     {
-        using var dialog = new OpenFileDialog { Filter = "Legacy item-rate data (*.bin;*.json)|*.bin;*.json|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "Legacy item-rate data (*.bin;*.json)|*.bin;*.json" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadFile(dialog.FileName);
     }
@@ -239,8 +239,13 @@ internal sealed class ItemIndividualRateForm : Form
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "projectへの保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             return;
         }
-        using var dialog = new SaveFileDialog { Filter = "Legacy item-rate binary (*.bin)|*.bin|すべてのファイル (*.*)|*.*", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_source) + "_edited.bin" };
+        using var dialog = new SaveFileDialog { Filter = "Legacy item-rate binary (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_source) + "_edited.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "旧版互換ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         try { File.WriteAllBytes(dialog.FileName, bytes); _status.ForeColor = Color.SeaGreen; _status.Text = $"保存しました: {dialog.FileName}。カテゴリ/個別item率を保存し、reserved 28..29/738..767と他blockを保持。PCSX2には反映していません。"; }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }

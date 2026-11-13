@@ -56,7 +56,7 @@ internal sealed class MonsterGrowthTableForm : Form
 
     private void OpenDump()
     {
-        using var dialog = new OpenFileDialog { Filter = "Raw binary/capture JSON (*.bin;*.dat;*.json)|*.bin;*.dat;*.json|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "旧版BIN / PINEキャプチャJSON (*.bin;*.json)|*.bin;*.json" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadDump(dialog.FileName);
     }
@@ -137,8 +137,13 @@ internal sealed class MonsterGrowthTableForm : Form
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "projectへの保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             return;
         }
-        using var dialog = new SaveFileDialog { Filter = "Raw binary (*.bin)|*.bin|すべてのファイル (*.*)|*.*", FileName = "monster-growth-edited.bin" };
+        using var dialog = new SaveFileDialog { Filter = "旧版成長テーブルBIN (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = "monster-growth-edited.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "旧版互換ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         try { File.WriteAllBytes(dialog.FileName, _bytes); _status.Text = $"編集済みraw dumpを保存しました: {dialog.FileName}。PCSX2には反映していません。"; }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "保存エラー", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }

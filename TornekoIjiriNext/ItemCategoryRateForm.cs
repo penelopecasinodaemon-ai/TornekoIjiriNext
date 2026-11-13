@@ -93,7 +93,7 @@ internal sealed class ItemCategoryRateForm : Form
 
     private void OpenData()
     {
-        using var dialog = new OpenFileDialog { Filter = "Legacy item-rate data (*.bin;*.json)|*.bin;*.json|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "旧版BIN / PINEキャプチャJSON (*.bin;*.json)|*.bin;*.json" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadFile(dialog.FileName);
     }
@@ -252,8 +252,13 @@ internal sealed class ItemCategoryRateForm : Form
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "projectへの保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             return;
         }
-        using var dialog = new SaveFileDialog { Filter = "旧版アイテムテーブル (*.bin)|*.bin|すべてのファイル (*.*)|*.*", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_source) + "_edited.bin" };
+        using var dialog = new SaveFileDialog { Filter = "旧版アイテムテーブル (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_source) + "_edited.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "旧版互換ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         try
         {
             File.WriteAllBytes(dialog.FileName, _bytes);

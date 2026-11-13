@@ -55,6 +55,7 @@ internal sealed class MainForm : Form
     private bool _hasSuccessfulRead;
     private uint? _lastReadAddress;
     private int _lastReadLength;
+    private readonly PineSessionSnapshotCache _sessionSnapshotCache = new();
 
     public MainForm()
     {
@@ -93,6 +94,20 @@ internal sealed class MainForm : Form
         conn.Controls.Add(new Label { Text = "ポート", AutoSize = true, Margin = new Padding(10, 8, 2, 0) });
         conn.Controls.Add(_port);
         conn.Controls.Add(_connect);
+        var openProject = new Button { Text = "プロジェクトを直接開く…", AutoSize = true };
+        openProject.Click += (_, _) =>
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Title = "開くプロジェクトを選択",
+                Filter = "Torneko Next project (*.tijproj)|*.tijproj|JSON manifest (*.json)|*.json",
+                CheckFileExists = true,
+                Multiselect = false
+            };
+            if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            new ProjectBundleForm(dialog.FileName).ShowDialog(this);
+        };
+        conn.Controls.Add(openProject);
         conn.Controls.Add(new Label { Text = "状態:", AutoSize = true, Margin = new Padding(12, 8, 2, 0) });
         conn.Controls.Add(_state);
         conn.Controls.Add(_game);
@@ -117,7 +132,15 @@ internal sealed class MainForm : Form
         catalog.Click += (_, _) => new CatalogBrowserForm().ShowDialog(this);
         bar.Controls.Add(catalog);
         var spawnEditor = new Button { Text = "出現テーブル編集（オフライン）", AutoSize = true };
-        spawnEditor.Click += (_, _) => new MonsterSpawnTableForm().ShowDialog(this);
+        spawnEditor.Click += (_, _) => new MonsterSpawnTableForm(
+            getPineClient: () => _pine,
+            isTargetPineSessionActive: () =>
+                _gameActive &&
+                _gameInfo is not null &&
+                string.Equals(_gameInfo.Id, "SLPM-62199", StringComparison.Ordinal) &&
+                string.Equals(_gameInfo.Crc, "e199f75d", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(_gameInfo.GameVersion, "1.04", StringComparison.Ordinal)
+        ).ShowDialog(this);
         bar.Controls.Add(spawnEditor);
         var spawnCompare = new Button { Text = "出現IDの重複比較（オフライン）", AutoSize = true };
         spawnCompare.Click += (_, _) => new MonsterSpawnCompareForm().ShowDialog(this);
@@ -146,19 +169,46 @@ internal sealed class MainForm : Form
         var projectBundle = new Button { Text = "旧データプロジェクト", AutoSize = true };
         projectBundle.Click += (_, _) => new ProjectBundleForm().ShowDialog(this);
         bar.Controls.Add(projectBundle);
+
         var roomEditor = new Button { Text = "固定部屋マップ（オフライン）", AutoSize = true };
         roomEditor.Click += (_, _) => new FixedRoomMapForm().ShowDialog(this);
         bar.Controls.Add(roomEditor);
         var capture = new Button { Text = "調査キャプチャ・比較", AutoSize = true };
         capture.Click += (_, _) => new MemoryCaptureForm(() => _pine, IsCaptureSessionActive).ShowDialog(this);
         bar.Controls.Add(capture);
+        var pineSnapshot = new Button { Text = "PINE取得データ", AutoSize = true };
+        pineSnapshot.Click += (_, _) =>
+        {
+            if (_gameInfo is null ||
+                !_sessionSnapshotCache.TryGetSnapshot(
+                    _connectionGeneration,
+                    _gameInfo.Id,
+                    _gameInfo.Crc,
+                    _gameInfo.GameVersion,
+                    out var snapshot) ||
+                snapshot is null)
+            {
+                MessageBox.Show(this,
+                    "現在の接続に対応するPINEキャッシュがありません。PCSX2へ接続し直してください。",
+                    "PINE取得データ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var viewer = new PineSnapshotViewerForm(snapshot);
+            viewer.ShowDialog(this);
+        };
+        bar.Controls.Add(pineSnapshot);
+        var pineDiff = new Button { Text = "PINE再取得・差分比較", AutoSize = true };
+        pineDiff.Click += async (_, _) =>
+            await ReacquireAndComparePineSnapshotAsync(pineDiff);
+        bar.Controls.Add(pineDiff);
         var binaryEditor = new Button { Text = "汎用バイナリエディタ（オフライン）", AutoSize = true };
         binaryEditor.Click += (_, _) =>
         {
             using var dialog = new OpenFileDialog
             {
                 Title = "編集するバイナリファイルを選択",
-                Filter = "バイナリ・データファイル (*.bin;*.dat;*.raw;*.sav;*.dmp)|*.bin;*.dat;*.raw;*.sav;*.dmp|すべてのファイル (*.*)|*.*",
+                Filter = "旧トルネコ互換バイナリ (*.bin)|*.bin",
                 CheckFileExists = true,
                 Multiselect = false
             };
@@ -180,6 +230,7 @@ internal sealed class MainForm : Form
     private async Task ConnectPineAsync()
     {
         InvalidateReadBuffer();
+        _sessionSnapshotCache.Invalidate();
         _monitor.Stop();
         ++_connectionGeneration;
         _pine?.Dispose();
@@ -200,6 +251,9 @@ internal sealed class MainForm : Form
             else
                 SetState(ConnectionState.WaitingForGame, "PCSX2には接続しました。ゲーム起動を待っています。");
 
+            if (_gameActive && _gameInfo is not null)
+                await InitializeConnectedGameAsync(client, _connectionGeneration);
+
             _monitor.Start();
             Log($"PINE接続成功: PCSX2={_pcsx2Version}, ゲーム={_gameInfo?.Title ?? "ゲーム待機中"}, ID={_gameInfo?.Id ?? "未取得"}");
         }
@@ -213,13 +267,36 @@ internal sealed class MainForm : Form
         }
     }
 
+    private async Task InitializeConnectedGameAsync(PineClient client, int generation)
+    {
+        if (!ReferenceEquals(client, _pine) ||
+            generation != _connectionGeneration ||
+            !_gameActive ||
+            _gameInfo is null)
+            return;
+
+        await CaptureSessionSnapshotAsync(client, generation);
+
+        if (!ReferenceEquals(client, _pine) ||
+            generation != _connectionGeneration ||
+            !_gameActive ||
+            _gameInfo is null)
+            return;
+
+        // メイン画面で指定されているアドレス・byte数を自動読み込みする。
+        await ReadMemoryAsync();
+    }
     private async Task RefreshGameInfoAsync(PineClient client, int generation)
     {
         SetState(ConnectionState.FetchingGameInfo, "PINEからゲーム情報を取得中…");
         var info = await Task.Run(client.GetGameInfo);
         if (generation != _connectionGeneration || !ReferenceEquals(client, _pine)) return;
         if (_gameInfo is not null && _gameInfo != info)
+        {
             InvalidateReadBuffer();
+            _sessionSnapshotCache.Invalidate();
+            Log("ゲーム識別情報が変わったため、PINEキャッシュを破棄しました。");
+        }
         _gameInfo = info;
         _gameActive = true;
         if (PineClient.IsAllowedGame(info))
@@ -241,12 +318,24 @@ internal sealed class MainForm : Form
             if (generation != _connectionGeneration || !ReferenceEquals(client, _pine)) return;
             if (status == 2)
             {
+                _sessionSnapshotCache.Invalidate();
+                InvalidateReadBuffer();
                 _gameInfo = null;
                 _gameActive = false;
                 SetState(ConnectionState.WaitingForGame, "PCSX2接続中・ゲーム未起動（起動を待っています）。");
                 return;
             }
+
+            var previousInfo = _gameInfo;
+            var wasGameActive = _gameActive;
             await RefreshGameInfoAsync(client, generation);
+
+            if (_gameActive &&
+                _gameInfo is not null &&
+                (!wasGameActive || previousInfo is null || previousInfo != _gameInfo))
+            {
+                await InitializeConnectedGameAsync(client, generation);
+            }
         }
         catch (Exception ex)
         {
@@ -260,6 +349,7 @@ internal sealed class MainForm : Form
     private void HandleConnectionFailure(Exception ex, PineClient? client)
     {
         InvalidateReadBuffer();
+        _sessionSnapshotCache.Invalidate();
         if (ex is PineCommandException)
         {
             _gameInfo = null;
@@ -286,6 +376,8 @@ internal sealed class MainForm : Form
     private void Disconnect()
     {
         InvalidateReadBuffer();
+        _sessionSnapshotCache.Invalidate();
+        _sessionSnapshotCache.Invalidate();
         _monitor.Stop();
         ++_connectionGeneration;
         _pine?.Dispose();
@@ -488,6 +580,197 @@ internal sealed class MainForm : Form
         }
     }
 
+    private async Task ReacquireAndComparePineSnapshotAsync(Button sourceButton)
+    {
+        var client = _pine;
+        var generation = _connectionGeneration;
+        var info = _gameInfo;
+
+        if (client is null ||
+            info is null ||
+            !_gameActive ||
+            _connectionState is not (ConnectionState.Connected or ConnectionState.UnsupportedGame))
+        {
+            MessageBox.Show(this,
+                "PCSX2に接続し、トルネコ3を起動してから実行してください。",
+                "PINE再取得", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        if (!_sessionSnapshotCache.TryGetSnapshot(
+                generation, info.Id, info.Crc, info.GameVersion, out var previous) ||
+            previous is null)
+        {
+            MessageBox.Show(this,
+                "比較元データがありません。先にPINEへ接続して自動取得を完了してください。",
+                "PINE再取得", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        uint[] addresses =
+        [
+            0x00181100, 0x001812C4, 0x001815D8, 0x0018195C,
+            0x00181C00, 0x00182064, 0x00182538, 0x00182AEC,
+            0x00182CB0, 0x001830A4, 0x00183578, 0x00183A4C,
+            0x00184070, 0x00184234, 0x00184628, 0x00184B6C
+        ];
+
+        sourceButton.Enabled = false;
+        _monitor.Stop();
+
+        try
+        {
+            Log("PINE再取得を開始します。比較元データは保持しています。");
+
+            var capture = await Task.Run(() => CapturePointerBatch(client, addresses));
+
+            if (!ReferenceEquals(client, _pine) ||
+                generation != _connectionGeneration ||
+                !_gameActive ||
+                _gameInfo is null)
+            {
+                throw new IOException("再取得中に接続またはゲーム状態が変化しました。");
+            }
+
+            if (!string.Equals(_gameInfo.Id, capture.GameId, StringComparison.Ordinal) ||
+                !string.Equals(_gameInfo.Crc, capture.GameCrc, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(_gameInfo.GameVersion, capture.GameVersion, StringComparison.Ordinal))
+            {
+                throw new IOException("再取得データのゲーム識別情報が現在の接続と一致しません。");
+            }
+
+            var regions = capture.Regions
+                .Select(region => new PineCachedRegion(
+                    region.Address,
+                    Convert.FromHexString(region.BytesHex)))
+                .ToArray();
+
+            if (!_sessionSnapshotCache.TryPublish(
+                    generation,
+                    capture.GameId,
+                    capture.GameCrc,
+                    capture.GameVersion,
+                    checked((int)capture.StatusBefore),
+                    checked((int)capture.StatusAfter),
+                    regions,
+                    out var reason))
+            {
+                throw new IOException(
+                    "再取得データを採用できませんでした。比較元データは保持しています。理由: " + reason);
+            }
+
+            if (!_sessionSnapshotCache.TryGetSnapshot(
+                    generation, info.Id, info.Crc, info.GameVersion, out var current) ||
+                current is null)
+            {
+                throw new IOException("再取得後のスナップショットを取得できませんでした。");
+            }
+
+            Log($"PINE再取得成功: {regions.Length}領域 / {regions.Sum(x => x.Length)} bytes。差分比較を開始します。");
+
+            using var compare = new PineSnapshotCompareForm(previous, current);
+            compare.ShowDialog(this);
+
+            Log("PINE再取得・差分比較が完了しました。新しいスナップショットを比較元として保存しました。");
+        }
+        catch (Exception ex)
+        {
+            Log("PINE再取得失敗。以前の比較元データは可能な限り保持します: " + ex.Message);
+            MessageBox.Show(this,
+                "再取得または比較に失敗しました。ゲームメモリへの書き込みは行っていません。\n\n" + ex.Message,
+                "PINE再取得失敗", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        finally
+        {
+            if (!IsDisposed &&
+                ReferenceEquals(client, _pine) &&
+                generation == _connectionGeneration)
+            {
+                _monitor.Start();
+            }
+
+            if (!IsDisposed)
+                sourceButton.Enabled = true;
+        }
+    }
+    private async Task CaptureSessionSnapshotAsync(PineClient client, int generation)
+    {
+        _sessionSnapshotCache.Invalidate();
+
+        if (_gameInfo is null ||
+            !ReferenceEquals(client, _pine) ||
+            generation != _connectionGeneration ||
+            !_gameActive)
+        {
+            Log("自動キャプチャを中止しました。接続またはゲーム状態が変化しています。");
+            return;
+        }
+
+        uint[] addresses =
+        [
+            0x00181100, 0x001812C4, 0x001815D8, 0x0018195C,
+            0x00181C00, 0x00182064, 0x00182538, 0x00182AEC,
+            0x00182CB0, 0x001830A4, 0x00183578, 0x00183A4C,
+            0x00184070, 0x00184234, 0x00184628, 0x00184B6C
+        ];
+
+        try
+        {
+            Log("PINE接続時の自動一括読み取りを開始します（16領域×64 bytes・読み取り専用）。");
+
+            var capture = await Task.Run(() => CapturePointerBatch(client, addresses));
+
+            if (!ReferenceEquals(client, _pine) ||
+                generation != _connectionGeneration ||
+                !_gameActive ||
+                _gameInfo is null)
+            {
+                _sessionSnapshotCache.Invalidate();
+                Log("読み取り中に接続またはゲーム状態が変化したため、キャッシュを破棄しました。");
+                return;
+            }
+
+            if (!string.Equals(_gameInfo.Id, capture.GameId, StringComparison.Ordinal) ||
+                !string.Equals(_gameInfo.Crc, capture.GameCrc, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(_gameInfo.GameVersion, capture.GameVersion, StringComparison.Ordinal))
+            {
+                _sessionSnapshotCache.Invalidate();
+                Log("読み取り結果のゲーム識別情報が一致しないため、キャッシュを破棄しました。");
+                return;
+            }
+
+            var regions = capture.Regions.Select(region =>
+                new PineCachedRegion(region.Address, Convert.FromHexString(region.BytesHex)))
+                .ToArray();
+
+            if (!_sessionSnapshotCache.TryPublish(
+                generation,
+                capture.GameId,
+                capture.GameCrc,
+                capture.GameVersion,
+                checked((int)capture.StatusBefore),
+                checked((int)capture.StatusAfter),
+                regions,
+                out var reason))
+            {
+                _sessionSnapshotCache.Invalidate();
+                Log("PINEキャッシュ登録を拒否しました: " + reason);
+                return;
+            }
+
+            Log($"PINE自動キャプチャ成功: {regions.Length}領域 / {regions.Sum(x => x.Length)} bytes。接続世代={generation}、ゲームID={capture.GameId}。");
+            Log("取得データを読み取り専用キャッシュに保存しました。");
+        }
+        catch (Exception ex)
+        {
+            _sessionSnapshotCache.Invalidate();
+
+            if (ReferenceEquals(client, _pine) && generation == _connectionGeneration)
+                HandleConnectionFailure(ex, client);
+
+            Log("PINE自動一括読み取り失敗。キャッシュは破棄しました: " + ex.Message);
+        }
+    }
     private async Task ValidateLegacyAddressesAsync()
     {
         var client = _pine;

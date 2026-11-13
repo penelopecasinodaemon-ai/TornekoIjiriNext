@@ -24,10 +24,31 @@ internal sealed class MonsterSpawnTableForm : Form
     private bool _loading;
     private bool _dirty;
     private readonly Func<byte[], string>? _saveToProject;
+    private readonly Func<PineClient?>? _getPineClient;
+    private readonly Func<bool>? _isTargetPineSessionActive;
+    private readonly TextBox _pineAddress = new()
+    {
+        Width = 110,
+        PlaceholderText = "例: 00199EC6"
+    };
+    private readonly NumericUpDown _pineEntryCount = new()
+    {
+        Minimum = 1,
+        Maximum = 682,
+        Value = 1,
+        Width = 65
+    };
+    private readonly Button _pineReadButton = new()
+    {
+        Text = "PINEから読み込み",
+        AutoSize = true
+    };
 
-    public MonsterSpawnTableForm(string? initialPath = null, Func<byte[], string>? saveToProject = null)
+    public MonsterSpawnTableForm(string? initialPath = null, Func<byte[], string>? saveToProject = null, Func<PineClient?>? getPineClient = null, Func<bool>? isTargetPineSessionActive = null)
     {
         _saveToProject = saveToProject;
+        _getPineClient = getPineClient;
+        _isTargetPineSessionActive = isTargetPineSessionActive;
         Text = "モンスター出現テーブル（オフライン編集・未検証形式）";
         StartPosition = FormStartPosition.CenterParent;
         Size = new Size(1000, 720);
@@ -41,6 +62,13 @@ internal sealed class MonsterSpawnTableForm : Form
         var open = new Button { Text = "旧形式ファイル/単一キャプチャを開く…", AutoSize = true };
         open.Click += (_, _) => OpenData();
         actions.Controls.Add(open);
+        actions.Controls.Add(new Label { Text = "PINEアドレス(hex):", AutoSize = true, Margin = new Padding(8, 8, 2, 0) });
+        actions.Controls.Add(_pineAddress);
+        actions.Controls.Add(new Label { Text = "行数:", AutoSize = true, Margin = new Padding(8, 8, 2, 0) });
+        actions.Controls.Add(_pineEntryCount);
+        _pineReadButton.Enabled = _getPineClient is not null && _isTargetPineSessionActive is not null;
+        _pineReadButton.Click += async (_, _) => await ReadFromPineAsync();
+        actions.Controls.Add(_pineReadButton);
         var average = new Button { Text = "有効行を平均化", AutoSize = true };
         average.Click += (_, _) => ApplyAverage();
         actions.Controls.Add(average);
@@ -111,12 +139,112 @@ internal sealed class MonsterSpawnTableForm : Form
         if (_grid.Columns.Contains("Level")) _grid.Columns["Level"].FillWeight = 80;
     }
 
+    private async Task ReadFromPineAsync()
+    {
+        if (_getPineClient is null ||
+            _isTargetPineSessionActive is null ||
+            !_isTargetPineSessionActive())
+        {
+            MessageBox.Show(this,
+                "対象ゲームのPCSX2へPINE接続してから実行してください。",
+                "PINE読み込み", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var client = _getPineClient();
+        if (client is null)
+        {
+            MessageBox.Show(this, "PINE接続がありません。",
+                "PINE読み込み", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var addressText = _pineAddress.Text.Trim();
+        if (addressText.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            addressText = addressText[2..];
+
+        if (!uint.TryParse(addressText, NumberStyles.HexNumber,
+                CultureInfo.InvariantCulture, out var address))
+        {
+            MessageBox.Show(this, "アドレスを16進数で入力してください。例: 00199EC6",
+                "PINE読み込み", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var entryCount = decimal.ToInt32(_pineEntryCount.Value);
+        var byteLength = checked(entryCount * EntrySize);
+
+        if (byteLength is < 1 or > 4096 ||
+            (ulong)address + (uint)byteLength > (ulong)uint.MaxValue + 1UL)
+        {
+            MessageBox.Show(this, "読み込み範囲がPINEの読み込み上限またはアドレス範囲を超えています。",
+                "PINE読み込み", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var warning =
+            $"PCSX2から次の範囲を読み込みます。{Environment.NewLine}" +
+            $"開始アドレス: 0x{address:X8}{Environment.NewLine}" +
+            $"読み込み長: {byteLength} bytes ({entryCount}行){Environment.NewLine}{Environment.NewLine}" +
+            "取得したデータを旧HSP由来の6バイト形式として仮表示します。" +
+            "実ゲーム内での意味・対応関係は未確認です。ゲームメモリへの書き込みは行いません。";
+
+        if (_dirty)
+            warning += Environment.NewLine + Environment.NewLine +
+                "現在の未保存編集内容は読み込み後に置き換わります。";
+
+        if (MessageBox.Show(this, warning, "PINE読み込み確認",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+            return;
+
+        _pineReadButton.Enabled = false;
+
+        try
+        {
+            _status.Text = $"PINE読み込み中: 0x{address:X8} / {byteLength} bytes";
+
+            var bytes = await Task.Run(() => client.ReadMemory(address, byteLength));
+
+            if (!ReferenceEquals(client, _getPineClient()) ||
+                !_isTargetPineSessionActive())
+            {
+                throw new IOException("読み込み中にPINE接続または対象ゲームの状態が変化しました。取得データを破棄します。");
+            }
+
+            if (bytes.Length != byteLength)
+                throw new IOException($"読み込みサイズが一致しません。要求={byteLength}, 実際={bytes.Length}");
+
+            LoadBytes(bytes,
+                $"PINE仮読み込み 0x{address:X8} / {byteLength} bytes");
+
+            _status.Text =
+                $"PINEから {byteLength} bytes を読み込みました。アドレス: 0x{address:X8}。" +
+                "6バイト形式として仮表示中です。構造の正当性は未確認です。";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this,
+                "PINEからの読み込みに失敗しました。既存の編集データは維持します。" +
+                Environment.NewLine + Environment.NewLine + ex.Message,
+                "PINE読み込み失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            UpdateStatus();
+        }
+        finally
+        {
+            if (!IsDisposed)
+                _pineReadButton.Enabled =
+                    _getPineClient is not null &&
+                    _isTargetPineSessionActive is not null &&
+                    _isTargetPineSessionActive();
+        }
+    }
     private void OpenData()
     {
         using var dialog = new OpenFileDialog
         {
             Title = "旧形式6-byteテーブルまたはPINE単一領域キャプチャを選択",
-            Filter = "旧形式bin/JSON (*.bin;*.json)|*.bin;*.json|すべてのファイル (*.*)|*.*"
+            Filter = "旧版BIN / PINEキャプチャJSON (*.bin;*.json)|*.bin;*.json"
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadFile(dialog.FileName);
@@ -292,8 +420,13 @@ internal sealed class MonsterSpawnTableForm : Form
             return;
         }
 
-        using var dialog = new SaveFileDialog { Filter = "旧版出現テーブル (*.bin)|*.bin|すべてのファイル (*.*)|*.*", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_sourceDescription) + "_edited.bin" };
+        using var dialog = new SaveFileDialog { Filter = "旧版出現テーブル (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_sourceDescription) + "_edited.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "旧版互換ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         try { File.WriteAllBytes(dialog.FileName, bytes); _status.Text = $"ローカルファイルに保存しました: {dialog.FileName}。PCSX2のゲームメモリは変更していません。"; }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }

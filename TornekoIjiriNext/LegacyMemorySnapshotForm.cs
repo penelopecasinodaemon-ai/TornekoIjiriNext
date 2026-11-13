@@ -47,7 +47,7 @@ internal sealed class LegacyMemorySnapshotForm : Form
 
     private void OpenSnapshot()
     {
-        using var dialog = new OpenFileDialog { Filter = "Legacy memory snapshot (*.bin;*.dat)|*.bin;*.dat|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "Legacy memory snapshot (*.bin)|*.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         OpenSnapshot(dialog.FileName);
     }
@@ -79,7 +79,7 @@ internal sealed class LegacyMemorySnapshotForm : Form
     private void CompareSnapshot()
     {
         if (_snapshot is null) { MessageBox.Show(this, "先に基準snapshotを開いてください。"); return; }
-        using var dialog = new OpenFileDialog { Filter = "Legacy memory snapshot (*.bin;*.dat)|*.bin;*.dat|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "Legacy memory snapshot (*.bin)|*.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try
         {
@@ -115,8 +115,13 @@ internal sealed class LegacyMemorySnapshotForm : Form
             if (segment is null) return;
             bytes = _snapshot.ReadSegment(segment);
         }
-        using var dialog = new SaveFileDialog { Filter = "Binary (*.bin)|*.bin|すべてのファイル (*.*)|*.*", DefaultExt = "bin", AddExtension = true, FileName = (name ?? "snapshot-region").Replace(' ', '_') + ".bin" };
+        using var dialog = new SaveFileDialog { Filter = "Binary (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = (name ?? "snapshot-region").Replace(' ', '_') + ".bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "抽出ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         try { File.WriteAllBytes(dialog.FileName, bytes); _status.Text = $"選択内容をローカル抽出しました: {dialog.FileName}。PCSX2には反映していません。"; }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "抽出失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }

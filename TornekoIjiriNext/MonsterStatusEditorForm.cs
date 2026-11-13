@@ -55,7 +55,7 @@ internal sealed class MonsterStatusEditorForm : Form
 
     private void OpenRecords()
     {
-        using var dialog = new OpenFileDialog { Filter = "Legacy status binary (*.bin;*.dat)|*.bin;*.dat|All files (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "旧版モンスター能力BIN (*.bin)|*.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadRecords(dialog.FileName);
     }
@@ -105,8 +105,13 @@ internal sealed class MonsterStatusEditorForm : Form
                 _status.Text = $"編集内容をproject内の新しいassetとして保存しました: {name}。元assetは保持し、PCSX2には反映していません.";
                 return;
             }
-            using var dialog = new SaveFileDialog { Filter = "Legacy status binary (*.bin)|*.bin|All files (*.*)|*.*", FileName = "monster-status.bin" };
+            using var dialog = new SaveFileDialog { Filter = "旧版モンスター能力BIN (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = "monster-status.bin" };
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show(this, "旧版互換ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             File.WriteAllBytes(dialog.FileName, bytes); _dirty = false; UpdateStatus();
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "保存エラー", MessageBoxButtons.OK, MessageBoxIcon.Error); }

@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Globalization;
 using System.Text.Json;
 
@@ -6,7 +7,17 @@ namespace TornekoIjiriNext;
 internal sealed record CaptureRegionDescriptor(uint Address, int Length, string BytesHex);
 internal sealed record CaptureDescriptor(string Kind, DateTime CapturedAtUtc, string Pcsx2Version, string GameTitle, string GameId, string GameCrc, string GameVersion, IReadOnlyList<CaptureRegionDescriptor> Regions);
 internal sealed record CaptureByteDifference(int Offset, byte Before, byte After);
-internal sealed record CaptureRegionComparison(uint Address, int Length, int ChangedBytes, IReadOnlyList<CaptureByteDifference> Changes, bool IsTruncated);
+internal sealed record CaptureDwordDifference(int Offset, uint Before, uint After);
+internal sealed record CaptureRegionComparison(
+    uint Address,
+    int Length,
+    int ChangedBytes,
+    IReadOnlyList<CaptureByteDifference> Changes,
+    bool IsTruncated,
+    int ChangedDwords,
+    IReadOnlyList<CaptureDwordDifference> DwordChanges,
+    bool DwordChangesTruncated,
+    int TrailingBytes);
 internal sealed record CaptureComparison(bool RegionLayoutMatches, bool GameIdentityMatches, IReadOnlyList<CaptureRegionComparison> Regions);
 
 /// <summary>Validates and describes existing read-only PINE capture JSON without interpreting game data.</summary>
@@ -111,7 +122,41 @@ internal static class ProjectCaptureModel
                 total++;
                 if (changes.Count < maximumDisplayedChangesPerRegion) changes.Add(new CaptureByteDifference(i, leftBytes[i], rightBytes[i]));
             }
-            comparisons.Add(new CaptureRegionComparison(left.Address, left.Length, total, changes, total > changes.Count));
+            // 4バイト単位のDWORD比較。リトルエンディアンとして解釈する。
+            var dwordChanges = new List<CaptureDwordDifference>(
+                Math.Min(maximumDisplayedChangesPerRegion, leftBytes.Length / sizeof(uint)));
+
+            var totalDwords = 0;
+
+            for (var offset = 0; offset + sizeof(uint) <= leftBytes.Length; offset += sizeof(uint))
+            {
+                var beforeValue = BinaryPrimitives.ReadUInt32LittleEndian(
+                    leftBytes.AsSpan(offset, sizeof(uint)));
+
+                var afterValue = BinaryPrimitives.ReadUInt32LittleEndian(
+                    rightBytes.AsSpan(offset, sizeof(uint)));
+
+                if (beforeValue == afterValue) continue;
+
+                totalDwords++;
+
+                if (dwordChanges.Count < maximumDisplayedChangesPerRegion)
+                {
+                    dwordChanges.Add(
+                        new CaptureDwordDifference(offset, beforeValue, afterValue));
+                }
+            }
+
+            comparisons.Add(new CaptureRegionComparison(
+                left.Address,
+                left.Length,
+                total,
+                changes,
+                total > changes.Count,
+                totalDwords,
+                dwordChanges,
+                totalDwords > dwordChanges.Count,
+                leftBytes.Length % sizeof(uint)));
         }
         return new CaptureComparison(true, sameGame, comparisons);
     }

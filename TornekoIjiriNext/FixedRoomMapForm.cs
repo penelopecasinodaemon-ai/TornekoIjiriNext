@@ -151,7 +151,7 @@ internal sealed class FixedRoomMapForm : Form
 
     private void OpenData()
     {
-        using var dialog = new OpenFileDialog { Filter = "固定部屋payload/project (*.bin;*.json)|*.bin;*.json|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "固定部屋payload/project (*.bin;*.json)|*.bin;*.json" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadFile(dialog.FileName);
     }
@@ -282,6 +282,11 @@ internal sealed class FixedRoomMapForm : Form
             if (_savePayloadToBundle is not null) { var name = _savePayloadToBundle(payload); UpdateStatus($"project保存: {name} / RLE {encoded.Length} bytes"); return; }
             using var dialog = new SaveFileDialog { Filter = "Legacy room payload (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = "room_payload.bin" };
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show(this, "旧版互換payloadは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             File.WriteAllBytes(dialog.FileName, payload); UpdateStatus($"payload保存: {Path.GetFileName(dialog.FileName)} / RLE {encoded.Length} bytes。ゲームメモリは変更していません。");
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "payload保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
@@ -296,7 +301,7 @@ internal sealed class FixedRoomMapForm : Form
 
     private void OpenObjectRecords()
     {
-        using var dialog = new OpenFileDialog { Filter = "220×20-byte object table (*.bin)|*.bin|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "220×20-byte object table (*.bin)|*.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try
         {

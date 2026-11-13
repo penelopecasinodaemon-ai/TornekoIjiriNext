@@ -9,7 +9,7 @@ internal sealed class ProjectBundleForm : Form
     private readonly Button _openEditorButton;
     private readonly Button _historyButton;
 
-    public ProjectBundleForm()
+    public ProjectBundleForm(string? initialProjectPath = null)
     {
         Text = "旧データプロジェクト（オフライン）";
         Width = 900; Height = 560; MinimumSize = new Size(700, 420); StartPosition = FormStartPosition.CenterParent;
@@ -40,6 +40,18 @@ internal sealed class ProjectBundleForm : Form
         _addButton = add; _verifyButton = verify;
         _addCaptureButton = addCaptures; _compareCaptureButton = compareCaptures;
         ConfigureGrid();
+        if (!string.IsNullOrWhiteSpace(initialProjectPath))
+        {
+            try
+            {
+                SetProject(ProjectBundleModel.Open(initialProjectPath));
+                Verify();
+            }
+            catch (Exception ex)
+            {
+                ShowFailure(ex);
+            }
+        }
     }
 
     private readonly Button _addButton;
@@ -55,6 +67,9 @@ internal sealed class ProjectBundleForm : Form
         _grid.Columns.Add("Parent", "元asset");
         _grid.Columns.Add("Hash", "SHA-256");
         _grid.Columns.Add("Added", "取り込み日時 (UTC)");
+        _grid.Columns.Add("PineAddress", "PINEアドレス");
+        _grid.Columns.Add("PineGame", "PINEゲーム情報");
+        _grid.Columns.Add("PineCaptured", "PINE取得日時 (UTC)");
     }
 
     private void CreateProject()
@@ -76,7 +91,7 @@ internal sealed class ProjectBundleForm : Form
     private void AddFiles()
     {
         if (_project is null) return;
-        using var dialog = new OpenFileDialog { Filter = "旧データ (*.bin;*.json;*.ini;*.txt)|*.bin;*.json;*.ini;*.txt|すべてのファイル (*.*)|*.*", Multiselect = true, CheckFileExists = true };
+        using var dialog = new OpenFileDialog { Filter = "旧データ (*.bin)|*.bin", Multiselect = true, CheckFileExists = true };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try
         {
@@ -127,7 +142,26 @@ internal sealed class ProjectBundleForm : Form
     {
         _grid.Rows.Clear();
         if (_project is null) return;
-        foreach (var entry in _project.Entries) _grid.Rows.Add(entry.FileName, entry.Category, entry.Length.ToString("N0"), entry.ParentFileName ?? "—", entry.Sha256, entry.AddedUtc.ToString("u"));
+        foreach (var entry in _project.Entries)
+        {
+            var pine = entry.PineSource;
+            var address = pine is null ? "—" : $"0x{pine.Address:X8} ({pine.Length:N0} bytes)";
+            var game = pine is null
+                ? "—"
+                : $"{pine.GameId} / CRC {pine.GameCrc} / Ver {pine.GameVersion}";
+            var captured = pine?.CapturedAt.ToUniversalTime().ToString("u") ?? "—";
+
+            _grid.Rows.Add(
+                entry.FileName,
+                entry.Category,
+                entry.Length.ToString("N0"),
+                entry.ParentFileName ?? "—",
+                entry.Sha256,
+                entry.AddedUtc.ToString("u"),
+                address,
+                game,
+                captured);
+        }
     }
 
     private void OpenSelectedHistory()
@@ -145,7 +179,10 @@ internal sealed class ProjectBundleForm : Form
         var row = _grid.SelectedRows[0].Index;
         if (row < 0 || row >= _project.Entries.Count) return;
         var entry = _project.Entries[row];
-        var editorKind = ProjectBundleEditorRouter.Resolve(entry, entry.Length);
+        var editorKind = ProjectBundleEditorRouter.Resolve(entry, entry.Length)
+            ?? (string.Equals(Path.GetExtension(entry.FileName), ".bin", StringComparison.OrdinalIgnoreCase)
+                ? ProjectBundleEditorKind.RawBinary
+                : null);
         if (editorKind is null)
         { MessageBox.Show(this, "assetの分類と拡張子/サイズに対応するeditorがありません。形式を推測して開かず、分類を確認してください。", "editor未対応", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
         var problems = _project.VerifyAssets();
@@ -188,7 +225,7 @@ internal sealed class ProjectBundleForm : Form
             ProjectBundleEditorKind.LegacySnapshot =>
                 new LegacyMemorySnapshotForm(path),
             ProjectBundleEditorKind.RawBinary =>
-                new LegacyBinaryEditorForm(path, bytes => project.AddAssetBytes(Path.GetFileNameWithoutExtension(entry.FileName) + "_edited" + Path.GetExtension(entry.FileName), entry.Category, bytes, entry.FileName, entry.Sha256)),
+                new LegacyBinaryEditorForm(path, bytes => project.AddAssetBytes(Path.GetFileNameWithoutExtension(entry.FileName) + "_edited.bin", entry.Category, bytes, entry.FileName, entry.Sha256)),
             _ => null
         };
         if (editor is null)

@@ -892,18 +892,13 @@ internal sealed class LegacyBinaryEditorForm : Form
             if (targetPath is null)
             {
                 string suggestedFileName =
-                    _sourcePath is not null
-                        ? Path.GetFileNameWithoutExtension(_sourcePath) +
-                          "_edited" +
-                          Path.GetExtension(_sourcePath)
-                        : Path.GetFileNameWithoutExtension(_assetName) +
-                          "_edited" +
-                          Path.GetExtension(_assetName);
+                    Path.GetFileNameWithoutExtension(
+                        _sourcePath ?? _assetName) + "_edited.bin";
 
                 using var dialog = new SaveFileDialog
                 {
                     Filter =
-                        "Binary (*.bin)|*.bin|すべてのファイル (*.*)|*.*",
+                        "旧トルネコ互換バイナリ (*.bin)|*.bin",
 
                     InitialDirectory =
                         _sourcePath is not null
@@ -918,6 +913,20 @@ internal sealed class LegacyBinaryEditorForm : Form
                 if (dialog.ShowDialog(this) != DialogResult.OK)
                 {
                     _info.Text = "保存をキャンセルしました。";
+                    return;
+                }
+
+                if (!string.Equals(
+                    Path.GetExtension(dialog.FileName),
+                    ".bin",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show(
+                        this,
+                        "旧トルネコいじりとの互換性を保つため、保存形式は .bin のみです。",
+                        "保存形式エラー",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     return;
                 }
 

@@ -4,7 +4,24 @@ using System.Text.Json.Serialization;
 
 namespace TornekoIjiriNext;
 
-internal sealed record ProjectBundleEntry(string FileName, string Category, long Length, string Sha256, DateTimeOffset AddedUtc, string? ParentFileName = null, string? ParentSha256 = null);
+internal sealed record PineAssetMetadata(
+    string GameId,
+    string GameCrc,
+    string GameVersion,
+    uint Address,
+    int Length,
+    DateTimeOffset CapturedAt,
+    long ConnectionGeneration);
+
+internal sealed record ProjectBundleEntry(
+    string FileName,
+    string Category,
+    long Length,
+    string Sha256,
+    DateTimeOffset AddedUtc,
+    string? ParentFileName = null,
+    string? ParentSha256 = null,
+    PineAssetMetadata? PineSource = null);
 internal sealed record ProjectAssetByteChange(int Offset, byte? Before, byte? After);
 internal sealed record ProjectAssetDiff(int BeforeLength, int AfterLength, int TotalChangedBytes, IReadOnlyList<ProjectAssetByteChange> Changes, bool IsTruncated);
 
@@ -126,7 +143,7 @@ internal sealed class ProjectBundleModel
         }
     }
 
-    public string AddAssetBytes(string fileName, string category, ReadOnlySpan<byte> content, string? parentFileName = null, string? parentSha256 = null)
+    public string AddAssetBytes(string fileName, string category, ReadOnlySpan<byte> content, string? parentFileName = null, string? parentSha256 = null, PineAssetMetadata? pineSource = null)
     {
         if (string.IsNullOrWhiteSpace(category)) throw new ArgumentException("Asset category is required.", nameof(category));
         if (content.Length > MaximumAssetLength) throw new InvalidDataException("Asset exceeds 64 MiB.");
@@ -145,7 +162,7 @@ internal sealed class ProjectBundleModel
         File.WriteAllBytes(tempPath, content.ToArray());
         try
         {
-            var entry = new ProjectBundleEntry(uniqueName, category.Trim(), content.Length, HashFile(tempPath), DateTimeOffset.UtcNow, parentFileName, parentSha256);
+            var entry = new ProjectBundleEntry(uniqueName, category.Trim(), content.Length, HashFile(tempPath), DateTimeOffset.UtcNow, parentFileName, parentSha256, pineSource);
             File.Move(tempPath, finalPath);
             moved = true;
             _entries.Add(entry);
@@ -195,6 +212,26 @@ internal sealed class ProjectBundleModel
         return history;
     }
 
+    public IReadOnlyList<ProjectBundleEntry> GetPineCaptureHistory(PineAssetMetadata source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        return _entries
+            .Where(entry =>
+            {
+                var pine = entry.PineSource;
+                return pine is not null
+                    && string.Equals(pine.GameId, source.GameId, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(pine.GameCrc, source.GameCrc, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(pine.GameVersion, source.GameVersion, StringComparison.OrdinalIgnoreCase)
+                    && pine.Address == source.Address
+                    && pine.Length == source.Length;
+            })
+            .OrderBy(entry => entry.PineSource!.CapturedAt)
+            .ThenBy(entry => entry.AddedUtc)
+            .ToList()
+            .AsReadOnly();
+    }
     public ProjectAssetDiff CompareAssets(string beforeFileName, string afterFileName, int maximumDisplayedChanges = 2000)
     {
         if (maximumDisplayedChanges is < 1 or > 10000) throw new ArgumentOutOfRangeException(nameof(maximumDisplayedChanges));

@@ -4,7 +4,14 @@ internal sealed class ProjectBundleHistoryForm : Form
 {
     private sealed record AssetChoice(ProjectBundleEntry Entry)
     {
-        public override string ToString() => $"{Entry.FileName}  |  {Entry.Length:N0} B  |  {Entry.AddedUtc:u}";
+        public override string ToString()
+        {
+            var pine = Entry.PineSource;
+            if (pine is null)
+                return $"{Entry.FileName}  |  {Entry.Length:N0} B  |  {Entry.AddedUtc:u}";
+
+            return $"{Entry.FileName}  |  0x{pine.Address:X8}  |  {pine.CapturedAt:u}  |  世代 {pine.ConnectionGeneration}";
+        }
     }
 
     private readonly ProjectBundleModel _project;
@@ -20,7 +27,12 @@ internal sealed class ProjectBundleHistoryForm : Form
         Width = 900; Height = 620; MinimumSize = new Size(700, 420); StartPosition = FormStartPosition.CenterParent;
         var selected = project.Entries.FirstOrDefault(entry => string.Equals(entry.FileName, selectedFileName, StringComparison.OrdinalIgnoreCase))
             ?? throw new KeyNotFoundException($"Project asset not found: {selectedFileName}");
-        var history = project.GetAssetHistory(selectedFileName);
+        var history = selected.PineSource is { } pineSource
+            ? project.GetPineCaptureHistory(pineSource)
+            : project.GetAssetHistory(selectedFileName);
+
+        if (history.Count == 0)
+            throw new InvalidOperationException("比較できる履歴データがありません。");
         foreach (var entry in history)
         {
             var choice = new AssetChoice(entry);
@@ -59,7 +71,13 @@ internal sealed class ProjectBundleHistoryForm : Form
             foreach (var change in diff.Changes)
                 _changes.Items.Add($"0x{change.Offset:X8}: {(change.Before.HasValue ? change.Before.Value.ToString("X2") : "--")} → {(change.After.HasValue ? change.After.Value.ToString("X2") : "--")}");
             var truncated = diff.IsTruncated ? $" 表示は先頭{diff.Changes.Count:N0}件まで。" : "";
-            _summary.Text = $"{before.Entry.FileName} ({diff.BeforeLength:N0} bytes) → {after.Entry.FileName} ({diff.AfterLength:N0} bytes): {diff.TotalChangedBytes:N0} changed bytes。SHA-256を検証して比較しました。{truncated} ゲームメモリ/PINEは未使用。";
+            var beforePine = before.Entry.PineSource;
+            var afterPine = after.Entry.PineSource;
+            var pineInfo = beforePine is not null && afterPine is not null
+                ? $" PINE取得比較: 0x{beforePine.Address:X8} / {beforePine.CapturedAt:u} → {afterPine.CapturedAt:u}。"
+                : "";
+
+            _summary.Text = $"{before.Entry.FileName} ({diff.BeforeLength:N0} bytes) → {after.Entry.FileName} ({diff.AfterLength:N0} bytes): {diff.TotalChangedBytes:N0} changed bytes。SHA-256を検証して比較しました。{pineInfo}{truncated} 保存済み資産のみを比較し、ゲームメモリには接続しません。";
         }
         catch (Exception ex)
         {

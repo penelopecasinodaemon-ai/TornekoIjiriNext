@@ -138,7 +138,7 @@ internal sealed class FloorDataEditorForm : Form
 
     private void OpenData()
     {
-        using var dialog = new OpenFileDialog { Filter = "Legacy floor data (*.bin;*.json)|*.bin;*.json|すべてのファイル (*.*)|*.*" };
+        using var dialog = new OpenFileDialog { Filter = "旧版BIN / PINEキャプチャJSON (*.bin;*.json)|*.bin;*.json" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         LoadFile(dialog.FileName);
     }
@@ -259,8 +259,13 @@ internal sealed class FloorDataEditorForm : Form
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "projectへの保存失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             return;
         }
-        using var dialog = new SaveFileDialog { Filter = "Legacy floor data (*.bin)|*.bin|すべてのファイル (*.*)|*.*", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_sourceDescription) + "_edited.bin" };
+        using var dialog = new SaveFileDialog { Filter = "旧版フロアデータ (*.bin)|*.bin", DefaultExt = "bin", AddExtension = true, FileName = Path.GetFileNameWithoutExtension(_sourceDescription) + "_edited.bin" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        if (!Path.GetExtension(dialog.FileName).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "旧版互換ファイルは .bin 形式で保存してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         try
         {
             File.WriteAllBytes(dialog.FileName, _workingBytes);
