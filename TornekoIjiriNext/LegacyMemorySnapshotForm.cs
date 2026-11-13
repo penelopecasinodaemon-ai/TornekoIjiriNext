@@ -34,6 +34,7 @@ internal sealed class LegacyMemorySnapshotForm : Form
         _status.ForeColor = Color.DarkSlateBlue;
         _status.Text = "旧label_151..156の512 KiB containerとversioned extensionをローカル閲覧/比較します。Restore・PCSX2接続・memory writeはありません。";
         root.Controls.Add(_status, 0, 2); Controls.Add(root);
+        if (!string.IsNullOrWhiteSpace(initialPath)) OpenSnapshot(initialPath);
     }
 
     private void ConfigureColumns()
