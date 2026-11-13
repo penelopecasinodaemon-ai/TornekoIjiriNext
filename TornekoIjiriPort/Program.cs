@@ -746,6 +746,20 @@ map["var_251_offset"] = 931856;
 map["var_252_offset"] = 931860;
 map["var_253_offset"] = 1647976;
 
+map["var_644"] = AddOffset(
+    a,
+    546379562L + 6L - 538443776L);
+
+map["var_761_size"] =
+    546383552L - 546379562L;
+
+map["var_648"] = AddOffset(
+    a,
+    546392048L - 538443776L);
+
+map["var_762_size"] =
+    546393648L - 546392048L;
+
 map["var_254"] = AddOffset(a, 538156288L - 538443776L);
 map["var_255_difference"] =
     (538162816L - 538443776L) -
@@ -758,6 +772,315 @@ return layout;
         {
             CloseHandle(handle);
         }
+    }
+}
+
+// =========================================================
+// PCSX2メモリから旧HSP互換BINを構築する。
+// 読み取り専用。ゲームメモリへの書き込みは行わない。
+// =========================================================
+
+internal static class Pcsx2VanillaBinReader
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+    private static byte[] Read(
+        System.IntPtr handle,
+        long address,
+        int length)
+    {
+        if (address <= 0)
+            throw new System.ArgumentOutOfRangeException(
+                nameof(address));
+
+        if (length <= 0)
+            throw new System.ArgumentOutOfRangeException(
+                nameof(length));
+
+        byte[] buffer = new byte[length];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+            handle,
+            new System.IntPtr(address),
+            buffer,
+            new System.UIntPtr((uint)length),
+            out read);
+
+        if (!ok || read.ToUInt64() != (ulong)length)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2メモリの読み取りに失敗しました。アドレス: 0x" +
+                address.ToString("X"));
+        }
+
+        return buffer;
+    }
+
+    private static long Address(
+        Pcsx2MemoryLayout layout,
+        string key)
+    {
+        if (!layout.Addresses.TryGetValue(key, out long value))
+            throw new System.InvalidOperationException(
+                "メモリアドレスが定義されていません: " + key);
+
+        return value;
+    }
+
+    private static int Size(
+        Pcsx2MemoryLayout layout,
+        string key)
+    {
+        long value = Address(layout, key);
+
+        if (value <= 0 || value > 1024 * 1024)
+            throw new System.InvalidOperationException(
+                "メモリ領域サイズが不正です: " + key);
+
+        return (int)value;
+    }
+
+    private static void Append(
+        System.IntPtr handle,
+        byte[] bin,
+        ref int destination,
+        long address,
+        int length)
+    {
+        if (destination < 0 ||
+            length < 0 ||
+            destination > bin.Length ||
+            length > bin.Length - destination)
+        {
+            throw new System.InvalidOperationException(
+                "BIN組み立て先が範囲外です。位置: " +
+                destination + " / サイズ: " + length);
+        }
+
+        byte[] part = Read(handle, address, length);
+
+        System.Buffer.BlockCopy(
+            part,
+            0,
+            bin,
+            destination,
+            length);
+
+        // 旧HSP版のmemcpy後の領域間隔。
+        destination = checked(destination + length + 16);
+    }
+
+    private static void AppendFlag(
+        byte[] bin,
+        ref int destination,
+        byte value)
+    {
+        if (destination < 0 || destination >= bin.Length)
+            throw new System.InvalidOperationException(
+                "BINフラグ位置が範囲外です。");
+
+        bin[destination] = value;
+        destination = checked(destination + 17);
+    }
+
+    public static byte[] Capture(
+        int processId,
+        Pcsx2MemoryLayout layout)
+    {
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "BIN取得用にPCSX2を開けません。");
+        }
+
+        try
+        {
+            // 旧HSP:
+            // ReadProcessMemory var_130, var_134,
+            // varptr(var_226), 524288, var_145
+            byte[] bin = Read(
+                handle,
+                layout.SignatureA,
+                BaseSize);
+
+            // 旧HSP版のBIN出力はバージョン5として構築する。
+            bin[VersionOffset] = 5;
+
+            int destination = ExtensionOffset;
+
+            // 旧HSP label_155 の読み込み順序を維持。
+            Append(handle, bin, ref destination,
+                Address(layout, "var_150"),
+                Size(layout, "var_151_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_152"),
+                Size(layout, "var_153_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_154"),
+                Size(layout, "var_155_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_156"),
+                Size(layout, "var_157_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_158"),
+                Size(layout, "var_159_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_160"),
+                Size(layout, "var_161_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_162"),
+                Size(layout, "var_163_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_164"),
+                Size(layout, "var_165_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_166"),
+                Size(layout, "var_167_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_168"),
+                Size(layout, "var_169_size"));
+
+            // 旧HSPのチェックボックス値。
+            // 新しいC#画面では初期値を0として扱う。
+            AppendFlag(bin, ref destination, 0);
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_170"),
+                Size(layout, "var_171_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_220"),
+                Size(layout, "var_221_constant"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_222"),
+                Size(layout, "var_223_size"));
+
+            AppendFlag(bin, ref destination, 0);
+
+            // バージョン5の追加領域。
+            Append(handle, bin, ref destination,
+                checked(Address(layout, "var_644") - 6),
+                Size(layout, "var_761_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_648"),
+                Size(layout, "var_762_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_254"),
+                Size(layout, "var_255_difference"));
+
+            if (destination > BaseSize)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換BINの構築位置が524288 bytesを超えました。");
+            }
+
+            if (bin.Length != BaseSize)
+                throw new System.InvalidOperationException(
+                    "BINサイズが524288 bytesではありません。");
+
+            return bin;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+}
+
+// ============================================================
+// メインメニューとPCSX2接続画面で共有する状態。
+// 接続とBIN読み込みを別々に管理する。
+// ============================================================
+
+internal static class Pcsx2LiveSession
+{
+    public static bool IsConnected { get; private set; }
+    public static bool VanillaDataLoaded { get; private set; }
+    public static int ProcessId { get; private set; }
+    public static byte[]? VanillaBin { get; private set; }
+
+    public static event System.Action? StateChanged;
+
+    public static void SetConnected(int processId)
+    {
+        IsConnected = true;
+        ProcessId = processId;
+
+        // 新しい接続では新しい取得を待つ。
+        VanillaDataLoaded = false;
+        VanillaBin = null;
+
+        StateChanged?.Invoke();
+    }
+
+    public static void SetVanillaData(byte[] data)
+    {
+        if (data == null || data.Length != 524288)
+            throw new System.ArgumentException(
+                "取得BINは524288 bytesである必要があります。");
+
+        VanillaBin = (byte[])data.Clone();
+        VanillaDataLoaded = true;
+
+        StateChanged?.Invoke();
+    }
+
+    public static void SetDisconnected()
+    {
+        IsConnected = false;
+        ProcessId = 0;
+
+        // 取得済みBINはメイン画面の編集バッファに残す。
+        StateChanged?.Invoke();
     }
 }
 
@@ -779,6 +1102,9 @@ internal sealed class Pcsx2ConnectionForm :
 
     public Pcsx2ConnectionForm()
     {
+        ShowInTaskbar = false;
+        Opacity = 0;
+        ShowInTaskbar = false;
         Text = "PCSX2接続・メモリ基準アドレス検索";
         Width = 760;
         Height = 560;
@@ -899,6 +1225,8 @@ internal sealed class Pcsx2ConnectionForm :
             _connectedProcessId = 0;
         }
 
+        Pcsx2LiveSession.SetDisconnected();
+
         base.OnFormClosed(e);
     }
 
@@ -956,8 +1284,25 @@ internal sealed class Pcsx2ConnectionForm :
             Log("旧HSP互換アドレス計算が完了しました。");
             Log(layout.Describe());
 
-            statusLabel.Text = "基準アドレス検索完了";
-            Log("基準アドレス検索が完了しました。");
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
         }
         catch (System.Exception ex)
         {
@@ -973,7 +1318,7 @@ internal sealed class Pcsx2ConnectionForm :
             refreshButton.Enabled = true;
         }
     }
-    private void ConnectSelected()
+    private async void ConnectSelected()
     {
         if (_processHandle != System.IntPtr.Zero)
         {
@@ -1424,6 +1769,14 @@ internal sealed class MainForm : Form
     private readonly Label _status;
     private readonly AppSettings _settings;
 
+    private readonly Label _pcsx2ConnectionStatus =
+        new Label();
+
+    private readonly Label _pcsx2DataStatus =
+        new Label();
+
+    private Pcsx2ConnectionForm? _pcsx2ConnectionForm;
+
     public MainForm()
     {
         // TornekoIjiriPort 統合データ編集画面
@@ -1490,13 +1843,63 @@ internal sealed class MainForm : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 3,
+            RowCount = 4,
             Padding = new Padding(12)
         };
 
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+
+        // メインメニュー最上部の独立PCSX2接続パネル。
+        var pcsx2Panel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BorderStyle = BorderStyle.FixedSingle,
+            BackColor = Color.FromArgb(245, 248, 252)
+        };
+
+        var pcsx2Title = new Label
+        {
+            Text = "PCSX2 接続",
+            Font = new Font("Yu Gothic UI", 13, FontStyle.Bold),
+            AutoSize = true,
+            Location = new Point(10, 5)
+        };
+
+        var pcsx2Button = new Button
+        {
+            Text = "PCSX2に接続",
+            Width = 170,
+            Height = 42,
+            Location = new Point(12, 32),
+            Font = new Font("Yu Gothic UI", 10, FontStyle.Bold)
+        };
+
+        pcsx2Button.Click += (_, _) => OpenPcsx2Connection();
+
+        _pcsx2ConnectionStatus = new Label
+        {
+            Text = "未接続",
+            AutoSize = true,
+            Location = new Point(205, 34),
+            Font = new Font("Yu Gothic UI", 12, FontStyle.Bold),
+            ForeColor = Color.DarkRed
+        };
+
+        _pcsx2DataStatus = new Label
+        {
+            Text = "バニラデータ未読み込み",
+            AutoSize = true,
+            Location = new Point(205, 58),
+            Font = new Font("Yu Gothic UI", 9)
+        };
+
+        pcsx2Panel.Controls.Add(pcsx2Title);
+        pcsx2Panel.Controls.Add(pcsx2Button);
+        pcsx2Panel.Controls.Add(_pcsx2ConnectionStatus);
+        pcsx2Panel.Controls.Add(_pcsx2DataStatus);
 
         var header = new Panel { Dock = DockStyle.Fill };
 
@@ -1555,14 +1958,6 @@ internal sealed class MainForm : Form
         buttons.Controls.Add(UiFactory.Button(
             "BIN情報", (_, _) => ShowBinInfo()));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "PCSX2接続・メモリ検索", (_, _) =>
-            {
-                using (var dialog = new Pcsx2ConnectionForm())
-                {
-                    dialog.ShowDialog(this);
-                }
-            }));
 
         _status = new Label
         {
@@ -1572,15 +1967,107 @@ internal sealed class MainForm : Form
             BorderStyle = BorderStyle.FixedSingle
         };
 
-        root.Controls.Add(header, 0, 0);
-        root.Controls.Add(buttons, 0, 1);
-        root.Controls.Add(_status, 0, 2);
+        root.Controls.Add(pcsx2Panel, 0, 0);
+        root.Controls.Add(header, 0, 1);
+        root.Controls.Add(buttons, 0, 2);
+        root.Controls.Add(_status, 0, 3);
 
         Controls.Add(root);
+
+        Pcsx2LiveSession.StateChanged += UpdatePcsx2Status;
+        FormClosed += (_, _) =>
+        {
+            Pcsx2LiveSession.StateChanged -= UpdatePcsx2Status;
+        };
+
+        UpdateStatus();
+        UpdatePcsx2Status();
+    }
+
+    private void OpenPcsx2Connection()
+    {
+        if (_pcsx2ConnectionForm == null ||
+            _pcsx2ConnectionForm.IsDisposed)
+        {
+            _pcsx2ConnectionForm =
+                new Pcsx2ConnectionForm();
+
+            _pcsx2ConnectionForm.FormClosed += (_, _) =>
+            {
+                _pcsx2ConnectionForm = null;
+            };
+
+            _pcsx2ConnectionForm.Show(this);
+        }
+        else
+        {
+            _pcsx2ConnectionForm.BringToFront();
+        }
+    }
+
+    private void UpdatePcsx2Status()
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(new System.Action(UpdatePcsx2Status));
+            return;
+        }
+
+        if (Pcsx2LiveSession.IsConnected)
+        {
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " +
+                Pcsx2LiveSession.ProcessId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+        }
+        else
+        {
+            _pcsx2ConnectionStatus.Text = "未接続";
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkRed;
+        }
+
+        if (Pcsx2LiveSession.VanillaDataLoaded &&
+            Pcsx2LiveSession.VanillaBin != null)
+        {
+            LoadPcsx2VanillaData(
+                Pcsx2LiveSession.VanillaBin);
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        else if (_bin != null && _binPath == null)
+        {
+            _pcsx2DataStatus.Text =
+                "前回取得したバニラデータを保持中";
+        }
+        else
+        {
+            _pcsx2DataStatus.Text =
+                "バニラデータ未読み込み";
+        }
+    }
+
+    private void LoadPcsx2VanillaData(byte[] data)
+    {
+        if (data == null || data.Length != 524288)
+            throw new System.InvalidOperationException(
+                "PCSX2から取得したBINサイズが不正です。");
+
+        _bin = (byte[])data.Clone();
+
+        _binSnapshot =
+            TornekoBinPreservation.CreateInMemorySnapshot(_bin);
+
+        // 実在しない仮ファイルを開いたことにはしない。
+        _binPath = null;
+
         UpdateStatus();
     }
 
-        private void OpenBin()
+    private void OpenBin()
     {
         using var dialog = new OpenFileDialog
         {
@@ -1817,8 +2304,18 @@ internal sealed class MainForm : Form
             return;
         }
 
-        _status.Text =
-            $"読み込み中: {_binPath}　|　{_bin.Length:N0} bytes";
+        if (string.IsNullOrWhiteSpace(_binPath))
+        {
+            _status.Text =
+                "PCSX2取得バニラBIN　|　" +
+                _bin.Length.ToString("N0") +
+                " bytes　|　メモリ上の編集データ";
+        }
+        else
+        {
+            _status.Text =
+                $"読み込み中: {_binPath}　|　{_bin.Length:N0} bytes";
+        }
     }
 }
 
@@ -2907,6 +3404,28 @@ public static class TornekoBinPreservation
     public const int LegacyBaseRegionSize = 524288;
     public const int VersionMarkerOffset = 355056;
     public const int ExtensionStartOffset = 355072;
+
+    public static TornekoBinPreservationSnapshot CreateInMemorySnapshot(
+        byte[] data)
+    {
+        if (data == null)
+            throw new System.ArgumentNullException(nameof(data));
+
+        if (data.Length != LegacyBaseRegionSize)
+            throw new System.ArgumentException(
+                "メモリBINは524288 bytesである必要があります。");
+
+        // 保存時の元ファイル判定用の仮想パス。
+        // このパスにファイルを作成することはない。
+        string virtualPath =
+            System.IO.Path.Combine(
+                System.IO.Path.GetTempPath(),
+                "PCSX2_VanillaMemory.bin");
+
+        return new TornekoBinPreservationSnapshot(
+            data,
+            virtualPath);
+    }
 
     public static TornekoBinPreservationSnapshot Load(
         string path)
