@@ -218,6 +218,8 @@ internal sealed class MainForm : Form
         SetState(ConnectionState.FetchingGameInfo, "PINEからゲーム情報を取得中…");
         var info = await Task.Run(client.GetGameInfo);
         if (generation != _connectionGeneration || !ReferenceEquals(client, _pine)) return;
+        if (_gameInfo is not null && _gameInfo != info)
+            InvalidateReadBuffer();
         _gameInfo = info;
         _gameActive = true;
         if (PineClient.IsAllowedGame(info))
