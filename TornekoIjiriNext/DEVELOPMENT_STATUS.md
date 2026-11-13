@@ -35,6 +35,12 @@
 
 **ゲーム内memoryとの対応付けが未実装**の機能は、dungeon/floor pointer navigation、floor duplicate scan、monster/item editorと実ゲームblockとの接続、tempo/patch/string editing、ranking upload、bulk memory restoreなど。オフラインUI/legacy data editorが先行実装済みの機能もある。機能ごとの旧版動作・必要画面/操作・データ・課題は [FEATURE_PORTING_MATRIX.md](FEATURE_PORTING_MATRIX.md) を参照。
 
+## 追加の書き込み安全ゲート
+
+- 書き込み許可条件をゲームID単独から、検証済みプロファイル `SLPM-62199` / CRC `e199f75d` / game version `1.04` の3条件一致へ強化した。
+- UIの書き込みボタン、確認ダイアログ直前の再確認、`PineClient.SafeWriteMemory` 内部の最終認可で同じ判定関数を使用する。別CRC/版は読み取り専用。
+- この変更はGitHub draft PRでレビュー中。現環境では.NET Release buildおよびPCSX2 GUI実機確認は未実施。ユーザーPCでPINEが返すCRC/版を確認し、Release build後に統合する。
+
 ## 未解決事項と制約
 
 - オフラインlegacy editorのデータ形式は旧HSP/解析資料に基づく。これらの形式が対象ゲーム `SLPM-62199` 上のどのEEアドレスに対応するかは未検証であり、ゲームメモリへ反映しない。

@@ -213,10 +213,11 @@ internal sealed class MainForm : Form
         if (generation != _connectionGeneration || !ReferenceEquals(client, _pine)) return;
         _gameInfo = info;
         _gameActive = true;
-        if (string.Equals(info.Id, PineClient.AllowedGameId, StringComparison.Ordinal))
-            SetState(ConnectionState.Connected, "対象ゲームを確認しました。書き込みを許可できます。");
+        if (PineClient.IsAllowedGame(info))
+            SetState(ConnectionState.Connected, "対象ゲームID・CRC・版を確認しました。書き込みを許可できます。");
         else
-            SetState(ConnectionState.UnsupportedGame, $"対象外ゲームです。許可ID: {PineClient.AllowedGameId}");
+            SetState(ConnectionState.UnsupportedGame,
+                $"書き込み対象外のゲーム版です。許可: {PineClient.AllowedGameId} / CRC {PineClient.AllowedGameCrc} / Version {PineClient.AllowedGameVersion}");
     }
 
     private async Task MonitorConnectionAsync()
@@ -285,7 +286,7 @@ internal sealed class MainForm : Form
     }
 
     private bool CanWrite => _pine is not null && _gameActive && _connectionState == ConnectionState.Connected &&
-        _gameInfo is not null && string.Equals(_gameInfo.Id, PineClient.AllowedGameId, StringComparison.Ordinal);
+        _gameInfo is not null && PineClient.IsAllowedGame(_gameInfo);
 
     private bool IsCaptureSessionActive(PineClient client) => ReferenceEquals(client, _pine) && _gameActive &&
         _connectionState is ConnectionState.Connected or ConnectionState.UnsupportedGame;
@@ -363,12 +364,15 @@ internal sealed class MainForm : Form
             var status = await Task.Run(client.GetStatus);
             if (status is not (0 or 1)) throw new PineWriteException("ゲームが動作していません。", null, null);
             var freshInfo = await Task.Run(client.GetGameInfo);
-            if (!string.Equals(freshInfo.Id, PineClient.AllowedGameId, StringComparison.Ordinal))
+            if (!PineClient.IsAllowedGame(freshInfo))
             {
                 _gameInfo = freshInfo;
                 _gameActive = true;
-                SetState(ConnectionState.UnsupportedGame, $"対象ID不一致: {freshInfo.Id}");
-                throw new PineWriteException($"対象ゲームIDと一致しません: {freshInfo.Id}", null, null);
+                SetState(ConnectionState.UnsupportedGame,
+                    $"書き込み対象外のゲーム版: ID={freshInfo.Id}, CRC={freshInfo.Crc}, Version={freshInfo.GameVersion}");
+                throw new PineWriteException(
+                    $"書き込み許可対象と一致しません。許可: ID={PineClient.AllowedGameId}, CRC={PineClient.AllowedGameCrc}, Version={PineClient.AllowedGameVersion} / 取得: ID={freshInfo.Id}, CRC={freshInfo.Crc}, Version={freshInfo.GameVersion}",
+                    null, null);
             }
 
             var before = await Task.Run(() => client.ReadMemory(address, data.Length));

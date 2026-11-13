@@ -4,25 +4,25 @@
 
 ## 書き込み許可条件
 
-書き込み許可IDは `SLPM-62199` とし、PINEから受け取ったID文字列を `StringComparison.Ordinal` で完全一致比較する。取得値をtrimして許可することはしない。空文字/空白/別IDはいずれも拒否する。
+書き込み許可プロファイルは `SLPM-62199` / CRC `e199f75d` / game version `1.04` とする。IDとgame versionは `StringComparison.Ordinal`、CRCは16進文字列の大文字小文字を許容して比較する。取得値をtrimして許可することはしない。いずれかが異なる、空、または未取得の場合は書き込みを拒否する。別CRC/版は、別途実機検証して許可プロファイルに追加するまでread-onlyとする。
 
 書き込み可能状態は次のすべてが真の場合だけ。
 
 1. `_pine` が存在し、破棄されていない。
 2. 初回/直近のゲーム情報取得が成功し、IDが空でない。
-3. 取得IDが完全一致で `SLPM-62199`。
+3. 取得したID/CRC/game versionが `SLPM-62199` / `e199f75d` / `1.04` の許可プロファイルと一致。
 4. PINEの `MsgStatus` がRunning(0)またはPaused(1)。Shutdown(2)は不可。
 5. UIの接続状態が `Connected`。
 
-ボタンの `CanWrite` はUI上の早期ガード。実書き込みの唯一の入口 `PineClient.SafeWriteMemory` も必ずPINEのstatus、タイトル/ID/CRC/ゲーム版取得、完全一致ID、statusを再確認する。書き込み前後の全処理はクライアントのlock下で行い、他のアプリ内PINE要求が検査と書き込みに割り込まないようにする。対象IDであっても確認値の変更があれば中止する。
+ボタンの `CanWrite` はUI上の早期ガード。実書き込みの唯一の入口 `PineClient.SafeWriteMemory` も必ずPINEのstatus、タイトル/ID/CRC/ゲーム版取得、ID/CRC/版の許可プロファイル一致、statusを再確認する。書き込み前後の全処理はクライアントのlock下で行い、他のアプリ内PINE要求が検査と書き込みに割り込まないようにする。対象IDであっても確認値の変更があれば中止する。
 
 ## 書き込みの流れ
 
-1. UI状態/IDに基づきボタンを有効化。
-2. クリック時にstatusと全ゲーム情報を再取得し、対象IDを再確認。
+1. UI状態とID/CRC/ゲーム版の許可プロファイル一致に基づきボタンを有効化。
+2. クリック時にstatusと全ゲーム情報を再取得し、対象ID/CRC/ゲーム版を再確認。
 3. 書き込み前の生byte列を読み取る。
 4. 最終確認ダイアログにゲームタイトル/ID、status、アドレス、変更前byte列、書込byte列を表示。
-5. Yes後、通信層でstatus→完全一致ID→statusを再確認。
+5. Yes後、通信層でstatus→ID/CRC/ゲーム版→statusを再確認。
 6. 変更前byte列を再取得して確認時の値と一致しなければ中止。
 7. MsgWrite8でbyteを書き込む。
 8. MsgRead8で同じ範囲を読み戻し、全byteが期待値と一致した場合だけ成功表示。
