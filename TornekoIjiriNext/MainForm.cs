@@ -179,6 +179,7 @@ internal sealed class MainForm : Form
 
     private async Task ConnectPineAsync()
     {
+        InvalidateReadBuffer();
         _monitor.Stop();
         ++_connectionGeneration;
         _pine?.Dispose();
@@ -256,6 +257,7 @@ internal sealed class MainForm : Form
 
     private void HandleConnectionFailure(Exception ex, PineClient? client)
     {
+        InvalidateReadBuffer();
         if (ex is PineCommandException)
         {
             _gameInfo = null;
@@ -281,6 +283,7 @@ internal sealed class MainForm : Form
 
     private void Disconnect()
     {
+        InvalidateReadBuffer();
         _monitor.Stop();
         ++_connectionGeneration;
         _pine?.Dispose();
