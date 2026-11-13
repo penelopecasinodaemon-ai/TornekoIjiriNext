@@ -52,6 +52,9 @@ internal sealed class MainForm : Form
     private bool _gameActive;
     private int _polling;
     private int _connectionGeneration;
+    private bool _hasSuccessfulRead;
+    private uint? _lastReadAddress;
+    private int _lastReadLength;
 
     public MainForm()
     {
@@ -65,6 +68,9 @@ internal sealed class MainForm : Form
         _read.Click += async (_, _) => await ReadMemoryAsync();
         _write.Click += async (_, _) => await WriteMemoryAsync();
         _pointerDump.Click += async (_, _) => await ReadPointerTargetsAsync();
+        _address.TextChanged += (_, _) => InvalidateReadBuffer();
+        _length.ValueChanged += (_, _) => InvalidateReadBuffer();
+        _memory.TextChanged += (_, _) => UpdateWriteButton();
         _monitor.Tick += async (_, _) => await MonitorConnectionAsync();
         FormClosed += (_, _) => Disconnect();
         SetState(ConnectionState.Disconnected, "PCSX2に未接続です。");
@@ -163,7 +169,7 @@ internal sealed class MainForm : Form
         bar.Controls.Add(binaryEditor);
         main.Controls.Add(bar, 0, 0);
         main.Controls.Add(_memory, 0, 1);
-        main.Controls.Add(new Label { Text = "読み書き形式: 16進数バイト列。書き込みは対象ID確認・変更前値確認・最終確認・読み戻しを行います。", AutoSize = true, ForeColor = Color.DimGray }, 0, 2);
+        main.Controls.Add(new Label { Text = "読み込み後、同じアドレス・byte数のまま値を編集して書き込みます。書き込みは対象ID確認・変更前値確認・最終確認・読み戻しを行います。", AutoSize = true, ForeColor = Color.DimGray }, 0, 2);
         root.Controls.Add(main, 0, 2);
 
         var logGroup = new GroupBox { Text = "接続・操作ログ", Dock = DockStyle.Fill, Padding = new Padding(8) };
@@ -318,30 +324,67 @@ internal sealed class MainForm : Form
             : $"PCSX2 {_pcsx2Version} / {_gameInfo.Title} / {_gameInfo.Id} / CRC {_gameInfo.Crc} / {_gameInfo.GameVersion} — {detail}";
         _connect.Enabled = state is not (ConnectionState.Connecting or ConnectionState.FetchingGameInfo);
         _read.Enabled = _pine is not null && _gameActive && state is ConnectionState.Connected or ConnectionState.UnsupportedGame;
-        _write.Enabled = CanWrite;
+        UpdateWriteButton();
         _pointerDump.Enabled = _pine is not null && _gameActive && state is ConnectionState.Connected or ConnectionState.UnsupportedGame;
     }
 
     private bool TryGetAddress(out uint address)
     {
-        var text = _address.Text.Trim().Replace("0x", "", StringComparison.OrdinalIgnoreCase);
-        if (uint.TryParse(text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out address)) return true;
+        if (TryParseAddress(out address)) return true;
         MessageBox.Show(this, "アドレスを16進数で入力してください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return false;
+    }
+
+    private bool TryParseAddress(out uint address)
+    {
+        var text = _address.Text.Trim().Replace("0x", "", StringComparison.OrdinalIgnoreCase);
+        return uint.TryParse(text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out address);
+    }
+
+    private bool HasValidReadBuffer()
+    {
+        if (!_hasSuccessfulRead || _lastReadAddress is not uint readAddress ||
+            !TryParseAddress(out var currentAddress) || currentAddress != readAddress ||
+            (int)_length.Value != _lastReadLength)
+            return false;
+
+        var tokens = _memory.Text.Split([' ', '\t', '\r', '\n', ','], StringSplitOptions.RemoveEmptyEntries);
+        return tokens.Length == _lastReadLength &&
+            tokens.All(token => token.Length is 1 or 2 &&
+                byte.TryParse(token, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _));
+    }
+
+    private void UpdateWriteButton()
+    {
+        if (_write is not null) _write.Enabled = CanWrite && HasValidReadBuffer();
+    }
+
+    private void InvalidateReadBuffer()
+    {
+        _hasSuccessfulRead = false;
+        _lastReadAddress = null;
+        _lastReadLength = 0;
+        UpdateWriteButton();
     }
 
     private async Task ReadMemoryAsync()
     {
         var client = _pine;
         if (client is null || !_gameActive || !TryGetAddress(out var address)) return;
+        InvalidateReadBuffer();
         try
         {
-            var data = await Task.Run(() => client.ReadMemory(address, (int)_length.Value));
+            var requestedLength = (int)_length.Value;
+            var data = await Task.Run(() => client.ReadMemory(address, requestedLength));
             if (!ReferenceEquals(client, _pine)) return;
             _memory.Text = string.Join(" ", data.Select(b => b.ToString("X2")));
+            _lastReadAddress = address;
+            _lastReadLength = data.Length;
+            _hasSuccessfulRead = true;
+            UpdateWriteButton();
             Log($"読み込み: 0x{address:X8} から {data.Length} bytes");
         }
-        catch (Exception ex) { HandleConnectionFailure(ex, client); Log($"読み込み失敗: {ex.Message}"); }
+        catch (Exception ex) { InvalidateReadBuffer(); HandleConnectionFailure(ex, client); Log($"読み込み失敗: {ex.Message}"); }
     }
 
     private async Task WriteMemoryAsync()
@@ -354,8 +397,18 @@ internal sealed class MainForm : Form
             Log("書き込み拒否: PINE接続・ゲーム情報・対象ID・接続状態の条件を満たしていません。");
             return;
         }
+        if (!HasValidReadBuffer())
+        {
+            MessageBox.Show(this, "書き込み前に現在のアドレス・長さで「読み込み」を実行してください。読み込み後にアドレスや長さを変更した場合も、再読み込みが必要です。", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
         if (!TryGetAddress(out var address)) return;
         var data = ParseMemoryBytes();
+        if (data is not null && data.Length != _lastReadLength)
+        {
+            MessageBox.Show(this, $"書き込むbyte数は読み込み時と同じ {_lastReadLength} bytes にしてください。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         if (data is null) return;
 
         try
@@ -384,6 +437,10 @@ internal sealed class MainForm : Form
             var readBack = await Task.Run(() => client.SafeWriteMemory(address, before, data));
             if (!ReferenceEquals(client, _pine)) throw new IOException("確認中にPINE接続が切り替わりました。");
             _memory.Text = string.Join(" ", readBack.Select(b => b.ToString("X2")));
+            _lastReadAddress = address;
+            _lastReadLength = readBack.Length;
+            _hasSuccessfulRead = true;
+            UpdateWriteButton();
             Log($"書き込み成功: 0x{address:X8}, 前={Convert.ToHexString(before)}, 書込={Convert.ToHexString(data)}, 読戻={Convert.ToHexString(readBack)}");
             MessageBox.Show(this, "書き込み後の読み戻し値が一致しました。", "書き込み成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -393,7 +450,11 @@ internal sealed class MainForm : Form
             if (ex.Before is not null) Log($"  書き込み前: {Convert.ToHexString(ex.Before)}");
             if (ex.ReadBack is not null) Log($"  読み戻し: {Convert.ToHexString(ex.ReadBack)} (期待値不一致)");
             var observed = ex.ReadBack ?? ex.Before;
-            if (observed is not null) _memory.Text = string.Join(" ", observed.Select(b => b.ToString("X2")));
+            if (observed is not null)
+            {
+                _memory.Text = string.Join(" ", observed.Select(b => b.ToString("X2")));
+                InvalidateReadBuffer();
+            }
             MessageBox.Show(this, ex.Message, "書き込み失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
             await MonitorConnectionAsync();
         }
