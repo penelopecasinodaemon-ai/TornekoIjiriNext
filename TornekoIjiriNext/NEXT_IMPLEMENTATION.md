@@ -93,4 +93,3 @@ capture JSONのschema検証、project bundle取込み、metadata表示、同じ�
 - `start.hsp` の354 item ID と `offset 30 + 2*ID` を根拠に、個別アイテム率のオフライン編集を実装。category CDF editorとは別画面で、source catalog item names/IDsを表示し、複数768-byte block、category reset CDF、999調整を扱う。
 - 旧6-byte spawn tableの同一/複数table間ID重複比較画面を実装。次はcategory/individual item率とfloor dataをひとつのlocal projectに束ね、再読込・diff・編集履歴を扱えるようにする。
 - 旧512KiB memory snapshotはoffline viewer/comparer/region extractorを実装。次は旧version marker別container testを実データで確認し、local-only snapshot projectへ進む。ゲームmemory restoreは許可しない。
-
