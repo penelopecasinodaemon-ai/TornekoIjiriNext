@@ -33,7 +33,7 @@
 
 ## 未移植の主要機能
 
-**ゲーム内memoryとの対応付けが未実装**の機能は、dungeon/floor pointer navigation、floor duplicate scan、monster/item editorと実ゲームblockとの接続、tempo/patch/string editing、ranking upload、bulk memory restoreなど。オフラインUI/legacy data editorが先行実装済みの機能もある。機能ごとの旧版動作・必要画面/操作・データ・課題は [FEATURE_PORTING_MATRIX.md](FEATURE_PORTING_MATRIX.md) を参照。
+**ゲーム内memoryとの対応付けが未実装**の機能は、dungeon/floor pointer navigation、floor duplicate scan、monster/item editorと実ゲームblockとの接続、string editing、ranking upload、bulk memory restoreなど。オフラインUI/legacy data editorが先行実装済みの機能もある。機能ごとの旧版動作・必要画面/操作・データ・課題は [FEATURE_PORTING_MATRIX.md](FEATURE_PORTING_MATRIX.md) を参照。
 
 ## 追加の書き込み安全ゲート
 
@@ -175,7 +175,7 @@ raw bytesは以下の16個のlittle-endian DWORDとして読め、以前のユ�
 
 ## 全体状況
 
-PINE接続/ゲーム情報/raw read-write安全ゲート、旧アドレス候補read、静的カタログ、読み取りcapture/compare、出現table/重複候補比較/floor/item category+individual rates/monster status+growth/fixed room/legacy snapshot viewer/旧INI editor/project bundleのオフライン機能を実装済み。bundleから既存offline editor全系統へのrouteを実装。dungeon/floor pointer navigation、実ゲームとの編集block対応、tempo/patch/string/ranking、bulk restore等は未実装。
+PINE接続/ゲーム情報/raw read-write安全ゲート、旧アドレス候補read、静的カタログ、読み取りcapture/compare、出現table/重複候補比較/floor/item category+individual rates/monster status+growth/fixed room/legacy snapshot viewer/旧INI editor/project bundleのオフライン機能を実装済み。bundleから既存offline editor全系統へのrouteを実装。dungeon/floor pointer navigation、実ゲームとの編集block対応、string/ranking、bulk restore等は未実装。
 
 これら未移植項目のデータ形式やアドレスは候補・旧実装に基づくものを含み、SLPM-62199 / PCSX2 2.8.2での意味・構造の実機検証が済んでいません。カタログが増えたことは、編集機能やアドレスprofileが確定したことを意味しません。
 
