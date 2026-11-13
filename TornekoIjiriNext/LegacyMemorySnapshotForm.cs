@@ -12,7 +12,7 @@ internal sealed class LegacyMemorySnapshotForm : Form
     private LegacyMemorySnapshotModel? _snapshot;
     private string _source = "";
 
-    public LegacyMemorySnapshotForm()
+    public LegacyMemorySnapshotForm(string? initialPath = null)
     {
         Text = "旧版512 KiB memory snapshot（offline / read-only）";
         StartPosition = FormStartPosition.CenterParent;
@@ -48,10 +48,15 @@ internal sealed class LegacyMemorySnapshotForm : Form
     {
         using var dialog = new OpenFileDialog { Filter = "Legacy memory snapshot (*.bin;*.dat)|*.bin;*.dat|すべてのファイル (*.*)|*.*" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        OpenSnapshot(dialog.FileName);
+    }
+
+    private void OpenSnapshot(string path)
+    {
         try
         {
-            var model = new LegacyMemorySnapshotModel(File.ReadAllBytes(dialog.FileName));
-            _snapshot = model; _source = dialog.FileName; DisplaySnapshot();
+            var model = new LegacyMemorySnapshotModel(File.ReadAllBytes(path));
+            _snapshot = model; _source = path; DisplaySnapshot();
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "snapshot読込失敗", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }
