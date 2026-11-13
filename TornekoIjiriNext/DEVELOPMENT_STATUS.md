@@ -242,3 +242,11 @@ PINE接続/ゲーム情報/raw read-write安全ゲート、旧アドレス候補
 - UI文言を「編集値を書き込み」に変更し、読み込み→編集→書き込みの順序を明示。
 - この変更はPINEの書き込み許可アドレスを増やさず、ゲームデータの意味が未確定なアドレスへの書き込みを安全と認定するものではない。
 - Windows上のRelease buildとWinForms操作確認が必要。
+
+
+### 2026-11-13: project bundle snapshot routing
+
+- Project bundleの分類 `snapshot` で、拡張子 `.bin` / `.dat` かつ正確に512 KiBのassetを専用ルートへ渡すようにした。
+- `LegacyMemorySnapshotForm` に既存asset pathを受け取る起動経路を追加。プロジェクト側のSHA-256整合性確認後、旧snapshotのregion一覧・比較・抽出を既存read-only viewerで利用できる。
+- 形式不一致のファイルはrouterで拒否し、汎用binary editorへ誤って回さない。PCSX2/PINE接続・memory restore/writeは追加していない。
+- Windows Release buildとGUI操作確認は未実施。次のレビュー環境で確認する。
