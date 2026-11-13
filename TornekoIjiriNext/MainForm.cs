@@ -140,9 +140,6 @@ internal sealed class MainForm : Form
         var snapshotInspector = new Button { Text = "旧snapshot閲覧・比較（オフライン）", AutoSize = true };
         snapshotInspector.Click += (_, _) => new LegacyMemorySnapshotForm().ShowDialog(this);
         bar.Controls.Add(snapshotInspector);
-        var tempoProfile = new Button { Text = "テンポ改善パッチ設定（オフライン）", AutoSize = true };
-        tempoProfile.Click += (_, _) => new TempoPatchProfileForm().ShowDialog(this);
-        bar.Controls.Add(tempoProfile);
         var legacyIni = new Button { Text = "旧INI設定（オフライン）", AutoSize = true };
         legacyIni.Click += (_, _) => new LegacyIniForm().ShowDialog(this);
         bar.Controls.Add(legacyIni);
