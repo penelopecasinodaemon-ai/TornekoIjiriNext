@@ -14,7 +14,7 @@
 4. PINEの `MsgStatus` がRunning(0)またはPaused(1)。Shutdown(2)は不可。
 5. UIの接続状態が `Connected`。
 
-ボタンの `CanWrite` はUI上の早期ガード。実書き込みの唯一の入口 `PineClient.SafeWriteMemory` も必ずPINEのstatus、タイトル/ID/CRC/ゲーム版取得、完全一致ID、statusを再確認する。書き込み前後の全処理はクライアントのlock下で行い、他のアプリ内PINE要求が検査と書き込みに割り込まないようにする。対象IDであっても確認値の変更があれば中止する。
+ボタンの `CanWrite` はUI上の早期ガード。実書き込みの唯一の入口 `PineClient.SafeWriteMemory` も必ずPINEのstatus、タイトル/ID/CRC/ゲーム版取得、ID/CRC/版の許可プロファイル一致、statusを再確認する。書き込み前後の全処理はクライアントのlock下で行い、他のアプリ内PINE要求が検査と書き込みに割り込まないようにする。対象IDであっても確認値の変更があれば中止する。
 
 ## 書き込みの流れ
 
