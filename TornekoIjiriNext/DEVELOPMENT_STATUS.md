@@ -33,7 +33,13 @@
 
 ## 未移植の主要機能
 
-**ゲーム内memoryとの対応付けが未実装**の機能は、dungeon/floor pointer navigation、floor duplicate scan、monster/item editorと実ゲームblockとの接続、tempo/patch/string editing、ranking upload、bulk memory restoreなど。オフラインUI/legacy data editorが先行実装済みの機能もある。機能ごとの旧版動作・必要画面/操作・データ・課題は [FEATURE_PORTING_MATRIX.md](FEATURE_PORTING_MATRIX.md) を参照。
+**ゲーム内memoryとの対応付けが未実装**の機能は、dungeon/floor pointer navigation、floor duplicate scan、monster/item editorと実ゲームblockとの接続、string editing、ranking upload、bulk memory restoreなど。オフラインUI/legacy data editorが先行実装済みの機能もある。機能ごとの旧版動作・必要画面/操作・データ・課題は [FEATURE_PORTING_MATRIX.md](FEATURE_PORTING_MATRIX.md) を参照。
+
+## 追加の書き込み安全ゲート
+
+- 書き込み許可条件をゲームID単独から、検証済みプロファイル `SLPM-62199` / CRC `e199f75d` / game version `1.04` の3条件一致へ強化した。
+- UIの書き込みボタン、確認ダイアログ直前の再確認、`PineClient.SafeWriteMemory` 内部の最終認可で同じ判定関数を使用する。別CRC/版は読み取り専用。
+- この変更はGitHub draft PRでレビュー中。現環境では.NET Release buildおよびPCSX2 GUI実機確認は未実施。ユーザーPCでPINEが返すCRC/版を確認し、Release build後に統合する。
 
 ## 未解決事項と制約
 
@@ -169,7 +175,7 @@ raw bytesは以下の16個のlittle-endian DWORDとして読め、以前のユ�
 
 ## 全体状況
 
-PINE接続/ゲーム情報/raw read-write安全ゲート、旧アドレス候補read、静的カタログ、読み取りcapture/compare、出現table/重複候補比較/floor/item category+individual rates/monster status+growth/fixed room/legacy snapshot viewer/旧INI editor/project bundleのオフライン機能を実装済み。bundleから既存offline editor全系統へのrouteを実装。dungeon/floor pointer navigation、実ゲームとの編集block対応、tempo/patch/string/ranking、bulk restore等は未実装。
+PINE接続/ゲーム情報/raw read-write安全ゲート、旧アドレス候補read、静的カタログ、読み取りcapture/compare、出現table/重複候補比較/floor/item category+individual rates/monster status+growth/fixed room/legacy snapshot viewer/旧INI editor/project bundleのオフライン機能を実装済み。bundleから既存offline editor全系統へのrouteを実装。dungeon/floor pointer navigation、実ゲームとの編集block対応、string/ranking、bulk restore等は未実装。
 
 これら未移植項目のデータ形式やアドレスは候補・旧実装に基づくものを含み、SLPM-62199 / PCSX2 2.8.2での意味・構造の実機検証が済んでいません。カタログが増えたことは、編集機能やアドレスprofileが確定したことを意味しません。
 
@@ -225,3 +231,22 @@ PINE接続/ゲーム情報/raw read-write安全ゲート、旧アドレス候補
 - `ProjectCaptureModel` を拡張し、FormatVersion 1のsingle/batch captureだけでなく、同梱されている旧診断JSON（PointerTable/PointerTargets64Bytes/PreviousProbePoints、Regions/Points形式）をread-only captureとして取り込めるようにした。旧形式の数値/hex文字列アドレス、Length省略、raw bytes長、32-bit address overflowを検査する。
 - 検証: 同梱JSON 6ファイルのJSON構文OK。capture 5ファイルを互換ルールで検査し、1/16/23/23/11領域すべてのhex長・byte長・アドレス範囲が一致。26個のC#ソースの括弧/文字列境界の簡易静的検査OK。
 - 制約: この作業環境に `dotnet` / MSBuild / C# compilerが存在しないため、Windows FormsのReleaseビルド・実画面操作テストは未実施。簡易静的検査はC#コンパイルの代替ではない。次のWindows側工程で `dotnet build -c Release` を必ず実行する。
+
+
+## 2026-11-13 UI安全性改善: 読み込み前の書き込み操作を防止
+
+- メモリ欄の初期値が空の状態で書き込みボタンを押すと、16進数byte parserの入力形式エラーが表示されるUX上の問題を修正。
+- 書き込みボタンは、現在の接続先/許可ゲーム条件に加えて、現在のアドレスと長さで読み込みが成功している場合のみ有効化する。
+- 読み込み後にアドレスまたは長さを変更した場合は読み込み済み状態を破棄し、再読み込みを要求する。編集値は読み込み時と同じbyte数でなければ書き込めない。
+- 書き込み後は読み戻し値を新しい読み込み済みbufferとして扱う。書き込み失敗時は読み込み済み状態を無効化する。
+- UI文言を「編集値を書き込み」に変更し、読み込み→編集→書き込みの順序を明示。
+- この変更はPINEの書き込み許可アドレスを増やさず、ゲームデータの意味が未確定なアドレスへの書き込みを安全と認定するものではない。
+- Windows上のRelease buildとWinForms操作確認が必要。
+
+
+### 2026-11-13: project bundle snapshot routing
+
+- Project bundleの分類 `snapshot` で、拡張子 `.bin` / `.dat` かつ正確に512 KiBのassetを専用ルートへ渡すようにした。
+- `LegacyMemorySnapshotForm` に既存asset pathを受け取る起動経路を追加。プロジェクト側のSHA-256整合性確認後、旧snapshotのregion一覧・比較・抽出を既存read-only viewerで利用できる。
+- 形式不一致のファイルはrouterで拒否し、汎用binary editorへ誤って回さない。PCSX2/PINE接続・memory restore/writeは追加していない。
+- Windows Release buildとGUI操作確認は未実施。次のレビュー環境で確認する。

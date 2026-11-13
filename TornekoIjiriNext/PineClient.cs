@@ -15,6 +15,14 @@ internal sealed class PineClient : IDisposable
     private const uint MaxRequestFrame = 650_000;
     private const uint MaxResponseFrame = 450_000;
     public const string AllowedGameId = "SLPM-62199";
+    // Verified target profile. Unknown revisions remain read-only until validated.
+    public const string AllowedGameCrc = "e199f75d";
+    public const string AllowedGameVersion = "1.04";
+
+    public static bool IsAllowedGame(GameInfo info) =>
+        string.Equals(info.Id, AllowedGameId, StringComparison.Ordinal) &&
+        string.Equals(info.Crc, AllowedGameCrc, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(info.GameVersion, AllowedGameVersion, StringComparison.Ordinal);
 
     private PineClient(TcpClient client)
     {
@@ -160,8 +168,10 @@ internal sealed class PineClient : IDisposable
         {
             throw new PineWriteException($"ゲーム情報取得に失敗したため、書き込みを拒否しました: {ex.Message}", null, null);
         }
-        if (!string.Equals(gameInfo.Id, AllowedGameId, StringComparison.Ordinal))
-            throw new PineWriteException($"対象ゲームID {AllowedGameId} と一致しないため、書き込みを拒否しました (取得値: '{gameInfo.Id}').", null, null);
+        if (!IsAllowedGame(gameInfo))
+            throw new PineWriteException(
+                $"書き込み許可対象のゲーム版と一致しないため、書き込みを拒否しました。許可: ID={AllowedGameId}, CRC={AllowedGameCrc}, Version={AllowedGameVersion} / 取得: ID={gameInfo.Id}, CRC={gameInfo.Crc}, Version={gameInfo.GameVersion}",
+                null, null);
         if (GetStatus() is not (0 or 1)) throw new PineWriteException("ゲーム状態が変化したため、書き込みを拒否しました。", null, null);
     }
 

@@ -11,6 +11,7 @@ internal enum ProjectBundleEditorKind
     MonsterGrowth,
     FixedRoomMap,
     FixedRoomObjectTable,
+    LegacySnapshot,
     RawBinary
 }
 
@@ -34,6 +35,7 @@ internal static class ProjectBundleEditorRouter
             "成長テーブル" when Is(".bin", ".dat", ".json") => ProjectBundleEditorKind.MonsterGrowth,
             "固定部屋" when Is(".bin", ".json") && assetLength != FixedRoomObjectTableLength => ProjectBundleEditorKind.FixedRoomMap,
             "固定部屋object table" when Is(".bin") && assetLength == FixedRoomObjectTableLength => ProjectBundleEditorKind.FixedRoomObjectTable,
+            "snapshot" when Is(".bin", ".dat") && assetLength == LegacyMemorySnapshotModel.SnapshotLength => ProjectBundleEditorKind.LegacySnapshot,
             "その他" when Is(".bin", ".dat", ".raw", ".sav", ".dmp") => ProjectBundleEditorKind.RawBinary,
             _ => null
         };

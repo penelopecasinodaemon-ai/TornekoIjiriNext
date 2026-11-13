@@ -16,7 +16,6 @@
 | フロア設定/その他出現率 | `*label_099`; `*label_074`,`*label_092`〜`*label_098` | 112B FloorDataオフライン編集、複数floor、copy/paste | field grid、floor選択、rate編集、コピー/保存 | 112B layout、既知offsets、reserved bytes | 一部field意味/enum未確定、ゲーム内アドレス未照合 |
 | 他floorとの出現重複チェック | `*label_077`,`*label_078`; Block 8 | **オフラインcandidate 6-byte table複数比較を実装**。同一/複数tableのmonster ID出現を行位置付きで表示。実dungeon/floorのscanは未実装 | 複数bin選択、重複IDとtable/file/row/level/CDF表示 | 6-byte `(uint16 ID,CDF,level)` files | file名は利用者指定table名に限定。dungeon/floor pointer map、ゲーム名寄せ未検証 |
 | 固定部屋/部屋オブジェクト | `*label_127`〜`*label_135`; Block 15 | オフラインRLE map editor、220×20B raw object record editor実装 | tile map描画/編集、RLE import/export、object field grid | room payload、RLE tokens、object rows、palette | object意味、room index/pointer/size table、実機対応未検証 |
-| ゲームテンポ/アニメーション | `*label_105`〜`*label_117`; Block 12/13 | 未実装 | slider、個別待機値、最速preset、値読込 | Rev0/Rev1 byte groups、delay settings | patch addresses/edition mapping、safe write ranges、可逆化 |
 | ダンジョン共通設定 | `*label_118`〜`*label_125`; Block 14 | 未実装 | 風ターン、識別率、野良補正、ロゴ/名前、flag editor | settings table、logo bitmap、strings、flags | 旧版host offsets、文字コード/容量/ポインタ更新 |
 | enemy motion / trap patches / party flags / Fai問 | `*label_121`〜`*label_123`; Block 14 | 未実装 | patch toggles、進行状態表示、motion pattern editor | code signatures、byte patterns、party/result state | コード領域書込リスク、signature false positive、CRC毎の検証 |
 | item description / monster names / dungeon names | `*label_120`,`*label_124`,`*label_125`,`*label_137` | 未実装 | string editor、文字数/encoding preview | game character encoding、string buffers、pointer table | EUC/SJIS/独自文字コード、容量超過、pointer relocation |
@@ -24,7 +23,7 @@
 | adventure score/ranking upload | `*label_138`,`*label_139`; Block 17 | 未実装 | preview, explicit opt-in send, errors | result fields, EUC-JP encoding, old HTTP endpoint | endpoint/privacy/current protocol/consent. External send remains out of scope |
 | full memory backup/restore | `*label_151`〜`*label_156`; Block 19 | **512 KiB snapshotのoffline viewer/comparer/extractorを実装**。game memory restoreは未実装 | version markerとextension一覧、別snapshot比較、選択region抽出 | 512KiB container、marker offset355056、offset355072からversion1..5 segment/16B gaps | container restoreは最大リスク。CRC/版/region mapping/backup/rollback未確立のためPINE write経路に接続しない |
 | app preferences/legacy INI | `*label_003`,`*label_157`〜`*label_159` | **22/25行の旧INIをCP932で取り込み・編集・保存するoffline画面を実装**。HSP変数順・値域を保持。PCSX2/ゲームへの適用は未実装 | ローカル設定画面、旧INIのopen/edit/export | 22/25 positional lines; HSP vars 807..846/224/433/353/431 | 一部変数の画面上の意味は未確定。設定反映・実ゲーム連携は未実装 |
-| 旧データ作業管理/実測capture | 旧HSPの各editor、`*label_151`〜`*label_159` | **offline project bundleを実装**。INI/spawn/floor/item category+individual/monster status+growth/fixed room map+object tableを明示分類で既存editorへ渡し、元assetを保持して親hash付きnew version/履歴/hash検証付きBYTE差分を表示し、PINE single/batch capture JSONもmetadata付き取込み・read-only比較 | project新規/再開、カテゴリ付きimport、対応editor起動、format validation、version integrity検証 | `.tijproj` JSON manifest + `assets/`; CP932 INI、6B spawn、112B floor、768B item table、24B status、growth dump、room RLE/object table | model検証済み、WinForms操作は未確認。captureのgame ID/CRC/version/時刻/address/length/raw bytesを保持する。各旧形式とゲーム内意味/address applicabilityの検証は別課題 |
+| 旧データ作業管理/実測capture | 旧HSPの各editor、`*label_151`〜`*label_159` | **offline project bundleを実装**。INI/spawn/floor/item category+individual/monster status+growth/fixed room map+object table/512 KiB snapshot viewerを明示分類で既存editorへ渡し、元assetを保持して親hash付きnew version/履歴/hash検証付きBYTE差分を表示し、PINE single/batch capture JSONもmetadata付き取込み・read-only比較 | project新規/再開、カテゴリ付きimport、対応editor起動、format validation、version integrity検証 | `.tijproj` JSON manifest + `assets/`; CP932 INI、6B spawn、112B floor、768B item table、24B status、growth dump、room RLE/object table | model検証済み、WinForms操作は未確認。captureのgame ID/CRC/version/時刻/address/length/raw bytesを保持する。各旧形式とゲーム内意味/address applicabilityの検証は別課題 |
 | utility functions/UI/graphics/encoding | HSP `#deffunc`/`#defcfunc`, Block 1/2, 91..1542 | WinForms foundation and core tools implemented; visual utilities only as needed | native windows, tables, draw canvas, text codec helpers | event logic, bitmap/encoding routines | preserve usability/accessibility; avoid porting process-memory-specific helpers |
 
 ## 実装順
@@ -32,7 +31,6 @@
 1. **実装済み:** 個別編集器・旧INIに続き、旧データproject bundleを追加。次はmonster/floor/item captureを安全に整理するread-only diagnostic workspaceへ進む。
 2. 現在の実機PINE read-only測定をシーン違いで採取し、monster/floor/item pointer dataを比較。意味が確定するまでアプリ内編集はoffline modelに限定。
 3. dungeon/floor navigation、duplicate result view、growth/profile captureをread-onlyで追加。
-4. tempo/common settings/patch UIはデータモデルと候補address profileを先行し、対象CRCごとに個別レビューできるまでmemory writeを実装しない。
 5. bulk restore/ranking uploadは互換/endpoint/バックアップ/プライバシー条件が揃うまで実装しない。
 
 ## 追加: 汎用raw asset編集基盤
