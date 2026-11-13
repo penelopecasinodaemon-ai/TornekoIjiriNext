@@ -163,6 +163,32 @@ internal static class Pcsx2MemoryScanner
         return result;
     }
 
+    // メモリ全域を検索せず、PCSX2プロセスを開くだけの接続処理。
+    public static IntPtr OpenConnection(int processId)
+    {
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2プロセスへの接続に失敗しました。");
+        }
+
+        return handle;
+    }
+
+    public static void CloseConnection(IntPtr handle)
+    {
+        if (handle != IntPtr.Zero)
+        {
+            CloseHandle(handle);
+        }
+    }
+
     public static Pcsx2ScanResult Scan(
         int processId,
         System.Action<string> report)
@@ -745,8 +771,11 @@ internal sealed class Pcsx2ConnectionForm :
     private readonly System.Windows.Forms.ListBox processList;
     private readonly System.Windows.Forms.Button refreshButton;
     private readonly System.Windows.Forms.Button scanButton;
+    private readonly System.Windows.Forms.Button memoryScanButton;
     private readonly System.Windows.Forms.TextBox logBox;
     private readonly System.Windows.Forms.Label statusLabel;
+    private System.IntPtr _processHandle = System.IntPtr.Zero;
+    private int _connectedProcessId;
 
     public Pcsx2ConnectionForm()
     {
@@ -775,16 +804,26 @@ internal sealed class Pcsx2ConnectionForm :
         refreshButton.Click += (s, e) => RefreshProcesses();
 
         scanButton = new System.Windows.Forms.Button();
-        scanButton.Text = "接続・基準アドレス検索";
+        scanButton.Text = "PCSX2へ接続";
         scanButton.Left = 385;
         scanButton.Top = 48;
         scanButton.Width = 220;
         scanButton.Height = 30;
-        scanButton.Click += async (s, e) => await ScanSelected();
+        scanButton.Click += (s, e) => ConnectSelected();
+
+        memoryScanButton = new System.Windows.Forms.Button();
+        memoryScanButton.Text = "基準アドレス検索";
+        memoryScanButton.Left = 615;
+        memoryScanButton.Top = 48;
+        memoryScanButton.Width = 130;
+        memoryScanButton.Height = 30;
+        memoryScanButton.Enabled = false;
+        memoryScanButton.Click += (s, e) => ScanMemoryAndBuild();
 
         topPanel.Controls.Add(processList);
         topPanel.Controls.Add(refreshButton);
         topPanel.Controls.Add(scanButton);
+        topPanel.Controls.Add(memoryScanButton);
 
         statusLabel = new System.Windows.Forms.Label();
         statusLabel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -804,6 +843,7 @@ internal sealed class Pcsx2ConnectionForm :
         Controls.Add(statusLabel);
         Controls.Add(topPanel);
 
+        Shown += (_, _) => ConnectSelected();
         RefreshProcesses();
     }
 
@@ -833,89 +873,181 @@ internal sealed class Pcsx2ConnectionForm :
                 process.ProcessName + "  PID:" + process.Id);
         }
 
+        if (processList.Items.Count > 0)
+        {
+            processList.SelectedIndex = 0;
+        }
+
         statusLabel.Text =
             "PCSX2候補: " + processes.Count + " 件";
 
         Log("プロセス検索完了: " + processes.Count + " 件");
+
+        if (processes.Count > 0)
+        {
+            Log("接続対象を自動選択しました。PID付き一覧の先頭を使用します。");
+        }
     }
 
-    private async System.Threading.Tasks.Task ScanSelected()
+    protected override void OnFormClosed(
+        System.Windows.Forms.FormClosedEventArgs e)
     {
-        if (processList.SelectedIndex < 0)
+        if (_processHandle != System.IntPtr.Zero)
         {
-            System.Windows.Forms.MessageBox.Show(
-                "PCSX2プロセスを選択してください。");
+            Pcsx2MemoryScanner.CloseConnection(_processHandle);
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+        }
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
             return;
         }
 
-        string selected = processList.SelectedItem.ToString();
-        int marker = selected.LastIndexOf("PID:");
+        int processId = _connectedProcessId;
 
-        if (marker < 0)
-            return;
-
-        int processId;
-
-        if (!int.TryParse(
-            selected.Substring(marker + 4).Trim(),
-            out processId))
-            return;
-
-        refreshButton.Enabled = false;
+        memoryScanButton.Enabled = false;
         scanButton.Enabled = false;
+        refreshButton.Enabled = false;
         statusLabel.Text = "メモリ検索中...";
-        logBox.Clear();
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
 
         try
         {
-            Log("PID " + processId + " に接続します。");
-            Log("読み取り専用アクセスで検索します。");
-
             var result = await System.Threading.Tasks.Task.Run(
                 () => Pcsx2MemoryScanner.Scan(
                     processId,
                     message => Log(message)));
 
-            Log("--------------------------------");
             Log(result.Message);
-            Log("プロセス: " + result.ProcessName);
-            Log("PID: " + result.ProcessId);
-            Log("検索済みバイト数: " +
-                result.ScannedBytes.ToString("N0"));
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
 
-            if (result.FirstSignatureAddress != 0)
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
             {
-                Log("第1基準候補: 0x" +
-                    result.FirstSignatureAddress.ToString("X"));
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
             }
 
-            if (result.SecondSignatureAddress != 0)
-            {
-                Log("第2基準候補: 0x" +
-                    result.SecondSignatureAddress.ToString("X"));
-            }
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
 
-            statusLabel.Text = result.Message;
+            Log("旧HSP互換ポインタ計算を開始します。");
 
-            if (result.FirstSignatureAddress != 0 &&
-                result.SecondSignatureAddress != 0)
-            {
-                Log("旧HSP互換ポインタ計算を開始します。");
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
 
-                var layout = await System.Threading.Tasks.Task.Run(
-                    () => Pcsx2MemoryLayoutBuilder.Build(
-                        processId,
-                        result.FirstSignatureAddress,
-                        result.SecondSignatureAddress));
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
 
-                Log("ポインタ計算が完了しました。");
-                Log(layout.Describe());
-            }
+            statusLabel.Text = "基準アドレス検索完了";
+            Log("基準アドレス検索が完了しました。");
         }
         catch (System.Exception ex)
         {
-            Log("エラー: " + ex.Message);
-            statusLabel.Text = "検索に失敗しました。";
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+        if (processList.SelectedIndex < 0 ||
+            processList.SelectedItem == null)
+        {
+            statusLabel.Text = "PCSX2が見つかりません。";
+            Log("PCSX2が見つかりません。起動してから再検索してください。");
+            return;
+        }
+
+        string selected =
+            processList.SelectedItem.ToString() ?? "";
+
+        int marker = selected.LastIndexOf("PID:");
+
+        if (marker < 0)
+        {
+            Log("PID情報を取得できません。");
+            statusLabel.Text = "接続失敗";
+            return;
+        }
+
+        if (!int.TryParse(
+            selected.Substring(marker + 4).Trim(),
+            out int processId))
+        {
+            Log("PIDの解析に失敗しました。");
+            statusLabel.Text = "接続失敗";
+            return;
+        }
+
+        refreshButton.Enabled = false;
+        scanButton.Enabled = false;
+        statusLabel.Text = "PCSX2へ接続中...";
+
+        try
+        {
+            Log("PCSX2プロセスへ接続します。");
+            Log("対象: " + selected);
+
+            _processHandle =
+                Pcsx2MemoryScanner.OpenConnection(processId);
+
+            _connectedProcessId = processId;
+            memoryScanButton.Enabled = true;
+
+            Log("PCSX2への接続に成功しました。");
+            Log("PID: " + processId);
+            Log("プロセスハンドルを保持しています。");
+            Log("全メモリ検索は実行していません。");
+            Log("ポインタ計算も実行していません。");
+
+            statusLabel.Text =
+                "接続済み PID:" + processId;
+        }
+        catch (System.Exception ex)
+        {
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+
+            Log("接続エラー: " + ex.Message);
+            statusLabel.Text = "接続に失敗しました。";
         }
         finally
         {
@@ -934,20 +1066,7 @@ internal static class Program
         ApplicationConfiguration.Initialize();
         var mainForm = new MainForm();
 
-var pcsx2Button = new System.Windows.Forms.Button();
-pcsx2Button.Text = "PCSX2接続・メモリ検索";
-pcsx2Button.Dock = System.Windows.Forms.DockStyle.Top;
-pcsx2Button.Height = 38;
-pcsx2Button.Click += (sender, args) =>
-{
-    using (var dialog = new Pcsx2ConnectionForm())
-    {
-        dialog.ShowDialog(mainForm);
-    }
-};
 
-mainForm.Controls.Add(pcsx2Button);
-pcsx2Button.BringToFront();
 
 Application.Run(mainForm);
     }
@@ -1435,6 +1554,15 @@ internal sealed class MainForm : Form
 
         buttons.Controls.Add(UiFactory.Button(
             "BIN情報", (_, _) => ShowBinInfo()));
+
+        buttons.Controls.Add(UiFactory.Button(
+            "PCSX2接続・メモリ検索", (_, _) =>
+            {
+                using (var dialog = new Pcsx2ConnectionForm())
+                {
+                    dialog.ShowDialog(this);
+                }
+            }));
 
         _status = new Label
         {
