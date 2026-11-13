@@ -93,3 +93,10 @@ capture JSONのschema検証、project bundle取込み、metadata表示、同じ�
 - `start.hsp` の354 item ID と `offset 30 + 2*ID` を根拠に、個別アイテム率のオフライン編集を実装。category CDF editorとは別画面で、source catalog item names/IDsを表示し、複数768-byte block、category reset CDF、999調整を扱う。
 - 旧6-byte spawn tableの同一/複数table間ID重複比較画面を実装。次はcategory/individual item率とfloor dataをひとつのlocal projectに束ね、再読込・diff・編集履歴を扱えるようにする。
 - 旧512KiB memory snapshotはoffline viewer/comparer/region extractorを実装。次は旧version marker別container testを実データで確認し、local-only snapshot projectへ進む。ゲームmemory restoreは許可しない。
+
+
+## 進捗更新 2026-11-13: テンポ改善パッチのオフライン設定
+
+旧 `start.hsp` の `*label_105`〜`*label_117` にあるUI項目を基に、テンポ改善パッチ設定プロファイル画面を追加した。パッチ有効、その他（壷入れ等）最速、モンスター関連最速、冒険結果のターン表示、自動セーブの5項目を編集でき、「全部 最速設定」プリセットとJSON形式のLOAD/SAVE、自由記述メモに対応する。
+
+これは旧UIに表示されていた設定意図を保存するオフライン機能であり、旧版が使用する個別待機値やRev0/Rev1のbyte groupを再現したものではない。ゲームメモリのアドレス・値を推測せず、PINE接続・読取・書込にも接続していない。次工程では旧ソースの個別待機値と版別データ構造を整理し、値の意味と可逆性を裏付けられる範囲で設定モデルを拡張する。
