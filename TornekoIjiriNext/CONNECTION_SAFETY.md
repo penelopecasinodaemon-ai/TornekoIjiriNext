@@ -4,13 +4,13 @@
 
 ## 書き込み許可条件
 
-書き込み許可IDは `SLPM-62199` とし、PINEから受け取ったID文字列を `StringComparison.Ordinal` で完全一致比較する。取得値をtrimして許可することはしない。空文字/空白/別IDはいずれも拒否する。
+書き込み許可プロファイルは `SLPM-62199` / CRC `e199f75d` / game version `1.04` とする。IDとgame versionは `StringComparison.Ordinal`、CRCは16進文字列の大文字小文字を許容して比較する。取得値をtrimして許可することはしない。いずれかが異なる、空、または未取得の場合は書き込みを拒否する。別CRC/版は、別途実機検証して許可プロファイルに追加するまでread-onlyとする。
 
 書き込み可能状態は次のすべてが真の場合だけ。
 
 1. `_pine` が存在し、破棄されていない。
 2. 初回/直近のゲーム情報取得が成功し、IDが空でない。
-3. 取得IDが完全一致で `SLPM-62199`。
+3. 取得したID/CRC/game versionが `SLPM-62199` / `e199f75d` / `1.04` の許可プロファイルと一致。
 4. PINEの `MsgStatus` がRunning(0)またはPaused(1)。Shutdown(2)は不可。
 5. UIの接続状態が `Connected`。
 
