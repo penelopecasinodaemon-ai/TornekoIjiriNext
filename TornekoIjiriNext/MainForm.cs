@@ -42,7 +42,7 @@ internal sealed class MainForm : Form
     private readonly TextBox _memory = new() { Multiline = true, ScrollBars = ScrollBars.Both, AcceptsReturn = true, AcceptsTab = true, WordWrap = false, Font = new Font("Consolas", 10), Dock = DockStyle.Fill };
     private readonly TextBox _log = new() { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill };
     private readonly Button _read = new() { Text = "読み込み", AutoSize = true, Enabled = false };
-    private readonly Button _write = new() { Text = "現在値を書き込み…", AutoSize = true, Enabled = false };
+    private readonly Button _write = new() { Text = "編集値を書き込み…", AutoSize = true, Enabled = false };
     private readonly Button _pointerDump = new() { Text = "実測参照先16領域を読み取り", AutoSize = true, Enabled = false };
     private readonly System.Windows.Forms.Timer _monitor = new() { Interval = 1000 };
     private PineClient? _pine;
