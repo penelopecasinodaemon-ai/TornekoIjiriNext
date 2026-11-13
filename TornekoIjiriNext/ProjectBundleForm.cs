@@ -185,6 +185,8 @@ internal sealed class ProjectBundleForm : Form
                 new FixedRoomMapForm(path,
                     bytes => project.AddAssetBytes(Path.GetFileNameWithoutExtension(entry.FileName) + "_edited.room.json", entry.Category, bytes, entry.FileName, entry.Sha256),
                     bytes => project.AddAssetBytes(Path.GetFileNameWithoutExtension(entry.FileName) + "_edited.bin", entry.Category, bytes, entry.FileName, entry.Sha256)),
+            ProjectBundleEditorKind.LegacySnapshot =>
+                new LegacyMemorySnapshotForm(path),
             ProjectBundleEditorKind.RawBinary =>
                 new LegacyBinaryEditorForm(path, bytes => project.AddAssetBytes(Path.GetFileNameWithoutExtension(entry.FileName) + "_edited" + Path.GetExtension(entry.FileName), entry.Category, bytes, entry.FileName, entry.Sha256)),
             _ => null
