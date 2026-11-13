@@ -40,12 +40,13 @@ internal sealed class TempoPatchProfileForm : Form
             Dock = DockStyle.Fill,
             Padding = new Padding(18),
             ColumnCount = 1,
-            RowCount = 5
+            RowCount = 6
         };
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         Controls.Add(root);
 
@@ -95,8 +96,7 @@ internal sealed class TempoPatchProfileForm : Form
             ForeColor = Color.DarkGoldenrod,
             Padding = new Padding(0, 8, 0, 0)
         };
-        root.Controls.Add(notice, 0, 4);
-        buttons.Controls.SetChildIndex(notice, 0);
+        root.Controls.Add(notice, 0, 5);
     }
 
     private TempoPatchProfile ReadForm() => new()
