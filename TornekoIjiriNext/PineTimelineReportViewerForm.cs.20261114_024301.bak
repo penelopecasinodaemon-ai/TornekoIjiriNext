@@ -1,0 +1,305 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
+namespace TornekoIjiriNext;
+
+internal sealed class PineTimelineReportViewerForm : Form
+{
+    private readonly ProjectBundleModel _project;
+
+    private sealed record ReportChoice(ProjectBundleEntry Entry)
+    {
+        public override string ToString() =>
+            $"{Entry.FileName}  |  {Entry.AddedUtc:u}  |  {Entry.Length:N0} bytes";
+    }
+
+    private readonly ListBox _reports = new()
+    {
+        Dock = DockStyle.Fill,
+        HorizontalScrollbar = true
+    };
+
+    private readonly RichTextBox _content = new()
+    {
+        Dock = DockStyle.Fill,
+        ReadOnly = true,
+        WordWrap = false,
+        Font = new Font("Consolas", 9F),
+        DetectUrls = false
+    };
+
+    private readonly Label _summary = new()
+    {
+        Dock = DockStyle.Fill,
+        AutoSize = true,
+        Text = "プロジェクト内のPINE時系列分析レポートを選択してください。"
+    };
+
+    public PineTimelineReportViewerForm(ProjectBundleModel project)
+    {
+        _project = project ?? throw new ArgumentNullException(nameof(project));
+
+        Text = $"PINE時系列分析レポート — {_project.Name}";
+        Width = 1100;
+        Height = 760;
+        MinimumSize = new Size(780, 500);
+        StartPosition = FormStartPosition.CenterParent;
+
+        var open = new Button
+        {
+            Text = "選択レポートを表示",
+            AutoSize = true
+        };
+        open.Click += (_, _) => ShowSelectedReport();
+
+        var verifyAll = new Button
+        {
+            Text = "レポート整合性確認",
+            AutoSize = true
+        };
+        verifyAll.Click += (_, _) => VerifyReports();
+
+        var refresh = new Button
+        {
+            Text = "一覧更新",
+            AutoSize = true
+        };
+        refresh.Click += (_, _) => RefreshReports();
+
+        var toolbar = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true
+        };
+        toolbar.Controls.AddRange(new Control[] { open, verifyAll, refresh });
+
+        var split = new SplitContainer
+        {
+            Dock = DockStyle.Fill,
+            Orientation = Orientation.Vertical,
+            SplitterDistance = 340,
+            Panel1MinSize = 220,
+            Panel2MinSize = 350
+        };
+        split.Panel1.Controls.Add(_reports);
+        split.Panel2.Controls.Add(_content);
+
+        var layout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(10),
+            ColumnCount = 1,
+            RowCount = 3
+        };
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.Controls.Add(toolbar, 0, 0);
+        layout.Controls.Add(split, 0, 1);
+        layout.Controls.Add(_summary, 0, 2);
+
+        Controls.Add(layout);
+
+        _reports.DoubleClick += (_, _) => ShowSelectedReport();
+
+        RefreshReports();
+    }
+
+    private void RefreshReports()
+    {
+        _reports.Items.Clear();
+        _content.Clear();
+
+        var entries = _project.Entries
+            .Where(entry => string.Equals(
+                entry.Category,
+                "PINE時系列分析レポート",
+                StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(entry => entry.AddedUtc)
+            .ToList();
+
+        foreach (var entry in entries)
+            _reports.Items.Add(new ReportChoice(entry));
+
+        _summary.Text =
+            $"プロジェクト: {_project.Name} / レポート数: {entries.Count}件";
+
+        if (entries.Count == 0)
+        {
+            _content.Text =
+                "このプロジェクトにはPINE時系列分析レポートがありません。\r\n\r\n" +
+                "候補キャプチャを読み込み、時系列分析画面からレポートを保存してください。";
+        }
+        else
+        {
+            _reports.SelectedIndex = 0;
+        }
+    }
+
+    private void ShowSelectedReport()
+    {
+        if (_reports.SelectedItem is not ReportChoice choice)
+            return;
+
+        try
+        {
+            var path = Path.Combine(
+                _project.RootDirectory,
+                "assets",
+                choice.Entry.FileName);
+
+            if (!File.Exists(path))
+                throw new InvalidDataException("レポートファイルが見つかりません。");
+
+            var info = new FileInfo(path);
+
+            if (info.Length != choice.Entry.Length ||
+                info.Length > 64L * 1024 * 1024)
+            {
+                throw new InvalidDataException(
+                    "ファイルサイズがプロジェクトマニフェストと一致しません。");
+            }
+
+            var bytes = File.ReadAllBytes(path);
+            var hash = Convert.ToHexString(SHA256.HashData(bytes));
+
+            if (!string.Equals(
+                hash,
+                choice.Entry.Sha256,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidDataException(
+                    "SHA-256が一致しません。資産が変更されている可能性があります。");
+            }
+
+            using var document = JsonDocument.Parse(
+                bytes,
+                new JsonDocumentOptions { MaxDepth = 64 });
+
+            var root = document.RootElement;
+
+            if (root.ValueKind != JsonValueKind.Object ||
+                !root.TryGetProperty("ReportType", out var reportType) ||
+                reportType.GetString() != "PINE_CANDIDATE_TIMELINE")
+            {
+                throw new InvalidDataException(
+                    "このファイルは対応するPINE時系列分析レポートではありません。");
+            }
+
+            var formatted = JsonSerializer.Serialize(
+                root,
+                new JsonSerializerOptions { WriteIndented = true });
+
+            _content.Text = formatted;
+
+            var gameId = GetString(root, "GameId");
+            var crc = GetString(root, "GameCrc");
+            var version = GetString(root, "GameVersion");
+            var count = GetInt(root, "CaptureCount");
+            var regionCount = GetInt(root, "RegionCount");
+
+            _summary.Text =
+                $"SHA-256検証OK / {choice.Entry.FileName} / " +
+                $"ゲーム {gameId} / CRC {crc} / Ver {version} / " +
+                $"キャプチャ {count}件 / 領域 {regionCount}件";
+        }
+        catch (Exception ex)
+        {
+            _content.Clear();
+            _summary.Text = $"表示中止: {ex.Message}";
+
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "レポートを開けません",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+    }
+
+    private void VerifyReports()
+    {
+        var entries = _project.Entries
+            .Where(entry => string.Equals(
+                entry.Category,
+                "PINE時系列分析レポート",
+                StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var errors = new List<string>();
+        var valid = 0;
+
+        foreach (var entry in entries)
+        {
+            try
+            {
+                var path = Path.Combine(
+                    _project.RootDirectory,
+                    "assets",
+                    entry.FileName);
+
+                if (!File.Exists(path))
+                    throw new InvalidDataException("ファイルがありません。");
+
+                var info = new FileInfo(path);
+
+                if (info.Length != entry.Length)
+                    throw new InvalidDataException("サイズ不一致。");
+
+                var hash = Convert.ToHexString(
+                    SHA256.HashData(File.ReadAllBytes(path)));
+
+                if (!string.Equals(
+                    hash,
+                    entry.Sha256,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidDataException("SHA-256不一致。");
+                }
+
+                valid++;
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{entry.FileName}: {ex.Message}");
+            }
+        }
+
+        var message =
+            $"検証対象: {entries.Count}件\r\n" +
+            $"正常: {valid}件\r\n" +
+            $"異常: {errors.Count}件";
+
+        if (errors.Count > 0)
+            message += "\r\n\r\n" + string.Join("\r\n", errors);
+
+        _summary.Text = message;
+
+        MessageBox.Show(
+            this,
+            message,
+            "PINEレポート整合性確認",
+            MessageBoxButtons.OK,
+            errors.Count == 0
+                ? MessageBoxIcon.Information
+                : MessageBoxIcon.Warning);
+    }
+
+    private static string GetString(JsonElement root, string name)
+    {
+        return root.TryGetProperty(name, out var value) &&
+               value.ValueKind == JsonValueKind.String
+            ? value.GetString() ?? "不明"
+            : "不明";
+    }
+
+    private static int GetInt(JsonElement root, string name)
+    {
+        return root.TryGetProperty(name, out var value) &&
+               value.TryGetInt32(out var result)
+            ? result
+            : 0;
+    }
+}

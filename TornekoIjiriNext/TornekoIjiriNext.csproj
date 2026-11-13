@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>TornekoIjiriNext</AssemblyName>
+    <RootNamespace>TornekoIjiriNext</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Update="Data\game-catalog.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Exclude offline test harness sources from the application build. -->
+    <Compile Remove="work\**\*.cs" />
+  </ItemGroup>
+</Project>
+

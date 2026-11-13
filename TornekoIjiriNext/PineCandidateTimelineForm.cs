@@ -1,0 +1,970 @@
+using System.Buffers.Binary;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
+namespace TornekoIjiriNext;
+
+internal sealed class PineCandidateTimelineForm : Form
+{
+    private sealed record RegionData(
+        string Name,
+        uint Address,
+        int Length,
+        string BytesHex,
+        string PurposeNote);
+
+    private sealed record CaptureData(
+        DateTime CapturedAtUtc,
+        string Pcsx2Version,
+        string GameTitle,
+        string GameId,
+        string GameCrc,
+        string GameVersion,
+        uint? StatusBefore,
+        uint? StatusAfter,
+        string SceneNote,
+        IReadOnlyList<RegionData> Regions);
+
+    private sealed record TimelineRow(
+        string RegionName,
+        string Unit,
+        int Offset,
+        uint Address,
+        int ChangedTransitions,
+        int TransitionCount,
+        int DistinctValues,
+        string FirstValue,
+        string LastValue);
+
+    private readonly Button _load = new()
+    {
+        Text = "複数キャプチャを読み込んで分析",
+        AutoSize = true
+    };
+
+    private readonly Button _export = new()
+    {
+        Text = "CSV出力",
+        AutoSize = true,
+        Enabled = false
+    };
+
+    private readonly Button _loadProject = new()
+    {
+        Text = "プロジェクトからキャプチャを読み込む",
+        AutoSize = true
+    };
+
+    private readonly Button _saveReport = new()
+    {
+        Text = "分析結果をプロジェクトに保存",
+        AutoSize = true,
+        Enabled = false
+    };
+
+    private readonly TextBox _output = new()
+    {
+        Multiline = true,
+        ReadOnly = true,
+        ScrollBars = ScrollBars.Both,
+        WordWrap = false,
+        Dock = DockStyle.Fill,
+        Font = new Font("Consolas", 9.5f)
+    };
+
+    private readonly Label _status = new()
+    {
+        Text = "キャプチャ未読み込み",
+        AutoSize = true,
+        ForeColor = Color.DimGray
+    };
+
+    private readonly List<TimelineRow> _rows = new();
+    private readonly List<CaptureData> _captures = new();
+
+    private string? _analysisProjectManifest;
+
+    public PineCandidateTimelineForm()
+    {
+        Text = "PINE候補アドレス・時系列分析";
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new Size(850, 600);
+        Size = new Size(1150, 800);
+        Font = new Font("Yu Gothic UI", 9.5f);
+
+        BuildUi();
+
+        _load.Click += (_, _) => LoadAndAnalyze();
+        _loadProject.Click += (_, _) => LoadProjectCaptures();
+        _export.Click += (_, _) => ExportCsv();
+        _saveReport.Click += (_, _) => SaveReportToProject();
+    }
+
+    private void BuildUi()
+    {
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(12),
+            ColumnCount = 1,
+            RowCount = 3
+        };
+
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+        Controls.Add(root);
+
+        var toolbar = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true,
+            Padding = new Padding(2)
+        };
+
+        toolbar.Controls.Add(_load);
+        toolbar.Controls.Add(_loadProject);
+        toolbar.Controls.Add(_export);
+        toolbar.Controls.Add(_saveReport);
+
+        root.Controls.Add(toolbar, 0, 0);
+        root.Controls.Add(_status, 0, 1);
+        root.Controls.Add(_output, 0, 2);
+    }
+
+    private void LoadAndAnalyze()
+    {
+        using var dialog = new OpenFileDialog
+        {
+            Title = "時系列分析する候補キャプチャを選択",
+            Filter = "PINE候補キャプチャ (*.json)|*.json|JSONファイル (*.json)|*.json",
+            Multiselect = true,
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            var captures = new List<CaptureData>();
+
+            if (dialog.FileNames.Length is < 2 or > 128)
+                throw new InvalidDataException(
+                    "時系列分析には2～128個のキャプチャが必要です。");
+
+            foreach (var path in dialog.FileNames)
+                captures.Add(ReadCapture(path));
+
+            DisplayAnalysis(captures);
+            _analysisProjectManifest = null;
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "分析に失敗しました。";
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "時系列分析エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+
+    private void DisplayAnalysis(List<CaptureData> captures)
+    {
+        captures = captures
+            .OrderBy(x => x.CapturedAtUtc)
+            .ToList();
+
+        ValidateCaptureSet(captures);
+
+        _captures.Clear();
+        _captures.AddRange(captures);
+
+        _rows.Clear();
+        AnalyzeAll();
+
+        _output.Text = BuildReport();
+
+        _status.Text =
+            $"分析完了: {_captures.Count}件 / {_rows.Count:N0}項目";
+
+        _export.Enabled = _rows.Count > 0;
+        _saveReport.Enabled = _rows.Count > 0;
+    }
+
+    private void LoadProjectCaptures()
+    {
+        using var dialog = new OpenFileDialog
+        {
+            Title = "PINE候補キャプチャを含むプロジェクトを選択",
+            Filter = "プロジェクトマニフェスト (*.json)|*.json",
+            CheckFileExists = true,
+            Multiselect = false
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            var manifest = Path.GetFullPath(dialog.FileName);
+            var project = ProjectBundleModel.Open(manifest);
+
+            var entries = project.Entries
+                .Where(entry => string.Equals(
+                    entry.Category,
+                    "PINE候補キャプチャ",
+                    StringComparison.OrdinalIgnoreCase))
+                .OrderBy(entry => entry.AddedUtc)
+                .ToList();
+
+            if (entries.Count < 2)
+            {
+                throw new InvalidDataException(
+                    "このプロジェクトには時系列分析可能な候補キャプチャが2件以上ありません。");
+            }
+
+            if (entries.Count > 128)
+            {
+                throw new InvalidDataException(
+                    "候補キャプチャが128件を超えています。");
+            }
+
+            var captures = new List<CaptureData>();
+
+            foreach (var entry in entries)
+            {
+                var assetPath = Path.Combine(
+                    project.RootDirectory,
+                    "assets",
+                    entry.FileName);
+
+                if (!File.Exists(assetPath))
+                {
+                    throw new InvalidDataException(
+                        $"プロジェクト資産が見つかりません: {entry.FileName}");
+                }
+
+                var info = new FileInfo(assetPath);
+
+                if (info.Length != entry.Length ||
+                    info.Length > 64L * 1024 * 1024)
+                {
+                    throw new InvalidDataException(
+                        $"資産サイズがマニフェストと一致しません: {entry.FileName}");
+                }
+
+                var bytes = File.ReadAllBytes(assetPath);
+                var hash = Convert.ToHexString(SHA256.HashData(bytes));
+
+                if (!string.Equals(
+                    hash,
+                    entry.Sha256,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidDataException(
+                        $"SHA-256検証に失敗しました: {entry.FileName}");
+                }
+
+                captures.Add(ReadCaptureBytes(bytes));
+            }
+
+            DisplayAnalysis(captures);
+
+            _analysisProjectManifest = manifest;
+
+            _status.Text =
+                $"プロジェクト分析完了: {project.Name} / {captures.Count}件";
+
+            MessageBox.Show(
+                this,
+                $"プロジェクトから候補キャプチャを読み込みました。\n\n" +
+                $"プロジェクト: {project.Name}\n" +
+                $"キャプチャ: {captures.Count}件\n" +
+                $"分析項目: {_rows.Count:N0}件\n\n" +
+                "すべての資産についてSHA-256を検証しています。",
+                "プロジェクト読み込み完了",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "プロジェクト読み込みに失敗しました。";
+
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "プロジェクト読み込みエラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+
+    private void SaveReportToProject()
+    {
+        if (_captures.Count < 2 || _rows.Count == 0)
+            return;
+
+        var manifest = _analysisProjectManifest;
+
+        if (string.IsNullOrWhiteSpace(manifest) ||
+            !File.Exists(manifest))
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Title = "分析結果を保存するプロジェクトを選択",
+                Filter = "プロジェクトマニフェスト (*.json)|*.json",
+                CheckFileExists = true
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            manifest = Path.GetFullPath(dialog.FileName);
+        }
+
+        try
+        {
+            var project = ProjectBundleModel.Open(manifest);
+
+            var first = _captures[0];
+
+            var report = new
+            {
+                FormatVersion = 1,
+                ReportType = "PINE_CANDIDATE_TIMELINE",
+                GeneratedAtUtc = DateTime.UtcNow,
+                GameId = first.GameId,
+                GameCrc = first.GameCrc,
+                GameVersion = first.GameVersion,
+                Pcsx2Version = first.Pcsx2Version,
+                CaptureCount = _captures.Count,
+                RegionCount = first.Regions.Count,
+                Captures = _captures.Select(capture => new
+                {
+                    capture.CapturedAtUtc,
+                    capture.StatusBefore,
+                    capture.StatusAfter,
+                    capture.SceneNote
+                }).ToArray(),
+                Rows = _rows.Select(row => new
+                {
+                    row.RegionName,
+                    row.Unit,
+                    row.Offset,
+                    row.Address,
+                    row.ChangedTransitions,
+                    row.TransitionCount,
+                    row.DistinctValues,
+                    row.FirstValue,
+                    row.LastValue
+                }).ToArray()
+            };
+
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(
+                report,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+            var fileName =
+                $"PINE_Timeline_{DateTime.UtcNow:yyyyMMdd_HHmmss}.json";
+
+            var savedName = project.AddAssetBytes(
+                fileName,
+                "PINE時系列分析レポート",
+                bytes);
+
+            _analysisProjectManifest = manifest;
+
+            _status.Text =
+                $"分析レポート保存完了: {savedName}";
+
+            MessageBox.Show(
+                this,
+                $"分析結果をプロジェクトへ保存しました。\n\n" +
+                $"プロジェクト: {project.Name}\n" +
+                $"保存ファイル: {savedName}\n" +
+                $"分析行数: {_rows.Count:N0}",
+                "分析結果保存完了",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "分析結果保存エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+
+    private static CaptureData ReadCapture(string path)
+    {
+        var info = new FileInfo(path);
+
+        if (!info.Exists || info.Length > 64L * 1024 * 1024)
+            throw new InvalidDataException(
+                $"ファイルが存在しないか、64MiBを超えています: {path}");
+
+        return ReadCaptureBytes(File.ReadAllBytes(path));
+    }
+
+    private static CaptureData ReadCaptureBytes(byte[] bytes)
+    {
+        using var document = JsonDocument.Parse(
+            bytes,
+            new JsonDocumentOptions { MaxDepth = 32 });
+
+        var root = document.RootElement;
+
+        if (root.ValueKind != JsonValueKind.Object)
+            throw new InvalidDataException("JSONのルートが不正です。");
+
+        if (ReadInt(root, "FormatVersion") != 1)
+            throw new InvalidDataException(
+                "未対応のキャプチャ形式です。");
+
+        var capturedAt = DateTime.Parse(
+            ReadString(root, "CapturedAtUtc"),
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.RoundtripKind).ToUniversalTime();
+
+        var pcsx2 = ReadString(root, "Pcsx2Version");
+        var title = ReadString(root, "GameTitle");
+        var gameId = ReadString(root, "GameId");
+        var crc = ReadString(root, "GameCrc");
+        var version = ReadString(root, "GameVersion");
+        var sceneNote = ReadOptionalString(root, "SceneNote") ?? "";
+
+        var statusBefore = ReadOptionalUInt(root, "StatusBefore");
+        var statusAfter = ReadOptionalUInt(root, "StatusAfter");
+
+        if (!TryGet(root, "Regions", out var regionArray) ||
+            regionArray.ValueKind != JsonValueKind.Array)
+        {
+            throw new InvalidDataException(
+                "候補キャプチャにRegions配列がありません。");
+        }
+
+        if (regionArray.GetArrayLength() is < 1 or > 64)
+            throw new InvalidDataException(
+                "候補領域は1～64個である必要があります。");
+
+        var regions = new List<RegionData>();
+        var totalLength = 0;
+
+        foreach (var item in regionArray.EnumerateArray())
+        {
+            var name = ReadString(item, "Name");
+            var address = ReadUInt(item, "Address");
+            var length = ReadInt(item, "Length");
+            var bytesHex = ReadString(item, "BytesHex");
+            var note = ReadOptionalString(item, "PurposeNote") ?? "";
+
+            if (length is < 1 or > 4096)
+                throw new InvalidDataException(
+                    $"候補領域の長さが不正です: {name}");
+
+            if (bytesHex.Length != length * 2 ||
+                (bytesHex.Length & 1) != 0 ||
+                !bytesHex.All(Uri.IsHexDigit))
+            {
+                throw new InvalidDataException(
+                    $"候補領域のHEXデータが不正です: {name}");
+            }
+
+            if ((ulong)address + (uint)length - 1 > uint.MaxValue)
+                throw new InvalidDataException(
+                    $"候補領域のアドレスが32bit範囲を超えています: {name}");
+
+            totalLength += length;
+
+            if (totalLength > 65536)
+                throw new InvalidDataException(
+                    "候補領域の合計サイズが65536バイトを超えています。");
+
+            regions.Add(new RegionData(
+                name,
+                address,
+                length,
+                bytesHex,
+                note));
+        }
+
+        return new CaptureData(
+            capturedAt,
+            pcsx2,
+            title,
+            gameId,
+            crc,
+            version,
+            statusBefore,
+            statusAfter,
+            sceneNote,
+            regions);
+    }
+
+    private static void ValidateCaptureSet(
+        IReadOnlyList<CaptureData> captures)
+    {
+        var first = captures[0];
+
+        foreach (var capture in captures)
+        {
+            if (!string.Equals(
+                    first.GameId,
+                    capture.GameId,
+                    StringComparison.Ordinal) ||
+                !string.Equals(
+                    first.GameCrc,
+                    capture.GameCrc,
+                    StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(
+                    first.GameVersion,
+                    capture.GameVersion,
+                    StringComparison.Ordinal))
+            {
+                throw new InvalidDataException(
+                    "ゲームID・CRC・バージョンが異なるキャプチャが混在しています。");
+            }
+
+            if (capture.Regions.Count != first.Regions.Count)
+                throw new InvalidDataException(
+                    "候補領域の数が一致しません。");
+
+            for (var i = 0; i < first.Regions.Count; i++)
+            {
+                var a = first.Regions[i];
+                var b = capture.Regions[i];
+
+                if (!string.Equals(
+                        a.Name,
+                        b.Name,
+                        StringComparison.Ordinal) ||
+                    a.Address != b.Address ||
+                    a.Length != b.Length)
+                {
+                    throw new InvalidDataException(
+                        $"候補領域の構成が一致しません。領域番号: {i + 1}");
+                }
+            }
+        }
+    }
+
+    private void AnalyzeAll()
+    {
+        var first = _captures[0];
+
+        for (var regionIndex = 0;
+             regionIndex < first.Regions.Count;
+             regionIndex++)
+        {
+            var region = first.Regions[regionIndex];
+
+            var data = _captures
+                .Select(c => Convert.FromHexString(
+                    c.Regions[regionIndex].BytesHex))
+                .ToArray();
+
+            AnalyzeUnit(region, data, 1, "BYTE");
+            AnalyzeUnit(region, data, 2, "WORD");
+            AnalyzeUnit(region, data, 4, "DWORD");
+        }
+    }
+
+    private void AnalyzeUnit(
+        RegionData region,
+        byte[][] captures,
+        int width,
+        string unit)
+    {
+        var length = region.Length - width + 1;
+
+        for (var offset = 0; offset < length; offset += width)
+        {
+            var values = new HashSet<uint>();
+            var firstValue = ReadValue(captures[0], offset, width);
+            var lastValue = firstValue;
+
+            values.Add(firstValue);
+
+            var changed = 0;
+
+            for (var captureIndex = 1;
+                 captureIndex < captures.Length;
+                 captureIndex++)
+            {
+                var before = ReadValue(
+                    captures[captureIndex - 1],
+                    offset,
+                    width);
+
+                var after = ReadValue(
+                    captures[captureIndex],
+                    offset,
+                    width);
+
+                values.Add(after);
+
+                if (before != after)
+                    changed++;
+
+                lastValue = after;
+            }
+
+            var address64 = (ulong)region.Address + (uint)offset;
+
+            _rows.Add(new TimelineRow(
+                region.Name,
+                unit,
+                offset,
+                (uint)address64,
+                changed,
+                captures.Length - 1,
+                values.Count,
+                FormatValue(firstValue, width),
+                FormatValue(lastValue, width)));
+        }
+    }
+
+    private static uint ReadValue(
+        byte[] data,
+        int offset,
+        int width)
+    {
+        return width switch
+        {
+            1 => data[offset],
+            2 => BinaryPrimitives.ReadUInt16LittleEndian(
+                data.AsSpan(offset, 2)),
+            4 => BinaryPrimitives.ReadUInt32LittleEndian(
+                data.AsSpan(offset, 4)),
+            _ => throw new ArgumentOutOfRangeException(nameof(width))
+        };
+    }
+
+    private static string FormatValue(uint value, int width)
+    {
+        return value.ToString(
+            width switch
+            {
+                1 => "X2",
+                2 => "X4",
+                4 => "X8",
+                _ => "X"
+            },
+            CultureInfo.InvariantCulture);
+    }
+
+    private string BuildReport()
+    {
+        var output = new StringBuilder();
+
+        var first = _captures[0];
+        var last = _captures[^1];
+
+        output.AppendLine("==============================================");
+        output.AppendLine(" PINE候補アドレス 時系列分析レポート");
+        output.AppendLine("==============================================");
+        output.AppendLine();
+
+        output.AppendLine($"キャプチャ数: {_captures.Count}");
+        output.AppendLine($"最初の取得: {first.CapturedAtUtc:yyyy-MM-dd HH:mm:ss} UTC");
+        output.AppendLine($"最後の取得: {last.CapturedAtUtc:yyyy-MM-dd HH:mm:ss} UTC");
+        output.AppendLine($"PCSX2: {first.Pcsx2Version}");
+        output.AppendLine($"ゲーム: {first.GameTitle}");
+        output.AppendLine($"ゲームID: {first.GameId}");
+        output.AppendLine($"CRC: {first.GameCrc}");
+        output.AppendLine($"ゲームバージョン: {first.GameVersion}");
+        output.AppendLine($"候補領域数: {first.Regions.Count}");
+        output.AppendLine();
+
+        output.AppendLine("---- 取得履歴 ----");
+
+        foreach (var capture in _captures)
+        {
+            output.AppendLine(
+                $"{capture.CapturedAtUtc:yyyy-MM-dd HH:mm:ss} UTC");
+
+            output.AppendLine(
+                $"  状態: {FormatStatus(capture.StatusBefore)} → {FormatStatus(capture.StatusAfter)}");
+
+            if (!string.IsNullOrWhiteSpace(capture.SceneNote))
+                output.AppendLine($"  場面メモ: {capture.SceneNote}");
+        }
+
+        output.AppendLine();
+        output.AppendLine("---- 変化回数ランキング ----");
+
+        foreach (var unit in new[] { "BYTE", "WORD", "DWORD" })
+        {
+            output.AppendLine();
+            output.AppendLine($"[{unit}]");
+
+            var ranking = _rows
+                .Where(x => x.Unit == unit)
+                .OrderByDescending(x => x.ChangedTransitions)
+                .ThenByDescending(x => x.DistinctValues)
+                .ThenBy(x => x.Address)
+                .Take(50)
+                .ToList();
+
+            if (ranking.Count == 0)
+            {
+                output.AppendLine("  対象データなし");
+                continue;
+            }
+
+            foreach (var row in ranking)
+            {
+                output.AppendLine(
+                    $"0x{row.Address:X8}  " +
+                    $"変化 {row.ChangedTransitions}/{row.TransitionCount}回  " +
+                    $"種類 {row.DistinctValues}  " +
+                    $"{row.FirstValue} → {row.LastValue}  " +
+                    $"[{row.RegionName}]");
+            }
+        }
+
+        output.AppendLine();
+        output.AppendLine("---- 候補領域別の集計 ----");
+
+        foreach (var region in first.Regions)
+        {
+            output.AppendLine();
+            output.AppendLine(
+                $"{region.Name} 0x{region.Address:X8} / {region.Length} bytes");
+
+            if (!string.IsNullOrWhiteSpace(region.PurposeNote))
+                output.AppendLine($"メモ: {region.PurposeNote}");
+
+            foreach (var unit in new[] { "BYTE", "WORD", "DWORD" })
+            {
+                var rows = _rows
+                    .Where(x =>
+                        x.RegionName == region.Name &&
+                        x.Unit == unit)
+                    .ToList();
+
+                var changedPositions = rows.Count(
+                    x => x.ChangedTransitions > 0);
+
+                var totalTransitions = rows.Sum(
+                    x => x.ChangedTransitions);
+
+                output.AppendLine(
+                    $"{unit}: 変化位置 {changedPositions}/{rows.Count}, " +
+                    $"変化回数合計 {totalTransitions}");
+            }
+        }
+
+        output.AppendLine();
+        output.AppendLine("==============================================");
+        output.AppendLine("注意:");
+        output.AppendLine("変化回数は連続するキャプチャ間の差分です。");
+        output.AppendLine("変化したデータの意味やゲーム内構造を確定するものではありません。");
+        output.AppendLine("ゲーム構造の判断には複数の状況での追加検証が必要です。");
+        output.AppendLine("==============================================");
+
+        return output.ToString();
+    }
+
+    private void ExportCsv()
+    {
+        using var dialog = new SaveFileDialog
+        {
+            Title = "時系列分析結果をCSV保存",
+            Filter = "CSVファイル (*.csv)|*.csv",
+            FileName = "PINE_CandidateTimeline.csv",
+            AddExtension = true,
+            DefaultExt = "csv"
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            var output = new StringBuilder();
+
+            output.AppendLine(
+                "Region,Unit,Offset,Address,ChangedTransitions,TransitionCount,DistinctValues,FirstValue,LastValue");
+
+            foreach (var row in _rows.OrderBy(x => x.Address)
+                                     .ThenBy(x => x.Unit))
+            {
+                output.AppendLine(string.Join(",",
+                    Csv(row.RegionName),
+                    Csv(row.Unit),
+                    row.Offset.ToString(CultureInfo.InvariantCulture),
+                    $"0x{row.Address:X8}",
+                    row.ChangedTransitions.ToString(CultureInfo.InvariantCulture),
+                    row.TransitionCount.ToString(CultureInfo.InvariantCulture),
+                    row.DistinctValues.ToString(CultureInfo.InvariantCulture),
+                    Csv(row.FirstValue),
+                    Csv(row.LastValue)));
+            }
+
+            File.WriteAllText(
+                dialog.FileName,
+                output.ToString(),
+                new UTF8Encoding(true));
+
+            MessageBox.Show(
+                this,
+                $"CSVを保存しました。\n{dialog.FileName}",
+                "CSV出力",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "CSV保存エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+
+    private static string Csv(string value)
+    {
+        return "\"" + value.Replace("\"", "\"\"") + "\"";
+    }
+
+    private static string FormatStatus(uint? status)
+    {
+        return status switch
+        {
+            0 => "動作中",
+            1 => "一時停止",
+            2 => "停止",
+            null => "不明",
+            _ => status.Value.ToString(CultureInfo.InvariantCulture)
+        };
+    }
+
+    private static bool TryGet(
+        JsonElement element,
+        string name,
+        out JsonElement value)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                if (string.Equals(
+                    property.Name,
+                    name,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    value = property.Value;
+                    return true;
+                }
+            }
+        }
+
+        value = default;
+        return false;
+    }
+
+    private static string ReadString(
+        JsonElement element,
+        string name)
+    {
+        if (!TryGet(element, name, out var value) ||
+            value.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(value.GetString()))
+        {
+            throw new InvalidDataException(
+                $"必須文字列がありません: {name}");
+        }
+
+        return value.GetString()!;
+    }
+
+    private static string? ReadOptionalString(
+        JsonElement element,
+        string name)
+    {
+        if (!TryGet(element, name, out var value) ||
+            value.ValueKind == JsonValueKind.Null)
+            return null;
+
+        return value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
+    }
+
+    private static int ReadInt(
+        JsonElement element,
+        string name)
+    {
+        if (!TryGet(element, name, out var value) ||
+            !value.TryGetInt32(out var result))
+        {
+            throw new InvalidDataException(
+                $"整数フィールドが不正です: {name}");
+        }
+
+        return result;
+    }
+
+    private static uint ReadUInt(
+        JsonElement element,
+        string name)
+    {
+        if (!TryGet(element, name, out var value))
+            throw new InvalidDataException(
+                $"数値フィールドがありません: {name}");
+
+        if (value.ValueKind == JsonValueKind.Number &&
+            value.TryGetUInt32(out var numeric))
+            return numeric;
+
+        if (value.ValueKind == JsonValueKind.String)
+        {
+            var text = value.GetString()?.Trim() ?? "";
+
+            if (text.StartsWith(
+                "0x",
+                StringComparison.OrdinalIgnoreCase))
+                text = text[2..];
+
+            if (uint.TryParse(
+                text,
+                NumberStyles.HexNumber,
+                CultureInfo.InvariantCulture,
+                out var hex))
+                return hex;
+        }
+
+        throw new InvalidDataException(
+            $"32bitアドレスが不正です: {name}");
+    }
+
+    private static uint? ReadOptionalUInt(
+        JsonElement element,
+        string name)
+    {
+        if (!TryGet(element, name, out var value) ||
+            value.ValueKind == JsonValueKind.Null)
+            return null;
+
+        if (value.TryGetUInt32(out var result))
+            return result;
+
+        return null;
+    }
+}

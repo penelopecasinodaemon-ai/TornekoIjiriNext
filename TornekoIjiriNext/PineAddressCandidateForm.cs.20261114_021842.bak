@@ -1,0 +1,830 @@
+using System.Buffers.Binary;
+using System.Globalization;
+using System.Text;
+using System.Text.Json;
+
+namespace TornekoIjiriNext;
+
+internal sealed record CandidateAddressRegion(
+    string Name,
+    uint Address,
+    int Length,
+    string BytesHex,
+    string PurposeNote);
+
+internal sealed record CandidateAddressProfileEntry(
+    string Name,
+    uint Address,
+    int Length,
+    string Note);
+
+internal sealed record CandidateAddressProfile(
+    int FormatVersion,
+    DateTime CreatedAtUtc,
+    string ProfileName,
+    IReadOnlyList<CandidateAddressProfileEntry> Candidates);
+
+internal sealed record CandidateAddressCapture(
+    int FormatVersion,
+    DateTime CapturedAtUtc,
+    string Pcsx2Version,
+    string GameTitle,
+    string GameId,
+    string GameCrc,
+    string GameVersion,
+    uint StatusBefore,
+    uint StatusAfter,
+    string SceneNote,
+    IReadOnlyList<CandidateAddressRegion> Regions);
+
+/// <summary>
+/// 任意の候補アドレスを読み取り専用で一括取得する診断画面。
+/// ゲームメモリへの書き込み機能は持たない。
+/// </summary>
+internal sealed class PineAddressCandidateForm : Form
+{
+    private sealed record Candidate(
+        string Name,
+        uint Address,
+        int Length,
+        string Note)
+    {
+        public override string ToString() =>
+            $"{Name} | 0x{Address:X8} | {Length} bytes";
+    }
+
+    private readonly Func<PineClient?> _getClient;
+    private readonly Func<PineClient, bool> _isActive;
+
+    private readonly TextBox _name = new() { Width = 150, PlaceholderText = "候補名" };
+    private readonly TextBox _address = new() { Width = 110, Text = "00180020" };
+    private readonly NumericUpDown _length = new()
+    {
+        Minimum = 1,
+        Maximum = 4096,
+        Value = 64,
+        Width = 75
+    };
+    private readonly TextBox _note = new()
+    {
+        Width = 220,
+        MaxLength = 300,
+        PlaceholderText = "用途・根拠・周辺情報"
+    };
+    private readonly TextBox _sceneNote = new()
+    {
+        Width = 300,
+        MaxLength = 500,
+        PlaceholderText = "取得時のゲーム内状況・操作"
+    };
+    private readonly ListBox _candidates = new()
+    {
+        Dock = DockStyle.Fill,
+        IntegralHeight = false
+    };
+    private readonly TextBox _output = new()
+    {
+        Dock = DockStyle.Fill,
+        Multiline = true,
+        ReadOnly = true,
+        ScrollBars = ScrollBars.Both,
+        WordWrap = false,
+        Font = new Font("Consolas", 9.5f)
+    };
+    private readonly Button _add = new() { Text = "候補を追加", AutoSize = true };
+    private readonly Button _remove = new() { Text = "選択候補を削除", AutoSize = true };
+    private readonly Button _saveProfile = new() { Text = "候補セット保存…", AutoSize = true };
+    private readonly Button _loadProfile = new() { Text = "候補セット読み込み…", AutoSize = true };
+    private readonly Button _capture = new() { Text = "候補を一括読み取り・JSON保存…", AutoSize = true };
+    private readonly Button _compare = new() { Text = "保存済み候補キャプチャを比較…", AutoSize = true };
+
+    private readonly List<Candidate> _items = new();
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true
+    };
+
+    public PineAddressCandidateForm(
+        Func<PineClient?> getClient,
+        Func<PineClient, bool> isActive)
+    {
+        _getClient = getClient;
+        _isActive = isActive;
+
+        Text = "PINE候補アドレス検証（読み取り専用）";
+        StartPosition = FormStartPosition.CenterParent;
+        Size = new Size(1050, 720);
+        MinimumSize = new Size(820, 560);
+
+        BuildUi();
+
+        _add.Click += (_, _) => AddCandidate();
+        _remove.Click += (_, _) => RemoveCandidate();
+        _saveProfile.Click += (_, _) => SaveCandidateProfile();
+        _loadProfile.Click += (_, _) => LoadCandidateProfile();
+        _capture.Click += async (_, _) => await CaptureAsync();
+        _compare.Click += (_, _) => CompareCaptures();
+    }
+
+    private void BuildUi()
+    {
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(10),
+            ColumnCount = 1,
+            RowCount = 4
+        };
+
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 38));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 62));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+        var editor = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true,
+            Padding = new Padding(2, 2, 2, 8)
+        };
+
+        editor.Controls.Add(new Label
+        {
+            Text = "候補名",
+            AutoSize = true,
+            Margin = new Padding(3, 8, 2, 0)
+        });
+        editor.Controls.Add(_name);
+
+        editor.Controls.Add(new Label
+        {
+            Text = "EEアドレス(hex)",
+            AutoSize = true,
+            Margin = new Padding(8, 8, 2, 0)
+        });
+        editor.Controls.Add(_address);
+
+        editor.Controls.Add(new Label
+        {
+            Text = "長さ",
+            AutoSize = true,
+            Margin = new Padding(8, 8, 2, 0)
+        });
+        editor.Controls.Add(_length);
+
+        editor.Controls.Add(_note);
+        editor.Controls.Add(_add);
+        editor.Controls.Add(_remove);
+        editor.Controls.Add(_saveProfile);
+        editor.Controls.Add(_loadProfile);
+
+        var scene = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true,
+            Padding = new Padding(2, 0, 2, 8)
+        };
+        scene.Controls.Add(new Label
+        {
+            Text = "取得状況メモ",
+            AutoSize = true,
+            Margin = new Padding(3, 8, 2, 0)
+        });
+        scene.Controls.Add(_sceneNote);
+
+        var upper = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3
+        };
+        upper.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        upper.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        upper.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        upper.Controls.Add(editor, 0, 0);
+        upper.Controls.Add(scene, 0, 1);
+        upper.Controls.Add(_candidates, 0, 2);
+
+        var footer = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            FlowDirection = FlowDirection.RightToLeft,
+            WrapContents = true
+        };
+        footer.Controls.Add(_capture);
+        footer.Controls.Add(_compare);
+
+        root.Controls.Add(new Label
+        {
+            Text = "候補アドレスと読み取り範囲を登録します。複数候補を同一セッションで読み取り、ゲーム情報・取得状態・状況メモ付きJSONとして保存します。読み取り値の意味は自動判定しません。",
+            AutoSize = true,
+            MaximumSize = new Size(980, 0),
+            ForeColor = Color.DimGray,
+            Padding = new Padding(2, 2, 2, 8)
+        }, 0, 0);
+
+        root.Controls.Add(upper, 0, 1);
+        root.Controls.Add(_output, 0, 2);
+        root.Controls.Add(footer, 0, 3);
+
+        Controls.Add(root);
+    }
+
+    private void AddCandidate()
+    {
+        var name = _name.Text.Trim();
+        var addressText = _address.Text.Trim()
+            .Replace("0x", "", StringComparison.OrdinalIgnoreCase);
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            MessageBox.Show(this, "候補名を入力してください。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (!uint.TryParse(
+            addressText,
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture,
+            out var address))
+        {
+            MessageBox.Show(this, "有効な32-bit EEアドレスを入力してください。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var length = (int)_length.Value;
+        if ((ulong)address + (uint)length - 1 > uint.MaxValue)
+        {
+            MessageBox.Show(this, "読み取り範囲が32-bitアドレス範囲を超えています。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (_items.Count >= 64)
+        {
+            MessageBox.Show(this, "候補は最大64件まで登録できます。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (_items.Any(x => x.Address == address))
+        {
+            MessageBox.Show(this, "同じ開始アドレスの候補が既にあります。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var totalBytes = _items.Sum(x => x.Length) + length;
+        if (totalBytes > 65536)
+        {
+            MessageBox.Show(this, "一括読み取り合計は65536 bytesまでです。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var candidate = new Candidate(name, address, length, _note.Text.Trim());
+        _items.Add(candidate);
+        _candidates.Items.Add(candidate);
+
+        _name.Clear();
+        _note.Clear();
+    }
+
+    private void SaveCandidateProfile()
+    {
+        try
+        {
+            if (_items.Count == 0)
+            {
+                MessageBox.Show(this, "保存する候補がありません。", Text,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var dialog = new SaveFileDialog
+            {
+                Title = "候補セットを保存",
+                Filter = "PINE候補セット (*.json)|*.json",
+                DefaultExt = "json",
+                AddExtension = true,
+                FileName = $"pine_candidate_profile_{DateTime.Now:yyyyMMdd_HHmmss}.json"
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            var profile = new CandidateAddressProfile(
+                1,
+                DateTime.UtcNow,
+                Path.GetFileNameWithoutExtension(dialog.FileName),
+                _items.Select(x => new CandidateAddressProfileEntry(
+                    x.Name, x.Address, x.Length, x.Note)).ToArray());
+
+            File.WriteAllText(
+                dialog.FileName,
+                JsonSerializer.Serialize(profile, JsonOptions),
+                new UTF8Encoding(false));
+
+            _output.Text = $"候補セットを保存しました。{Environment.NewLine}" +
+                $"候補数: {profile.Candidates.Count}{Environment.NewLine}" +
+                $"保存先: {dialog.FileName}";
+        }
+        catch (Exception ex)
+        {
+            _output.Text = "候補セット保存失敗" + Environment.NewLine + ex;
+            MessageBox.Show(this, ex.Message, "候補セット保存失敗",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void LoadCandidateProfile()
+    {
+        try
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Title = "候補セットを読み込み",
+                Filter = "PINE候補セット (*.json)|*.json|すべてのファイル (*.*)|*.*",
+                CheckFileExists = true
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            var info = new FileInfo(dialog.FileName);
+            if (!info.Exists || info.Length > 1024 * 1024)
+                throw new InvalidDataException("候補セットファイルが存在しないか、1 MiBを超えています。");
+
+            var profile = JsonSerializer.Deserialize<CandidateAddressProfile>(
+                File.ReadAllText(dialog.FileName),
+                JsonOptions)
+                ?? throw new InvalidDataException("候補セットJSONを読み込めません。");
+
+            if (profile.FormatVersion != 1 ||
+                profile.Candidates is null ||
+                profile.Candidates.Count is < 1 or > 64)
+                throw new InvalidDataException("候補セットの形式または候補数が不正です。");
+
+            var loaded = new List<Candidate>();
+            var addresses = new HashSet<uint>();
+            var totalBytes = 0;
+
+            foreach (var entry in profile.Candidates)
+            {
+                if (string.IsNullOrWhiteSpace(entry.Name) ||
+                    entry.Name.Length > 100 ||
+                    entry.Length is < 1 or > 4096 ||
+                    entry.Note is null ||
+                    entry.Note.Length > 300)
+                    throw new InvalidDataException("候補名・長さ・メモのいずれかが不正です。");
+
+                if ((ulong)entry.Address + (uint)entry.Length - 1 > uint.MaxValue)
+                    throw new InvalidDataException("読み取り範囲が32-bitアドレス範囲を超えています。");
+
+                if (!addresses.Add(entry.Address))
+                    throw new InvalidDataException("同じ開始アドレスが複数登録されています。");
+
+                totalBytes += entry.Length;
+                if (totalBytes > 65536)
+                    throw new InvalidDataException("候補セットの合計読み取りサイズが65536 bytesを超えています。");
+
+                loaded.Add(new Candidate(
+                    entry.Name,
+                    entry.Address,
+                    entry.Length,
+                    entry.Note));
+            }
+
+            var answer = MessageBox.Show(
+                this,
+                $"現在の候補 {_items.Count} 件を置き換えて、候補セット「{profile.ProfileName}」を読み込みますか？{Environment.NewLine}" +
+                $"読み込み候補数: {loaded.Count}",
+                "候補セット読み込み確認",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (answer != DialogResult.Yes)
+                return;
+
+            _items.Clear();
+            _items.AddRange(loaded);
+
+            _candidates.BeginUpdate();
+            try
+            {
+                _candidates.Items.Clear();
+                foreach (var candidate in _items)
+                    _candidates.Items.Add(candidate);
+            }
+            finally
+            {
+                _candidates.EndUpdate();
+            }
+
+            _output.Text = $"候補セットを読み込みました。{Environment.NewLine}" +
+                $"セット名: {profile.ProfileName}{Environment.NewLine}" +
+                $"候補数: {_items.Count}{Environment.NewLine}" +
+                $"合計読み取りサイズ: {totalBytes:N0} bytes";
+        }
+        catch (Exception ex)
+        {
+            _output.Text = "候補セット読み込み失敗" + Environment.NewLine + ex;
+            MessageBox.Show(this, ex.Message, "候補セット読み込み失敗",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+    private void RemoveCandidate()
+    {
+        var index = _candidates.SelectedIndex;
+        if (index < 0 || index >= _items.Count)
+            return;
+
+        _items.RemoveAt(index);
+        _candidates.Items.RemoveAt(index);
+    }
+
+    private async Task CaptureAsync()
+    {
+        if (_items.Count == 0)
+        {
+            MessageBox.Show(this, "候補アドレスを1件以上登録してください。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var client = _getClient();
+        if (client is null || !_isActive(client))
+        {
+            MessageBox.Show(this, "PINE接続と起動中のゲームが必要です。", Text,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        _capture.Enabled = false;
+        _add.Enabled = false;
+        _remove.Enabled = false;
+
+        try
+        {
+            var candidates = _items.ToArray();
+            var sceneNote = _sceneNote.Text.Trim();
+
+            var capture = await Task.Run(() =>
+                CaptureNow(client, candidates, sceneNote));
+
+            if (!_isActive(client))
+                throw new IOException("取得後にPINEセッションが切断または切り替わりました。");
+
+            using var dialog = new SaveFileDialog
+            {
+                Title = "候補アドレス一括キャプチャを保存",
+                Filter = "PINE候補アドレスキャプチャ (*.json)|*.json",
+                DefaultExt = "json",
+                AddExtension = true,
+                FileName = $"pine_candidates_{capture.GameId}_{capture.CapturedAtUtc:yyyyMMdd_HHmmss}.json"
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            await File.WriteAllTextAsync(
+                dialog.FileName,
+                JsonSerializer.Serialize(capture, JsonOptions),
+                new UTF8Encoding(false));
+
+            _output.Text = FormatCapture(capture) +
+                Environment.NewLine + "保存先: " + dialog.FileName;
+        }
+        catch (Exception ex)
+        {
+            _output.Text = "候補アドレス取得失敗（成功扱いではありません）" +
+                Environment.NewLine + ex;
+
+            MessageBox.Show(this, ex.Message, "候補アドレス取得失敗",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        finally
+        {
+            _capture.Enabled = true;
+            _add.Enabled = true;
+            _remove.Enabled = true;
+        }
+    }
+
+    private void CompareCaptures()
+    {
+        try
+        {
+            CandidateAddressCapture? before;
+            CandidateAddressCapture? after;
+
+            using (var dialog = new OpenFileDialog
+            {
+                Title = "比較元の候補アドレスキャプチャ",
+                Filter = "PINE候補アドレスキャプチャ (*.json)|*.json|すべてのファイル (*.*)|*.*",
+                CheckFileExists = true
+            })
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                before = LoadCandidateCapture(dialog.FileName);
+            }
+
+            using (var dialog = new OpenFileDialog
+            {
+                Title = "比較先の候補アドレスキャプチャ",
+                Filter = "PINE候補アドレスキャプチャ (*.json)|*.json|すべてのファイル (*.*)|*.*",
+                CheckFileExists = true
+            })
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                after = LoadCandidateCapture(dialog.FileName);
+            }
+
+            if (before is null || after is null)
+                throw new InvalidDataException("キャプチャを読み込めませんでした。");
+
+            ValidateCandidatePair(before, after);
+
+            var output = new StringBuilder();
+            output.AppendLine("===== PINE候補アドレス比較 =====");
+            output.AppendLine($"比較元: {before.CapturedAtUtc:O}");
+            output.AppendLine($"比較先: {after.CapturedAtUtc:O}");
+            output.AppendLine($"PCSX2: {before.Pcsx2Version} → {after.Pcsx2Version}");
+            output.AppendLine($"ゲーム: {before.GameTitle}");
+            output.AppendLine($"ID: {before.GameId}");
+            output.AppendLine($"CRC: {before.GameCrc}");
+            output.AppendLine($"Version: {before.GameVersion}");
+            output.AppendLine($"PCSX2状態: {before.StatusBefore} → {before.StatusAfter} / {after.StatusBefore} → {after.StatusAfter}");
+
+            if (!string.Equals(before.GameId, after.GameId, StringComparison.Ordinal) ||
+                !string.Equals(before.GameCrc, after.GameCrc, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(before.GameVersion, after.GameVersion, StringComparison.Ordinal))
+            {
+                output.AppendLine("警告: ゲームID・CRC・版が異なります。同一ゲームの状態変化とは解釈できません。");
+            }
+
+            if (!string.IsNullOrWhiteSpace(before.SceneNote))
+                output.AppendLine($"比較元の状況: {before.SceneNote}");
+            if (!string.IsNullOrWhiteSpace(after.SceneNote))
+                output.AppendLine($"比較先の状況: {after.SceneNote}");
+
+            output.AppendLine();
+            output.AppendLine($"比較候補数: {before.Regions.Count}");
+
+            for (var regionIndex = 0; regionIndex < before.Regions.Count; regionIndex++)
+            {
+                var leftRegion = before.Regions[regionIndex];
+                var rightRegion = after.Regions[regionIndex];
+                var left = Convert.FromHexString(leftRegion.BytesHex);
+                var right = Convert.FromHexString(rightRegion.BytesHex);
+
+                var changedBytes = 0;
+                var changedWords = 0;
+                var changedDwords = 0;
+                var detailCount = 0;
+                const int maxDetails = 300;
+
+                output.AppendLine();
+                output.AppendLine($"===== {leftRegion.Name} =====");
+                output.AppendLine($"アドレス: 0x{leftRegion.Address:X8}");
+                output.AppendLine($"長さ: {leftRegion.Length} bytes");
+
+                if (!string.IsNullOrWhiteSpace(leftRegion.PurposeNote))
+                    output.AppendLine($"候補メモ: {leftRegion.PurposeNote}");
+
+                for (var i = 0; i < left.Length; i++)
+                {
+                    if (left[i] == right[i])
+                        continue;
+
+                    changedBytes++;
+
+                    if (detailCount < maxDetails)
+                    {
+                        output.AppendLine(
+                            $"BYTE +0x{i:X4} (0x{leftRegion.Address + (uint)i:X8}): {left[i]:X2} → {right[i]:X2}");
+                        detailCount++;
+                    }
+                }
+
+                for (var i = 0; i + 2 <= left.Length; i += 2)
+                {
+                    var oldValue = BinaryPrimitives.ReadUInt16LittleEndian(left.AsSpan(i, 2));
+                    var newValue = BinaryPrimitives.ReadUInt16LittleEndian(right.AsSpan(i, 2));
+
+                    if (oldValue != newValue)
+                        changedWords++;
+                }
+
+                for (var i = 0; i + 4 <= left.Length; i += 4)
+                {
+                    var oldValue = BinaryPrimitives.ReadUInt32LittleEndian(left.AsSpan(i, 4));
+                    var newValue = BinaryPrimitives.ReadUInt32LittleEndian(right.AsSpan(i, 4));
+
+                    if (oldValue != newValue)
+                        changedDwords++;
+                }
+
+                output.AppendLine(
+                    $"BYTE変更数: {changedBytes} / WORD変更数: {changedWords} / DWORD変更数: {changedDwords}");
+
+                if (changedBytes == 0)
+                    output.AppendLine("この候補領域に変化はありません。");
+                else if (changedBytes > maxDetails)
+                    output.AppendLine($"差分詳細は先頭{maxDetails}件まで表示しました。残り {changedBytes - maxDetails} 件。");
+
+                output.AppendLine("WORD/DWORDは範囲先頭からlittle-endianで整列して比較しています。");
+            }
+
+            output.AppendLine();
+            output.AppendLine("注意: 差分は観測されたバイト値の変化です。ゲーム内データの意味や構造を確定するものではありません。");
+
+            _output.Text = output.ToString();
+        }
+        catch (Exception ex)
+        {
+            _output.Text = "候補アドレス比較失敗" + Environment.NewLine + ex;
+            MessageBox.Show(this, ex.Message, "候補アドレス比較失敗",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private static CandidateAddressCapture LoadCandidateCapture(string path)
+    {
+        var info = new FileInfo(path);
+        if (!info.Exists || info.Length > 64L * 1024 * 1024)
+            throw new InvalidDataException("ファイルが存在しないか、64 MiBを超えています。");
+
+        var capture = JsonSerializer.Deserialize<CandidateAddressCapture>(
+            File.ReadAllText(path),
+            JsonOptions)
+            ?? throw new InvalidDataException("JSONを読み込めません。");
+
+        if (capture.FormatVersion != 1 ||
+            capture.Regions is null ||
+            capture.Regions.Count is < 1 or > 64)
+            throw new InvalidDataException("候補キャプチャ形式または候補数が不正です。");
+
+        if (string.IsNullOrWhiteSpace(capture.GameId) ||
+            string.IsNullOrWhiteSpace(capture.GameCrc) ||
+            string.IsNullOrWhiteSpace(capture.GameVersion))
+            throw new InvalidDataException("ゲーム識別情報が不足しています。");
+
+        var totalBytes = 0;
+
+        foreach (var region in capture.Regions)
+        {
+            if (string.IsNullOrWhiteSpace(region.Name) ||
+                region.Length is < 1 or > 4096 ||
+                string.IsNullOrWhiteSpace(region.BytesHex) ||
+                region.BytesHex.Length != region.Length * 2 ||
+                !region.BytesHex.All(Uri.IsHexDigit))
+                throw new InvalidDataException("候補領域の名前・長さ・HEXデータが不正です。");
+
+            if ((ulong)region.Address + (uint)region.Length - 1 > uint.MaxValue)
+                throw new InvalidDataException("候補領域が32-bitアドレス範囲を超えています。");
+
+            totalBytes += region.Length;
+        }
+
+        if (totalBytes > 65536)
+            throw new InvalidDataException("合計読み取りサイズが上限を超えています。");
+
+        return capture;
+    }
+
+    private static void ValidateCandidatePair(
+        CandidateAddressCapture before,
+        CandidateAddressCapture after)
+    {
+        if (before.Regions.Count != after.Regions.Count)
+            throw new InvalidDataException("候補数が一致しません。");
+
+        for (var i = 0; i < before.Regions.Count; i++)
+        {
+            var left = before.Regions[i];
+            var right = after.Regions[i];
+
+            if (!string.Equals(left.Name, right.Name, StringComparison.Ordinal) ||
+                left.Address != right.Address ||
+                left.Length != right.Length)
+            {
+                throw new InvalidDataException(
+                    $"候補 {i + 1} の名前・アドレス・長さが一致しません。候補構成を揃えてください。");
+            }
+        }
+    }
+    private CandidateAddressCapture CaptureNow(
+        PineClient client,
+        Candidate[] candidates,
+        string sceneNote)
+    {
+        if (!_isActive(client))
+            throw new IOException("PINEセッションが有効ではありません。");
+
+        var statusBefore = client.GetStatus();
+        if (statusBefore is not (0 or 1))
+            throw new IOException("PCSX2でゲームが起動していません。");
+
+        var infoBefore = client.GetGameInfo();
+        var version = client.GetPcsx2Version();
+        var capturedAt = DateTime.UtcNow;
+
+        var regions = new List<CandidateAddressRegion>(candidates.Length);
+
+        foreach (var candidate in candidates)
+        {
+            var bytes = client.ReadMemory(candidate.Address, candidate.Length);
+
+            if (bytes.Length != candidate.Length)
+                throw new IOException(
+                    $"0x{candidate.Address:X8} の読み取り長が一致しません。");
+
+            regions.Add(new CandidateAddressRegion(
+                candidate.Name,
+                candidate.Address,
+                candidate.Length,
+                Convert.ToHexString(bytes),
+                candidate.Note));
+        }
+
+        var statusAfter = client.GetStatus();
+        if (statusAfter is not (0 or 1))
+            throw new IOException("読み取り中にゲームが停止しました。");
+
+        if (statusBefore != statusAfter)
+            throw new IOException("読み取り中にPCSX2の状態が変化しました。整合性を保証できないため取得結果を破棄しました。");
+
+        var infoAfter = client.GetGameInfo();
+
+        if (!string.Equals(infoBefore.Id, infoAfter.Id, StringComparison.Ordinal) ||
+            !string.Equals(infoBefore.Crc, infoAfter.Crc, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(infoBefore.GameVersion, infoAfter.GameVersion, StringComparison.Ordinal))
+        {
+            throw new IOException("読み取り中に接続先ゲームが変化しました。取得結果を破棄しました。");
+        }
+
+        return new CandidateAddressCapture(
+            1,
+            capturedAt,
+            version,
+            infoAfter.Title,
+            infoAfter.Id,
+            infoAfter.Crc,
+            infoAfter.GameVersion,
+            statusBefore,
+            statusAfter,
+            sceneNote,
+            regions);
+    }
+
+    private static string FormatCapture(CandidateAddressCapture capture)
+    {
+        var output = new StringBuilder();
+
+        output.AppendLine($"形式: {capture.FormatVersion}");
+        output.AppendLine($"UTC: {capture.CapturedAtUtc:O}");
+        output.AppendLine($"PCSX2: {capture.Pcsx2Version}");
+        output.AppendLine($"ゲーム: {capture.GameTitle}");
+        output.AppendLine($"ID: {capture.GameId} / CRC: {capture.GameCrc} / 版: {capture.GameVersion}");
+        output.AppendLine($"状態: {capture.StatusBefore} → {capture.StatusAfter} (0=動作中, 1=一時停止)");
+        output.AppendLine($"候補数: {capture.Regions.Count}");
+
+        if (!string.IsNullOrWhiteSpace(capture.SceneNote))
+            output.AppendLine($"取得状況: {capture.SceneNote}");
+
+        output.AppendLine("値の意味・構造は未判定です。");
+
+        foreach (var region in capture.Regions)
+        {
+            var bytes = Convert.FromHexString(region.BytesHex);
+
+            output.AppendLine();
+            output.AppendLine($"===== {region.Name} / 0x{region.Address:X8} / {region.Length} bytes =====");
+
+            if (!string.IsNullOrWhiteSpace(region.PurposeNote))
+                output.AppendLine($"候補メモ: {region.PurposeNote}");
+
+            for (var offset = 0; offset < bytes.Length; offset += 16)
+            {
+                var count = Math.Min(16, bytes.Length - offset);
+                var hex = string.Join(" ",
+                    bytes.AsSpan(offset, count).ToArray().Select(x => x.ToString("X2")));
+
+                output.AppendLine($"0x{region.Address + (uint)offset:X8}: {hex}");
+            }
+        }
+
+        return output.ToString();
+    }
+}

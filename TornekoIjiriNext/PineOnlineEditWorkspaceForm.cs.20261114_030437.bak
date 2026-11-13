@@ -1,0 +1,324 @@
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace TornekoIjiriNext;
+
+/// <summary>
+/// 複数のオンライン数値編集項目をまとめて表示するワークスペース。
+/// </summary>
+internal sealed class PineOnlineEditWorkspaceForm : Form
+{
+    private readonly PineOnlineEditService _service;
+    private readonly List<PineOnlineEditFieldDefinition> _definitions;
+    private readonly List<PineOnlineNumericEditor> _editors = new();
+
+    private readonly FlowLayoutPanel _fieldPanel;
+    private readonly Label _summary;
+    private readonly Label _connectionStatus;
+    private readonly Button _refreshAll;
+    private readonly Button _enableVerified;
+    private readonly Button _disableAll;
+    private readonly Button _close;
+
+    public PineOnlineEditWorkspaceForm(
+        PineOnlineEditService service,
+        IEnumerable<PineOnlineEditFieldDefinition> definitions,
+        string title = "オンライン編集")
+    {
+        _service = service ?? throw new ArgumentNullException(nameof(service));
+        _definitions = definitions?.ToList()
+            ?? throw new ArgumentNullException(nameof(definitions));
+
+        ValidateDefinitions(_definitions);
+
+        Text = title;
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new Size(760, 520);
+        Size = new Size(980, 720);
+        AutoScaleMode = AutoScaleMode.Dpi;
+
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 4,
+            Padding = new Padding(10)
+        };
+
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+        var header = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false
+        };
+
+        var titleLabel = new Label
+        {
+            Text = "オンライン編集ワークスペース",
+            Font = new Font(SystemFonts.DefaultFont.FontFamily, 13, FontStyle.Bold),
+            AutoSize = true,
+            Margin = new Padding(3, 3, 3, 8)
+        };
+
+        _connectionStatus = new Label
+        {
+            Text = "接続状態は各操作時に確認します。",
+            AutoSize = true,
+            ForeColor = SystemColors.ControlText
+        };
+
+        _summary = new Label
+        {
+            AutoSize = true,
+            Text = "",
+            Margin = new Padding(3, 6, 3, 6)
+        };
+
+        header.Controls.Add(titleLabel);
+        header.Controls.Add(_connectionStatus);
+        header.Controls.Add(_summary);
+
+        var toolbar = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true,
+            Margin = new Padding(0, 5, 0, 8)
+        };
+
+        _refreshAll = new Button
+        {
+            Text = "全項目を再取得",
+            AutoSize = true
+        };
+
+        _enableVerified = new Button
+        {
+            Text = "検証済み項目を編集可能にする",
+            AutoSize = true
+        };
+
+        _disableAll = new Button
+        {
+            Text = "編集を一時停止",
+            AutoSize = true
+        };
+
+        _refreshAll.Click += (_, _) => RefreshAll();
+        _enableVerified.Click += (_, _) => SetVerifiedEditing(true);
+        _disableAll.Click += (_, _) => SetVerifiedEditing(false);
+
+        toolbar.Controls.Add(_refreshAll);
+        toolbar.Controls.Add(_enableVerified);
+        toolbar.Controls.Add(_disableAll);
+
+        _fieldPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true,
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            Padding = new Padding(4)
+        };
+
+        var footer = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            FlowDirection = FlowDirection.RightToLeft
+        };
+
+        _close = new Button
+        {
+            Text = "閉じる",
+            AutoSize = true
+        };
+        _close.Click += (_, _) => Close();
+
+        footer.Controls.Add(_close);
+
+        root.Controls.Add(header, 0, 0);
+        root.Controls.Add(toolbar, 0, 1);
+        root.Controls.Add(_fieldPanel, 0, 2);
+        root.Controls.Add(footer, 0, 3);
+
+        Controls.Add(root);
+
+        BuildEditors();
+        UpdateSummary();
+    }
+
+    private static void ValidateDefinitions(
+        List<PineOnlineEditFieldDefinition> definitions)
+    {
+        if (definitions.Count > 512)
+            throw new ArgumentException("編集項目は512件以内にしてください。");
+
+        var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var item in definitions)
+        {
+            if (item is null)
+                throw new ArgumentException("編集項目にnullが含まれています。");
+
+            if (string.IsNullOrWhiteSpace(item.GroupName))
+                throw new ArgumentException("グループ名が空の項目があります。");
+
+            if (string.IsNullOrWhiteSpace(item.FieldName))
+                throw new ArgumentException("項目名が空の項目があります。");
+
+            if (item.WidthBytes is not (1 or 2 or 4))
+                throw new ArgumentException(
+                    $"データ幅が不正です: {item.FieldName}");
+
+            ulong end = (ulong)item.Address + (uint)item.WidthBytes - 1;
+            if (end > uint.MaxValue)
+                throw new ArgumentException(
+                    $"アドレス範囲が不正です: {item.FieldName}");
+
+            ulong maxValue = item.WidthBytes switch
+            {
+                1 => byte.MaxValue,
+                2 => ushort.MaxValue,
+                4 => uint.MaxValue,
+                _ => 0
+            };
+
+            if (item.InitialValue > maxValue)
+                throw new ArgumentException(
+                    $"初期値がデータ幅を超えています: {item.FieldName}");
+
+            string key = $"{item.GroupName}\0{item.FieldName}";
+            if (!keys.Add(key))
+                throw new ArgumentException(
+                    $"同じグループに重複項目があります: {item.FieldName}");
+        }
+    }
+
+    private void BuildEditors()
+    {
+        foreach (var group in _definitions.GroupBy(
+            x => x.GroupName,
+            StringComparer.OrdinalIgnoreCase))
+        {
+            var groupBox = new GroupBox
+            {
+                Text = group.Key,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Width = 880,
+                Padding = new Padding(8),
+                Margin = new Padding(4, 4, 4, 12)
+            };
+
+            var layout = new FlowLayoutPanel
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                Dock = DockStyle.Fill
+            };
+
+            foreach (var definition in group)
+            {
+                var row = new Panel
+                {
+                    Width = 840,
+                    Height = string.IsNullOrWhiteSpace(definition.Description)
+                        ? 82 : 105,
+                    Margin = new Padding(2)
+                };
+
+                var editor = new PineOnlineNumericEditor(
+                    _service,
+                    definition.FieldName,
+                    definition.Address,
+                    definition.WidthBytes,
+                    definition.InitialValue,
+                    definition.AddressVerified)
+                {
+                    Location = new Point(0, 0),
+                    Width = 820,
+                    Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
+                };
+
+                row.Controls.Add(editor);
+
+                if (!string.IsNullOrWhiteSpace(definition.Description))
+                {
+                    var description = new Label
+                    {
+                        Text = definition.Description,
+                        AutoSize = true,
+                        Location = new Point(5, 78),
+                        ForeColor = SystemColors.GrayText
+                    };
+                    row.Controls.Add(description);
+                }
+
+                layout.Controls.Add(row);
+                _editors.Add(editor);
+            }
+
+            groupBox.Controls.Add(layout);
+            _fieldPanel.Controls.Add(groupBox);
+        }
+    }
+
+    private void RefreshAll()
+    {
+        int success = 0;
+        int failure = 0;
+        int skipped = 0;
+
+        foreach (var editor in _editors)
+        {
+            if (!editor.IsAddressVerified)
+            {
+                skipped++;
+                continue;
+            }
+
+            if (editor.RefreshFromGame())
+                success++;
+            else
+                failure++;
+        }
+
+        _connectionStatus.Text =
+            $"一括再取得: 成功 {success} / 失敗 {failure} / 未検証 {skipped}";
+
+        _connectionStatus.ForeColor =
+            failure == 0 ? Color.DarkGreen : Color.DarkRed;
+    }
+
+    private void SetVerifiedEditing(bool enabled)
+    {
+        foreach (var editor in _editors)
+            editor.SetEditingEnabled(enabled);
+
+        _connectionStatus.Text = enabled
+            ? "検証済み項目の編集を有効化しました。"
+            : "編集を一時停止しました。";
+
+        UpdateSummary();
+    }
+
+    private void UpdateSummary()
+    {
+        int verified = _definitions.Count(x => x.AddressVerified);
+        int unverified = _definitions.Count - verified;
+
+        _summary.Text =
+            $"登録項目: {_definitions.Count}件 / " +
+            $"アドレス検証済み: {verified}件 / " +
+            $"未検証: {unverified}件";
+    }
+}
