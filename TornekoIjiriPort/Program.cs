@@ -1696,10 +1696,11 @@ internal static class Pcsx2BinApplier
             bool committed = mbi.State == 0x1000;
             bool guarded = (mbi.Protect & 0x100) != 0;
             bool noAccess = protection == 0x01;
+            bool writable = protection == 0x04 || protection == 0x08 ||
+                            protection == 0x40 || protection == 0x80;
 
-            // PAGE_READONLYも対象にする。実際の書き込み時に
-            // VirtualProtectExで一時的に保護属性を変更する。
-            if (!committed || guarded || noAccess)
+            // 読み取り専用ページなど、書き込み不可の領域は拒否する。
+            if (!committed || guarded || noAccess || !writable)
             {
                 throw new System.InvalidOperationException(
                     "書き込み予定領域の事前検証に失敗: " + block.Name +
@@ -1796,9 +1797,9 @@ internal static class Pcsx2BinApplier
                 System.UIntPtr partSize = new System.UIntPtr(partLength);
                 uint oldProtect;
 
-                // 実行属性も維持できるようPAGE_EXECUTE_READWRITEにする。
+                // 現在の保護属性を維持し、強制的なRWX変更は行わない。
                 bool changed = VirtualProtectEx(
-                    handle, partAddress, partSize, 0x40, out oldProtect);
+                    handle, partAddress, partSize, mbi.Protect, out oldProtect);
 
                 if (!changed)
                     throw new System.ComponentModel.Win32Exception(
@@ -1986,12 +1987,35 @@ internal static class Pcsx2BinApplier
                 throw new System.InvalidOperationException(
                     "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
 
-            // 書き込み予定領域をVirtualQueryExで検査する。
-            // この処理ではゲームメモリを書き換えない。
-            for (int i = 0; i < blocks.Count; i++)
+            // 書き込み可能領域を事前検証する。
+            // var_164だけは旧HSP同様、書き込み不能時に続行する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            for (int i = blocks.Count - 1; i >= 0; i--)
             {
-                ValidateAccessibleRange(handle, blocks[i]);
+                try
+                {
+                    ValidateAccessibleRange(handle, blocks[i]);
+                }
+                catch (System.InvalidOperationException validationError)
+                {
+                    bool isKnownReadOnlyVar164 =
+                        blocks[i].Name == "var_164" &&
+                        validationError.Message.Contains(
+                            "Writable=False", System.StringComparison.Ordinal);
+
+                    if (!isKnownReadOnlyVar164)
+                        throw;
+
+                    skippedBlocks.Add(
+                        "var_164 (読み取り専用のため適用除外)");
+                    blocks.RemoveAt(i);
+                }
             }
+
+            if (blocks.Count == 0)
+                throw new System.InvalidOperationException(
+                    "適用可能な書き込み領域がありません。");
 
             // ブロック同士の重複を禁止する。
             for (int i = 0; i < blocks.Count; i++)
@@ -2065,9 +2089,14 @@ internal static class Pcsx2BinApplier
             foreach (WriteBlock block in blocks)
                 totalBytes = checked(totalBytes + block.Data.Length);
 
+            string skippedText = skippedBlocks.Count == 0
+                ? "なし"
+                : string.Join(", ", skippedBlocks);
+
             return "BINバージョン: " + version +
                 "\r\n書き込み領域数: " + blocks.Count +
-                "\r\n書き込み総量: " + totalBytes.ToString("N0") + " bytes";
+                "\r\n書き込み総量: " + totalBytes.ToString("N0") + " bytes" +
+                "\r\n未適用領域: " + skippedText;
         }
         finally
         {
