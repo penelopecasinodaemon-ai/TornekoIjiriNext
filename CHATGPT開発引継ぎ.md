@@ -1,3 +1,61 @@
+﻿<!-- PERMANENT_BUILD_RULES_SINGLE_FILE_START -->
+
+# 追加最優先命令：PowerShell記述方式と単一ファイル発行
+
+## 1. PowerShellのヒア文字列を全面禁止
+
+今後、ユーザーに提示するPowerShellコードでは、ヒア文字列を一切使用しない。
+
+複数行ヒア文字列を使用する記述方式は禁止する。
+ファイル編集・ソースコード生成・Markdown生成では、通常の文字列、文字列配列、文字列連結、StringBuilderなどを使用する。
+PowerShellの入力待ち状態（>>）を発生させないよう、コードは必ず構文が完結した状態で一括提示する。
+
+この命令は過去資料にヒア文字列を使用した記録があっても優先する。
+
+## 2. 発行物は必ず単一EXEファイルに統合
+
+最終的な配布物は、複数のDLLや依存ファイルを並べる形式ではなく、すべてを統合した単一のEXEファイルとする。
+
+最終ファイル名：
+`トルネコいじりネクスト.exe`
+
+発行先：
+`C:\Users\penelope\Desktop\トルネコいじりネクスト`
+
+400個以上のファイルなど、多数のファイルを別々に出力する方式は禁止する。
+
+原則として以下の発行設定を使用する。
+- PublishSingleFile=true
+- SelfContained=true
+- RuntimeIdentifier=win-x64
+- IncludeNativeLibrariesForSelfExtract=true
+- IncludeAllContentForSelfExtract=true
+- DebugType=None
+- DebugSymbols=false
+
+発行時は、必要なランタイム・依存ライブラリ・アプリケーションコンテンツを単一EXEに含める。
+Trimによる機能欠落や既存機能の破壊を避けるため、PublishTrimmedは有効にしない。
+
+## 3. 単一ファイル発行の検証
+
+発行後は必ず以下を確認する。
+1. `トルネコいじりネクスト.exe` が存在すること。
+2. EXEのファイルサイズが0バイトではないこと。
+3. 発行先フォルダに不要なDLL・JSON・PDBなどが残っていないこと。
+4. 最終的に発行先フォルダに残すファイルは `トルネコいじりネクスト.exe` のみとすること。
+5. 単一EXEとして起動できることを実際に確認すること。
+
+発行先の古いファイルは、新しい発行が成功し、最終EXEの存在とサイズを確認した後に整理する。
+発行失敗時に既存の正常なEXEを失わないようにする。
+
+単一ファイル化によって既存機能や旧版BIN互換性を損なってはならない。
+
+## 4. 優先順位
+
+この追加命令は、過去資料に記載された複数ファイル発行方式やヒア文字列を使用する手順より優先する。
+
+<!-- PERMANENT_BUILD_RULES_SINGLE_FILE_END -->
+
 # トルネコいじり Next 開発引継ぎ
 
 <!-- CHATGPT_CURRENT_STATUS_START -->
