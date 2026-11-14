@@ -780,8 +780,8 @@ map["var_162"] = AddOffset(a, -297238);
 map["var_164"] = AddOffset(a, 1371800);
 
 // 補正値を基準にする領域
-map["var_166"] = AddOffset(eeMemoryBase, 9384904L + correction);
-map["var_168"] = AddOffset(eeMemoryBase, 9385504L + correction);
+map["var_166"] = AddOffset(eeMemoryBase, 9384904L);
+map["var_168"] = AddOffset(eeMemoryBase, 9385504L);
 
 // 旧HSPの固定アドレス差分。
 // すべて var_134 + (固定値 - 538443776)
@@ -1647,8 +1647,15 @@ internal static class Pcsx2BinApplier
         System.IntPtr address,
         out APPLY_MEMORY_BASIC_INFORMATION information,
         System.UIntPtr length);
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool VirtualProtectEx(
+        System.IntPtr process,
+        System.IntPtr address,
+        System.UIntPtr size,
+        uint newProtect,
+        out uint oldProtect);
 
-    private static void ValidateWritableRange(
+    private static void ValidateAccessibleRange(
         System.IntPtr handle, WriteBlock block)
     {
         if (block.Address <= 0 || block.Data == null || block.Data.Length <= 0)
@@ -1689,12 +1696,10 @@ internal static class Pcsx2BinApplier
             bool committed = mbi.State == 0x1000;
             bool guarded = (mbi.Protect & 0x100) != 0;
             bool noAccess = protection == 0x01;
-            bool writable = protection == 0x04 ||
-                             protection == 0x08 ||
-                             protection == 0x40 ||
-                             protection == 0x80;
 
-            if (!committed || guarded || noAccess || !writable)
+            // PAGE_READONLYも対象にする。実際の書き込み時に
+            // VirtualProtectExで一時的に保護属性を変更する。
+            if (!committed || guarded || noAccess)
             {
                 throw new System.InvalidOperationException(
                     "書き込み予定領域の事前検証に失敗: " + block.Name +
@@ -1744,22 +1749,104 @@ internal static class Pcsx2BinApplier
     private static void WriteExact(
         System.IntPtr handle, long address, byte[] data, string name)
     {
-        System.UIntPtr written;
+        if (address <= 0 || data == null || data.Length == 0)
+            throw new System.InvalidOperationException("書き込み範囲が不正です: " + name);
 
-        bool ok = WriteProcessMemory(
-            handle, new System.IntPtr(address), data,
-            new System.UIntPtr((uint)data.Length), out written);
-
-        int error = ok ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
-
-        if (!ok || written.ToUInt64() != (ulong)data.Length)
+        var changes = new System.Collections.Generic.List<System.Tuple<System.IntPtr, System.UIntPtr, uint>>();
+        ulong current = unchecked((ulong)address);
+        ulong end = checked(current + (ulong)data.Length);
+        try
         {
-            throw new System.InvalidOperationException(
-                "メモリ書き込み失敗: " + name +
-                " / Address=0x" + address.ToString("X") +
-                " / Required=" + data.Length +
-                " / Written=" + written.ToUInt64() +
-                " / Win32Error=" + error);
+            // 書き込み範囲をVirtualQueryExの領域単位で保護変更する。
+            while (current < end)
+            {
+                APPLY_MEMORY_BASIC_INFORMATION mbi;
+                System.UIntPtr queried = VirtualQueryEx(
+                    handle,
+                    new System.IntPtr(unchecked((long)current)),
+                    out mbi,
+                    new System.UIntPtr((uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(APPLY_MEMORY_BASIC_INFORMATION))));
+
+                if (queried == System.UIntPtr.Zero)
+                    throw new System.ComponentModel.Win32Exception(
+                        System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                        "書き込み直前のメモリ領域取得に失敗: " + name);
+
+                ulong regionStart = unchecked((ulong)mbi.BaseAddress.ToInt64());
+                ulong regionSize = mbi.RegionSize.ToUInt64();
+                ulong regionEnd = checked(regionStart + regionSize);
+
+                if (regionSize == 0 || current < regionStart || regionEnd <= current)
+                    throw new System.InvalidOperationException("書き込み領域の境界が不正: " + name);
+
+                bool committed = mbi.State == 0x1000;
+                bool guarded = (mbi.Protect & 0x100) != 0;
+                bool noAccess = (mbi.Protect & 0xFF) == 0x01;
+
+                if (!committed || guarded || noAccess)
+                    throw new System.InvalidOperationException(
+                        "書き込み不能なメモリ領域です: " + name +
+                        " / Address=0x" + current.ToString("X") +
+                        " / State=0x" + mbi.State.ToString("X") +
+                        " / Protect=0x" + mbi.Protect.ToString("X"));
+
+                ulong partEnd = regionEnd < end ? regionEnd : end;
+                ulong partLength = partEnd - current;
+                System.IntPtr partAddress = new System.IntPtr(unchecked((long)current));
+                System.UIntPtr partSize = new System.UIntPtr(partLength);
+                uint oldProtect;
+
+                // 実行属性も維持できるようPAGE_EXECUTE_READWRITEにする。
+                bool changed = VirtualProtectEx(
+                    handle, partAddress, partSize, 0x40, out oldProtect);
+
+                if (!changed)
+                    throw new System.ComponentModel.Win32Exception(
+                        System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                        "メモリ保護属性の一時変更に失敗: " + name +
+                        " / Address=0x" + current.ToString("X"));
+
+                changes.Add(System.Tuple.Create(partAddress, partSize, oldProtect));
+                current = partEnd;
+            }
+
+            System.UIntPtr written;
+            bool ok = WriteProcessMemory(
+                handle, new System.IntPtr(address), data,
+                new System.UIntPtr((uint)data.Length), out written);
+
+            int error = ok ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+
+            if (!ok || written.ToUInt64() != (ulong)data.Length)
+                throw new System.InvalidOperationException(
+                    "メモリ書き込み失敗: " + name +
+                    " / Address=0x" + address.ToString("X") +
+                    " / Required=" + data.Length +
+                    " / Written=" + written.ToUInt64() +
+                    " / Win32Error=" + error);
+        }
+        finally
+        {
+            // 成功・失敗にかかわらず保護属性を元に戻す。
+            System.Exception restoreError = null;
+            for (int i = changes.Count - 1; i >= 0; i--)
+            {
+                var item = changes[i];
+                uint ignored;
+                bool restored = VirtualProtectEx(
+                    handle, item.Item1, item.Item2, item.Item3, out ignored);
+
+                if (!restored)
+                {
+                    int error = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                    restoreError = new System.InvalidOperationException(
+                        "メモリ保護属性の復元に失敗しました: " + name +
+                        " / Win32Error=" + error);
+                }
+            }
+
+            if (restoreError != null)
+                throw restoreError;
         }
     }
 
@@ -1814,7 +1901,7 @@ internal static class Pcsx2BinApplier
         cursor = checked(cursor + 17);
     }
 
-    public static string ValidateOnly(
+    public static string Apply(
         int processId, Pcsx2MemoryLayout layout, byte[] bin)
     {
         if (processId <= 0)
@@ -1880,7 +1967,7 @@ internal static class Pcsx2BinApplier
             throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
 
         System.IntPtr handle = OpenProcess(
-            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
             false, processId);
 
         if (handle == System.IntPtr.Zero)
@@ -1903,7 +1990,7 @@ internal static class Pcsx2BinApplier
             // この処理ではゲームメモリを書き換えない。
             for (int i = 0; i < blocks.Count; i++)
             {
-                ValidateWritableRange(handle, blocks[i]);
+                ValidateAccessibleRange(handle, blocks[i]);
             }
 
             // ブロック同士の重複を禁止する。
@@ -1931,23 +2018,6 @@ internal static class Pcsx2BinApplier
             // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
             foreach (WriteBlock block in blocks)
                 block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
-
-            // ここで終了。WriteProcessMemoryは実行しない。
-            var report = new System.Text.StringBuilder();
-            report.AppendLine("書き込み先の事前検証が完了しました。");
-            report.AppendLine("ゲームメモリへの書き込みは一切行っていません。");
-            report.AppendLine("検証ブロック数: " + blocks.Count);
-            report.AppendLine("各領域の読み取り事前保存: 成功");
-            report.AppendLine("メモリ保護属性の検査: 成功");
-            report.AppendLine("領域重複検査: 成功");
-            foreach (WriteBlock block in blocks)
-            {
-                report.AppendLine(
-                    block.Name + " / Address=0x" +
-                    block.Address.ToString("X") +
-                    " / Size=" + block.Data.Length);
-            }
-            return report.ToString();
 
             int attempted = -1;
             try
@@ -2973,25 +3043,25 @@ internal sealed class MainForm : Form
         if (MessageBox.Show(
             this,
             "読み込んだBINの書き込み予定領域を検証します。\\r\\n" +
-            "検証中はPCSX2やゲームを終了しないでください。メモリへの書き込みは行いません。\\r\\n\\r\\n続行しますか？",
-            "書き込み先検証確認",
+            "先にPCSX2でゲームを一時停止してください。適用中はPCSX2やゲームを終了しないでください。メモリへの書き込みを実行します。\\r\\n\\r\\n続行しますか？",
+            "改造ダンジョン適用確認",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Warning) != DialogResult.Yes)
             return;
 
         try
         {
-            string result = Pcsx2BinApplier.ValidateOnly(
+            string result = Pcsx2BinApplier.Apply(
                 Pcsx2LiveSession.ProcessId, layout, _bin);
 
-            _status.Text = "書き込み先検証済み";
-            _pcsx2DataStatus.Text = "書き込み先検証済み";
+            _status.Text = "改造ダンジョン適用済み";
+            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
 
             MessageBox.Show(
                 this,
-                "書き込み予定領域の検証が完了しました。メモリへの書き込みは行っていません。\\r\\n\\r\\n" + result +
+                "BINデータの適用処理が完了しました。\\r\\n\\r\\n" + result +
                 "\\r\\n\\r\\nゲーム内でダンジョンに入れるか確認してください。",
-                "事前検証完了",
+                "BIN適用完了",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
