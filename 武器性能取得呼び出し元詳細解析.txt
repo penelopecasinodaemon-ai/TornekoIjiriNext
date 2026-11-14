@@ -1,0 +1,2275 @@
+﻿===== 改良版逆アセンブル =====
+RANGE 0x00270E00 - 0x00271900
+
+0x00270E00 SD        rs=24 rt=0 imm=8               RAW=FF000008
+0x00270E04 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E08 SD        rs=24 rt=4 imm=0               RAW=FF040000
+0x00270E0C ADDIU     rs=0 rt=4 imm=896              RAW=24040380
+0x00270E10 SD        rs=24 rt=6 imm=8               RAW=FF060008
+0x00270E14 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E18 SD        rs=24 rt=3 imm=0               RAW=FF030000
+0x00270E1C OR        rs=12 rt=5 rd=12 sa=0 fn=37    RAW=01856025
+0x00270E20 SD        rs=24 rt=0 imm=8               RAW=FF000008
+0x00270E24 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E28 SD        rs=24 rt=2 imm=0               RAW=FF020000
+0x00270E2C ADDIU     rs=0 rt=2 imm=256              RAW=24020100
+0x00270E30 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x00270E34 ORI       rs=2 rt=2 imm=1024             RAW=34420400
+0x00270E38 SD        rs=24 rt=6 imm=8               RAW=FF060008
+0x00270E3C ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E40 SD        rs=24 rt=10 imm=0              RAW=FF0A0000
+0x00270E44 SD        rs=24 rt=11 imm=8              RAW=FF0B0008
+0x00270E48 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E4C SD        rs=24 rt=4 imm=0               RAW=FF040000
+0x00270E50 SD        rs=24 rt=0 imm=8               RAW=FF000008
+0x00270E54 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E58 SD        rs=24 rt=12 imm=0              RAW=FF0C0000
+0x00270E5C SD        rs=24 rt=6 imm=8               RAW=FF060008
+0x00270E60 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E64 SD        rs=24 rt=2 imm=0               RAW=FF020000
+0x00270E68 SD        rs=24 rt=0 imm=8               RAW=FF000008
+0x00270E6C ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E70 SD        rs=24 rt=8 imm=0               RAW=FF080000
+0x00270E74 SD        rs=24 rt=6 imm=8               RAW=FF060008
+0x00270E78 ADDIU     rs=24 rt=24 imm=16             RAW=27180010
+0x00270E7C JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x00270E80 DADDU     rs=24 rt=0 rd=2 sa=0 fn=45     RAW=0300102D
+0x00270E84 ADDIU     rs=29 rt=29 imm=-144           RAW=27BDFF70
+0x00270E88 DADDU     rs=4 rt=0 rd=15 sa=0 fn=45     RAW=0080782D
+0x00270E8C SD        rs=29 rt=17 imm=72             RAW=FFB10048
+0x00270E90 DADDU     rs=5 rt=0 rd=17 sa=0 fn=45     RAW=00A0882D
+0x00270E94 SD        rs=29 rt=20 imm=96             RAW=FFB40060
+0x00270E98 ANDI      rs=7 rt=20 imm=255             RAW=30F400FF
+0x00270E9C SD        rs=29 rt=16 imm=64             RAW=FFB00040
+0x00270EA0 ADDIU     rs=0 rt=8 imm=511              RAW=240801FF
+0x00270EA4 SD        rs=29 rt=18 imm=80             RAW=FFB20050
+0x00270EA8 ADDIU     rs=0 rt=9 imm=447              RAW=240901BF
+0x00270EAC SD        rs=29 rt=19 imm=88             RAW=FFB30058
+0x00270EB0 SD        rs=29 rt=21 imm=104            RAW=FFB50068
+0x00270EB4 SD        rs=29 rt=22 imm=112            RAW=FFB60070
+0x00270EB8 SD        rs=29 rt=23 imm=120            RAW=FFB70078
+0x00270EBC SD        rs=29 rt=30 imm=128            RAW=FFBE0080
+0x00270EC0 LH        rs=17 rt=3 imm=0               RAW=86230000
+0x00270EC4 LH        rs=17 rt=2 imm=4               RAW=86220004
+0x00270EC8 LH        rs=17 rt=5 imm=2               RAW=86250002
+0x00270ECC ADDIU     rs=3 rt=13 imm=4               RAW=246D0004
+0x00270ED0 ADDU      rs=3 rt=2 rd=3 sa=0 fn=33      RAW=00621821
+0x00270ED4 LH        rs=17 rt=2 imm=6               RAW=86220006
+0x00270ED8 ADDIU     rs=3 rt=12 imm=-4              RAW=246CFFFC
+0x00270EDC SLTI      rs=13 rt=4 imm=0               RAW=29A40000
+0x00270EE0 ADDU      rs=5 rt=2 rd=2 sa=0 fn=33      RAW=00A21021
+0x00270EE4 SLTI      rs=12 rt=3 imm=0               RAW=29830000
+0x00270EE8 ADDIU     rs=2 rt=11 imm=-8              RAW=244BFFF8
+0x00270EEC MOVN      rs=0 rt=4 rd=13 sa=0 fn=11     RAW=0004680B
+0x00270EF0 MOVN      rs=0 rt=3 rd=12 sa=0 fn=11     RAW=0003600B
+0x00270EF4 SLTI      rs=11 rt=4 imm=0               RAW=29640000
+0x00270EF8 MOVN      rs=0 rt=4 rd=11 sa=0 fn=11     RAW=0004580B
+0x00270EFC SLTI      rs=12 rt=2 imm=512             RAW=29820200
+0x00270F00 SW        rs=29 rt=6 imm=0               RAW=AFA60000
+0x00270F04 MOVZ      rs=8 rt=2 rd=12 sa=0 fn=10     RAW=0102600A
+0x00270F08 SLTI      rs=11 rt=2 imm=448             RAW=296201C0
+0x00270F0C ADDIU     rs=5 rt=10 imm=8               RAW=24AA0008
+0x00270F10 MOVZ      rs=9 rt=2 rd=11 sa=0 fn=10     RAW=0122580A
+0x00270F14 LHU       rs=17 rt=2 imm=0               RAW=96220000
+0x00270F18 SLTI      rs=10 rt=3 imm=0               RAW=29430000
+0x00270F1C SLTI      rs=13 rt=5 imm=512             RAW=29A50200
+0x00270F20 MOVN      rs=0 rt=3 rd=10 sa=0 fn=11     RAW=0003500B
+0x00270F24 SH        rs=29 rt=2 imm=16              RAW=A7A20010
+0x00270F28 SLTI      rs=10 rt=3 imm=448             RAW=294301C0
+0x00270F2C MOVZ      rs=8 rt=5 rd=13 sa=0 fn=10     RAW=0105680A
+0x00270F30 MOVZ      rs=9 rt=3 rd=10 sa=0 fn=10     RAW=0123500A
+0x00270F34 LHU       rs=17 rt=3 imm=2               RAW=96230002
+0x00270F38 SLT       rs=13 rt=12 rd=4 sa=0 fn=42    RAW=01AC202A
+0x00270F3C DADDU     rs=15 rt=0 rd=2 sa=0 fn=45     RAW=01E0102D
+0x00270F40 BEQ       rs=4 rt=0 imm=463              RAW=108001CF TARGET=0x00271680
+0x00270F44 SH        rs=29 rt=3 imm=32              RAW=A7A30020
+0x00270F48 SLT       rs=10 rt=11 rd=3 sa=0 fn=42    RAW=014B182A
+0x00270F4C BEQL      rs=3 rt=0 imm=461              RAW=506001CD TARGET=0x00271684
+0x00270F50 LD        rs=29 rt=16 imm=64             RAW=DFB00040
+0x00270F54 DADDU     rs=12 rt=0 rd=2 sa=0 fn=45     RAW=0180102D
+0x00270F58 DSLL32    rs=0 rt=11 rd=4 sa=16 fn=60    RAW=000B243C
+0x00270F5C DSRL32    rs=0 rt=2 rd=2 sa=16 fn=56     RAW=00021438
+0x00270F60 DSLL32    rs=0 rt=10 rd=3 sa=0 fn=60     RAW=000A183C
+0x00270F64 OR        rs=3 rt=2 rd=3 sa=0 fn=37      RAW=00621825
+0x00270F68 ADDIU     rs=0 rt=2 imm=14               RAW=2402000E
+0x00270F6C LUI       rs=0 rt=5 imm=4096             RAW=3C051000
+0x00270F70 OR        rs=13 rt=4 rd=4 sa=0 fn=37     RAW=01A42025
+0x00270F74 ADDIU     rs=0 rt=6 imm=6                RAW=24060006
+0x00270F78 SW        rs=15 rt=2 imm=8               RAW=ADE20008
+0x00270F7C SW        rs=15 rt=5 imm=4               RAW=ADE50004
+0x00270F80 OR        rs=4 rt=3 rd=4 sa=0 fn=37      RAW=00832025
+0x00270F84 SW        rs=15 rt=6 imm=0               RAW=ADE60000
+0x00270F88 ADDIU     rs=0 rt=2 imm=64               RAW=24020040
+0x00270F8C SW        rs=15 rt=0 imm=12              RAW=ADE0000C
+0x00270F90 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00270F94 SD        rs=15 rt=4 imm=0               RAW=FDE40000
+0x00270F98 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00270F9C ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00270FA0 BEQ       rs=20 rt=0 imm=14              RAW=1280000E TARGET=0x00270FDC
+0x00270FA4 ADDIU     rs=15 rt=5 imm=16              RAW=25E50010
+0x00270FA8 ADDIU     rs=0 rt=2 imm=6                RAW=24020006
+0x00270FAC LUI       rs=0 rt=3 imm=8199             RAW=3C032007
+0x00270FB0 ORI       rs=3 rt=3 imm=-1147            RAW=3463FB85
+0x00270FB4 DSRL32    rs=0 rt=3 rd=3 sa=16 fn=56     RAW=00031C38
+0x00270FB8 ORI       rs=3 rt=3 imm=-8912            RAW=3463DD30
+0x00270FBC DSRL32    rs=0 rt=3 rd=3 sa=16 fn=56     RAW=00031C38
+0x00270FC0 ORI       rs=3 rt=3 imm=-16544           RAW=3463BF60
+0x00270FC4 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00270FC8 ADDIU     rs=0 rt=2 imm=20               RAW=24020014
+0x00270FCC SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x00270FD0 DADDU     rs=5 rt=0 rd=15 sa=0 fn=45     RAW=00A0782D
+0x00270FD4 BEQ       rs=0 rt=0 imm=13               RAW=1000000D TARGET=0x0027100C
+0x00270FD8 ADDIU     rs=0 rt=4 imm=96               RAW=24040060
+0x00270FDC ADDIU     rs=0 rt=2 imm=6                RAW=24020006
+0x00270FE0 LUI       rs=0 rt=3 imm=8199             RAW=3C032007
+0x00270FE4 ORI       rs=3 rt=3 imm=-1146            RAW=3463FB86
+0x00270FE8 DSRL32    rs=0 rt=3 rd=3 sa=16 fn=56     RAW=00031C38
+0x00270FEC ORI       rs=3 rt=3 imm=9538             RAW=34632542
+0x00270FF0 DSRL32    rs=0 rt=3 rd=3 sa=16 fn=56     RAW=00031C38
+0x00270FF4 ORI       rs=3 rt=3 imm=15232            RAW=34633B80
+0x00270FF8 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00270FFC ADDIU     rs=0 rt=2 imm=20               RAW=24020014
+0x00271000 SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x00271004 DADDU     rs=5 rt=0 rd=15 sa=0 fn=45     RAW=00A0782D
+0x00271008 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0027100C SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00271010 SD        rs=15 rt=4 imm=0               RAW=FDE40000
+0x00271014 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271018 ADDIU     rs=0 rt=2 imm=128              RAW=24020080
+0x0027101C DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x00271020 ORI       rs=2 rt=2 imm=68               RAW=34420044
+0x00271024 ADDIU     rs=0 rt=3 imm=66               RAW=24030042
+0x00271028 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x0027102C ADDIU     rs=0 rt=2 imm=8                RAW=24020008
+0x00271030 SD        rs=15 rt=3 imm=8               RAW=FDE30008
+0x00271034 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271038 ADDIU     rs=0 rt=4 imm=5                RAW=24040005
+0x0027103C SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00271040 SD        rs=15 rt=4 imm=0               RAW=FDE40000
+0x00271044 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271048 LUI       rs=0 rt=2 imm=5                RAW=3C020005
+0x0027104C ORI       rs=2 rt=2 imm=13               RAW=3442000D
+0x00271050 ADDIU     rs=0 rt=3 imm=71               RAW=24030047
+0x00271054 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271058 DADDU     rs=0 rt=0 rd=18 sa=0 fn=45     RAW=0000902D
+0x0027105C SD        rs=15 rt=3 imm=8               RAW=FDE30008
+0x00271060 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271064 SW        rs=29 rt=0 imm=48              RAW=AFA00030
+0x00271068 DADDU     rs=15 rt=0 rd=21 sa=0 fn=45    RAW=01E0A82D
+0x0027106C DADDU     rs=0 rt=0 rd=30 sa=0 fn=45     RAW=0000F02D
+0x00271070 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271074 DADDU     rs=0 rt=0 rd=23 sa=0 fn=45     RAW=0000B82D
+0x00271078 ADDIU     rs=0 rt=22 imm=31              RAW=2416001F
+0x0027107C LW        rs=29 rt=3 imm=48              RAW=8FA30030
+0x00271080 ADDU      rs=3 rt=23 rd=2 sa=0 fn=33     RAW=00771021
+0x00271084 LUI       rs=0 rt=24 imm=106             RAW=3C18006A
+0x00271088 ADDIU     rs=24 rt=24 imm=9120           RAW=271823A0
+0x0027108C ADDU      rs=24 rt=2 rd=24 sa=0 fn=33    RAW=0302C021
+0x00271090 LHU       rs=24 rt=6 imm=0               RAW=97060000
+0x00271094 ANDI      rs=6 rt=3 imm=-1               RAW=30C3FFFF
+0x00271098 BEQ       rs=3 rt=0 imm=358              RAW=10600166 TARGET=0x00271634
+0x0027109C ORI       rs=0 rt=2 imm=-1               RAW=3402FFFF
+0x002710A0 BEQL      rs=3 rt=2 imm=357              RAW=50620165 TARGET=0x00271638
+0x002710A4 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x002710A8 LBU       rs=24 rt=2 imm=34              RAW=93020022
+0x002710AC BEQ       rs=2 rt=0 imm=353              RAW=10400161 TARGET=0x00271634
+0x002710B0 LW        rs=29 rt=3 imm=0               RAW=8FA30000
+0x002710B4 LBU       rs=24 rt=2 imm=2               RAW=93020002
+0x002710B8 BNEL      rs=2 rt=3 imm=351              RAW=5443015F TARGET=0x00271638
+0x002710BC ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x002710C0 OP61      rs=12 rt=18 imm=8203           RAW=F592200B
+0x002710C4 COP1X     rs=29 rt=28 imm=-30562         RAW=4FBC889E
+0x002710C8 OP39      rs=18 rt=2 imm=28842           RAW=9E4270AA
+0x002710CC COP1X     rs=1 rt=14 imm=3932            RAW=4C2E0F5C
+0x002710D0 JAL       rs=22 rt=11 imm=23729          RAW=0ECB5CB1 TARGET=0x0B2D72C4
+0x002710D4 BGTZ      rs=31 rt=10 imm=19746          RAW=1FEA4D22 TARGET=0x00284560
+0x002710D8 BNE       rs=0 rt=27 imm=20230           RAW=141B4F06 TARGET=0x00284CF4
+0x002710DC COP0      rs=16 rt=0 imm=30592           RAW=42007780
+0x002710E0 OP30      rs=20 rt=9 imm=23373           RAW=7A895B4D
+0x002710E4 OP54      rs=3 rt=12 imm=-13027          RAW=D86CCD1D
+0x002710E8 SWL       rs=2 rt=0 imm=-23689           RAW=A840A377
+0x002710EC OP49      rs=6 rt=4 imm=21087            RAW=C4C4525F
+0x002710F0 OP49      rs=6 rt=2 imm=11231            RAW=C4C22BDF
+0x002710F4 OP62      rs=15 rt=31 imm=1531           RAW=F9FF05FB
+0x002710F8 OP54      rs=11 rt=15 imm=5638           RAW=D96F1606
+0x002710FC BGTZ      rs=25 rt=18 imm=-8703          RAW=1F32DE01 TARGET=0x00268904
+0x00271100 SW        rs=30 rt=21 imm=16880          RAW=AFD541F0
+0x00271104 LB        rs=9 rt=10 imm=-27695          RAW=812A93D1
+0x00271108 SWR       rs=23 rt=25 imm=29932          RAW=BAF974EC
+0x0027110C LBU       rs=27 rt=22 imm=31251          RAW=93767A13
+0x00271110 JALX      rs=1 rt=31 imm=16759           RAW=743F4177
+0x00271114 BNEL      rs=19 rt=3 imm=16641           RAW=56634101 TARGET=0x0028151C
+0x00271118 COP1X     rs=15 rt=24 imm=21915          RAW=4DF8559B
+0x0027111C BLEZ      rs=25 rt=7 imm=28891           RAW=1B2770DB TARGET=0x0028D48C
+0x00271120 SPECIAL2  rs=1 rt=15 imm=-25936          RAW=702F9AB0
+0x00271124 ADDI      rs=25 rt=16 imm=-31095         RAW=23308689
+0x00271128 BEQL      rs=16 rt=16 imm=23765          RAW=52105CD5 TARGET=0x00288480
+0x0027112C LWL       rs=19 rt=30 imm=-2924          RAW=8A7EF494
+0x00271130 JAL       rs=19 rt=4 imm=9913            RAW=0E6426B9 TARGET=0x09909AE4
+0x00271134 SPECIAL_40 rs=19 rt=30 rd=21 sa=12 fn=40  RAW=027EAB28
+0x00271138 J         rs=10 rt=26 imm=12560          RAW=095A3110 TARGET=0x0568C440
+0x0027113C BNE       rs=16 rt=27 imm=8247           RAW=161B2037 TARGET=0x0027921C
+0x00271140 XORI      rs=16 rt=12 imm=-25            RAW=3A0CFFE7
+0x00271144 LL        rs=20 rt=2 imm=10634           RAW=C282298A
+0x00271148 OP54      rs=13 rt=30 imm=1183           RAW=D9BE049F
+0x0027114C OP50      rs=21 rt=20 imm=-4645          RAW=CAB4EDDB
+0x00271150 LDL       rs=26 rt=25 imm=-31123         RAW=6B59866D
+0x00271154 OP30      rs=15 rt=22 imm=-7185          RAW=79F6E3EF
+0x00271158 REGIMM    rs=21 rt=0 imm=-29502          RAW=06A08CC2 TARGET=0x00254464
+0x0027115C OP59      rs=22 rt=14 imm=-6024          RAW=EECEE878
+0x00271160 BNEL      rs=17 rt=25 imm=11836          RAW=56392E3C TARGET=0x0027CA54
+0x00271164 SLTIU     rs=19 rt=12 imm=11875          RAW=2E6C2E63
+0x00271168 SC        rs=1 rt=29 imm=23038           RAW=E03D59FE
+0x0027116C LL        rs=14 rt=11 imm=29031          RAW=C1CB7167
+0x00271170 BGTZL     rs=5 rt=23 imm=2961            RAW=5CB70B91 TARGET=0x00273FB8
+0x00271174 DADDIU    rs=2 rt=26 imm=24363           RAW=645A5F2B
+0x00271178 J         rs=25 rt=15 imm=-28456         RAW=0B2F90D8 TARGET=0x0CBE4360
+0x0027117C BNE       rs=2 rt=4 imm=13324            RAW=1444340C TARGET=0x0027E1B0
+0x00271180 J         rs=23 rt=29 imm=30422          RAW=0AFD76D6 TARGET=0x0BF5DB58
+0x00271184 OP30      rs=26 rt=27 imm=-25018         RAW=7B5B9E46
+0x00271188 LH        rs=24 rt=28 imm=20078          RAW=871C4E6E
+0x0027118C SW        rs=9 rt=12 imm=-16089          RAW=AD2CC127
+0x00271190 ANDI      rs=1 rt=17 imm=-23317          RAW=3031A4EB
+0x00271194 BNEL      rs=9 rt=0 imm=17718            RAW=55204536 TARGET=0x00282670
+0x00271198 BEQL      rs=26 rt=16 imm=-1955          RAW=5350F85D TARGET=0x0026F310
+0x0027119C LHU       rs=2 rt=25 imm=-8940           RAW=9459DD14
+0x002711A0 LB        rs=11 rt=0 imm=3147            RAW=81600C4B
+0x002711A4 OP49      rs=14 rt=19 imm=3504           RAW=C5D30DB0
+0x002711A8 OP59      rs=31 rt=14 imm=27192          RAW=EFEE6A38
+0x002711AC XORI      rs=9 rt=6 imm=-21085           RAW=3926ADA3
+0x002711B0 LBU       rs=24 rt=11 imm=-2225          RAW=930BF74F
+0x002711B4 ADDIU     rs=10 rt=17 imm=10302          RAW=2551283E
+0x002711B8 LL        rs=19 rt=15 imm=20494          RAW=C26F500E
+0x002711BC SPECIAL2  rs=31 rt=26 imm=15394          RAW=73FA3C22
+0x002711C0 OP58      rs=20 rt=27 imm=3201           RAW=EA9B0C81
+0x002711C4 REGIMM    rs=21 rt=22 imm=-23973         RAW=06B6A25B TARGET=0x00259B34
+0x002711C8 LH        rs=14 rt=25 imm=10900          RAW=85D92A94
+0x002711CC LWL       rs=28 rt=2 imm=-20445          RAW=8B82B023
+0x002711D0 ADDIU     rs=27 rt=6 imm=-22535          RAW=2766A7F9
+0x002711D4 LDL       rs=7 rt=5 imm=21443            RAW=68E553C3
+0x002711D8 SD        rs=31 rt=31 imm=-256           RAW=FFFFFF00
+0x002711DC SD        rs=31 rt=31 imm=-1             RAW=FFFFFFFF
+0x002711E0 SPECIAL_63 rs=7 rt=31 rd=31 sa=31 fn=63   RAW=00FFFFFF
+0x002711E4 SLL       rs=18 rt=7 rd=0 sa=20 fn=0     RAW=02470500
+0x002711E8 SLL       rs=0 rt=8 rd=0 sa=0 fn=0       RAW=00080000
+0x002711EC SLL       rs=0 rt=8 rd=0 sa=0 fn=0       RAW=00080000
+0x002711F0 LBU       rs=24 rt=2 imm=35              RAW=93020023
+0x002711F4 BNEL      rs=2 rt=0 imm=348              RAW=5440015C TARGET=0x00271768
+0x002711F8 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x002711FC LHU       rs=29 rt=3 imm=16              RAW=97A30010
+0x00271200 LH        rs=24 rt=19 imm=4              RAW=87130004
+0x00271204 SLL       rs=0 rt=3 rd=2 sa=16 fn=0      RAW=00031400
+0x00271208 SRA       rs=0 rt=2 rd=10 sa=16 fn=3     RAW=00025403
+0x0027120C ADDU      rs=10 rt=19 rd=25 sa=0 fn=33   RAW=0153C821
+0x00271210 SLTI      rs=25 rt=2 imm=-32             RAW=2B22FFE0
+0x00271214 BNEL      rs=2 rt=0 imm=340              RAW=54400154 TARGET=0x00271768
+0x00271218 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x0027121C LHU       rs=29 rt=3 imm=32              RAW=97A30020
+0x00271220 LH        rs=24 rt=16 imm=6              RAW=87100006
+0x00271224 SLL       rs=0 rt=3 rd=2 sa=16 fn=0      RAW=00031400
+0x00271228 SRA       rs=0 rt=2 rd=8 sa=16 fn=3      RAW=00024403
+0x0027122C ADDU      rs=8 rt=16 rd=3 sa=0 fn=33     RAW=01101821
+0x00271230 SLTI      rs=3 rt=2 imm=-32              RAW=2862FFE0
+0x00271234 BNEL      rs=2 rt=0 imm=332              RAW=5440014C TARGET=0x00271768
+0x00271238 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x0027123C SLTI      rs=25 rt=2 imm=512             RAW=2B220200
+0x00271240 BEQL      rs=2 rt=0 imm=329              RAW=50400149 TARGET=0x00271768
+0x00271244 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x00271248 SLTI      rs=3 rt=2 imm=512              RAW=28620200
+0x0027124C BEQL      rs=2 rt=0 imm=326              RAW=50400146 TARGET=0x00271768
+0x00271250 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x00271254 LBU       rs=24 rt=3 imm=36              RAW=93030024
+0x00271258 ADDIU     rs=0 rt=2 imm=1                RAW=24020001
+0x0027125C BNE       rs=3 rt=2 imm=59               RAW=1462003B TARGET=0x0027134C
+0x00271260 ADDIU     rs=0 rt=2 imm=3                RAW=24020003
+0x00271264 BEQL      rs=20 rt=0 imm=320             RAW=52800140 TARGET=0x00271768
+0x00271268 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x0027126C LW        rs=24 rt=2 imm=28              RAW=8F02001C
+0x00271270 BNEL      rs=2 rt=0 imm=317              RAW=5440013D TARGET=0x00271768
+0x00271274 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x00271278 LH        rs=17 rt=3 imm=8               RAW=86230008
+0x0027127C ADDIU     rs=0 rt=13 imm=128             RAW=240D0080
+0x00271280 DSLL32    rs=0 rt=13 rd=13 sa=0 fn=60    RAW=000D683C
+0x00271284 ORI       rs=13 rt=13 imm=128            RAW=35AD0080
+0x00271288 LHU       rs=24 rt=9 imm=14              RAW=9709000E
+0x0027128C SLL       rs=0 rt=25 rd=10 sa=4 fn=0     RAW=00195100
+0x00271290 ADDU      rs=3 rt=8 rd=3 sa=0 fn=33      RAW=00681821
+0x00271294 LH        rs=24 rt=8 imm=10              RAW=8708000A
+0x00271298 LHU       rs=24 rt=5 imm=12              RAW=9705000C
+0x0027129C ADDIU     rs=3 rt=3 imm=1828             RAW=24630724
+0x002712A0 SLL       rs=0 rt=9 rd=2 sa=4 fn=0       RAW=00091100
+0x002712A4 LHU       rs=24 rt=11 imm=16             RAW=970B0010
+0x002712A8 SLL       rs=0 rt=5 rd=6 sa=4 fn=0       RAW=00053100
+0x002712AC ADDU      rs=3 rt=16 rd=7 sa=0 fn=33     RAW=00703821
+0x002712B0 ADDIU     rs=2 rt=2 imm=8                RAW=24420008
+0x002712B4 LHU       rs=24 rt=12 imm=18             RAW=970C0012
+0x002712B8 LH        rs=24 rt=4 imm=8               RAW=87040008
+0x002712BC DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x002712C0 ADDU      rs=5 rt=11 rd=5 sa=0 fn=33     RAW=00AB2821
+0x002712C4 ADDU      rs=8 rt=16 rd=8 sa=0 fn=33     RAW=01104021
+0x002712C8 ADDIU     rs=6 rt=6 imm=8                RAW=24C60008
+0x002712CC SLL       rs=0 rt=7 rd=7 sa=4 fn=0       RAW=00073900
+0x002712D0 SD        rs=15 rt=13 imm=8              RAW=FDED0008
+0x002712D4 OR        rs=6 rt=2 rd=6 sa=0 fn=37      RAW=00C23025
+0x002712D8 SD        rs=15 rt=13 imm=0              RAW=FDED0000
+0x002712DC ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002712E0 ADDU      rs=9 rt=12 rd=9 sa=0 fn=33     RAW=012C4821
+0x002712E4 ADDU      rs=25 rt=4 rd=4 sa=0 fn=33     RAW=03242021
+0x002712E8 ADDU      rs=3 rt=8 rd=3 sa=0 fn=33      RAW=00681821
+0x002712EC ADDIU     rs=10 rt=10 imm=28672          RAW=254A7000
+0x002712F0 DSLL32    rs=0 rt=7 rd=7 sa=0 fn=60      RAW=0007383C
+0x002712F4 SLL       rs=0 rt=5 rd=5 sa=4 fn=0       RAW=00052900
+0x002712F8 SD        rs=15 rt=6 imm=0               RAW=FDE60000
+0x002712FC LUI       rs=0 rt=2 imm=15               RAW=3C02000F
+0x00271300 ORI       rs=2 rt=2 imm=-80              RAW=3442FFB0
+0x00271304 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271308 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x0027130C OR        rs=10 rt=7 rd=10 sa=0 fn=37    RAW=01475025
+0x00271310 ADDIU     rs=5 rt=5 imm=-8               RAW=24A5FFF8
+0x00271314 DSLL32    rs=0 rt=9 rd=9 sa=4 fn=60      RAW=0009493C
+0x00271318 SLL       rs=0 rt=4 rd=4 sa=4 fn=0       RAW=00042100
+0x0027131C SLL       rs=0 rt=3 rd=3 sa=4 fn=0       RAW=00031900
+0x00271320 SD        rs=15 rt=10 imm=0              RAW=FDEA0000
+0x00271324 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00271328 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x0027132C OR        rs=5 rt=9 rd=5 sa=0 fn=37      RAW=00A92825
+0x00271330 ADDIU     rs=4 rt=4 imm=28672            RAW=24847000
+0x00271334 DSLL32    rs=0 rt=3 rd=3 sa=0 fn=60      RAW=0003183C
+0x00271338 SD        rs=15 rt=5 imm=0               RAW=FDE50000
+0x0027133C SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271340 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271344 BEQ       rs=0 rt=0 imm=162              RAW=100000A2 TARGET=0x002715D0
+0x00271348 OR        rs=4 rt=3 rd=4 sa=0 fn=37      RAW=00832025
+0x0027134C BNE       rs=3 rt=2 imm=85               RAW=14620055 TARGET=0x002714A4
+0x00271350 ADDIU     rs=25 rt=4 imm=1776            RAW=272406F0
+0x00271354 LH        rs=17 rt=2 imm=8               RAW=86220008
+0x00271358 ADDIU     rs=25 rt=3 imm=1792            RAW=27230700
+0x0027135C SLL       rs=0 rt=3 rd=9 sa=4 fn=0       RAW=00034900
+0x00271360 ADDU      rs=8 rt=2 rd=2 sa=0 fn=33      RAW=01021021
+0x00271364 SLL       rs=0 rt=4 rd=10 sa=4 fn=0      RAW=00045100
+0x00271368 ADDU      rs=2 rt=16 rd=2 sa=0 fn=33     RAW=00501021
+0x0027136C ADDIU     rs=2 rt=3 imm=1848             RAW=24430738
+0x00271370 ADDIU     rs=2 rt=2 imm=1824             RAW=24420720
+0x00271374 SLL       rs=0 rt=2 rd=5 sa=4 fn=0       RAW=00022900
+0x00271378 BEQ       rs=20 rt=0 imm=250             RAW=128000FA TARGET=0x00271764
+0x0027137C SLL       rs=0 rt=3 rd=7 sa=4 fn=0       RAW=00033900
+0x00271380 LW        rs=24 rt=2 imm=28              RAW=8F02001C
+0x00271384 BNEL      rs=2 rt=0 imm=248              RAW=544000F8 TARGET=0x00271768
+0x00271388 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x0027138C ANDI      rs=6 rt=2 imm=1                RAW=30C20001
+0x00271390 ANDI      rs=2 rt=2 imm=-1               RAW=3042FFFF
+0x00271394 BEQ       rs=2 rt=0 imm=33               RAW=10400021 TARGET=0x0027141C
+0x00271398 DSLL32    rs=0 rt=5 rd=3 sa=0 fn=60      RAW=0005183C
+0x0027139C ADDIU     rs=0 rt=2 imm=128              RAW=24020080
+0x002713A0 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x002713A4 ORI       rs=2 rt=2 imm=128              RAW=34420080
+0x002713A8 ADDIU     rs=0 rt=4 imm=96               RAW=24040060
+0x002713AC DSLL32    rs=0 rt=4 rd=4 sa=0 fn=60      RAW=0004203C
+0x002713B0 ORI       rs=4 rt=4 imm=128              RAW=34840080
+0x002713B4 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x002713B8 ADDIU     rs=0 rt=2 imm=256              RAW=24020100
+0x002713BC DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x002713C0 ORI       rs=2 rt=2 imm=1024             RAW=34420400
+0x002713C4 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x002713C8 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002713CC SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x002713D0 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x002713D4 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002713D8 OR        rs=10 rt=3 rd=3 sa=0 fn=37     RAW=01431825
+0x002713DC LUI       rs=0 rt=4 imm=15               RAW=3C04000F
+0x002713E0 ORI       rs=4 rt=4 imm=-80              RAW=3484FFB0
+0x002713E4 SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x002713E8 DSLL32    rs=0 rt=7 rd=3 sa=0 fn=60      RAW=0007183C
+0x002713EC SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x002713F0 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002713F4 ADDIU     rs=0 rt=2 imm=512              RAW=24020200
+0x002713F8 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x002713FC ORI       rs=2 rt=2 imm=1280             RAW=34420500
+0x00271400 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271404 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271408 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x0027140C OR        rs=9 rt=3 rd=3 sa=0 fn=37      RAW=01231825
+0x00271410 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x00271414 BEQ       rs=0 rt=0 imm=112              RAW=10000070 TARGET=0x002715D8
+0x00271418 SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x0027141C ANDI      rs=6 rt=2 imm=2                RAW=30C20002
+0x00271420 BEQ       rs=2 rt=0 imm=208              RAW=104000D0 TARGET=0x00271764
+0x00271424 OR        rs=10 rt=3 rd=3 sa=0 fn=37     RAW=01431825
+0x00271428 ADDIU     rs=0 rt=2 imm=128              RAW=24020080
+0x0027142C DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x00271430 ORI       rs=2 rt=2 imm=128              RAW=34420080
+0x00271434 ADDIU     rs=0 rt=4 imm=96               RAW=24040060
+0x00271438 DSLL32    rs=0 rt=4 rd=4 sa=0 fn=60      RAW=0004203C
+0x0027143C ORI       rs=4 rt=4 imm=128              RAW=34840080
+0x00271440 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271444 ADDIU     rs=0 rt=2 imm=256              RAW=24020100
+0x00271448 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x0027144C ORI       rs=2 rt=2 imm=1280             RAW=34420500
+0x00271450 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x00271454 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271458 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x0027145C SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271460 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271464 LUI       rs=0 rt=4 imm=15               RAW=3C04000F
+0x00271468 ORI       rs=4 rt=4 imm=-80              RAW=3484FFB0
+0x0027146C SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x00271470 DSLL32    rs=0 rt=7 rd=3 sa=0 fn=60      RAW=0007183C
+0x00271474 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x00271478 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x0027147C ADDIU     rs=0 rt=2 imm=512              RAW=24020200
+0x00271480 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x00271484 ORI       rs=2 rt=2 imm=1536             RAW=34420600
+0x00271488 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x0027148C SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271490 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271494 OR        rs=9 rt=3 rd=3 sa=0 fn=37      RAW=01231825
+0x00271498 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x0027149C BEQ       rs=0 rt=0 imm=78               RAW=1000004E TARGET=0x002715D8
+0x002714A0 SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x002714A4 BNE       rs=3 rt=0 imm=79               RAW=1460004F TARGET=0x002715E4
+0x002714A8 ADDIU     rs=0 rt=2 imm=2                RAW=24020002
+0x002714AC BNEL      rs=20 rt=0 imm=174             RAW=568000AE TARGET=0x00271768
+0x002714B0 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x002714B4 LW        rs=24 rt=2 imm=28              RAW=8F02001C
+0x002714B8 BEQ       rs=2 rt=0 imm=170              RAW=104000AA TARGET=0x00271764
+0x002714BC LUI       rs=0 rt=6 imm=145              RAW=3C060091
+0x002714C0 LBU       rs=24 rt=3 imm=32              RAW=93030020
+0x002714C4 ADDIU     rs=6 rt=6 imm=-20640           RAW=24C6AF60
+0x002714C8 LH        rs=17 rt=7 imm=8               RAW=86270008
+0x002714CC SLL       rs=0 rt=3 rd=2 sa=1 fn=0       RAW=00031040
+0x002714D0 LH        rs=24 rt=4 imm=10              RAW=8704000A
+0x002714D4 ADDU      rs=2 rt=3 rd=2 sa=0 fn=33      RAW=00431021
+0x002714D8 ADDU      rs=7 rt=16 rd=5 sa=0 fn=33     RAW=00F02821
+0x002714DC SLL       rs=0 rt=2 rd=2 sa=1 fn=0       RAW=00021040
+0x002714E0 ADDU      rs=7 rt=4 rd=7 sa=0 fn=33      RAW=00E43821
+0x002714E4 ADDU      rs=2 rt=6 rd=3 sa=0 fn=33      RAW=00461821
+0x002714E8 ADDU      rs=6 rt=2 rd=2 sa=0 fn=33      RAW=00C21021
+0x002714EC LH        rs=3 rt=3 imm=0                RAW=84630000
+0x002714F0 ADDU      rs=5 rt=8 rd=5 sa=0 fn=33      RAW=00A82821
+0x002714F4 LH        rs=2 rt=2 imm=2                RAW=84420002
+0x002714F8 SLL       rs=0 rt=5 rd=5 sa=4 fn=0       RAW=00052900
+0x002714FC DSLL32    rs=0 rt=3 rd=3 sa=0 fn=60      RAW=0003183C
+0x00271500 LHU       rs=24 rt=9 imm=12              RAW=9709000C
+0x00271504 OR        rs=2 rt=3 rd=2 sa=0 fn=37      RAW=00431025
+0x00271508 LHU       rs=24 rt=11 imm=14             RAW=970B000E
+0x0027150C SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271510 ADDIU     rs=8 rt=2 imm=1824             RAW=25020720
+0x00271514 ADDU      rs=7 rt=2 rd=7 sa=0 fn=33      RAW=00E23821
+0x00271518 LH        rs=24 rt=4 imm=8               RAW=87040008
+0x0027151C LBU       rs=24 rt=3 imm=32              RAW=93030020
+0x00271520 ORI       rs=0 rt=14 imm=-32768          RAW=340E8000
+0x00271524 DSRL32    rs=0 rt=14 rd=14 sa=24 fn=56   RAW=000E7638
+0x00271528 LHU       rs=24 rt=13 imm=16             RAW=970D0010
+0x0027152C ADDU      rs=10 rt=4 rd=4 sa=0 fn=33     RAW=01442021
+0x00271530 SLL       rs=0 rt=3 rd=2 sa=1 fn=0       RAW=00031040
+0x00271534 LHU       rs=24 rt=12 imm=18             RAW=970C0012
+0x00271538 ADDU      rs=2 rt=3 rd=2 sa=0 fn=33      RAW=00431021
+0x0027153C DSRL32    rs=0 rt=9 rd=8 sa=4 fn=56      RAW=00094138
+0x00271540 SLL       rs=0 rt=2 rd=2 sa=1 fn=0       RAW=00021040
+0x00271544 SLL       rs=0 rt=25 rd=10 sa=4 fn=0     RAW=00195100
+0x00271548 ADDU      rs=6 rt=2 rd=6 sa=0 fn=33      RAW=00C23021
+0x0027154C DSLL32    rs=0 rt=11 rd=2 sa=4 fn=60     RAW=000B113C
+0x00271550 LH        rs=6 rt=3 imm=4                RAW=84C30004
+0x00271554 ADDIU     rs=5 rt=5 imm=29184            RAW=24A57200
+0x00271558 OR        rs=8 rt=2 rd=8 sa=0 fn=37      RAW=01024025
+0x0027155C LUI       rs=0 rt=2 imm=15               RAW=3C02000F
+0x00271560 ORI       rs=2 rt=2 imm=-80              RAW=3442FFB0
+0x00271564 OR        rs=3 rt=14 rd=3 sa=0 fn=37     RAW=006E1825
+0x00271568 ADDU      rs=9 rt=13 rd=9 sa=0 fn=33     RAW=012D4821
+0x0027156C SD        rs=15 rt=3 imm=8               RAW=FDE30008
+0x00271570 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271574 ADDU      rs=11 rt=12 rd=11 sa=0 fn=33   RAW=016C5821
+0x00271578 ADDU      rs=4 rt=19 rd=4 sa=0 fn=33     RAW=00932021
+0x0027157C ADDU      rs=7 rt=16 rd=7 sa=0 fn=33     RAW=00F03821
+0x00271580 ADDIU     rs=10 rt=10 imm=28672          RAW=254A7000
+0x00271584 DSLL32    rs=0 rt=5 rd=5 sa=0 fn=60      RAW=0005283C
+0x00271588 SD        rs=15 rt=8 imm=0               RAW=FDE80000
+0x0027158C SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271590 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271594 OR        rs=10 rt=5 rd=10 sa=0 fn=37    RAW=01455025
+0x00271598 DSRL32    rs=0 rt=9 rd=9 sa=4 fn=56      RAW=00094938
+0x0027159C DSLL32    rs=0 rt=11 rd=11 sa=4 fn=60    RAW=000B593C
+0x002715A0 SLL       rs=0 rt=4 rd=4 sa=4 fn=0       RAW=00042100
+0x002715A4 SLL       rs=0 rt=7 rd=7 sa=4 fn=0       RAW=00073900
+0x002715A8 SD        rs=15 rt=10 imm=0              RAW=FDEA0000
+0x002715AC SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x002715B0 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002715B4 OR        rs=9 rt=11 rd=9 sa=0 fn=37     RAW=012B4825
+0x002715B8 ADDIU     rs=4 rt=4 imm=28672            RAW=24847000
+0x002715BC DSLL32    rs=0 rt=7 rd=7 sa=0 fn=60      RAW=0007383C
+0x002715C0 SD        rs=15 rt=9 imm=0               RAW=FDE90000
+0x002715C4 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x002715C8 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002715CC OR        rs=4 rt=7 rd=4 sa=0 fn=37      RAW=00872025
+0x002715D0 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x002715D4 SD        rs=15 rt=4 imm=0               RAW=FDE40000
+0x002715D8 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002715DC BEQ       rs=0 rt=0 imm=97               RAW=10000061 TARGET=0x00271764
+0x002715E0 ADDIU     rs=18 rt=18 imm=1              RAW=26520001
+0x002715E4 BNEL      rs=3 rt=2 imm=96               RAW=54620060 TARGET=0x00271768
+0x002715E8 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x002715EC LH        rs=17 rt=2 imm=8               RAW=86220008
+0x002715F0 ADDIU     rs=25 rt=3 imm=1800            RAW=27230708
+0x002715F4 ADDIU     rs=25 rt=4 imm=1792            RAW=27240700
+0x002715F8 SLL       rs=0 rt=3 rd=9 sa=4 fn=0       RAW=00034900
+0x002715FC ADDU      rs=8 rt=2 rd=2 sa=0 fn=33      RAW=01021021
+0x00271600 SLL       rs=0 rt=4 rd=10 sa=4 fn=0      RAW=00045100
+0x00271604 ADDU      rs=2 rt=16 rd=2 sa=0 fn=33     RAW=00501021
+0x00271608 ADDIU     rs=2 rt=4 imm=1848             RAW=24440738
+0x0027160C ADDIU     rs=2 rt=3 imm=1824             RAW=24430720
+0x00271610 ADDIU     rs=2 rt=2 imm=1836             RAW=2442072C
+0x00271614 SLL       rs=0 rt=3 rd=8 sa=4 fn=0       RAW=00034100
+0x00271618 SLL       rs=0 rt=2 rd=5 sa=4 fn=0       RAW=00022900
+0x0027161C BEQ       rs=20 rt=0 imm=81              RAW=12800051 TARGET=0x00271764
+0x00271620 SLL       rs=0 rt=4 rd=7 sa=4 fn=0       RAW=00043900
+0x00271624 ANDI      rs=6 rt=2 imm=4                RAW=30C20004
+0x00271628 BEQ       rs=2 rt=0 imm=31               RAW=1040001F TARGET=0x002716A8
+0x0027162C DSLL32    rs=0 rt=5 rd=2 sa=0 fn=60      RAW=0005103C
+0x00271630 ADDIU     rs=0 rt=3 imm=128              RAW=24030080
+0x00271634 DSLL32    rs=0 rt=3 rd=3 sa=0 fn=60      RAW=0003183C
+0x00271638 ORI       rs=3 rt=3 imm=128              RAW=34630080
+0x0027163C ADDIU     rs=0 rt=4 imm=288              RAW=24040120
+0x00271640 DSLL32    rs=0 rt=4 rd=4 sa=0 fn=60      RAW=0004203C
+0x00271644 ORI       rs=4 rt=4 imm=1856             RAW=34840740
+0x00271648 SD        rs=15 rt=3 imm=8               RAW=FDE30008
+0x0027164C SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x00271650 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271654 SD        rs=15 rt=4 imm=0               RAW=FDE40000
+0x00271658 LUI       rs=0 rt=4 imm=15               RAW=3C04000F
+0x0027165C ORI       rs=4 rt=4 imm=-80              RAW=3484FFB0
+0x00271660 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271664 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271668 OR        rs=10 rt=2 rd=2 sa=0 fn=37     RAW=01421025
+0x0027166C SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x00271670 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271674 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271678 DSLL32    rs=0 rt=7 rd=3 sa=0 fn=60      RAW=0007183C
+0x0027167C ADDIU     rs=0 rt=2 imm=480              RAW=240201E0
+0x00271680 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x00271684 ORI       rs=2 rt=2 imm=1984             RAW=344207C0
+0x00271688 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x0027168C OR        rs=9 rt=3 rd=3 sa=0 fn=37      RAW=01231825
+0x00271690 SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271694 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x00271698 SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x0027169C ADDIU     rs=18 rt=18 imm=1              RAW=26520001
+0x002716A0 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x002716A4 ADDIU     rs=15 rt=15 imm=16             RAW=25EF0010
+0x002716A8 ANDI      rs=6 rt=2 imm=8                RAW=30C20008
+0x002716AC BEQ       rs=2 rt=0 imm=45               RAW=1040002D TARGET=0x00271764
+0x002716B0 ANDI      rs=6 rt=2 imm=2                RAW=30C20002
+0x002716B4 ADDIU     rs=8 rt=6 imm=-64              RAW=2506FFC0
+0x002716B8 ADDIU     rs=18 rt=11 imm=1              RAW=264B0001
+0x002716BC ADDIU     rs=10 rt=9 imm=192             RAW=254900C0
+0x002716C0 ADDIU     rs=8 rt=7 imm=192              RAW=250700C0
+0x002716C4 ADDIU     rs=15 rt=5 imm=16              RAW=25E50010
+0x002716C8 BEQ       rs=2 rt=0 imm=10               RAW=1040000A TARGET=0x002716F4
+0x002716CC ADDIU     rs=10 rt=4 imm=-64             RAW=2544FFC0
+0x002716D0 ADDIU     rs=0 rt=3 imm=20               RAW=24030014
+0x002716D4 DSLL32    rs=0 rt=3 rd=3 sa=0 fn=60      RAW=0003183C
+0x002716D8 ORI       rs=3 rt=3 imm=128              RAW=34630080
+0x002716DC ADDIU     rs=0 rt=2 imm=128              RAW=24020080
+0x002716E0 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x002716E4 ORI       rs=2 rt=2 imm=20               RAW=34420014
+0x002716E8 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x002716EC BEQ       rs=0 rt=0 imm=6                RAW=10000006 TARGET=0x00271708
+0x002716F0 SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x002716F4 ADDIU     rs=0 rt=2 imm=128              RAW=24020080
+0x002716F8 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x002716FC ORI       rs=2 rt=2 imm=128              RAW=34420080
+0x00271700 SD        rs=15 rt=2 imm=8               RAW=FDE20008
+0x00271704 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271708 DSLL32    rs=0 rt=6 rd=2 sa=0 fn=60      RAW=0006103C
+0x0027170C ADDIU     rs=5 rt=15 imm=16              RAW=24AF0010
+0x00271710 OR        rs=4 rt=2 rd=2 sa=0 fn=37      RAW=00821025
+0x00271714 LUI       rs=0 rt=4 imm=15               RAW=3C04000F
+0x00271718 ORI       rs=4 rt=4 imm=-80              RAW=3484FFB0
+0x0027171C ADDIU     rs=0 rt=3 imm=1792             RAW=24030700
+0x00271720 SD        rs=5 rt=0 imm=8                RAW=FCA00008
+0x00271724 SD        rs=5 rt=3 imm=0                RAW=FCA30000
+0x00271728 DSLL32    rs=0 rt=7 rd=3 sa=0 fn=60      RAW=0007183C
+0x0027172C SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271730 ADDIU     rs=0 rt=2 imm=256              RAW=24020100
+0x00271734 DSLL32    rs=0 rt=2 rd=2 sa=0 fn=60      RAW=0002103C
+0x00271738 ORI       rs=2 rt=2 imm=2048             RAW=34420800
+0x0027173C SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x00271740 ADDIU     rs=5 rt=15 imm=32              RAW=24AF0020
+0x00271744 SD        rs=15 rt=2 imm=0               RAW=FDE20000
+0x00271748 OR        rs=9 rt=3 rd=3 sa=0 fn=37      RAW=01231825
+0x0027174C SD        rs=15 rt=0 imm=8               RAW=FDE00008
+0x00271750 ADDIU     rs=5 rt=15 imm=48              RAW=24AF0030
+0x00271754 SD        rs=15 rt=4 imm=8               RAW=FDE40008
+0x00271758 DADDU     rs=11 rt=0 rd=18 sa=0 fn=45    RAW=0160902D
+0x0027175C SD        rs=15 rt=3 imm=0               RAW=FDE30000
+0x00271760 ADDIU     rs=5 rt=15 imm=64              RAW=24AF0040
+0x00271764 ADDIU     rs=22 rt=22 imm=-1             RAW=26D6FFFF
+0x00271768 REGIMM    rs=22 rt=1 imm=-368            RAW=06C1FE90 TARGET=0x002711AC
+0x0027176C ADDIU     rs=23 rt=23 imm=40             RAW=26F70028
+0x00271770 LW        rs=29 rt=2 imm=48              RAW=8FA20030
+0x00271774 ADDIU     rs=30 rt=30 imm=1              RAW=27DE0001
+0x00271778 ADDIU     rs=2 rt=2 imm=1280             RAW=24420500
+0x0027177C SW        rs=29 rt=2 imm=48              RAW=AFA20030
+0x00271780 SLTI      rs=30 rt=2 imm=10              RAW=2BC2000A
+0x00271784 BNE       rs=2 rt=0 imm=-376             RAW=1440FE88 TARGET=0x002711A8
+0x00271788 DADDU     rs=0 rt=0 rd=23 sa=0 fn=45     RAW=0000B82D
+0x0027178C LUI       rs=0 rt=3 imm=4                RAW=3C030004
+0x00271790 LUI       rs=0 rt=4 imm=20651            RAW=3C0450AB
+0x00271794 ORI       rs=3 rt=3 imm=13361            RAW=34633431
+0x00271798 ORI       rs=4 rt=4 imm=16384            RAW=34844000
+0x0027179C SW        rs=21 rt=18 imm=0              RAW=AEB20000
+0x002717A0 DADDU     rs=15 rt=0 rd=2 sa=0 fn=45     RAW=01E0102D
+0x002717A4 SW        rs=21 rt=3 imm=8               RAW=AEA30008
+0x002717A8 SW        rs=21 rt=4 imm=4               RAW=AEA40004
+0x002717AC SW        rs=21 rt=0 imm=12              RAW=AEA0000C
+0x002717B0 LD        rs=29 rt=16 imm=64             RAW=DFB00040
+0x002717B4 LD        rs=29 rt=17 imm=72             RAW=DFB10048
+0x002717B8 LD        rs=29 rt=18 imm=80             RAW=DFB20050
+0x002717BC LD        rs=29 rt=19 imm=88             RAW=DFB30058
+0x002717C0 LD        rs=29 rt=20 imm=96             RAW=DFB40060
+0x002717C4 LD        rs=29 rt=21 imm=104            RAW=DFB50068
+0x002717C8 LD        rs=29 rt=22 imm=112            RAW=DFB60070
+0x002717CC LD        rs=29 rt=23 imm=120            RAW=DFB70078
+0x002717D0 LD        rs=29 rt=30 imm=128            RAW=DFBE0080
+0x002717D4 JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x002717D8 ADDIU     rs=29 rt=29 imm=144            RAW=27BD0090
+0x002717DC DADDU     rs=5 rt=0 rd=14 sa=0 fn=45     RAW=00A0702D
+0x002717E0 DADDU     rs=4 rt=0 rd=9 sa=0 fn=45      RAW=0080482D
+0x002717E4 LH        rs=14 rt=24 imm=0              RAW=85D80000
+0x002717E8 ADDIU     rs=0 rt=7 imm=511              RAW=240701FF
+0x002717EC LH        rs=14 rt=2 imm=4               RAW=85C20004
+0x002717F0 ADDIU     rs=0 rt=8 imm=447              RAW=240801BF
+0x002717F4 LH        rs=14 rt=15 imm=2              RAW=85CF0002
+0x002717F8 ADDIU     rs=24 rt=13 imm=4              RAW=270D0004
+0x002717FC ADDU      rs=24 rt=2 rd=25 sa=0 fn=33    RAW=0302C821
+0x00271800 LH        rs=14 rt=2 imm=6               RAW=85C20006
+0x00271804 ADDIU     rs=25 rt=12 imm=-4             RAW=272CFFFC
+0x00271808 SLTI      rs=13 rt=4 imm=0               RAW=29A40000
+0x0027180C ADDU      rs=15 rt=2 rd=2 sa=0 fn=33     RAW=01E21021
+0x00271810 SLTI      rs=12 rt=3 imm=0               RAW=29830000
+0x00271814 ADDIU     rs=2 rt=11 imm=-8              RAW=244BFFF8
+0x00271818 MOVN      rs=0 rt=4 rd=13 sa=0 fn=11     RAW=0004680B
+0x0027181C MOVN      rs=0 rt=3 rd=12 sa=0 fn=11     RAW=0003600B
+0x00271820 ADDIU     rs=15 rt=10 imm=8              RAW=25EA0008
+0x00271824 SLTI      rs=12 rt=2 imm=512             RAW=29820200
+0x00271828 SLTI      rs=10 rt=3 imm=0               RAW=29430000
+0x0027182C SLTI      rs=11 rt=4 imm=0               RAW=29640000
+0x00271830 SLTI      rs=13 rt=5 imm=512             RAW=29A50200
+0x00271834 MOVN      rs=0 rt=4 rd=11 sa=0 fn=11     RAW=0004580B
+0x00271838 MOVZ      rs=7 rt=2 rd=12 sa=0 fn=10     RAW=00E2600A
+0x0027183C MOVN      rs=0 rt=3 rd=10 sa=0 fn=11     RAW=0003500B
+0x00271840 MOVZ      rs=7 rt=5 rd=13 sa=0 fn=10     RAW=00E5680A
+0x00271844 SLTI      rs=11 rt=2 imm=448             RAW=296201C0
+0x00271848 SLTI      rs=10 rt=3 imm=448             RAW=294301C0
+0x0027184C SLT       rs=13 rt=12 rd=4 sa=0 fn=42    RAW=01AC202A
+0x00271850 MOVZ      rs=8 rt=2 rd=11 sa=0 fn=10     RAW=0102580A
+0x00271854 ANDI      rs=6 rt=6 imm=255              RAW=30C600FF
+0x00271858 MOVZ      rs=8 rt=3 rd=10 sa=0 fn=10     RAW=0103500A
+0x0027185C BEQ       rs=4 rt=0 imm=97               RAW=10800061 TARGET=0x002719E4
+0x00271860 DADDU     rs=9 rt=0 rd=2 sa=0 fn=45      RAW=0120102D
+0x00271864 SLT       rs=10 rt=11 rd=3 sa=0 fn=42    RAW=014B182A
+0x00271868 BEQ       rs=3 rt=0 imm=94               RAW=1060005E TARGET=0x002719E4
+0x0027186C SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x00271870 LH        rs=14 rt=8 imm=10              RAW=85C8000A
+0x00271874 BEQ       rs=8 rt=0 imm=91               RAW=1100005B TARGET=0x002719E4
+0x00271878 ADDU      rs=15 rt=8 rd=3 sa=0 fn=33     RAW=01E81821
+0x0027187C LH        rs=14 rt=14 imm=8              RAW=85CE0008
+0x00271880 ADDU      rs=3 rt=14 rd=7 sa=0 fn=33     RAW=006E3821
+0x00271884 SLTI      rs=7 rt=3 imm=512              RAW=28E30200
+0x00271888 BEQ       rs=3 rt=0 imm=86               RAW=10600056 TARGET=0x002719E4
+0x0027188C SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x00271890 BEQ       rs=6 rt=0 imm=84               RAW=10C00054 TARGET=0x002719E4
+0x00271894 DSLL32    rs=0 rt=11 rd=4 sa=16 fn=60    RAW=000B243C
+0x00271898 DADDU     rs=12 rt=0 rd=2 sa=0 fn=45     RAW=0180102D
+0x0027189C DSRL32    rs=0 rt=2 rd=2 sa=16 fn=56     RAW=00021438
+0x002718A0 DSLL32    rs=0 rt=10 rd=3 sa=0 fn=60     RAW=000A183C
+0x002718A4 OR        rs=3 rt=2 rd=3 sa=0 fn=37      RAW=00621825
+0x002718A8 ADDIU     rs=0 rt=2 imm=14               RAW=2402000E
+0x002718AC LUI       rs=0 rt=5 imm=4096             RAW=3C051000
+0x002718B0 ADDIU     rs=0 rt=6 imm=5                RAW=24060005
+0x002718B4 OR        rs=13 rt=4 rd=4 sa=0 fn=37     RAW=01A42025
+0x002718B8 SW        rs=9 rt=2 imm=8                RAW=AD220008
+0x002718BC SW        rs=9 rt=5 imm=4                RAW=AD250004
+0x002718C0 ADDU      rs=15 rt=14 rd=5 sa=0 fn=33    RAW=01EE2821
+0x002718C4 OR        rs=4 rt=3 rd=4 sa=0 fn=37      RAW=00832025
+0x002718C8 LUI       rs=0 rt=3 imm=8199             RAW=3C032007
+0x002718CC ORI       rs=3 rt=3 imm=-1147            RAW=3463FB85
+0x002718D0 DSRL32    rs=0 rt=3 rd=3 sa=16 fn=56     RAW=00031C38
+0x002718D4 ORI       rs=3 rt=3 imm=-8912            RAW=3463DD30
+0x002718D8 DSRL32    rs=0 rt=3 rd=3 sa=16 fn=56     RAW=00031C38
+0x002718DC ORI       rs=3 rt=3 imm=-16544           RAW=3463BF60
+0x002718E0 SW        rs=9 rt=6 imm=0                RAW=AD260000
+0x002718E4 ADDIU     rs=24 rt=6 imm=1812            RAW=27060714
+0x002718E8 ADDIU     rs=0 rt=2 imm=64               RAW=24020040
+0x002718EC SW        rs=9 rt=0 imm=12               RAW=AD20000C
+0x002718F0 ADDIU     rs=9 rt=9 imm=16               RAW=25290010
+0x002718F4 ADDIU     rs=7 rt=7 imm=1824             RAW=24E70720
+0x002718F8 SD        rs=9 rt=4 imm=0                RAW=FD240000
+0x002718FC LUI       rs=0 rt=4 imm=12419            RAW=3C043083
+
+===== 対象JAL呼び出し元一覧 =====
+CALL 0x0024F820 -> 0x002714A0
+CALL 0x0024F8A0 -> 0x002714A0
+CALL 0x0024F8EC -> 0x002714A0
+CALL 0x0024F97C -> 0x002714A0
+CALL 0x0024FE44 -> 0x00271478
+CALL 0x00276B9C -> 0x002714A0
+CALL 0x00276C94 -> 0x002714A0
+CALL 0x0028218C -> 0x00271478
+CALL 0x002823A0 -> 0x0027148C
+CALL 0x00282C9C -> 0x0027148C
+CALL 0x002A3254 -> 0x0027171C
+CALL 0x002A34A8 -> 0x0027171C
+CALL 0x002B273C -> 0x002714A0
+CALL 0x002B332C -> 0x002714A0
+CALL 0x002B3350 -> 0x00271478
+CALL 0x002C7154 -> 0x002714A0
+CALL 0x002C7F00 -> 0x0027171C
+CALL 0x002CC184 -> 0x002714A0
+CALL 0x002CC270 -> 0x002714A0
+CALL 0x002CC2CC -> 0x00271478
+CALL 0x002CC878 -> 0x002714A0
+CALL 0x002CC970 -> 0x00271478
+CALL 0x002D96B0 -> 0x0027171C
+CALL 0x002D98CC -> 0x00271478
+CALL 0x002D9E14 -> 0x0027171C
+CALL 0x002D9F6C -> 0x00271478
+CALL 0x002DB5BC -> 0x0027171C
+CALL 0x002DB5E4 -> 0x0027171C
+CALL 0x002DB640 -> 0x002714A0
+CALL 0x002E4754 -> 0x0027148C
+
+===== 呼び出し元前後の命令 =====
+
+----- CALL 0x0024F820 -> 0x002714A0 -----
+0x0024F7C0 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0024F7C4 BEQ       rs=0 rt=0 imm=232              RAW=100000E8 TARGET=0x0024FB68
+0x0024F7C8 LD        rs=29 rt=16 imm=48             RAW=DFB00030
+0x0024F7CC JAL       rs=0 rt=9 imm=5634             RAW=0C091602 TARGET=0x00245808
+0x0024F7D0 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x0024F7D4 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x0024F7D8 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F7DC BEQ       rs=19 rt=2 imm=2               RAW=12620002 TARGET=0x0024F7E8
+0x0024F7E0 ADDIU     rs=0 rt=2 imm=1                RAW=24020001
+0x0024F7E4 SB        rs=28 rt=2 imm=-28034          RAW=A382927E
+0x0024F7E8 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x0024F7EC DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F7F0 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x0024F7F4 LW        rs=20 rt=5 imm=8656            RAW=8E8521D0
+0x0024F7F8 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F7FC JAL       rs=0 rt=9 imm=29543            RAW=0C097367 TARGET=0x0025CD9C
+0x0024F800 DADDU     rs=2 rt=0 rd=19 sa=0 fn=45     RAW=0040982D
+0x0024F804 ADDIU     rs=0 rt=2 imm=7                RAW=24020007
+0x0024F808 BNEL      rs=17 rt=2 imm=11              RAW=5622000B TARGET=0x0024F838
+0x0024F80C SLTIU     rs=17 rt=2 imm=2               RAW=2E220002
+0x0024F810 DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x0024F814 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x0024F818 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0024F81C ADDIU     rs=0 rt=5 imm=113              RAW=24050071
+0x0024F820 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x0024F824 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D  <<< DELAY SLOT
+0x0024F828 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F82C ADDIU     rs=0 rt=5 imm=46               RAW=2405002E
+0x0024F830 BEQ       rs=0 rt=0 imm=11               RAW=1000000B TARGET=0x0024F860
+0x0024F834 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F838 BEQ       rs=2 rt=0 imm=19               RAW=10400013 TARGET=0x0024F888
+0x0024F83C ADDIU     rs=0 rt=2 imm=119              RAW=24020077
+0x0024F840 SLL       rs=0 rt=17 rd=2 sa=1 fn=0      RAW=00111040
+0x0024F844 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F848 ADDU      rs=2 rt=17 rd=2 sa=0 fn=33     RAW=00511021
+0x0024F84C ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x0024F850 SLL       rs=0 rt=2 rd=2 sa=1 fn=0       RAW=00021040
+0x0024F854 LUI       rs=0 rt=5 imm=104              RAW=3C050068
+0x0024F858 ADDU      rs=5 rt=2 rd=5 sa=0 fn=33      RAW=00A22821
+0x0024F85C LH        rs=5 rt=5 imm=-11648           RAW=84A5D280
+0x0024F860 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F864 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x0024F868 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x0024F86C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F870 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F874 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x0024F878 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x0024F87C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F880 BEQ       rs=0 rt=0 imm=76               RAW=1000004C TARGET=0x0024F9B4
+
+----- CALL 0x0024F8A0 -> 0x002714A0 -----
+0x0024F840 SLL       rs=0 rt=17 rd=2 sa=1 fn=0      RAW=00111040
+0x0024F844 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F848 ADDU      rs=2 rt=17 rd=2 sa=0 fn=33     RAW=00511021
+0x0024F84C ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x0024F850 SLL       rs=0 rt=2 rd=2 sa=1 fn=0       RAW=00021040
+0x0024F854 LUI       rs=0 rt=5 imm=104              RAW=3C050068
+0x0024F858 ADDU      rs=5 rt=2 rd=5 sa=0 fn=33      RAW=00A22821
+0x0024F85C LH        rs=5 rt=5 imm=-11648           RAW=84A5D280
+0x0024F860 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F864 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x0024F868 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x0024F86C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F870 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F874 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x0024F878 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x0024F87C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F880 BEQ       rs=0 rt=0 imm=76               RAW=1000004C TARGET=0x0024F9B4
+0x0024F884 SLTIU     rs=17 rt=2 imm=2               RAW=2E220002
+0x0024F888 BNEL      rs=18 rt=2 imm=18              RAW=56420012 TARGET=0x0024F8D4
+0x0024F88C ADDIU     rs=0 rt=2 imm=4                RAW=24020004
+0x0024F890 DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x0024F894 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x0024F898 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0024F89C ADDIU     rs=0 rt=5 imm=128              RAW=24050080
+0x0024F8A0 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x0024F8A4 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D  <<< DELAY SLOT
+0x0024F8A8 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F8AC ADDIU     rs=0 rt=5 imm=65               RAW=24050041
+0x0024F8B0 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F8B4 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x0024F8B8 JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x0024F8BC ADDIU     rs=0 rt=4 imm=2041             RAW=240407F9
+0x0024F8C0 ADDIU     rs=0 rt=4 imm=30               RAW=2404001E
+0x0024F8C4 JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x0024F8C8 ADDIU     rs=0 rt=5 imm=417              RAW=240501A1
+0x0024F8CC BEQ       rs=0 rt=0 imm=33               RAW=10000021 TARGET=0x0024F954
+0x0024F8D0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F8D4 BNEL      rs=17 rt=2 imm=35              RAW=56220023 TARGET=0x0024F964
+0x0024F8D8 ADDIU     rs=0 rt=2 imm=2                RAW=24020002
+0x0024F8DC DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x0024F8E0 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x0024F8E4 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0024F8E8 ADDIU     rs=0 rt=5 imm=130              RAW=24050082
+0x0024F8EC JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0
+0x0024F8F0 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F8F4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F8F8 ADDIU     rs=0 rt=5 imm=79               RAW=2405004F
+0x0024F8FC JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F900 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+
+----- CALL 0x0024F8EC -> 0x002714A0 -----
+0x0024F88C ADDIU     rs=0 rt=2 imm=4                RAW=24020004
+0x0024F890 DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x0024F894 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x0024F898 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0024F89C ADDIU     rs=0 rt=5 imm=128              RAW=24050080
+0x0024F8A0 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0
+0x0024F8A4 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F8A8 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F8AC ADDIU     rs=0 rt=5 imm=65               RAW=24050041
+0x0024F8B0 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F8B4 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x0024F8B8 JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x0024F8BC ADDIU     rs=0 rt=4 imm=2041             RAW=240407F9
+0x0024F8C0 ADDIU     rs=0 rt=4 imm=30               RAW=2404001E
+0x0024F8C4 JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x0024F8C8 ADDIU     rs=0 rt=5 imm=417              RAW=240501A1
+0x0024F8CC BEQ       rs=0 rt=0 imm=33               RAW=10000021 TARGET=0x0024F954
+0x0024F8D0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F8D4 BNEL      rs=17 rt=2 imm=35              RAW=56220023 TARGET=0x0024F964
+0x0024F8D8 ADDIU     rs=0 rt=2 imm=2                RAW=24020002
+0x0024F8DC DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x0024F8E0 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x0024F8E4 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x0024F8E8 ADDIU     rs=0 rt=5 imm=130              RAW=24050082
+0x0024F8EC JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x0024F8F0 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D  <<< DELAY SLOT
+0x0024F8F4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F8F8 ADDIU     rs=0 rt=5 imm=79               RAW=2405004F
+0x0024F8FC JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F900 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x0024F904 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x0024F908 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F90C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F910 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F914 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F918 ADDIU     rs=0 rt=5 imm=65               RAW=24050041
+0x0024F91C JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x0024F920 ADDIU     rs=0 rt=4 imm=2041             RAW=240407F9
+0x0024F924 ADDIU     rs=0 rt=4 imm=30               RAW=2404001E
+0x0024F928 JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x0024F92C ADDIU     rs=0 rt=5 imm=417              RAW=240501A1
+0x0024F930 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F934 ADDIU     rs=0 rt=5 imm=62               RAW=2405003E
+0x0024F938 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F93C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F940 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F944 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x0024F948 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x0024F94C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+
+----- CALL 0x0024F97C -> 0x002714A0 -----
+0x0024F91C JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x0024F920 ADDIU     rs=0 rt=4 imm=2041             RAW=240407F9
+0x0024F924 ADDIU     rs=0 rt=4 imm=30               RAW=2404001E
+0x0024F928 JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x0024F92C ADDIU     rs=0 rt=5 imm=417              RAW=240501A1
+0x0024F930 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F934 ADDIU     rs=0 rt=5 imm=62               RAW=2405003E
+0x0024F938 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F93C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F940 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F944 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x0024F948 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x0024F94C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F950 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F954 JAL       rs=0 rt=8 imm=-26773           RAW=0C08976B TARGET=0x00225DAC
+0x0024F958 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x0024F95C BEQ       rs=0 rt=0 imm=21               RAW=10000015 TARGET=0x0024F9B4
+0x0024F960 SLTIU     rs=17 rt=2 imm=2               RAW=2E220002
+0x0024F964 BNEL      rs=17 rt=2 imm=19              RAW=56220013 TARGET=0x0024F9B4
+0x0024F968 SLTIU     rs=17 rt=2 imm=2               RAW=2E220002
+0x0024F96C DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x0024F970 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x0024F974 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F978 ADDIU     rs=0 rt=5 imm=108              RAW=2405006C
+0x0024F97C JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x0024F980 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D  <<< DELAY SLOT
+0x0024F984 LUI       rs=0 rt=2 imm=104              RAW=3C020068
+0x0024F988 LH        rs=2 rt=5 imm=-11636           RAW=8445D28C
+0x0024F98C ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x0024F990 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x0024F994 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F998 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x0024F99C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024F9A0 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024F9A4 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x0024F9A8 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x0024F9AC DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x0024F9B0 SLTIU     rs=17 rt=2 imm=2               RAW=2E220002
+0x0024F9B4 BNE       rs=2 rt=0 imm=5                RAW=14400005 TARGET=0x0024F9CC
+0x0024F9B8 ADDIU     rs=0 rt=2 imm=4                RAW=24020004
+0x0024F9BC BEQ       rs=17 rt=2 imm=3               RAW=12220003 TARGET=0x0024F9CC
+0x0024F9C0 ADDIU     rs=0 rt=2 imm=2                RAW=24020002
+0x0024F9C4 BNE       rs=17 rt=2 imm=10              RAW=1622000A TARGET=0x0024F9F0
+0x0024F9C8 ADDIU     rs=0 rt=2 imm=7                RAW=24020007
+0x0024F9CC JAL       rs=0 rt=9 imm=24555            RAW=0C095FEB TARGET=0x00257FAC
+0x0024F9D0 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x0024F9D4 JAL       rs=0 rt=11 imm=8359            RAW=0C0B20A7 TARGET=0x002C829C
+0x0024F9D8 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x0024F9DC LW        rs=20 rt=5 imm=8656            RAW=8E8521D0
+
+----- CALL 0x0024FE44 -> 0x00271478 -----
+0x0024FDE4 JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x0024FDE8 ADDIU     rs=0 rt=4 imm=2007             RAW=240407D7
+0x0024FDEC LBU       rs=28 rt=4 imm=-25418          RAW=93849CB6
+0x0024FDF0 LUI       rs=0 rt=2 imm=-17              RAW=3C02FFEF
+0x0024FDF4 LW        rs=16 rt=3 imm=0               RAW=8E030000
+0x0024FDF8 ORI       rs=2 rt=2 imm=-1               RAW=3442FFFF
+0x0024FDFC SB        rs=16 rt=4 imm=60              RAW=A204003C
+0x0024FE00 LUI       rs=0 rt=5 imm=143              RAW=3C05008F
+0x0024FE04 AND       rs=3 rt=2 rd=3 sa=0 fn=36      RAW=00621824
+0x0024FE08 ADDIU     rs=5 rt=5 imm=-6096            RAW=24A5E830
+0x0024FE0C SW        rs=16 rt=3 imm=0               RAW=AE030000
+0x0024FE10 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x0024FE14 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x0024FE18 ADDIU     rs=0 rt=4 imm=20               RAW=24040014
+0x0024FE1C JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x0024FE20 ADDIU     rs=0 rt=5 imm=214              RAW=240500D6
+0x0024FE24 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x0024FE28 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024FE2C BNEL      rs=18 rt=2 imm=1               RAW=56420001 TARGET=0x0024FE34
+0x0024FE30 SB        rs=28 rt=20 imm=-28034         RAW=A394927E
+0x0024FE34 BEQ       rs=19 rt=0 imm=10              RAW=1260000A TARGET=0x0024FE60
+0x0024FE38 ADDIU     rs=0 rt=2 imm=7                RAW=24020007
+0x0024FE3C BNE       rs=17 rt=2 imm=8               RAW=16220008 TARGET=0x0024FE60
+0x0024FE40 ADDIU     rs=0 rt=2 imm=113              RAW=24020071
+0x0024FE44 JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x0024FE48 SH        rs=28 rt=2 imm=-23686          RAW=A782A37A  <<< DELAY SLOT
+0x0024FE4C ADDIU     rs=0 rt=4 imm=20               RAW=24040014
+0x0024FE50 ADDIU     rs=0 rt=5 imm=214              RAW=240500D6
+0x0024FE54 SH        rs=28 rt=2 imm=-23682          RAW=A782A37E
+0x0024FE58 JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x0024FE5C SB        rs=28 rt=0 imm=-23676          RAW=A380A384
+0x0024FE60 JAL       rs=0 rt=9 imm=19515            RAW=0C094C3B TARGET=0x002530EC
+0x0024FE64 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x0024FE68 JAL       rs=0 rt=9 imm=-17509           RAW=0C09BB9B TARGET=0x0026EE6C
+0x0024FE6C DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x0024FE70 JAL       rs=0 rt=9 imm=-17441           RAW=0C09BBDF TARGET=0x0026EF7C
+0x0024FE74 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x0024FE78 ADDIU     rs=0 rt=2 imm=1                RAW=24020001
+0x0024FE7C LD        rs=29 rt=16 imm=0              RAW=DFB00000
+0x0024FE80 LD        rs=29 rt=17 imm=8              RAW=DFB10008
+0x0024FE84 LD        rs=29 rt=18 imm=16             RAW=DFB20010
+0x0024FE88 LD        rs=29 rt=19 imm=24             RAW=DFB30018
+0x0024FE8C LD        rs=29 rt=20 imm=32             RAW=DFB40020
+0x0024FE90 LD        rs=29 rt=31 imm=40             RAW=DFBF0028
+0x0024FE94 JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x0024FE98 ADDIU     rs=29 rt=29 imm=48             RAW=27BD0030
+0x0024FE9C ADDIU     rs=29 rt=29 imm=-64            RAW=27BDFFC0
+0x0024FEA0 SD        rs=29 rt=16 imm=0              RAW=FFB00000
+0x0024FEA4 DADDU     rs=5 rt=0 rd=16 sa=0 fn=45     RAW=00A0802D
+
+----- CALL 0x00276B9C -> 0x002714A0 -----
+0x00276B3C LW        rs=16 rt=5 imm=0               RAW=8E050000
+0x00276B40 DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x00276B44 LW        rs=16 rt=5 imm=4               RAW=8E050004
+0x00276B48 JAL       rs=0 rt=9 imm=29543            RAW=0C097367 TARGET=0x0025CD9C
+0x00276B4C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x00276B50 LH        rs=17 rt=2 imm=56              RAW=86220038
+0x00276B54 BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x00276B60
+0x00276B58 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x00276B5C LH        rs=17 rt=3 imm=12              RAW=8623000C
+0x00276B60 ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x00276B64 BNEL      rs=3 rt=2 imm=5                RAW=54620005 TARGET=0x00276B7C
+0x00276B68 DADDU     rs=17 rt=0 rd=4 sa=0 fn=45     RAW=0220202D
+0x00276B6C JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x00276B70 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x00276B74 SLTIU     rs=2 rt=19 imm=1               RAW=2C530001
+0x00276B78 DADDU     rs=17 rt=0 rd=4 sa=0 fn=45     RAW=0220202D
+0x00276B7C JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x00276B80 DADDU     rs=0 rt=0 rd=20 sa=0 fn=45     RAW=0000A02D
+0x00276B84 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x00276B88 ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x00276B8C DADDU     rs=19 rt=0 rd=7 sa=0 fn=45     RAW=0260382D
+0x00276B90 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x00276B94 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x00276B98 SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x00276B9C JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x00276BA0 ADDIU     rs=0 rt=6 imm=1                RAW=24060001  <<< DELAY SLOT
+0x00276BA4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x00276BA8 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x00276BAC JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x00276BB0 ADDIU     rs=0 rt=5 imm=39               RAW=24050027
+0x00276BB4 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x00276BB8 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x00276BBC LUI       rs=0 rt=5 imm=145              RAW=3C050091
+0x00276BC0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x00276BC4 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x00276BC8 ADDIU     rs=5 rt=5 imm=-18664           RAW=24A5B718
+0x00276BCC DADDU     rs=17 rt=0 rd=5 sa=0 fn=45     RAW=0220282D
+0x00276BD0 JAL       rs=0 rt=9 imm=23155            RAW=0C095A73 TARGET=0x002569CC
+0x00276BD4 DADDU     rs=29 rt=0 rd=4 sa=0 fn=45     RAW=03A0202D
+0x00276BD8 DADDU     rs=18 rt=0 rd=5 sa=0 fn=45     RAW=0240282D
+0x00276BDC ADDIU     rs=29 rt=16 imm=576            RAW=27B00240
+0x00276BE0 JAL       rs=0 rt=9 imm=23155            RAW=0C095A73 TARGET=0x002569CC
+0x00276BE4 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x00276BE8 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x00276BEC LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x00276BF0 LW        rs=2 rt=5 imm=20               RAW=8C450014
+0x00276BF4 JAL       rs=0 rt=9 imm=28957            RAW=0C09711D TARGET=0x0025C474
+0x00276BF8 LW        rs=2 rt=4 imm=16               RAW=8C440010
+0x00276BFC DADDU     rs=17 rt=0 rd=4 sa=0 fn=45     RAW=0220202D
+
+----- CALL 0x00276C94 -> 0x002714A0 -----
+0x00276C34 LW        rs=2 rt=5 imm=20               RAW=8C450014
+0x00276C38 JAL       rs=0 rt=9 imm=28440            RAW=0C096F18 TARGET=0x0025BC60
+0x00276C3C LW        rs=2 rt=4 imm=16               RAW=8C440010
+0x00276C40 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x00276C44 DADDU     rs=17 rt=0 rd=4 sa=0 fn=45     RAW=0220202D
+0x00276C48 LH        rs=17 rt=3 imm=56              RAW=86230038
+0x00276C4C ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x00276C50 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x00276C54 DADDU     rs=3 rt=0 rd=4 sa=0 fn=45      RAW=0060202D
+0x00276C58 BNE       rs=3 rt=0 imm=2                RAW=14600002 TARGET=0x00276C64
+0x00276C5C SRA       rs=0 rt=2 rd=16 sa=16 fn=3     RAW=00028403
+0x00276C60 LH        rs=17 rt=4 imm=12              RAW=8624000C
+0x00276C64 ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x00276C68 BNE       rs=4 rt=2 imm=6                RAW=14820006 TARGET=0x00276C84
+0x00276C6C DADDU     rs=16 rt=0 rd=5 sa=0 fn=45     RAW=0200282D
+0x00276C70 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x00276C74 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x00276C78 BEQL      rs=2 rt=0 imm=1                RAW=50400001 TARGET=0x00276C80
+0x00276C7C ADDIU     rs=0 rt=20 imm=1               RAW=24140001
+0x00276C80 DADDU     rs=16 rt=0 rd=5 sa=0 fn=45     RAW=0200282D
+0x00276C84 DADDU     rs=20 rt=0 rd=7 sa=0 fn=45     RAW=0280382D
+0x00276C88 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x00276C8C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x00276C90 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x00276C94 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x00276C98 SB        rs=28 rt=20 imm=-23676         RAW=A394A384  <<< DELAY SLOT
+0x00276C9C LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x00276CA0 LW        rs=14 rt=20 imm=26006          RAW=8DD46596
+0x00276CA4 SLTIU     rs=17 rt=15 imm=21646          RAW=2E2F548E
+0x00276CA8 LW        rs=4 rt=6 imm=32024            RAW=8C867D18
+0x00276CAC SB        rs=22 rt=9 imm=17447           RAW=A2C94427
+0x00276CB0 SLTI      rs=19 rt=28 imm=-25887         RAW=2A7C9AE1
+0x00276CB4 ADDI      rs=6 rt=9 imm=-14393           RAW=20C9C7C7
+0x00276CB8 OP62      rs=10 rt=23 imm=15795          RAW=F9573DB3
+0x00276CBC LHU       rs=0 rt=3 imm=15749            RAW=94033D85
+0x00276CC0 ORI       rs=30 rt=15 imm=-1686          RAW=37CFF96A
+0x00276CC4 OP52      rs=31 rt=28 imm=1221           RAW=D3FC04C5
+0x00276CC8 J         rs=7 rt=6 imm=-27883           RAW=08E69315 TARGET=0x039A4C54
+0x00276CCC COP0      rs=3 rt=25 imm=20047           RAW=40794E4F
+0x00276CD0 LB        rs=22 rt=27 imm=-2573          RAW=82DBF5F3
+0x00276CD4 BEQ       rs=10 rt=6 imm=1030            RAW=11460406 TARGET=0x00277CF0
+0x00276CD8 JAL       rs=20 rt=0 imm=-407            RAW=0E80FE69 TARGET=0x0A03F9A4
+0x00276CDC COP1      rs=21 rt=1 imm=32094           RAW=46A17D5E
+0x00276CE0 J         rs=4 rt=6 imm=-11216           RAW=0886D430 TARGET=0x021B50C0
+0x00276CE4 SDR       rs=23 rt=16 imm=5702           RAW=B6F01646
+0x00276CE8 COP1X     rs=23 rt=13 imm=-9467          RAW=4EEDDB05
+0x00276CEC OP47      rs=8 rt=22 imm=24065           RAW=BD165E01
+0x00276CF0 OP50      rs=7 rt=22 imm=-26724          RAW=C8F6979C
+0x00276CF4 BGTZ      rs=3 rt=17 imm=2428            RAW=1C71097C TARGET=0x002792E8
+
+----- CALL 0x0028218C -> 0x00271478 -----
+0x0028212C ANDI      rs=4 rt=20 imm=255             RAW=309400FF
+0x00282130 SD        rs=29 rt=22 imm=48             RAW=FFB60030
+0x00282134 ANDI      rs=7 rt=22 imm=255             RAW=30F600FF
+0x00282138 SD        rs=29 rt=23 imm=56             RAW=FFB70038
+0x0028213C DADDU     rs=0 rt=0 rd=23 sa=0 fn=45     RAW=0000B82D
+0x00282140 SD        rs=29 rt=21 imm=40             RAW=FFB50028
+0x00282144 ADDIU     rs=0 rt=16 imm=100             RAW=24100064
+0x00282148 BNE       rs=17 rt=2 imm=4               RAW=16220004 TARGET=0x0028215C
+0x0028214C SD        rs=29 rt=31 imm=64             RAW=FFBF0040
+0x00282150 ADDIU     rs=0 rt=2 imm=1                RAW=24020001
+0x00282154 BEQ       rs=0 rt=0 imm=13               RAW=1000000D TARGET=0x0028218C
+0x00282158 SB        rs=28 rt=2 imm=-23675          RAW=A382A385
+0x0028215C SB        rs=28 rt=0 imm=-23675          RAW=A380A385
+0x00282160 LUI       rs=0 rt=3 imm=97               RAW=3C030061
+0x00282164 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x00282168 ADDIU     rs=0 rt=2 imm=4096             RAW=24021000
+0x0028216C SW        rs=3 rt=2 imm=-29520           RAW=AC628CB0
+0x00282170 LW        rs=4 rt=3 imm=8                RAW=8C830008
+0x00282174 LH        rs=3 rt=2 imm=380              RAW=8462017C
+0x00282178 BNEL      rs=2 rt=0 imm=4                RAW=54400004 TARGET=0x0028218C
+0x0028217C ADDIU     rs=0 rt=17 imm=124             RAW=2411007C
+0x00282180 LH        rs=3 rt=2 imm=320              RAW=84620140
+0x00282184 BNEL      rs=2 rt=0 imm=1                RAW=54400001 TARGET=0x0028218C
+0x00282188 ADDIU     rs=0 rt=17 imm=124             RAW=2411007C
+0x0028218C JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x00282190 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000  <<< DELAY SLOT
+0x00282194 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x00282198 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x0028219C ADDIU     rs=0 rt=3 imm=9                RAW=24030009
+0x002821A0 LW        rs=4 rt=5 imm=8                RAW=8C850008
+0x002821A4 SRA       rs=0 rt=2 rd=21 sa=16 fn=3     RAW=0002AC03
+0x002821A8 LBU       rs=5 rt=2 imm=57               RAW=90A20039
+0x002821AC BEQ       rs=2 rt=3 imm=25               RAW=10430019 TARGET=0x00282214
+0x002821B0 ADDIU     rs=0 rt=2 imm=42               RAW=2402002A
+0x002821B4 LBU       rs=5 rt=3 imm=59               RAW=90A3003B
+0x002821B8 SLTIU     rs=3 rt=2 imm=99               RAW=2C620063
+0x002821BC BNEL      rs=2 rt=0 imm=3                RAW=54400003 TARGET=0x002821CC
+0x002821C0 ADDIU     rs=3 rt=2 imm=206              RAW=246200CE
+0x002821C4 BEQ       rs=0 rt=0 imm=19               RAW=10000013 TARGET=0x00282214
+0x002821C8 ADDIU     rs=0 rt=2 imm=39               RAW=24020027
+0x002821CC ANDI      rs=2 rt=2 imm=255              RAW=304200FF
+0x002821D0 SLTIU     rs=2 rt=2 imm=10               RAW=2C42000A
+0x002821D4 BEQ       rs=2 rt=0 imm=15               RAW=1040000F TARGET=0x00282214
+0x002821D8 ADDIU     rs=0 rt=2 imm=42               RAW=2402002A
+0x002821DC LBU       rs=5 rt=3 imm=61               RAW=90A3003D
+0x002821E0 ADDIU     rs=0 rt=2 imm=99               RAW=24020063
+0x002821E4 BNE       rs=3 rt=2 imm=7                RAW=14620007 TARGET=0x00282204
+0x002821E8 ADDIU     rs=0 rt=2 imm=36               RAW=24020024
+0x002821EC ADDIU     rs=0 rt=2 imm=39               RAW=24020027
+
+----- CALL 0x002823A0 -> 0x0027148C -----
+0x00282340 LW        rs=4 rt=2 imm=20536            RAW=8C825038
+0x00282344 ANDI      rs=2 rt=2 imm=24816            RAW=304260F0
+0x00282348 BEQL      rs=2 rt=0 imm=-16              RAW=5040FFF0 TARGET=0x0028230C
+0x0028234C ADDIU     rs=0 rt=4 imm=118              RAW=24040076
+0x00282350 LD        rs=29 rt=16 imm=0              RAW=DFB00000
+0x00282354 LD        rs=29 rt=17 imm=8              RAW=DFB10008
+0x00282358 LD        rs=29 rt=18 imm=16             RAW=DFB20010
+0x0028235C LD        rs=29 rt=19 imm=24             RAW=DFB30018
+0x00282360 LD        rs=29 rt=20 imm=32             RAW=DFB40020
+0x00282364 LD        rs=29 rt=21 imm=40             RAW=DFB50028
+0x00282368 LD        rs=29 rt=22 imm=48             RAW=DFB60030
+0x0028236C LD        rs=29 rt=23 imm=56             RAW=DFB70038
+0x00282370 LD        rs=29 rt=31 imm=64             RAW=DFBF0040
+0x00282374 JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x00282378 ADDIU     rs=29 rt=29 imm=80             RAW=27BD0050
+0x0028237C ADDIU     rs=29 rt=29 imm=-48            RAW=27BDFFD0
+0x00282380 SD        rs=29 rt=16 imm=0              RAW=FFB00000
+0x00282384 DADDU     rs=6 rt=0 rd=16 sa=0 fn=45     RAW=00C0802D
+0x00282388 SD        rs=29 rt=17 imm=8              RAW=FFB10008
+0x0028238C ADDIU     rs=0 rt=17 imm=77              RAW=2411004D
+0x00282390 SD        rs=29 rt=18 imm=16             RAW=FFB20010
+0x00282394 ANDI      rs=5 rt=18 imm=255             RAW=30B200FF
+0x00282398 SD        rs=29 rt=19 imm=24             RAW=FFB30018
+0x0028239C SD        rs=29 rt=31 imm=32             RAW=FFBF0020
+0x002823A0 JAL       rs=0 rt=9 imm=-15069           RAW=0C09C523 TARGET=0x0027148C  <<< CALL
+0x002823A4 ANDI      rs=4 rt=19 imm=255             RAW=309300FF  <<< DELAY SLOT
+0x002823A8 SLTI      rs=16 rt=16 imm=99             RAW=2A100063
+0x002823AC ADDIU     rs=0 rt=2 imm=76               RAW=2402004C
+0x002823B0 MOVN      rs=2 rt=16 rd=17 sa=0 fn=11    RAW=0050880B
+0x002823B4 ADDIU     rs=0 rt=16 imm=100             RAW=24100064
+0x002823B8 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002823BC ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x002823C0 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002823C4 DADDU     rs=17 rt=0 rd=5 sa=0 fn=45     RAW=0220282D
+0x002823C8 BEQ       rs=0 rt=0 imm=3                RAW=10000003 TARGET=0x002823D8
+0x002823CC SW        rs=28 rt=17 imm=-23664         RAW=AF91A390
+0x002823D0 JAL       rs=0 rt=10 imm=27415           RAW=0C0A6B17 TARGET=0x0029AC5C
+0x002823D4 ADDIU     rs=16 rt=16 imm=-1             RAW=2610FFFF
+0x002823D8 BEQ       rs=16 rt=0 imm=20              RAW=12000014 TARGET=0x0028242C
+0x002823DC LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002823E0 LW        rs=2 rt=4 imm=12               RAW=8C44000C
+0x002823E4 JAL       rs=0 rt=11 imm=25370           RAW=0C0B631A TARGET=0x002D8C68
+0x002823E8 ADDIU     rs=4 rt=4 imm=28320            RAW=24846EA0
+0x002823EC ADDIU     rs=0 rt=4 imm=117              RAW=24040075
+0x002823F0 ANDI      rs=2 rt=2 imm=1                RAW=30420001
+0x002823F4 BNE       rs=2 rt=0 imm=13               RAW=1440000D TARGET=0x0028242C
+0x002823F8 LUI       rs=0 rt=3 imm=108              RAW=3C03006C
+0x002823FC LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x00282400 LW        rs=2 rt=2 imm=12               RAW=8C42000C
+
+----- CALL 0x00282C9C -> 0x0027148C -----
+0x00282C3C SH        rs=28 rt=16 imm=-23660         RAW=A790A394
+0x00282C40 ADDIU     rs=0 rt=2 imm=1                RAW=24020001
+0x00282C44 BEQ       rs=0 rt=0 imm=3                RAW=10000003 TARGET=0x00282C54
+0x00282C48 SH        rs=28 rt=2 imm=-23688          RAW=A782A378
+0x00282C4C ADDIU     rs=0 rt=2 imm=4096             RAW=24021000
+0x00282C50 SW        rs=7 rt=2 imm=22912            RAW=ACE25980
+0x00282C54 LD        rs=29 rt=16 imm=0              RAW=DFB00000
+0x00282C58 LD        rs=29 rt=31 imm=8              RAW=DFBF0008
+0x00282C5C JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x00282C60 ADDIU     rs=29 rt=29 imm=16             RAW=27BD0010
+0x00282C64 ADDIU     rs=29 rt=29 imm=-16            RAW=27BDFFF0
+0x00282C68 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x00282C6C SD        rs=29 rt=31 imm=0              RAW=FFBF0000
+0x00282C70 LW        rs=2 rt=3 imm=8                RAW=8C430008
+0x00282C74 LH        rs=3 rt=2 imm=320              RAW=84620140
+0x00282C78 BNE       rs=2 rt=0 imm=6                RAW=14400006 TARGET=0x00282C94
+0x00282C7C ANDI      rs=4 rt=4 imm=255              RAW=308400FF
+0x00282C80 LH        rs=3 rt=3 imm=380              RAW=8463017C
+0x00282C84 ADDIU     rs=0 rt=2 imm=9                RAW=24020009
+0x00282C88 ADDIU     rs=0 rt=5 imm=15               RAW=2405000F
+0x00282C8C BEQ       rs=3 rt=0 imm=2                RAW=10600002 TARGET=0x00282C98
+0x00282C90 MOVZ      rs=2 rt=4 rd=5 sa=0 fn=10      RAW=0044280A
+0x00282C94 ADDIU     rs=0 rt=5 imm=18               RAW=24050012
+0x00282C98 ADDIU     rs=5 rt=2 imm=106              RAW=24A2006A
+0x00282C9C JAL       rs=0 rt=9 imm=-15069           RAW=0C09C523 TARGET=0x0027148C  <<< CALL
+0x00282CA0 SH        rs=28 rt=2 imm=-23680          RAW=A782A380  <<< DELAY SLOT
+0x00282CA4 LD        rs=29 rt=31 imm=0              RAW=DFBF0000
+0x00282CA8 SH        rs=28 rt=2 imm=-23678          RAW=A782A382
+0x00282CAC JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x00282CB0 ADDIU     rs=29 rt=29 imm=16             RAW=27BD0010
+0x00282CB4 LBU       rs=28 rt=2 imm=-23674          RAW=9382A386
+0x00282CB8 BEQ       rs=2 rt=0 imm=6                RAW=10400006 TARGET=0x00282CD4
+0x00282CBC LBU       rs=28 rt=3 imm=-23684          RAW=9383A37C
+0x00282CC0 ADDIU     rs=0 rt=2 imm=2                RAW=24020002
+0x00282CC4 BNE       rs=3 rt=2 imm=2                RAW=14620002 TARGET=0x00282CD0
+0x00282CC8 SH        rs=28 rt=0 imm=-23680          RAW=A780A380
+0x00282CCC SB        rs=28 rt=0 imm=-23684          RAW=A380A37C
+0x00282CD0 SH        rs=28 rt=0 imm=-23678          RAW=A780A382
+0x00282CD4 JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x00282CD8 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x00282CDC ADDIU     rs=29 rt=29 imm=-32            RAW=27BDFFE0
+0x00282CE0 ANDI      rs=7 rt=7 imm=255              RAW=30E700FF
+0x00282CE4 SD        rs=29 rt=18 imm=16             RAW=FFB20010
+0x00282CE8 DADDU     rs=6 rt=0 rd=18 sa=0 fn=45     RAW=00C0902D
+0x00282CEC SD        rs=29 rt=16 imm=0              RAW=FFB00000
+0x00282CF0 ADDIU     rs=0 rt=6 imm=2042             RAW=240607FA
+0x00282CF4 SD        rs=29 rt=17 imm=8              RAW=FFB10008
+0x00282CF8 BEQ       rs=7 rt=0 imm=4                RAW=10E00004 TARGET=0x00282D0C
+0x00282CFC SD        rs=29 rt=31 imm=24             RAW=FFBF0018
+
+----- CALL 0x002A3254 -> 0x0027171C -----
+0x002A31F4 ADDU      rs=2 rt=4 rd=2 sa=0 fn=33      RAW=00441021
+0x002A31F8 LW        rs=3 rt=5 imm=4                RAW=8C650004
+0x002A31FC LW        rs=2 rt=4 imm=0                RAW=8C440000
+0x002A3200 ADDU      rs=7 rt=5 rd=5 sa=0 fn=33      RAW=00E52821
+0x002A3204 JAL       rs=0 rt=8 imm=31121            RAW=0C087991 TARGET=0x0021E644
+0x002A3208 ADDU      rs=6 rt=4 rd=4 sa=0 fn=33      RAW=00C42021
+0x002A320C LUI       rs=0 rt=3 imm=1024             RAW=3C030400
+0x002A3210 LW        rs=2 rt=2 imm=0                RAW=8C420000
+0x002A3214 AND       rs=2 rt=3 rd=2 sa=0 fn=36      RAW=00431024
+0x002A3218 SLTU      rs=0 rt=2 rd=3 sa=0 fn=43      RAW=0002182B
+0x002A321C LBU       rs=16 rt=2 imm=8000            RAW=92021F40
+0x002A3220 MOVN      rs=0 rt=2 rd=3 sa=0 fn=11      RAW=0002180B
+0x002A3224 BEQ       rs=3 rt=0 imm=100              RAW=10600064 TARGET=0x002A33B8
+0x002A3228 LUI       rs=0 rt=2 imm=105              RAW=3C020069
+0x002A322C DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x002A3230 LW        rs=2 rt=5 imm=8656             RAW=8C4521D0
+0x002A3234 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002A3238 OP49      rs=28 rt=20 imm=-31864         RAW=C7948388
+0x002A323C JAL       rs=0 rt=9 imm=29543            RAW=0C097367 TARGET=0x0025CD9C
+0x002A3240 DADDU     rs=0 rt=0 rd=17 sa=0 fn=45     RAW=0000882D
+0x002A3244 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002A3248 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002A324C DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002A3250 LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002A3254 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002A3258 LBU       rs=2 rt=6 imm=59               RAW=9046003B  <<< DELAY SLOT
+0x002A325C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002A3260 ADDIU     rs=0 rt=5 imm=55               RAW=24050037
+0x002A3264 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002A3268 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002A326C JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002A3270 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002A3274 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002A3278 LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002A327C JAL       rs=0 rt=11 imm=31132           RAW=0C0B799C TARGET=0x002DE670
+0x002A3280 OP49      rs=2 rt=12 imm=104             RAW=C44C0068
+0x002A3284 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002A3288 COP1      rs=16 rt=20 imm=2              RAW=46140002
+0x002A328C LW        rs=2 rt=3 imm=12               RAW=8C43000C
+0x002A3290 LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002A3294 OP49      rs=3 rt=1 imm=0                RAW=C4610000
+0x002A3298 COP1      rs=16 rt=0 imm=2113            RAW=46000841
+0x002A329C OP57      rs=29 rt=1 imm=0               RAW=E7A10000
+0x002A32A0 OP49      rs=3 rt=0 imm=4                RAW=C4600004
+0x002A32A4 OP57      rs=29 rt=0 imm=4               RAW=E7A00004
+0x002A32A8 JAL       rs=0 rt=11 imm=31166           RAW=0C0B79BE TARGET=0x002DE6F8
+0x002A32AC OP49      rs=2 rt=12 imm=104             RAW=C44C0068
+0x002A32B0 LW        rs=28 rt=3 imm=-26212          RAW=8F83999C
+0x002A32B4 COP1      rs=16 rt=20 imm=2              RAW=46140002
+
+----- CALL 0x002A34A8 -> 0x0027171C -----
+0x002A3448 DADDU     rs=2 rt=0 rd=4 sa=0 fn=45      RAW=0040202D
+0x002A344C LH        rs=3 rt=4 imm=12               RAW=8464000C
+0x002A3450 ADDIU     rs=0 rt=2 imm=345              RAW=24020159
+0x002A3454 BEQ       rs=4 rt=2 imm=6                RAW=10820006 TARGET=0x002A3470
+0x002A3458 SLL       rs=0 rt=5 rd=2 sa=16 fn=0      RAW=00051400
+0x002A345C ADDIU     rs=17 rt=17 imm=1              RAW=26310001
+0x002A3460 SRA       rs=0 rt=2 rd=2 sa=16 fn=3      RAW=00021403
+0x002A3464 SLT       rs=17 rt=2 rd=2 sa=0 fn=42     RAW=0222102A
+0x002A3468 BNE       rs=2 rt=0 imm=-20              RAW=1440FFEC TARGET=0x002A341C
+0x002A346C ADDIU     rs=3 rt=3 imm=64               RAW=24630040
+0x002A3470 LH        rs=16 rt=2 imm=14              RAW=8602000E
+0x002A3474 BNE       rs=17 rt=2 imm=5               RAW=16220005 TARGET=0x002A348C
+0x002A3478 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002A347C JAL       rs=0 rt=8 imm=-7498            RAW=0C08E2B6 TARGET=0x00238AD8
+0x002A3480 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002A3484 BEQ       rs=0 rt=0 imm=110              RAW=1000006E TARGET=0x002A3640
+0x002A3488 LD        rs=29 rt=16 imm=624            RAW=DFB00270
+0x002A348C JAL       rs=0 rt=10 imm=-14933          RAW=0C0AC5AB TARGET=0x002B16AC
+0x002A3490 SB        rs=28 rt=0 imm=-23674          RAW=A380A386
+0x002A3494 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002A3498 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002A349C DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002A34A0 ADDIU     rs=0 rt=18 imm=1               RAW=24120001
+0x002A34A4 LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002A34A8 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002A34AC LBU       rs=2 rt=6 imm=59               RAW=9046003B  <<< DELAY SLOT
+0x002A34B0 LUI       rs=0 rt=5 imm=145              RAW=3C050091
+0x002A34B4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002A34B8 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x002A34BC ADDIU     rs=5 rt=5 imm=5720             RAW=24A51658
+0x002A34C0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002A34C4 ADDIU     rs=0 rt=5 imm=57               RAW=24050039
+0x002A34C8 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002A34CC DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002A34D0 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002A34D4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002A34D8 JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x002A34DC ADDIU     rs=0 rt=4 imm=2021             RAW=240407E5
+0x002A34E0 SLL       rs=0 rt=17 rd=2 sa=6 fn=0      RAW=00111180
+0x002A34E4 ADDU      rs=2 rt=16 rd=2 sa=0 fn=33     RAW=00501021
+0x002A34E8 DADDU     rs=29 rt=0 rd=4 sa=0 fn=45     RAW=03A0202D
+0x002A34EC SW        rs=2 rt=0 imm=64               RAW=AC400040
+0x002A34F0 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002A34F4 JAL       rs=0 rt=9 imm=23371            RAW=0C095B4B TARGET=0x00256D2C
+0x002A34F8 ADDIU     rs=0 rt=5 imm=345              RAW=24050159
+0x002A34FC JAL       rs=0 rt=9 imm=25737            RAW=0C096489 TARGET=0x00259224
+0x002A3500 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002A3504 LW        rs=28 rt=5 imm=-26212          RAW=8F85999C
+0x002A3508 LW        rs=28 rt=3 imm=-20500          RAW=8F83AFEC
+
+----- CALL 0x002B273C -> 0x002714A0 -----
+0x002B26DC DADDU     rs=0 rt=0 rd=3 sa=0 fn=45      RAW=0000182D
+0x002B26E0 LH        rs=16 rt=2 imm=56              RAW=86020038
+0x002B26E4 BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002B26F0
+0x002B26E8 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002B26EC LH        rs=16 rt=3 imm=12              RAW=8603000C
+0x002B26F0 ADDIU     rs=0 rt=2 imm=341              RAW=24020155
+0x002B26F4 BNE       rs=3 rt=2 imm=77               RAW=1462004D TARGET=0x002B282C
+0x002B26F8 LD        rs=29 rt=16 imm=0              RAW=DFB00000
+0x002B26FC ADDIU     rs=0 rt=4 imm=2013             RAW=240407DD
+0x002B2700 LD        rs=29 rt=17 imm=8              RAW=DFB10008
+0x002B2704 LD        rs=29 rt=31 imm=16             RAW=DFBF0010
+0x002B2708 J         rs=0 rt=10 imm=-24780          RAW=080A9F34 TARGET=0x002A7CD0
+0x002B270C ADDIU     rs=29 rt=29 imm=32             RAW=27BD0020
+0x002B2710 LUI       rs=0 rt=3 imm=8                RAW=3C030008
+0x002B2714 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002B2718 OR        rs=2 rt=3 rd=2 sa=0 fn=37      RAW=00431025
+0x002B271C JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002B2720 SW        rs=5 rt=2 imm=0                RAW=ACA20000
+0x002B2724 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002B2728 ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002B272C DADDU     rs=17 rt=0 rd=7 sa=0 fn=45     RAW=0220382D
+0x002B2730 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002B2734 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x002B2738 SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002B273C JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002B2740 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D  <<< DELAY SLOT
+0x002B2744 BEQ       rs=16 rt=0 imm=5               RAW=12000005 TARGET=0x002B275C
+0x002B2748 DADDU     rs=0 rt=0 rd=3 sa=0 fn=45      RAW=0000182D
+0x002B274C LH        rs=16 rt=2 imm=56              RAW=86020038
+0x002B2750 BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002B275C
+0x002B2754 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002B2758 LH        rs=16 rt=3 imm=12              RAW=8603000C
+0x002B275C ADDIU     rs=0 rt=2 imm=341              RAW=24020155
+0x002B2760 BNEL      rs=3 rt=2 imm=4                RAW=54620004 TARGET=0x002B2774
+0x002B2764 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002B2768 JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x002B276C ADDIU     rs=0 rt=4 imm=2013             RAW=240407DD
+0x002B2770 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002B2774 LW        rs=2 rt=4 imm=8                RAW=8C440008
+0x002B2778 JAL       rs=0 rt=8 imm=31114            RAW=0C08798A TARGET=0x0021E628
+0x002B277C ADDIU     rs=4 rt=4 imm=16               RAW=24840010
+0x002B2780 LUI       rs=0 rt=4 imm=1                RAW=3C040001
+0x002B2784 LW        rs=2 rt=3 imm=0                RAW=8C430000
+0x002B2788 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002B278C OR        rs=3 rt=4 rd=3 sa=0 fn=37      RAW=00641825
+0x002B2790 BEQ       rs=16 rt=0 imm=2               RAW=12000002 TARGET=0x002B279C
+0x002B2794 SW        rs=2 rt=3 imm=0                RAW=AC430000
+0x002B2798 LBU       rs=16 rt=5 imm=58              RAW=9205003A
+0x002B279C ADDIU     rs=0 rt=2 imm=9                RAW=24020009
+
+----- CALL 0x002B332C -> 0x002714A0 -----
+0x002B32CC LBU       rs=16 rt=2 imm=58              RAW=9202003A
+0x002B32D0 ADDIU     rs=0 rt=19 imm=1               RAW=24130001
+0x002B32D4 SLTIU     rs=2 rt=18 imm=1               RAW=2C520001
+0x002B32D8 LH        rs=16 rt=2 imm=56              RAW=86020038
+0x002B32DC DADDU     rs=0 rt=0 rd=17 sa=0 fn=45     RAW=0000882D
+0x002B32E0 BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002B32EC
+0x002B32E4 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002B32E8 LH        rs=16 rt=3 imm=12              RAW=8603000C
+0x002B32EC ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x002B32F0 BNE       rs=3 rt=2 imm=4                RAW=14620004 TARGET=0x002B3304
+0x002B32F4 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002B32F8 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002B32FC DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002B3300 SLTIU     rs=2 rt=17 imm=1               RAW=2C510001
+0x002B3304 BNE       rs=19 rt=0 imm=13              RAW=1660000D TARGET=0x002B333C
+0x002B3308 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002B330C JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002B3310 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002B3314 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002B3318 ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002B331C DADDU     rs=17 rt=0 rd=7 sa=0 fn=45     RAW=0220382D
+0x002B3320 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002B3324 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x002B3328 SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002B332C JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002B3330 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D  <<< DELAY SLOT
+0x002B3334 BEQ       rs=0 rt=0 imm=10               RAW=1000000A TARGET=0x002B3360
+0x002B3338 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002B333C BNEL      rs=18 rt=0 imm=10              RAW=5640000A TARGET=0x002B3368
+0x002B3340 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002B3344 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002B3348 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002B334C ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002B3350 JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478
+0x002B3354 SH        rs=28 rt=2 imm=-23686          RAW=A782A37A
+0x002B3358 SH        rs=28 rt=2 imm=-23682          RAW=A782A37E
+0x002B335C SB        rs=28 rt=17 imm=-23676         RAW=A391A384
+0x002B3360 BEQ       rs=18 rt=0 imm=12              RAW=1240000C TARGET=0x002B3394
+0x002B3364 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002B3368 ADDIU     rs=0 rt=5 imm=71               RAW=24050047
+0x002B336C JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002B3370 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002B3374 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002B3378 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002B337C LW        rs=16 rt=3 imm=0               RAW=8E030000
+0x002B3380 LUI       rs=0 rt=2 imm=-17              RAW=3C02FFEF
+0x002B3384 ORI       rs=2 rt=2 imm=-1               RAW=3442FFFF
+0x002B3388 AND       rs=3 rt=2 rd=3 sa=0 fn=36      RAW=00621824
+0x002B338C BEQ       rs=0 rt=0 imm=22               RAW=10000016 TARGET=0x002B33E8
+
+----- CALL 0x002B3350 -> 0x00271478 -----
+0x002B32F0 BNE       rs=3 rt=2 imm=4                RAW=14620004 TARGET=0x002B3304
+0x002B32F4 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002B32F8 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002B32FC DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002B3300 SLTIU     rs=2 rt=17 imm=1               RAW=2C510001
+0x002B3304 BNE       rs=19 rt=0 imm=13              RAW=1660000D TARGET=0x002B333C
+0x002B3308 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002B330C JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002B3310 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002B3314 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002B3318 ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002B331C DADDU     rs=17 rt=0 rd=7 sa=0 fn=45     RAW=0220382D
+0x002B3320 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002B3324 ADDIU     rs=0 rt=6 imm=1                RAW=24060001
+0x002B3328 SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002B332C JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0
+0x002B3330 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x002B3334 BEQ       rs=0 rt=0 imm=10               RAW=1000000A TARGET=0x002B3360
+0x002B3338 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002B333C BNEL      rs=18 rt=0 imm=10              RAW=5640000A TARGET=0x002B3368
+0x002B3340 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002B3344 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002B3348 DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002B334C ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002B3350 JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x002B3354 SH        rs=28 rt=2 imm=-23686          RAW=A782A37A  <<< DELAY SLOT
+0x002B3358 SH        rs=28 rt=2 imm=-23682          RAW=A782A37E
+0x002B335C SB        rs=28 rt=17 imm=-23676         RAW=A391A384
+0x002B3360 BEQ       rs=18 rt=0 imm=12              RAW=1240000C TARGET=0x002B3394
+0x002B3364 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002B3368 ADDIU     rs=0 rt=5 imm=71               RAW=24050047
+0x002B336C JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002B3370 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002B3374 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002B3378 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002B337C LW        rs=16 rt=3 imm=0               RAW=8E030000
+0x002B3380 LUI       rs=0 rt=2 imm=-17              RAW=3C02FFEF
+0x002B3384 ORI       rs=2 rt=2 imm=-1               RAW=3442FFFF
+0x002B3388 AND       rs=3 rt=2 rd=3 sa=0 fn=36      RAW=00621824
+0x002B338C BEQ       rs=0 rt=0 imm=22               RAW=10000016 TARGET=0x002B33E8
+0x002B3390 SW        rs=16 rt=3 imm=0               RAW=AE030000
+0x002B3394 LW        rs=16 rt=3 imm=0               RAW=8E030000
+0x002B3398 LUI       rs=0 rt=2 imm=-17              RAW=3C02FFEF
+0x002B339C LW        rs=28 rt=5 imm=-26212          RAW=8F85999C
+0x002B33A0 ORI       rs=2 rt=2 imm=-1               RAW=3442FFFF
+0x002B33A4 AND       rs=3 rt=2 rd=3 sa=0 fn=36      RAW=00621824
+0x002B33A8 ADDIU     rs=0 rt=2 imm=39               RAW=24020027
+0x002B33AC SW        rs=16 rt=3 imm=0               RAW=AE030000
+0x002B33B0 LUI       rs=0 rt=4 imm=105              RAW=3C040069
+
+----- CALL 0x002C7154 -> 0x002714A0 -----
+0x002C70F4 MOVZ      rs=9 rt=2 rd=8 sa=0 fn=10      RAW=0122400A
+0x002C70F8 JAL       rs=0 rt=11 imm=8359            RAW=0C0B20A7 TARGET=0x002C829C
+0x002C70FC SW        rs=29 rt=8 imm=3600            RAW=AFA80E10
+0x002C7100 ADDIU     rs=29 rt=16 imm=80             RAW=27B00050
+0x002C7104 DADDU     rs=2 rt=0 rd=5 sa=0 fn=45      RAW=0040282D
+0x002C7108 JAL       rs=0 rt=9 imm=23155            RAW=0C095A73 TARGET=0x002569CC
+0x002C710C DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002C7110 JAL       rs=0 rt=10 imm=-14933          RAW=0C0AC5AB TARGET=0x002B16AC
+0x002C7114 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C7118 JAL       rs=0 rt=11 imm=8359            RAW=0C0B20A7 TARGET=0x002C829C
+0x002C711C SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002C7120 DADDU     rs=2 rt=0 rd=4 sa=0 fn=45      RAW=0040202D
+0x002C7124 JAL       rs=0 rt=9 imm=26177            RAW=0C096641 TARGET=0x00259904
+0x002C7128 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x002C712C JAL       rs=0 rt=11 imm=8359            RAW=0C0B20A7 TARGET=0x002C829C
+0x002C7130 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002C7134 ADDIU     rs=29 rt=10 imm=656            RAW=27AA0290
+0x002C7138 DADDU     rs=2 rt=0 rd=5 sa=0 fn=45      RAW=0040282D
+0x002C713C JAL       rs=0 rt=9 imm=23155            RAW=0C095A73 TARGET=0x002569CC
+0x002C7140 DADDU     rs=10 rt=0 rd=4 sa=0 fn=45     RAW=0140202D
+0x002C7144 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002C7148 DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x002C714C DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x002C7150 ADDIU     rs=0 rt=5 imm=112              RAW=24050070
+0x002C7154 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002C7158 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D  <<< DELAY SLOT
+0x002C715C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C7160 ADDIU     rs=0 rt=5 imm=69               RAW=24050045
+0x002C7164 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002C7168 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002C716C JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002C7170 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C7174 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002C7178 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002C717C JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x002C7180 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002C7184 LH        rs=29 rt=2 imm=94              RAW=87A2005E
+0x002C7188 BEQ       rs=2 rt=0 imm=27               RAW=1040001B TARGET=0x002C71F8
+0x002C718C LUI       rs=0 rt=17 imm=105             RAW=3C110069
+0x002C7190 ADDIU     rs=29 rt=6 imm=3568            RAW=27A60DF0
+0x002C7194 LW        rs=17 rt=5 imm=8656            RAW=8E2521D0
+0x002C7198 ADDIU     rs=0 rt=2 imm=4                RAW=24020004
+0x002C719C DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002C71A0 JAL       rs=0 rt=9 imm=29543            RAW=0C097367 TARGET=0x0025CD9C
+0x002C71A4 SB        rs=29 rt=2 imm=3568            RAW=A3A20DF0
+0x002C71A8 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C71AC LUI       rs=0 rt=5 imm=145              RAW=3C050091
+0x002C71B0 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x002C71B4 ADDIU     rs=5 rt=5 imm=29160            RAW=24A571E8
+
+----- CALL 0x002C7F00 -> 0x0027171C -----
+0x002C7EA0 LD        rs=29 rt=23 imm=3672           RAW=DFB70E58
+0x002C7EA4 LD        rs=29 rt=30 imm=3680           RAW=DFBE0E60
+0x002C7EA8 LD        rs=29 rt=31 imm=3688           RAW=DFBF0E68
+0x002C7EAC OP49      rs=29 rt=22 imm=3712           RAW=C7B60E80
+0x002C7EB0 OP49      rs=29 rt=21 imm=3704           RAW=C7B50E78
+0x002C7EB4 OP49      rs=29 rt=20 imm=3696           RAW=C7B40E70
+0x002C7EB8 JR        rs=31 rt=0 rd=0 sa=0 fn=8      RAW=03E00008
+0x002C7EBC ADDIU     rs=29 rt=29 imm=3728           RAW=27BD0E90
+0x002C7EC0 ADDIU     rs=29 rt=29 imm=-752           RAW=27BDFD10
+0x002C7EC4 SD        rs=29 rt=17 imm=712            RAW=FFB102C8
+0x002C7EC8 SD        rs=29 rt=16 imm=704            RAW=FFB002C0
+0x002C7ECC SD        rs=29 rt=18 imm=720            RAW=FFB202D0
+0x002C7ED0 SD        rs=29 rt=19 imm=728            RAW=FFB302D8
+0x002C7ED4 SD        rs=29 rt=31 imm=736            RAW=FFBF02E0
+0x002C7ED8 JAL       rs=0 rt=11 imm=8359            RAW=0C0B20A7 TARGET=0x002C829C
+0x002C7EDC SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002C7EE0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C7EE4 JAL       rs=0 rt=10 imm=-14933          RAW=0C0AC5AB TARGET=0x002B16AC
+0x002C7EE8 DADDU     rs=2 rt=0 rd=17 sa=0 fn=45     RAW=0040882D
+0x002C7EEC SB        rs=28 rt=0 imm=-23674          RAW=A380A386
+0x002C7EF0 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002C7EF4 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002C7EF8 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002C7EFC LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002C7F00 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002C7F04 LBU       rs=2 rt=6 imm=59               RAW=9046003B  <<< DELAY SLOT
+0x002C7F08 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C7F0C ADDIU     rs=0 rt=5 imm=57               RAW=24050039
+0x002C7F10 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002C7F14 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002C7F18 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002C7F1C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002C7F20 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002C7F24 BEQ       rs=0 rt=0 imm=2                RAW=10000002 TARGET=0x002C7F30
+0x002C7F28 ADDIU     rs=17 rt=3 imm=64              RAW=26230040
+0x002C7F2C ADDIU     rs=4 rt=4 imm=1                RAW=24840001
+0x002C7F30 LH        rs=17 rt=2 imm=14              RAW=8622000E
+0x002C7F34 SLT       rs=4 rt=2 rd=2 sa=0 fn=42      RAW=0082102A
+0x002C7F38 BEQ       rs=2 rt=0 imm=8                RAW=10400008 TARGET=0x002C7F5C
+0x002C7F3C LHU       rs=17 rt=5 imm=14              RAW=9625000E
+0x002C7F40 BEQ       rs=3 rt=0 imm=3                RAW=10600003 TARGET=0x002C7F50
+0x002C7F44 DADDU     rs=0 rt=0 rd=2 sa=0 fn=45      RAW=0000102D
+0x002C7F48 LW        rs=3 rt=2 imm=0                RAW=8C620000
+0x002C7F4C SRL       rs=0 rt=2 rd=2 sa=31 fn=2      RAW=000217C2
+0x002C7F50 ANDI      rs=2 rt=2 imm=255              RAW=304200FF
+0x002C7F54 BEQL      rs=2 rt=0 imm=-11              RAW=5040FFF5 TARGET=0x002C7F2C
+0x002C7F58 ADDIU     rs=3 rt=3 imm=64               RAW=24630040
+0x002C7F5C SLL       rs=0 rt=5 rd=2 sa=16 fn=0      RAW=00051400
+0x002C7F60 SRA       rs=0 rt=2 rd=2 sa=16 fn=3      RAW=00021403
+
+----- CALL 0x002CC184 -> 0x002714A0 -----
+0x002CC124 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC128 LH        rs=3 rt=2 imm=56               RAW=84620038
+0x002CC12C BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002CC138
+0x002CC130 DADDU     rs=2 rt=0 rd=4 sa=0 fn=45      RAW=0040202D
+0x002CC134 LH        rs=3 rt=4 imm=12               RAW=8464000C
+0x002CC138 ADDIU     rs=0 rt=2 imm=119              RAW=24020077
+0x002CC13C BEQ       rs=4 rt=2 imm=40               RAW=10820028 TARGET=0x002CC1E0
+0x002CC140 ADDIU     rs=7 rt=4 imm=2456             RAW=24E40998
+0x002CC144 DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x002CC148 BEQ       rs=4 rt=0 imm=5                RAW=10800005 TARGET=0x002CC160
+0x002CC14C DADDU     rs=0 rt=0 rd=3 sa=0 fn=45      RAW=0000182D
+0x002CC150 LH        rs=4 rt=2 imm=56               RAW=84820038
+0x002CC154 BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002CC160
+0x002CC158 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002CC15C LH        rs=4 rt=3 imm=12               RAW=8483000C
+0x002CC160 ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x002CC164 BNE       rs=3 rt=2 imm=5                RAW=14620005 TARGET=0x002CC17C
+0x002CC168 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x002CC16C JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002CC170 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC174 SLTIU     rs=2 rt=7 imm=1                RAW=2C470001
+0x002CC178 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x002CC17C ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002CC180 ADDIU     rs=0 rt=5 imm=130              RAW=24050082
+0x002CC184 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002CC188 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D  <<< DELAY SLOT
+0x002CC18C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC190 ADDIU     rs=0 rt=5 imm=30               RAW=2405001E
+0x002CC194 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002CC198 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC19C JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002CC1A0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC1A4 LUI       rs=0 rt=1 imm=-16256           RAW=3C01C080
+0x002CC1A8 COP1      rs=4 rt=1 imm=0                RAW=44810000
+0x002CC1AC LUI       rs=0 rt=1 imm=16256            RAW=3C013F80
+0x002CC1B0 COP1      rs=4 rt=1 imm=2048             RAW=44810800
+0x002CC1B4 OP57      rs=29 rt=0 imm=36              RAW=E7A00024
+0x002CC1B8 OP57      rs=29 rt=1 imm=44              RAW=E7A1002C
+0x002CC1BC SW        rs=29 rt=0 imm=32              RAW=AFA00020
+0x002CC1C0 BEQ       rs=18 rt=0 imm=57              RAW=12400039 TARGET=0x002CC2A8
+0x002CC1C4 SW        rs=29 rt=0 imm=40              RAW=AFA00028
+0x002CC1C8 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC1CC DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002CC1D0 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x002CC1D4 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC1D8 BEQ       rs=0 rt=0 imm=52               RAW=10000034 TARGET=0x002CC2AC
+0x002CC1DC LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002CC1E0 LUI       rs=0 rt=18 imm=147             RAW=3C120093
+0x002CC1E4 LUI       rs=0 rt=2 imm=16               RAW=3C020010
+
+----- CALL 0x002CC270 -> 0x002714A0 -----
+0x002CC210 SW        rs=16 rt=2 imm=0               RAW=AE020000
+0x002CC214 BNE       rs=19 rt=0 imm=25              RAW=16600019 TARGET=0x002CC27C
+0x002CC218 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC21C DADDU     rs=0 rt=0 rd=17 sa=0 fn=45     RAW=0000882D
+0x002CC220 BEQ       rs=16 rt=0 imm=5               RAW=12000005 TARGET=0x002CC238
+0x002CC224 DADDU     rs=0 rt=0 rd=3 sa=0 fn=45      RAW=0000182D
+0x002CC228 LH        rs=16 rt=2 imm=56              RAW=86020038
+0x002CC22C BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002CC238
+0x002CC230 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002CC234 LH        rs=16 rt=3 imm=12              RAW=8603000C
+0x002CC238 ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x002CC23C BNE       rs=3 rt=2 imm=4                RAW=14620004 TARGET=0x002CC250
+0x002CC240 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002CC244 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002CC248 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC24C SLTIU     rs=2 rt=17 imm=1               RAW=2C510001
+0x002CC250 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002CC254 ADDIU     rs=18 rt=4 imm=2456            RAW=26440998
+0x002CC258 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002CC25C ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002CC260 DADDU     rs=17 rt=0 rd=7 sa=0 fn=45     RAW=0220382D
+0x002CC264 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002CC268 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC26C SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002CC270 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002CC274 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D  <<< DELAY SLOT
+0x002CC278 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC27C ADDIU     rs=0 rt=5 imm=38               RAW=24050026
+0x002CC280 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002CC284 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC288 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002CC28C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC290 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC294 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002CC298 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x002CC29C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC2A0 JAL       rs=0 rt=11 imm=31666           RAW=0C0B7BB2 TARGET=0x002DEEC8
+0x002CC2A4 ADDIU     rs=29 rt=4 imm=32              RAW=27A40020
+0x002CC2A8 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002CC2AC LUI       rs=0 rt=3 imm=-9               RAW=3C03FFF7
+0x002CC2B0 ORI       rs=3 rt=3 imm=-1               RAW=3463FFFF
+0x002CC2B4 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x002CC2B8 LW        rs=2 rt=4 imm=8                RAW=8C440008
+0x002CC2BC LUI       rs=0 rt=21 imm=147             RAW=3C150093
+0x002CC2C0 LW        rs=4 rt=2 imm=0                RAW=8C820000
+0x002CC2C4 AND       rs=2 rt=3 rd=2 sa=0 fn=36      RAW=00431024
+0x002CC2C8 SW        rs=4 rt=2 imm=0                RAW=AC820000
+0x002CC2CC JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478
+0x002CC2D0 SB        rs=28 rt=5 imm=-23674          RAW=A385A386
+
+----- CALL 0x002CC2CC -> 0x00271478 -----
+0x002CC26C SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002CC270 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0
+0x002CC274 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x002CC278 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC27C ADDIU     rs=0 rt=5 imm=38               RAW=24050026
+0x002CC280 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002CC284 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC288 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002CC28C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC290 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC294 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002CC298 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x002CC29C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC2A0 JAL       rs=0 rt=11 imm=31666           RAW=0C0B7BB2 TARGET=0x002DEEC8
+0x002CC2A4 ADDIU     rs=29 rt=4 imm=32              RAW=27A40020
+0x002CC2A8 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002CC2AC LUI       rs=0 rt=3 imm=-9               RAW=3C03FFF7
+0x002CC2B0 ORI       rs=3 rt=3 imm=-1               RAW=3463FFFF
+0x002CC2B4 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x002CC2B8 LW        rs=2 rt=4 imm=8                RAW=8C440008
+0x002CC2BC LUI       rs=0 rt=21 imm=147             RAW=3C150093
+0x002CC2C0 LW        rs=4 rt=2 imm=0                RAW=8C820000
+0x002CC2C4 AND       rs=2 rt=3 rd=2 sa=0 fn=36      RAW=00431024
+0x002CC2C8 SW        rs=4 rt=2 imm=0                RAW=AC820000
+0x002CC2CC JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x002CC2D0 SB        rs=28 rt=5 imm=-23674          RAW=A385A386  <<< DELAY SLOT
+0x002CC2D4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC2D8 LW        rs=28 rt=6 imm=-20500          RAW=8F86AFEC
+0x002CC2DC SLL       rs=0 rt=2 rd=3 sa=1 fn=0       RAW=00021840
+0x002CC2E0 LW        rs=4 rt=5 imm=12               RAW=8C85000C
+0x002CC2E4 ADDU      rs=3 rt=2 rd=3 sa=0 fn=33      RAW=00621821
+0x002CC2E8 SLL       rs=0 rt=6 rd=4 sa=3 fn=0       RAW=000620C0
+0x002CC2EC SLL       rs=0 rt=3 rd=3 sa=2 fn=0       RAW=00031880
+0x002CC2F0 SUBU      rs=4 rt=6 rd=4 sa=0 fn=35      RAW=00862023
+0x002CC2F4 ADDU      rs=3 rt=2 rd=3 sa=0 fn=33      RAW=00621821
+0x002CC2F8 SLL       rs=0 rt=4 rd=2 sa=6 fn=0       RAW=00041180
+0x002CC2FC SLL       rs=0 rt=3 rd=3 sa=4 fn=0       RAW=00031900
+0x002CC300 SUBU      rs=2 rt=4 rd=2 sa=0 fn=35      RAW=00441023
+0x002CC304 ADDIU     rs=29 rt=4 imm=32              RAW=27A40020
+0x002CC308 SLL       rs=0 rt=2 rd=2 sa=5 fn=0       RAW=00021140
+0x002CC30C DADDU     rs=4 rt=0 rd=6 sa=0 fn=45      RAW=0080302D
+0x002CC310 ADDU      rs=5 rt=2 rd=5 sa=0 fn=33      RAW=00A22821
+0x002CC314 ADDU      rs=5 rt=3 rd=5 sa=0 fn=33      RAW=00A32821
+0x002CC318 JAL       rs=0 rt=11 imm=30782           RAW=0C0B783E TARGET=0x002DE0F8
+0x002CC31C ADDIU     rs=5 rt=5 imm=96               RAW=24A50060
+0x002CC320 ADDIU     rs=21 rt=3 imm=2456            RAW=26A30998
+0x002CC324 BEQ       rs=3 rt=0 imm=5                RAW=10600005 TARGET=0x002CC33C
+0x002CC328 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002CC32C LH        rs=3 rt=2 imm=56               RAW=84620038
+
+----- CALL 0x002CC878 -> 0x002714A0 -----
+0x002CC818 DADDU     rs=17 rt=0 rd=5 sa=0 fn=45     RAW=0220282D
+0x002CC81C LUI       rs=0 rt=2 imm=105              RAW=3C020069
+0x002CC820 LW        rs=2 rt=5 imm=8656             RAW=8C4521D0
+0x002CC824 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC828 JAL       rs=0 rt=9 imm=29543            RAW=0C097367 TARGET=0x0025CD9C
+0x002CC82C DADDU     rs=16 rt=0 rd=4 sa=0 fn=45     RAW=0200202D
+0x002CC830 SW        rs=28 rt=0 imm=-21332          RAW=AF80ACAC
+0x002CC834 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC838 JAL       rs=0 rt=10 imm=-14933          RAW=0C0AC5AB TARGET=0x002B16AC
+0x002CC83C SW        rs=28 rt=0 imm=-26184          RAW=AF8099B8
+0x002CC840 LUI       rs=0 rt=5 imm=145              RAW=3C050091
+0x002CC844 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC848 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x002CC84C ADDIU     rs=5 rt=5 imm=29680            RAW=24A573F0
+0x002CC850 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002CC854 LUI       rs=0 rt=9 imm=8                RAW=3C090008
+0x002CC858 DADDU     rs=0 rt=0 rd=7 sa=0 fn=45      RAW=0000382D
+0x002CC85C LW        rs=2 rt=3 imm=8                RAW=8C430008
+0x002CC860 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+0x002CC864 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002CC868 ADDIU     rs=0 rt=5 imm=129              RAW=24050081
+0x002CC86C LW        rs=3 rt=2 imm=0                RAW=8C620000
+0x002CC870 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC874 OR        rs=2 rt=9 rd=2 sa=0 fn=37      RAW=00491025
+0x002CC878 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002CC87C SW        rs=3 rt=2 imm=0                RAW=AC620000  <<< DELAY SLOT
+0x002CC880 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC884 ADDIU     rs=0 rt=5 imm=29               RAW=2405001D
+0x002CC888 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002CC88C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC890 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002CC894 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002CC898 LW        rs=28 rt=7 imm=-26212          RAW=8F87999C
+0x002CC89C LUI       rs=0 rt=3 imm=-9               RAW=3C03FFF7
+0x002CC8A0 LUI       rs=0 rt=6 imm=128              RAW=3C060080
+0x002CC8A4 LW        rs=7 rt=4 imm=8                RAW=8CE40008
+0x002CC8A8 ORI       rs=3 rt=3 imm=-1               RAW=3463FFFF
+0x002CC8AC LH        rs=17 rt=5 imm=14              RAW=8625000E
+0x002CC8B0 LW        rs=4 rt=2 imm=0                RAW=8C820000
+0x002CC8B4 AND       rs=2 rt=3 rd=2 sa=0 fn=36      RAW=00431024
+0x002CC8B8 SW        rs=4 rt=2 imm=0                RAW=AC820000
+0x002CC8BC LW        rs=17 rt=2 imm=0               RAW=8E220000
+0x002CC8C0 OR        rs=2 rt=6 rd=2 sa=0 fn=37      RAW=00461025
+0x002CC8C4 BNE       rs=5 rt=0 imm=6                RAW=14A00006 TARGET=0x002CC8E0
+0x002CC8C8 SW        rs=17 rt=2 imm=0               RAW=AE220000
+0x002CC8CC DADDU     rs=7 rt=0 rd=4 sa=0 fn=45      RAW=00E0202D
+0x002CC8D0 JAL       rs=0 rt=8 imm=-7498            RAW=0C08E2B6 TARGET=0x00238AD8
+0x002CC8D4 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002CC8D8 BEQ       rs=0 rt=0 imm=261              RAW=10000105 TARGET=0x002CCCF0
+
+----- CALL 0x002CC970 -> 0x00271478 -----
+0x002CC910 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002CC914 BEQL      rs=2 rt=0 imm=10               RAW=5040000A TARGET=0x002CC940
+0x002CC918 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002CC91C DADDU     rs=17 rt=0 rd=4 sa=0 fn=45     RAW=0220202D
+0x002CC920 JAL       rs=0 rt=9 imm=26177            RAW=0C096641 TARGET=0x00259904
+0x002CC924 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x002CC928 BNE       rs=2 rt=0 imm=241              RAW=144000F1 TARGET=0x002CCCF0
+0x002CC92C LD        rs=29 rt=16 imm=64             RAW=DFB00040
+0x002CC930 LHU       rs=17 rt=2 imm=14              RAW=9622000E
+0x002CC934 ADDIU     rs=2 rt=2 imm=-1               RAW=2442FFFF
+0x002CC938 BEQ       rs=0 rt=0 imm=237              RAW=100000ED TARGET=0x002CCCF0
+0x002CC93C SH        rs=17 rt=2 imm=14              RAW=A622000E
+0x002CC940 ADDIU     rs=0 rt=6 imm=2148             RAW=24060864
+0x002CC944 LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002CC948 LW        rs=2 rt=5 imm=20               RAW=8C450014
+0x002CC94C JAL       rs=0 rt=10 imm=-24700          RAW=0C0A9F84 TARGET=0x002A7E10
+0x002CC950 LW        rs=2 rt=4 imm=16               RAW=8C440010
+0x002CC954 LUI       rs=0 rt=1 imm=-16256           RAW=3C01C080
+0x002CC958 COP1      rs=4 rt=1 imm=0                RAW=44810000
+0x002CC95C LUI       rs=0 rt=1 imm=16256            RAW=3C013F80
+0x002CC960 COP1      rs=4 rt=1 imm=2048             RAW=44810800
+0x002CC964 OP57      rs=29 rt=0 imm=40              RAW=E7A00028
+0x002CC968 OP57      rs=29 rt=1 imm=44              RAW=E7A1002C
+0x002CC96C SW        rs=29 rt=0 imm=32              RAW=AFA00020
+0x002CC970 JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x002CC974 SW        rs=29 rt=0 imm=36              RAW=AFA00024  <<< DELAY SLOT
+0x002CC978 LW        rs=28 rt=4 imm=-20500          RAW=8F84AFEC
+0x002CC97C SLL       rs=0 rt=2 rd=3 sa=1 fn=0       RAW=00021840
+0x002CC980 LW        rs=28 rt=5 imm=-26212          RAW=8F85999C
+0x002CC984 ADDU      rs=3 rt=2 rd=3 sa=0 fn=33      RAW=00621821
+0x002CC988 SLL       rs=0 rt=4 rd=6 sa=3 fn=0       RAW=000430C0
+0x002CC98C SLL       rs=0 rt=3 rd=3 sa=2 fn=0       RAW=00031880
+0x002CC990 SUBU      rs=6 rt=4 rd=6 sa=0 fn=35      RAW=00C43023
+0x002CC994 LW        rs=5 rt=5 imm=12               RAW=8CA5000C
+0x002CC998 SLL       rs=0 rt=6 rd=4 sa=6 fn=0       RAW=00062180
+0x002CC99C ADDU      rs=3 rt=2 rd=3 sa=0 fn=33      RAW=00621821
+0x002CC9A0 SUBU      rs=4 rt=6 rd=4 sa=0 fn=35      RAW=00862023
+0x002CC9A4 SLL       rs=0 rt=3 rd=3 sa=4 fn=0       RAW=00031900
+0x002CC9A8 SLL       rs=0 rt=4 rd=4 sa=5 fn=0       RAW=00042140
+0x002CC9AC ADDIU     rs=29 rt=20 imm=32             RAW=27B40020
+0x002CC9B0 ADDU      rs=5 rt=4 rd=5 sa=0 fn=33      RAW=00A42821
+0x002CC9B4 DADDU     rs=20 rt=0 rd=4 sa=0 fn=45     RAW=0280202D
+0x002CC9B8 ADDU      rs=5 rt=3 rd=5 sa=0 fn=33      RAW=00A32821
+0x002CC9BC DADDU     rs=20 rt=0 rd=6 sa=0 fn=45     RAW=0280302D
+0x002CC9C0 JAL       rs=0 rt=11 imm=30782           RAW=0C0B783E TARGET=0x002DE0F8
+0x002CC9C4 ADDIU     rs=5 rt=5 imm=96               RAW=24A50060
+0x002CC9C8 LW        rs=28 rt=5 imm=-26212          RAW=8F85999C
+0x002CC9CC OP49      rs=29 rt=0 imm=32              RAW=C7A00020
+0x002CC9D0 DADDU     rs=0 rt=0 rd=3 sa=0 fn=45      RAW=0000182D
+
+----- CALL 0x002D96B0 -> 0x0027171C -----
+0x002D9650 AND       rs=2 rt=3 rd=2 sa=0 fn=36      RAW=00431024
+0x002D9654 BEQ       rs=2 rt=0 imm=9                RAW=10400009 TARGET=0x002D967C
+0x002D9658 DADDU     rs=17 rt=0 rd=4 sa=0 fn=45     RAW=0220202D
+0x002D965C JAL       rs=0 rt=9 imm=5634             RAW=0C091602 TARGET=0x00245808
+0x002D9660 ADDIU     rs=0 rt=5 imm=1                RAW=24050001
+0x002D9664 ADDIU     rs=0 rt=4 imm=24               RAW=24040018
+0x002D9668 JAL       rs=0 rt=10 imm=27384           RAW=0C0A6AF8 TARGET=0x0029ABE0
+0x002D966C ADDIU     rs=0 rt=5 imm=214              RAW=240500D6
+0x002D9670 LBU       rs=28 rt=2 imm=-25418          RAW=93829CB6
+0x002D9674 JAL       rs=0 rt=9 imm=19515            RAW=0C094C3B TARGET=0x002530EC
+0x002D9678 SB        rs=17 rt=2 imm=60              RAW=A222003C
+0x002D967C ADDIU     rs=21 rt=21 imm=1              RAW=26B50001
+0x002D9680 SLTI      rs=21 rt=2 imm=21              RAW=2AA20015
+0x002D9684 BNE       rs=2 rt=0 imm=-56              RAW=1440FFC8 TARGET=0x002D95A8
+0x002D9688 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002D968C BNE       rs=18 rt=0 imm=294             RAW=16400126 TARGET=0x002D9B28
+0x002D9690 LW        rs=29 rt=3 imm=68              RAW=8FA30044
+0x002D9694 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002D9698 SB        rs=28 rt=0 imm=-23674          RAW=A380A386
+0x002D969C DADDU     rs=0 rt=0 rd=21 sa=0 fn=45     RAW=0000A82D
+0x002D96A0 XORI      rs=3 rt=2 imm=259              RAW=38620103
+0x002D96A4 SLTIU     rs=2 rt=2 imm=1                RAW=2C420001
+0x002D96A8 SB        rs=28 rt=2 imm=-23658          RAW=A382A396
+0x002D96AC ANDI      rs=2 rt=4 imm=255              RAW=304400FF
+0x002D96B0 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002D96B4 LBU       rs=19 rt=6 imm=3               RAW=92660003  <<< DELAY SLOT
+0x002D96B8 BEQ       rs=0 rt=0 imm=263              RAW=10000107 TARGET=0x002D9AD8
+0x002D96BC SLTI      rs=21 rt=2 imm=21              RAW=2AA20015
+0x002D96C0 JAL       rs=0 rt=8 imm=-9294            RAW=0C08DBB2 TARGET=0x00236EC8
+0x002D96C4 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002D96C8 BNE       rs=2 rt=0 imm=279              RAW=14400117 TARGET=0x002D9B28
+0x002D96CC LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002D96D0 LW        rs=2 rt=3 imm=8                RAW=8C430008
+0x002D96D4 LH        rs=3 rt=2 imm=322              RAW=84620142
+0x002D96D8 BNE       rs=2 rt=0 imm=275              RAW=14400113 TARGET=0x002D9B28
+0x002D96DC SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002D96E0 LH        rs=3 rt=2 imm=344              RAW=84620158
+0x002D96E4 BNE       rs=2 rt=0 imm=272              RAW=14400110 TARGET=0x002D9B28
+0x002D96E8 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002D96EC JAL       rs=0 rt=10 imm=-21126          RAW=0C0AAD7A TARGET=0x002AB5E8
+0x002D96F0 ADDIU     rs=0 rt=4 imm=16               RAW=24040010
+0x002D96F4 BNE       rs=2 rt=0 imm=268              RAW=1440010C TARGET=0x002D9B28
+0x002D96F8 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002D96FC LW        rs=2 rt=2 imm=8                RAW=8C420008
+0x002D9700 LH        rs=2 rt=2 imm=340              RAW=84420154
+0x002D9704 BNE       rs=2 rt=0 imm=264              RAW=14400108 TARGET=0x002D9B28
+0x002D9708 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002D970C JAL       rs=0 rt=10 imm=-21081          RAW=0C0AADA7 TARGET=0x002AB69C
+0x002D9710 ADDIU     rs=0 rt=4 imm=16               RAW=24040010
+
+----- CALL 0x002D98CC -> 0x00271478 -----
+0x002D986C JAL       rs=0 rt=13 imm=9324            RAW=0C0D246C TARGET=0x003491B0
+0x002D9870 DADDU     rs=29 rt=0 rd=4 sa=0 fn=45     RAW=03A0202D
+0x002D9874 LH        rs=18 rt=2 imm=56              RAW=86420038
+0x002D9878 DADDU     rs=0 rt=0 rd=20 sa=0 fn=45     RAW=0000A02D
+0x002D987C LBU       rs=28 rt=30 imm=-23684         RAW=939EA37C
+0x002D9880 BNE       rs=2 rt=0 imm=2                RAW=14400002 TARGET=0x002D988C
+0x002D9884 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002D9888 LH        rs=18 rt=3 imm=12              RAW=8643000C
+0x002D988C ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x002D9890 BNEL      rs=3 rt=2 imm=5                RAW=54620005 TARGET=0x002D98A8
+0x002D9894 DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x002D9898 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002D989C DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002D98A0 SLTIU     rs=2 rt=20 imm=1               RAW=2C540001
+0x002D98A4 DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x002D98A8 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002D98AC DADDU     rs=0 rt=0 rd=17 sa=0 fn=45     RAW=0000882D
+0x002D98B0 LW        rs=28 rt=3 imm=-26212          RAW=8F83999C
+0x002D98B4 ADDIU     rs=2 rt=16 imm=106             RAW=2450006A
+0x002D98B8 LUI       rs=0 rt=4 imm=8                RAW=3C040008
+0x002D98BC LW        rs=3 rt=3 imm=8                RAW=8C630008
+0x002D98C0 SLL       rs=0 rt=16 rd=16 sa=16 fn=0    RAW=00108400
+0x002D98C4 LW        rs=3 rt=2 imm=0                RAW=8C620000
+0x002D98C8 OR        rs=2 rt=4 rd=2 sa=0 fn=37      RAW=00441025
+0x002D98CC JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x002D98D0 SW        rs=3 rt=2 imm=0                RAW=AC620000  <<< DELAY SLOT
+0x002D98D4 XORI      rs=22 rt=7 imm=20              RAW=3AC70014
+0x002D98D8 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002D98DC SRA       rs=0 rt=16 rd=4 sa=16 fn=3     RAW=00102403
+0x002D98E0 COP1      rs=12 rt=16 imm=-16653         RAW=4590BEF3
+0x002D98E4 BEQ       rs=0 rt=28 imm=18953           RAW=101C4A09 TARGET=0x002EC10C
+0x002D98E8 LDL       rs=27 rt=5 imm=-1990           RAW=6B65F83A
+0x002D98EC ADDI      rs=31 rt=29 imm=14205          RAW=23FD377D
+0x002D98F0 LDL       rs=20 rt=25 imm=-22715         RAW=6A99A745
+0x002D98F4 SDL       rs=13 rt=10 imm=3636           RAW=B1AA0E34
+0x002D98F8 BNE       rs=0 rt=11 imm=-18905          RAW=140BB627 TARGET=0x002C7198
+0x002D98FC REGIMM    rs=14 rt=16 imm=-12373         RAW=05D0CFAB TARGET=0x002CD7AC
+0x002D9900 COP1X     rs=6 rt=31 imm=17356           RAW=4CDF43CC
+0x002D9904 ORI       rs=24 rt=8 imm=12664           RAW=37083178
+0x002D9908 LWR       rs=23 rt=6 imm=-9423           RAW=9AE6DB31
+0x002D990C COP1      rs=3 rt=23 imm=-23963          RAW=4477A265
+0x002D9910 SDR       rs=6 rt=10 imm=31836           RAW=B4CA7C5C
+0x002D9914 BGTZ      rs=24 rt=17 imm=-14763         RAW=1F11C655 TARGET=0x002CB26C
+0x002D9918 SWL       rs=0 rt=15 imm=5438            RAW=A80F153E
+0x002D991C DADDU     rs=13 rt=14 rd=0 sa=12 fn=45   RAW=01AE032D
+0x002D9920 OP53      rs=3 rt=17 imm=-12432          RAW=D471CF70
+0x002D9924 COP0      rs=22 rt=11 imm=15264          RAW=42CB3BA0
+0x002D9928 LW        rs=26 rt=16 imm=-6259          RAW=8F50E78D
+0x002D992C BEQ       rs=24 rt=4 imm=13022           RAW=130432DE TARGET=0x002E64A8
+
+----- CALL 0x002D9E14 -> 0x0027171C -----
+0x002D9DB4 LH        rs=2 rt=2 imm=378              RAW=8442017A
+0x002D9DB8 BEQ       rs=2 rt=0 imm=18               RAW=10400012 TARGET=0x002D9E04
+0x002D9DBC LUI       rs=0 rt=5 imm=145              RAW=3C050091
+0x002D9DC0 LD        rs=29 rt=16 imm=0              RAW=DFB00000
+0x002D9DC4 LD        rs=29 rt=17 imm=8              RAW=DFB10008
+0x002D9DC8 ADDIU     rs=5 rt=5 imm=31256            RAW=24A57A18
+0x002D9DCC LD        rs=29 rt=18 imm=16             RAW=DFB20010
+0x002D9DD0 LD        rs=29 rt=19 imm=24             RAW=DFB30018
+0x002D9DD4 LD        rs=29 rt=20 imm=32             RAW=DFB40020
+0x002D9DD8 LD        rs=29 rt=21 imm=40             RAW=DFB50028
+0x002D9DDC LD        rs=29 rt=22 imm=48             RAW=DFB60030
+0x002D9DE0 LD        rs=29 rt=23 imm=56             RAW=DFB70038
+0x002D9DE4 LD        rs=29 rt=31 imm=64             RAW=DFBF0040
+0x002D9DE8 J         rs=0 rt=9 imm=-29294           RAW=08098D92 TARGET=0x00263648
+0x002D9DEC ADDIU     rs=29 rt=29 imm=80             RAW=27BD0050
+0x002D9DF0 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002D9DF4 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x002D9DF8 ADDIU     rs=5 rt=5 imm=31280            RAW=24A57A30
+0x002D9DFC BEQ       rs=0 rt=0 imm=155              RAW=1000009B TARGET=0x002DA06C
+0x002D9E00 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002D9E04 SB        rs=28 rt=0 imm=-23674          RAW=A380A386
+0x002D9E08 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002D9E0C LBU       rs=28 rt=4 imm=-23658          RAW=9384A396
+0x002D9E10 DADDU     rs=0 rt=0 rd=21 sa=0 fn=45     RAW=0000A82D
+0x002D9E14 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002D9E18 LBU       rs=17 rt=6 imm=5               RAW=92260005  <<< DELAY SLOT
+0x002D9E1C ADDIU     rs=0 rt=6 imm=9999             RAW=2406270F
+0x002D9E20 ADDIU     rs=0 rt=7 imm=-1               RAW=2407FFFF
+0x002D9E24 DADDU     rs=0 rt=0 rd=18 sa=0 fn=45     RAW=0000902D
+0x002D9E28 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002D9E2C ADDIU     rs=16 rt=4 imm=64              RAW=26040040
+0x002D9E30 BEQ       rs=4 rt=0 imm=3                RAW=10800003 TARGET=0x002D9E40
+0x002D9E34 DADDU     rs=0 rt=0 rd=2 sa=0 fn=45      RAW=0000102D
+0x002D9E38 LW        rs=4 rt=2 imm=0                RAW=8C820000
+0x002D9E3C SRL       rs=0 rt=2 rd=2 sa=31 fn=2      RAW=000217C2
+0x002D9E40 ANDI      rs=2 rt=2 imm=255              RAW=304200FF
+0x002D9E44 BEQ       rs=2 rt=0 imm=12               RAW=1040000C TARGET=0x002D9E78
+0x002D9E48 LUI       rs=0 rt=3 imm=8                RAW=3C030008
+0x002D9E4C LW        rs=4 rt=2 imm=0                RAW=8C820000
+0x002D9E50 AND       rs=2 rt=3 rd=2 sa=0 fn=36      RAW=00431024
+0x002D9E54 BEQL      rs=2 rt=0 imm=9                RAW=50400009 TARGET=0x002D9E7C
+0x002D9E58 ADDIU     rs=5 rt=5 imm=1                RAW=24A50001
+0x002D9E5C LBU       rs=4 rt=3 imm=63               RAW=9083003F
+0x002D9E60 SLT       rs=3 rt=6 rd=2 sa=0 fn=42      RAW=0066102A
+0x002D9E64 BEQL      rs=2 rt=0 imm=5                RAW=50400005 TARGET=0x002D9E7C
+0x002D9E68 ADDIU     rs=5 rt=5 imm=1                RAW=24A50001
+0x002D9E6C DADDU     rs=3 rt=0 rd=6 sa=0 fn=45      RAW=0060302D
+0x002D9E70 DADDU     rs=4 rt=0 rd=18 sa=0 fn=45     RAW=0080902D
+0x002D9E74 DADDU     rs=5 rt=0 rd=7 sa=0 fn=45      RAW=00A0382D
+
+----- CALL 0x002D9F6C -> 0x00271478 -----
+0x002D9F0C DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x002D9F10 JAL       rs=0 rt=9 imm=26412            RAW=0C09672C TARGET=0x00259CB0
+0x002D9F14 DADDU     rs=0 rt=0 rd=20 sa=0 fn=45     RAW=0000A02D
+0x002D9F18 LH        rs=18 rt=3 imm=56              RAW=86430038
+0x002D9F1C ADDIU     rs=2 rt=19 imm=106             RAW=2453006A
+0x002D9F20 BNE       rs=3 rt=0 imm=2                RAW=14600002 TARGET=0x002D9F2C
+0x002D9F24 DADDU     rs=3 rt=0 rd=4 sa=0 fn=45      RAW=0060202D
+0x002D9F28 LH        rs=18 rt=4 imm=12              RAW=8644000C
+0x002D9F2C ADDIU     rs=0 rt=2 imm=209              RAW=240200D1
+0x002D9F30 BNEL      rs=4 rt=2 imm=5                RAW=54820005 TARGET=0x002D9F48
+0x002D9F34 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002D9F38 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002D9F3C DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002D9F40 SLTIU     rs=2 rt=20 imm=1               RAW=2C540001
+0x002D9F44 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002D9F48 ADDIU     rs=0 rt=5 imm=36               RAW=24050024
+0x002D9F4C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002D9F50 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002D9F54 ADDIU     rs=0 rt=17 imm=100             RAW=24110064
+0x002D9F58 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002D9F5C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002D9F60 JAL       rs=0 rt=10 imm=-24780          RAW=0C0A9F34 TARGET=0x002A7CD0
+0x002D9F64 ADDIU     rs=0 rt=4 imm=2015             RAW=240407DF
+0x002D9F68 SH        rs=28 rt=19 imm=-23686         RAW=A793A37A
+0x002D9F6C JAL       rs=0 rt=9 imm=-15074           RAW=0C09C51E TARGET=0x00271478  <<< CALL
+0x002D9F70 SB        rs=28 rt=20 imm=-23676         RAW=A394A384  <<< DELAY SLOT
+0x002D9F74 LW        rs=28 rt=3 imm=-26212          RAW=8F83999C
+0x002D9F78 ADDIU     rs=0 rt=4 imm=42               RAW=2404002A
+0x002D9F7C SH        rs=28 rt=2 imm=-23682          RAW=A782A37E
+0x002D9F80 ADDIU     rs=0 rt=5 imm=36               RAW=24050024
+0x002D9F84 LW        rs=3 rt=2 imm=12               RAW=8C62000C
+0x002D9F88 SW        rs=28 rt=4 imm=-23668          RAW=AF84A38C
+0x002D9F8C LUI       rs=0 rt=1 imm=1                RAW=3C010001
+0x002D9F90 ADDU      rs=1 rt=2 rd=1 sa=0 fn=33      RAW=00220821
+0x002D9F94 LH        rs=1 rt=2 imm=-24304           RAW=8422A110
+0x002D9F98 BNE       rs=2 rt=5 imm=14               RAW=1445000E TARGET=0x002D9FD4
+0x002D9F9C DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002D9FA0 ADDIU     rs=0 rt=4 imm=216              RAW=240400D8
+0x002D9FA4 JAL       rs=0 rt=10 imm=27415           RAW=0C0A6B17 TARGET=0x0029AC5C
+0x002D9FA8 ADDIU     rs=17 rt=17 imm=-1             RAW=2631FFFF
+0x002D9FAC BEQ       rs=17 rt=0 imm=8               RAW=12200008 TARGET=0x002D9FD0
+0x002D9FB0 ADDIU     rs=0 rt=3 imm=36               RAW=24030024
+0x002D9FB4 LW        rs=28 rt=2 imm=-26212          RAW=8F82999C
+0x002D9FB8 LW        rs=2 rt=2 imm=12               RAW=8C42000C
+0x002D9FBC LUI       rs=0 rt=1 imm=1                RAW=3C010001
+0x002D9FC0 ADDU      rs=1 rt=2 rd=1 sa=0 fn=33      RAW=00220821
+0x002D9FC4 LH        rs=1 rt=2 imm=-24304           RAW=8422A110
+0x002D9FC8 BEQL      rs=2 rt=3 imm=-10              RAW=5043FFF6 TARGET=0x002D9FA4
+0x002D9FCC ADDIU     rs=0 rt=4 imm=216              RAW=240400D8
+
+----- CALL 0x002DB5BC -> 0x0027171C -----
+0x002DB55C SWL       rs=26 rt=3 imm=-14979          RAW=AB43C57D
+0x002DB560 SW        rs=2 rt=6 imm=10227            RAW=AC4627F3
+0x002DB564 OP58      rs=29 rt=12 imm=-29066         RAW=EBAC8E76
+0x002DB568 COP1      rs=9 rt=29 imm=-32548          RAW=453D80DC
+0x002DB56C SW        rs=17 rt=13 imm=25460          RAW=AE2D6374
+0x002DB570 DADDI     rs=8 rt=20 imm=8374            RAW=611420B6
+0x002DB574 OP57      rs=21 rt=19 imm=27691          RAW=E6B36C2B
+0x002DB578 OP31      rs=30 rt=2 imm=2563            RAW=7FC20A03
+0x002DB57C BEQ       rs=1 rt=2 imm=-17863           RAW=1022BA39 TARGET=0x002C9E64
+0x002DB580 LB        rs=14 rt=29 imm=-17069         RAW=81DDBD53
+0x002DB584 XORI      rs=20 rt=6 imm=23415           RAW=3A865B77
+0x002DB588 SD        rs=31 rt=31 imm=-256           RAW=FFFFFF00
+0x002DB58C SD        rs=31 rt=31 imm=-1             RAW=FFFFFFFF
+0x002DB590 SPECIAL_63 rs=7 rt=31 rd=31 sa=31 fn=63   RAW=00FFFFFF
+0x002DB594 SLL       rs=16 rt=7 rd=1 sa=0 fn=0      RAW=02070800
+0x002DB598 SLL       rs=0 rt=8 rd=0 sa=0 fn=0       RAW=00080000
+0x002DB59C SLL       rs=0 rt=8 rd=0 sa=0 fn=0       RAW=00080000
+0x002DB5A0 DADDU     rs=3 rt=0 rd=2 sa=0 fn=45      RAW=0060102D
+0x002DB5A4 XORI      rs=3 rt=3 imm=0                RAW=38630000
+0x002DB5A8 MOVZ      rs=5 rt=3 rd=2 sa=0 fn=10      RAW=00A3100A
+0x002DB5AC BNEL      rs=2 rt=4 imm=7                RAW=54440007 TARGET=0x002DB5CC
+0x002DB5B0 ADDIU     rs=0 rt=2 imm=35               RAW=24020023
+0x002DB5B4 LBU       rs=21 rt=6 imm=3               RAW=92A60003
+0x002DB5B8 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB5BC JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002DB5C0 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D  <<< DELAY SLOT
+0x002DB5C4 BEQ       rs=0 rt=0 imm=32               RAW=10000020 TARGET=0x002DB648
+0x002DB5C8 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002DB5CC BNEL      rs=20 rt=2 imm=9               RAW=56820009 TARGET=0x002DB5F4
+0x002DB5D0 SLL       rs=0 rt=6 rd=2 sa=16 fn=0      RAW=00061400
+0x002DB5D4 SB        rs=28 rt=0 imm=-23674          RAW=A380A386
+0x002DB5D8 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB5DC SB        rs=28 rt=0 imm=-23658          RAW=A380A396
+0x002DB5E0 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002DB5E4 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C
+0x002DB5E8 LBU       rs=21 rt=6 imm=3               RAW=92A60003
+0x002DB5EC BEQ       rs=0 rt=0 imm=22               RAW=10000016 TARGET=0x002DB648
+0x002DB5F0 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002DB5F4 LH        rs=29 rt=4 imm=12              RAW=87A4000C
+0x002DB5F8 SRA       rs=0 rt=2 rd=2 sa=16 fn=3      RAW=00021403
+0x002DB5FC ADDIU     rs=0 rt=5 imm=209              RAW=240500D1
+0x002DB600 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002DB604 XORI      rs=2 rt=2 imm=0                RAW=38420000
+0x002DB608 MOVZ      rs=4 rt=2 rd=3 sa=0 fn=10      RAW=0082180A
+0x002DB60C BNE       rs=3 rt=5 imm=4                RAW=14650004 TARGET=0x002DB620
+0x002DB610 DADDU     rs=0 rt=0 rd=16 sa=0 fn=45     RAW=0000802D
+0x002DB614 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002DB618 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB61C SLTIU     rs=2 rt=16 imm=1               RAW=2C500001
+
+----- CALL 0x002DB5E4 -> 0x0027171C -----
+0x002DB584 XORI      rs=20 rt=6 imm=23415           RAW=3A865B77
+0x002DB588 SD        rs=31 rt=31 imm=-256           RAW=FFFFFF00
+0x002DB58C SD        rs=31 rt=31 imm=-1             RAW=FFFFFFFF
+0x002DB590 SPECIAL_63 rs=7 rt=31 rd=31 sa=31 fn=63   RAW=00FFFFFF
+0x002DB594 SLL       rs=16 rt=7 rd=1 sa=0 fn=0      RAW=02070800
+0x002DB598 SLL       rs=0 rt=8 rd=0 sa=0 fn=0       RAW=00080000
+0x002DB59C SLL       rs=0 rt=8 rd=0 sa=0 fn=0       RAW=00080000
+0x002DB5A0 DADDU     rs=3 rt=0 rd=2 sa=0 fn=45      RAW=0060102D
+0x002DB5A4 XORI      rs=3 rt=3 imm=0                RAW=38630000
+0x002DB5A8 MOVZ      rs=5 rt=3 rd=2 sa=0 fn=10      RAW=00A3100A
+0x002DB5AC BNEL      rs=2 rt=4 imm=7                RAW=54440007 TARGET=0x002DB5CC
+0x002DB5B0 ADDIU     rs=0 rt=2 imm=35               RAW=24020023
+0x002DB5B4 LBU       rs=21 rt=6 imm=3               RAW=92A60003
+0x002DB5B8 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB5BC JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C
+0x002DB5C0 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002DB5C4 BEQ       rs=0 rt=0 imm=32               RAW=10000020 TARGET=0x002DB648
+0x002DB5C8 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002DB5CC BNEL      rs=20 rt=2 imm=9               RAW=56820009 TARGET=0x002DB5F4
+0x002DB5D0 SLL       rs=0 rt=6 rd=2 sa=16 fn=0      RAW=00061400
+0x002DB5D4 SB        rs=28 rt=0 imm=-23674          RAW=A380A386
+0x002DB5D8 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB5DC SB        rs=28 rt=0 imm=-23658          RAW=A380A396
+0x002DB5E0 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002DB5E4 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C  <<< CALL
+0x002DB5E8 LBU       rs=21 rt=6 imm=3               RAW=92A60003  <<< DELAY SLOT
+0x002DB5EC BEQ       rs=0 rt=0 imm=22               RAW=10000016 TARGET=0x002DB648
+0x002DB5F0 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002DB5F4 LH        rs=29 rt=4 imm=12              RAW=87A4000C
+0x002DB5F8 SRA       rs=0 rt=2 rd=2 sa=16 fn=3      RAW=00021403
+0x002DB5FC ADDIU     rs=0 rt=5 imm=209              RAW=240500D1
+0x002DB600 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002DB604 XORI      rs=2 rt=2 imm=0                RAW=38420000
+0x002DB608 MOVZ      rs=4 rt=2 rd=3 sa=0 fn=10      RAW=0082180A
+0x002DB60C BNE       rs=3 rt=5 imm=4                RAW=14650004 TARGET=0x002DB620
+0x002DB610 DADDU     rs=0 rt=0 rd=16 sa=0 fn=45     RAW=0000802D
+0x002DB614 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002DB618 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB61C SLTIU     rs=2 rt=16 imm=1               RAW=2C500001
+0x002DB620 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002DB624 DADDU     rs=29 rt=0 rd=4 sa=0 fn=45     RAW=03A0202D
+0x002DB628 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002DB62C ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002DB630 DADDU     rs=16 rt=0 rd=7 sa=0 fn=45     RAW=0200382D
+0x002DB634 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002DB638 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002DB63C SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002DB640 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0
+0x002DB644 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D
+
+----- CALL 0x002DB640 -> 0x002714A0 -----
+0x002DB5E0 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002DB5E4 JAL       rs=0 rt=9 imm=-14905           RAW=0C09C5C7 TARGET=0x0027171C
+0x002DB5E8 LBU       rs=21 rt=6 imm=3               RAW=92A60003
+0x002DB5EC BEQ       rs=0 rt=0 imm=22               RAW=10000016 TARGET=0x002DB648
+0x002DB5F0 SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002DB5F4 LH        rs=29 rt=4 imm=12              RAW=87A4000C
+0x002DB5F8 SRA       rs=0 rt=2 rd=2 sa=16 fn=3      RAW=00021403
+0x002DB5FC ADDIU     rs=0 rt=5 imm=209              RAW=240500D1
+0x002DB600 DADDU     rs=2 rt=0 rd=3 sa=0 fn=45      RAW=0040182D
+0x002DB604 XORI      rs=2 rt=2 imm=0                RAW=38420000
+0x002DB608 MOVZ      rs=4 rt=2 rd=3 sa=0 fn=10      RAW=0082180A
+0x002DB60C BNE       rs=3 rt=5 imm=4                RAW=14650004 TARGET=0x002DB620
+0x002DB610 DADDU     rs=0 rt=0 rd=16 sa=0 fn=45     RAW=0000802D
+0x002DB614 JAL       rs=0 rt=10 imm=-25005          RAW=0C0A9E53 TARGET=0x002A794C
+0x002DB618 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB61C SLTIU     rs=2 rt=16 imm=1               RAW=2C500001
+0x002DB620 JAL       rs=0 rt=9 imm=26405            RAW=0C096725 TARGET=0x00259C94
+0x002DB624 DADDU     rs=29 rt=0 rd=4 sa=0 fn=45     RAW=03A0202D
+0x002DB628 ADDIU     rs=0 rt=4 imm=1                RAW=24040001
+0x002DB62C ADDIU     rs=2 rt=2 imm=106              RAW=2442006A
+0x002DB630 DADDU     rs=16 rt=0 rd=7 sa=0 fn=45     RAW=0200382D
+0x002DB634 SLL       rs=0 rt=2 rd=2 sa=16 fn=0      RAW=00021400
+0x002DB638 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002DB63C SRA       rs=0 rt=2 rd=5 sa=16 fn=3      RAW=00022C03
+0x002DB640 JAL       rs=0 rt=9 imm=-15064           RAW=0C09C528 TARGET=0x002714A0  <<< CALL
+0x002DB644 DADDU     rs=0 rt=0 rd=8 sa=0 fn=45      RAW=0000402D  <<< DELAY SLOT
+0x002DB648 BEQ       rs=20 rt=0 imm=4               RAW=12800004 TARGET=0x002DB65C
+0x002DB64C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002DB650 DADDU     rs=20 rt=0 rd=5 sa=0 fn=45     RAW=0280282D
+0x002DB654 JAL       rs=0 rt=8 imm=-27452           RAW=0C0894C4 TARGET=0x00225310
+0x002DB658 DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002DB65C LBU       rs=29 rt=3 imm=58              RAW=93A3003A
+0x002DB660 ADDIU     rs=0 rt=2 imm=8                RAW=24020008
+0x002DB664 BNE       rs=3 rt=2 imm=4                RAW=14620004 TARGET=0x002DB678
+0x002DB668 ADDIU     rs=0 rt=2 imm=35               RAW=24020023
+0x002DB66C BNE       rs=22 rt=0 imm=5               RAW=16C00005 TARGET=0x002DB684
+0x002DB670 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB674 ADDIU     rs=0 rt=2 imm=35               RAW=24020023
+0x002DB678 BNE       rs=20 rt=2 imm=5               RAW=16820005 TARGET=0x002DB690
+0x002DB67C SLL       rs=0 rt=0 rd=0 sa=0 fn=0       RAW=00000000
+0x002DB680 DADDU     rs=0 rt=0 rd=4 sa=0 fn=45      RAW=0000202D
+0x002DB684 DADDU     rs=0 rt=0 rd=5 sa=0 fn=45      RAW=0000282D
+0x002DB688 JAL       rs=0 rt=9 imm=-14716           RAW=0C09C684 TARGET=0x00271A10
+0x002DB68C DADDU     rs=0 rt=0 rd=6 sa=0 fn=45      RAW=0000302D
+0x002DB690 JAL       rs=0 rt=8 imm=-25662           RAW=0C089BC2 TARGET=0x00226F08
+0x002DB694 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002DB698 ADDIU     rs=0 rt=3 imm=9                RAW=24030009
+0x002DB69C LBU       rs=29 rt=2 imm=58              RAW=93A2003A
+0x002DB6A0 BNE       rs=2 rt=3 imm=11               RAW=1443000B TARGET=0x002DB6D0
+
+----- CALL 0x002E4754 -> 0x0027148C -----
+0x002E46F4 SLL       rs=0 rt=2 rd=2 sa=3 fn=0       RAW=000210C0
+0x002E46F8 ADDU      rs=3 rt=2 rd=4 sa=0 fn=33      RAW=00622021
+0x002E46FC ADDU      rs=2 rt=3 rd=2 sa=0 fn=33      RAW=00431021
+0x002E4700 LW        rs=2 rt=2 imm=0                RAW=8C420000
+0x002E4704 LW        rs=4 rt=3 imm=4                RAW=8C830004
+0x002E4708 ADDU      rs=18 rt=2 rd=18 sa=0 fn=33    RAW=02429021
+0x002E470C ADDU      rs=19 rt=3 rd=19 sa=0 fn=33    RAW=02639821
+0x002E4710 DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x002E4714 JAL       rs=0 rt=8 imm=31216            RAW=0C0879F0 TARGET=0x0021E7C0
+0x002E4718 DADDU     rs=19 rt=0 rd=5 sa=0 fn=45     RAW=0260282D
+0x002E471C DADDU     rs=18 rt=0 rd=4 sa=0 fn=45     RAW=0240202D
+0x002E4720 BEQ       rs=2 rt=0 imm=-33              RAW=1040FFDF TARGET=0x002E46A0
+0x002E4724 DADDU     rs=19 rt=0 rd=5 sa=0 fn=45     RAW=0260282D
+0x002E4728 BNE       rs=21 rt=0 imm=10              RAW=16A0000A TARGET=0x002E4754
+0x002E472C LUI       rs=0 rt=5 imm=146              RAW=3C050092
+0x002E4730 LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002E4734 JAL       rs=0 rt=9 imm=-29294           RAW=0C098D92 TARGET=0x00263648
+0x002E4738 ADDIU     rs=5 rt=5 imm=-32048           RAW=24A582D0
+0x002E473C LH        rs=17 rt=2 imm=14              RAW=8622000E
+0x002E4740 BEQ       rs=2 rt=0 imm=154              RAW=1040009A TARGET=0x002E49AC
+0x002E4744 LHU       rs=17 rt=3 imm=14              RAW=9623000E
+0x002E4748 ADDIU     rs=3 rt=2 imm=-1               RAW=2462FFFF
+0x002E474C BEQ       rs=0 rt=0 imm=151              RAW=10000097 TARGET=0x002E49AC
+0x002E4750 SH        rs=17 rt=2 imm=14              RAW=A622000E
+0x002E4754 JAL       rs=0 rt=9 imm=-15069           RAW=0C09C523 TARGET=0x0027148C  <<< CALL
+0x002E4758 ADDIU     rs=0 rt=16 imm=59              RAW=2410003B  <<< DELAY SLOT
+0x002E475C LW        rs=28 rt=4 imm=-26212          RAW=8F84999C
+0x002E4760 LW        rs=28 rt=6 imm=-20500          RAW=8F86AFEC
+0x002E4764 SLL       rs=0 rt=2 rd=3 sa=1 fn=0       RAW=00021840
+0x002E4768 LW        rs=4 rt=5 imm=12               RAW=8C85000C
+0x002E476C ADDU      rs=3 rt=2 rd=3 sa=0 fn=33      RAW=00621821
+0x002E4770 OP60      rs=1 rt=14 imm=-5551           RAW=F02EEA51
+0x002E4774 COP0      rs=13 rt=20 imm=27322          RAW=41B46ABA
+0x002E4778 COP0      rs=0 rt=20 imm=31428           RAW=40147AC4
+0x002E477C LD        rs=13 rt=13 imm=-5063          RAW=DDADEC39
+0x002E4780 OP58      rs=31 rt=0 imm=7071            RAW=EBE01B9F
+0x002E4784 SB        rs=16 rt=25 imm=24397          RAW=A2195F4D
+0x002E4788 LUI       rs=2 rt=25 imm=15146           RAW=3C593B2A
+0x002E478C COP0      rs=31 rt=11 imm=24796          RAW=43EB60DC
+0x002E4790 ADDIU     rs=21 rt=6 imm=-21648          RAW=26A6AB70
+0x002E4794 J         rs=3 rt=31 imm=-19405          RAW=087FB433 TARGET=0x01FED0CC
+0x002E4798 BLEZL     rs=12 rt=15 imm=-432           RAW=598FFE50 TARGET=0x002E40DC
+0x002E479C BEQ       rs=8 rt=18 imm=-17467          RAW=1112BBC5 TARGET=0x002D36B4
+0x002E47A0 BNEL      rs=5 rt=30 imm=27931           RAW=54BE6D1B TARGET=0x002FFC10
+0x002E47A4 LWL       rs=6 rt=14 imm=-7763           RAW=88CEE1AD
+0x002E47A8 COP2      rs=15 rt=28 imm=10594          RAW=49FC2962
+0x002E47AC OP53      rs=8 rt=28 imm=-26949          RAW=D51C96BB
+0x002E47B0 BLEZ      rs=26 rt=29 imm=3294           RAW=1B5D0CDE TARGET=0x002E7B2C
+0x002E47B4 OP54      rs=22 rt=7 imm=-26197          RAW=DAC799AB
+
+===== 解析統計 =====
+CALL件数: 30
+対象アドレス: 0x0027171C, 0x002714A0, 0x00271478, 0x0027148C
