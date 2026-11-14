@@ -1,0 +1,1189 @@
+Program.cs 全体行数: 6793
+===== メッセージ関連処理 =====
+    1: using System;
+    2: using System.IO;
+    3: using System.Linq;
+    4: using System.Text;
+    5: using System.Text.Json;
+    6: using System.Collections.Generic;
+    7: using System.Drawing;
+    8: using System.Windows.Forms;
+    9: 
+   10: namespace TornekoIjiriPort;
+   11: 
+   12: 
+   13: internal static class MessageTextAutoDecoder
+   14: {
+   15:     private static readonly System.Text.Encoding Cp932 =
+   16:         CreateCp932();
+   17: 
+   18:     private static readonly System.Text.Encoding Utf8 =
+   19:         new System.Text.UTF8Encoding(false, true);
+   20: 
+   21:     private static readonly System.Text.Encoding Utf16LE =
+   22:         new System.Text.UnicodeEncoding(false, false, true);
+   23: 
+   24:     private static readonly System.Text.Encoding Utf16BE =
+   25:         new System.Text.UnicodeEncoding(true, false, true);
+   26: 
+   27:     private static System.Text.Encoding CreateCp932()
+   28:     {
+   29:         System.Text.Encoding.RegisterProvider(
+   30:             System.Text.CodePagesEncodingProvider.Instance);
+   31: 
+   32:         return System.Text.Encoding.GetEncoding(
+   33:             932,
+   34:             System.Text.EncoderFallback.ExceptionFallback,
+   35:             System.Text.DecoderFallback.ExceptionFallback);
+   36:     }
+   37: 
+   38:     private sealed class Candidate
+   39:     {
+   40:         public string Text = "";
+   41:         public string EncodingName = "";
+   42:         public int Score;
+   43:     }
+   44: 
+   45:     public static string DecodeText(byte[] data)
+   46:     {
+   47:         if (data == null)
+   48:             return "";
+   49: 
+   50:         return DecodeText(data, 0, data.Length);
+   87:         }
+   88: 
+   89:         if (best == null || best.Score < 15)
+   90:             return SafeCp932(bytes);
+   91: 
+   92:         return best.Text;
+   93:     }
+   94: 
+   95:     private static string SafeCp932(byte[] bytes)
+   96:     {
+   97:         try
+   98:         {
+   99:             return Cp932.GetString(bytes);
+  100:         }
+  101:         catch
+  102:         {
+  103:             return System.Text.Encoding.GetEncoding(932)
+  104:                 .GetString(bytes);
+  105:         }
+  106:     }
+  107: 
+  108:     private static void AddCandidate(
+  109:         byte[] bytes,
+  110:         System.Text.Encoding encoding,
+  111:         string name,
+  112:         System.Collections.Generic.List<Candidate> candidates)
+  113:     {
+  114:         try
+  115:         {
+  116:             string text = encoding.GetString(bytes);
+  117: 
+  118:             if (string.IsNullOrWhiteSpace(text))
+  119:                 return;
+  120: 
+  121:             candidates.Add(new Candidate
+  122:             {
+  123:                 Text = text,
+  124:                 EncodingName = name,
+  125:                 Score = Evaluate(text)
+  126:             });
+  127:         }
+  128:         catch
+  129:         {
+  130:             // この文字コードでは復号できない
+  131:         }
+  132:     }
+  133: 
+  134:     private static int Evaluate(string text)
+  295:         "kernel32.dll", SetLastError = true)]
+  296:     private static extern IntPtr OpenProcess(
+  297:         uint dwDesiredAccess,
+  298:         bool bInheritHandle,
+  299:         int dwProcessId);
+  300: 
+  301:     [System.Runtime.InteropServices.DllImport(
+  302:         "kernel32.dll", SetLastError = true)]
+  303:     private static extern bool CloseHandle(IntPtr hObject);
+  304: 
+  305:     [System.Runtime.InteropServices.DllImport(
+  306:         "kernel32.dll", SetLastError = true)]
+  307:     private static extern bool ReadProcessMemory(
+  308:         IntPtr hProcess,
+  309:         IntPtr lpBaseAddress,
+  310:         byte[] lpBuffer,
+  311:         UIntPtr nSize,
+  312:         out UIntPtr lpNumberOfBytesRead);
+  313: 
+  314:     [System.Runtime.InteropServices.DllImport(
+  315:         "kernel32.dll", SetLastError = true)]
+  316:     private static extern UIntPtr VirtualQueryEx(
+  317:         IntPtr hProcess,
+  318:         IntPtr lpAddress,
+  319:         out MEMORY_BASIC_INFORMATION lpBuffer,
+  320:         UIntPtr dwLength);
+  321: 
+  322:     [System.Runtime.InteropServices.DllImport(
+  323:         "kernel32.dll", SetLastError = true)]
+  324:     private static extern bool IsWow64Process(
+  325:         IntPtr hProcess,
+  493:                     SignatureA.Length, SignatureB.Length);
+  494:                 byte[] buffer = new byte[CHUNK_SIZE + 32];
+  495: 
+  496:                 while (offset < runEnd - runStart)
+  497:                 {
+  498:                     int request = (int)System.Math.Min(
+  499:                         (ulong)CHUNK_SIZE,
+  500:                         (runEnd - runStart) - offset);
+  501: 
+  502:                     byte[] chunkBuffer = new byte[request];
+  503:                     UIntPtr bytesRead;
+  504: 
+  505:                     ReadProcessMemory(
+  506:                         handle,
+  507:                         ToIntPtr(runStart + offset),
+  508:                         chunkBuffer,
+  509:                         new UIntPtr((uint)request),
+  510:                         out bytesRead);
+  511: 
+  512:                     int actual = (int)System.Math.Min(
+  513:                         bytesRead.ToUInt64(),
+  514:                         (ulong)request);
+  515: 
+  516:                     if (actual <= 0)
+  517:                     {
+  518:                         ulong skip = System.Math.Min(
+  519:                             (ulong)FALLBACK_SIZE,
+  520:                             (runEnd - runStart) - offset);
+  521:                         offset += skip;
+  522:                         carry = 0;
+  523:                         continue;
+  723:     private static extern System.IntPtr OpenProcess(
+  724:         uint access,
+  725:         bool inherit,
+  726:         int processId);
+  727: 
+  728:     [System.Runtime.InteropServices.DllImport(
+  729:         "kernel32.dll", SetLastError = true)]
+  730:     private static extern bool CloseHandle(
+  731:         System.IntPtr handle);
+  732: 
+  733:     [System.Runtime.InteropServices.DllImport(
+  734:         "kernel32.dll", SetLastError = true)]
+  735:     private static extern bool ReadProcessMemory(
+  736:         System.IntPtr process,
+  737:         System.IntPtr address,
+  738:         byte[] buffer,
+  739:         System.UIntPtr size,
+  740:         out System.UIntPtr read);
+  741: 
+  742:     private static byte[] Read(
+  743:         System.IntPtr handle,
+  744:         long address,
+  745:         int size)
+  746:     {
+  747:         if (address <= 0)
+  748:             throw new System.ArgumentOutOfRangeException(
+  749:                 nameof(address));
+  750: 
+  751:         byte[] buffer = new byte[size];
+  752:         System.UIntPtr read;
+  753: 
+  754:         bool ok = ReadProcessMemory(
+  755:             handle,
+  756:             new System.IntPtr(address),
+  757:             buffer,
+  758:             new System.UIntPtr((uint)size),
+  759:             out read);
+  760: 
+  761:         if (!ok || read.ToUInt64() != (ulong)size)
+  762:         {
+  763:             throw new System.ComponentModel.Win32Exception(
+  764:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+  765:                 "ゲームメモリの読み取りに失敗しました。");
+  766:         }
+  767: 
+  768:         return buffer;
+  769:     }
+  770: 
+  771:     private static uint ReadUInt32(
+  772:         System.IntPtr handle,
+  863:                 byte[] nameBytes = Read(
+  864:                     handle,
+  865:                     checked(moduleBase + nameRva),
+  866:                     32);
+  867: 
+  868:                 int terminator =
+  869:                     System.Array.IndexOf(nameBytes, (byte)0);
+  870: 
+  871:                 int nameLength =
+  872:                     terminator < 0 ? nameBytes.Length : terminator;
+  873: 
+  874:                 string name =
+  875:                     System.Text.Encoding.ASCII.GetString(
+  876:                         nameBytes, 0, nameLength);
+  877: 
+  878:                 if (name != "EEmem")
+  879:                     continue;
+  880: 
+  881:                 byte[] ordinalBytes = Read(
+  882:                     handle,
+  883:                     checked(moduleBase + ordinalsRva + (long)i * 2),
+  884:                     2);
+  885: 
+  886:                 ushort ordinal =
+  887:                     System.BitConverter.ToUInt16(ordinalBytes, 0);
+  888: 
+  889:                 uint variableRva = ReadUInt32(
+  890:                     handle,
+  891:                     checked(moduleBase + functionsRva +
+  892:                         (long)ordinal * 4));
+  893: 
+ 1191:     private static extern System.IntPtr OpenProcess(
+ 1192:         uint access,
+ 1193:         bool inherit,
+ 1194:         int processId);
+ 1195: 
+ 1196:     [System.Runtime.InteropServices.DllImport(
+ 1197:         "kernel32.dll", SetLastError = true)]
+ 1198:     private static extern bool CloseHandle(
+ 1199:         System.IntPtr handle);
+ 1200: 
+ 1201:     [System.Runtime.InteropServices.DllImport(
+ 1202:         "kernel32.dll", SetLastError = true)]
+ 1203:     private static extern bool ReadProcessMemory(
+ 1204:         System.IntPtr process,
+ 1205:         System.IntPtr address,
+ 1206:         byte[] buffer,
+ 1207:         System.UIntPtr size,
+ 1208:         out System.UIntPtr read);
+ 1209: 
+ 1210:     private static byte[] Read(
+ 1211:         System.IntPtr handle,
+ 1212:         long address,
+ 1213:         int length)
+ 1214:     {
+ 1215:         if (handle == System.IntPtr.Zero)
+ 1216:             throw new System.ArgumentException("PCSX2プロセスハンドルが無効です。");
+ 1217: 
+ 1218:         if (address <= 0)
+ 1219:             throw new System.ArgumentOutOfRangeException(nameof(address));
+ 1220: 
+ 1221:         if (length < 0 || length > 64 * 1024 * 1024)
+ 1222:             throw new System.ArgumentOutOfRangeException(nameof(length));
+ 1223: 
+ 1224:         byte[] buffer = new byte[length];
+ 1225:         System.UIntPtr read;
+ 1226: 
+ 1227:         bool ok = ReadProcessMemory(
+ 1228:             handle,
+ 1229:             new System.IntPtr(address),
+ 1230:             buffer,
+ 1231:             new System.UIntPtr((uint)length),
+ 1232:             out read);
+ 1233: 
+ 1234:         // GetLastWin32Error は別のAPIを呼ぶ前に取得する。
+ 1235:         int win32Error = ok
+ 1236:             ? 0
+ 1237:             : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+ 1238: 
+ 1239:         ulong actual = read.ToUInt64();
+ 1240: 
+ 1241:         if (!ok || actual != (ulong)length)
+ 1242:         {
+ 1243:             string detail =
+ 1244:                 "PCSX2メモリ読み取り失敗。" +
+ 1245:                 " アドレス=0x" + address.ToString("X") +
+ 1246:                 " (decimal=" + address.ToString() + ")" +
+ 1247:                 " 要求サイズ=" + length.ToString() + " bytes" +
+ 1248:                 " 実読取サイズ=" + actual.ToString() + " bytes" +
+ 1249:                 " ReadProcessMemory=" + ok.ToString() +
+ 1250:                 " Win32Error=" + win32Error.ToString() +
+ 1251:                 " (0x" + win32Error.ToString("X") + ")";
+ 1252: 
+ 1253:             throw new System.InvalidOperationException(detail);
+ 1254:         }
+ 1255: 
+ 1256:         return buffer;
+ 1257:     }
+ 1258: 
+ 1259:     private static long Address(
+ 1260:         Pcsx2MemoryLayout layout,
+ 1261:         string key)
+ 1262:     {
+ 1263:         if (!layout.Addresses.TryGetValue(key, out long value))
+ 1264:             throw new System.InvalidOperationException(
+ 1265:                 "メモリアドレスが定義されていません: " + key);
+ 1266: 
+ 1267:         return value;
+ 1336:             processId);
+ 1337: 
+ 1338:         if (handle == System.IntPtr.Zero)
+ 1339:         {
+ 1340:             throw new System.ComponentModel.Win32Exception(
+ 1341:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+ 1342:                 "BIN取得用にPCSX2を開けません。");
+ 1343:         }
+ 1344: 
+ 1345:         try
+ 1346:         {
+ 1347:             // 旧HSP:
+ 1348:             // ReadProcessMemory var_130, var_134,
+ 1349:             // varptr(var_226), 524288, var_145
+ 1350:             byte[] bin = Read(
+ 1351:                 handle,
+ 1352:                 layout.SignatureA,
+ 1353:                 BaseSize);
+ 1354: 
+ 1355:             // 旧HSP版のBIN出力はバージョン5として構築する。
+ 1356:             bin[VersionOffset] = 5;
+ 1357: 
+ 1358:             int destination = ExtensionOffset;
+ 1359: 
+ 1360:             // 旧HSP label_155 の読み込み順序を維持。
+ 1361:             Append(handle, bin, ref destination,
+ 1362:                 Address(layout, "var_150"),
+ 1363:                 Size(layout, "var_151_size"));
+ 1364: 
+ 1365:             Append(handle, bin, ref destination,
+ 1366:                 Address(layout, "var_152"),
+ 1881:         0x5F, 0x65, 0x71, 0x75,
+ 1882:         0x69, 0x70, 0x6F, 0x66,
+ 1883:         0x66, 0x00, 0x00, 0x00
+ 1884:     };
+ 1885: 
+ 1886:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1887:     private static extern System.IntPtr OpenProcess(uint access, bool inherit, int processId);
+ 1888: 
+ 1889:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1890:     private static extern bool CloseHandle(System.IntPtr handle);
+ 1891: 
+ 1892:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1893:     private static extern bool ReadProcessMemory(
+ 1894:         System.IntPtr process, System.IntPtr address, byte[] buffer,
+ 1895:         System.UIntPtr size, out System.UIntPtr read);
+ 1896: 
+ 1897:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1898:     private static extern bool WriteProcessMemory(
+ 1899:         System.IntPtr process, System.IntPtr address, byte[] buffer,
+ 1900:         System.UIntPtr size, out System.UIntPtr written);
+ 1901: 
+ 1902:     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+ 1903:     private struct APPLY_MEMORY_BASIC_INFORMATION
+ 1904:     {
+ 1905:         public System.IntPtr BaseAddress;
+ 1906:         public System.IntPtr AllocationBase;
+ 1907:         public uint AllocationProtect;
+ 1908:         public System.UIntPtr RegionSize;
+ 1909:         public uint State;
+ 1910:         public uint Protect;
+ 1911:         public uint Type;
+ 1994:     }
+ 1995: 
+ 1996:     private static byte[] ReadExact(
+ 1997:         System.IntPtr handle, long address, int length, string name)
+ 1998:     {
+ 1999:         if (address <= 0 || length <= 0)
+ 2000:             throw new System.InvalidOperationException("不正な読み取り範囲: " + name);
+ 2001: 
+ 2002:         checked { long unused = address + length; }
+ 2003:         byte[] buffer = new byte[length];
+ 2004:         System.UIntPtr read;
+ 2005: 
+ 2006:         bool ok = ReadProcessMemory(
+ 2007:             handle, new System.IntPtr(address), buffer,
+ 2008:             new System.UIntPtr((uint)length), out read);
+ 2009: 
+ 2010:         int error = ok ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+ 2011: 
+ 2012:         if (!ok || read.ToUInt64() != (ulong)length)
+ 2013:         {
+ 2014:             throw new System.InvalidOperationException(
+ 2015:                 "メモリ読み取り失敗: " + name +
+ 2016:                 " / Address=0x" + address.ToString("X") +
+ 2017:                 " / Required=" + length +
+ 2018:                 " / Read=" + read.ToUInt64() +
+ 2019:                 " / Win32Error=" + error);
+ 2020:         }
+ 2021: 
+ 2022:         return buffer;
+ 2023:     }
+ 2024: 
+ 2629: 
+ 2630:     public static LegacyIniSettings Load(string path)
+ 2631:     {
+ 2632:         var result = new LegacyIniSettings();
+ 2633: 
+ 2634:         if (!File.Exists(path))
+ 2635:             return result;
+ 2636: 
+ 2637:         Encoding.RegisterProvider(
+ 2638:             System.Text.CodePagesEncodingProvider.Instance);
+ 2639: 
+ 2640:         string[] lines = File.ReadAllLines(
+ 2641:             path, Encoding.GetEncoding(932));
+ 2642: 
+ 2643:         // 旧INIの25項目を基準に読み込む。
+ 2644:         // 削除対象のパッチ・重複アイテム階層設定は移行しない。
+ 2645:         if (lines.Length > 19)
+ 2646:             result.ShowAdventureTurns =
+ 2647:                 lines[19].Trim() == "1";
+ 2648: 
+ 2649:         if (lines.Length > 23)
+ 2650:             result.MemoryFilePath = lines[23].Trim();
+ 2651: 
+ 2652:         if (lines.Length > 24)
+ 2653:             result.RankingDisplayName = lines[24].Trim();
+ 2654: 
+ 2655:         return result;
+ 2656:     }
+ 2657: }
+ 2658: 
+ 2659: // ============================================================
+ 2954: 
+ 2955:     [System.Runtime.InteropServices.DllImport(
+ 2956:         "kernel32.dll", SetLastError = true)]
+ 2957:     private static extern System.IntPtr OpenProcess(
+ 2958:         uint access, bool inherit, int processId);
+ 2959: 
+ 2960:     [System.Runtime.InteropServices.DllImport(
+ 2961:         "kernel32.dll", SetLastError = true)]
+ 2962:     private static extern bool CloseHandle(System.IntPtr handle);
+ 2963: 
+ 2964:     [System.Runtime.InteropServices.DllImport(
+ 2965:         "kernel32.dll", SetLastError = true)]
+ 2966:     private static extern bool ReadProcessMemory(
+ 2967:         System.IntPtr process,
+ 2968:         System.IntPtr address,
+ 2969:         byte[] buffer,
+ 2970:         System.UIntPtr size,
+ 2971:         out System.UIntPtr read);
+ 2972: 
+ 2973:     private static readonly System.Text.Encoding JapaneseEncoding =
+ 2974:         CreateJapaneseEncoding();
+ 2975: 
+ 2976:     private static System.Text.Encoding CreateJapaneseEncoding()
+ 2977:     {
+ 2978:         System.Text.Encoding.RegisterProvider(
+ 2979:             System.Text.CodePagesEncodingProvider.Instance);
+ 2980:         return System.Text.Encoding.GetEncoding(932);
+ 2981:     }
+ 2982: 
+ 2983:     public MonsterNameEditorForm(int processId)
+ 2984:     {
+ 2985:         _processId = processId;
+ 2986:         _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+ 2987: 
+ 2988:         Text = "モンスター名変更・名前データ確認";
+ 2989:         StartPosition = FormStartPosition.CenterParent;
+ 2990:         Width = 900;
+ 2991:         Height = 700;
+ 2992:         MinimumSize = new Size(650, 450);
+ 2993:         Font = new Font("Yu Gothic UI", 10);
+ 2994: 
+ 2995:         var root = new TableLayoutPanel
+ 2996:         {
+ 2997:             Dock = DockStyle.Fill,
+ 2998:             ColumnCount = 1,
+ 3083:         if (handle == IntPtr.Zero)
+ 3084:         {
+ 3085:             throw new System.ComponentModel.Win32Exception(
+ 3086:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+ 3087:                 "PCSX2の読み取りハンドルを取得できません。");
+ 3088:         }
+ 3089: 
+ 3090:         try
+ 3091:         {
+ 3092:             long address = checked(_eeBase + ScanStart);
+ 3093:             UIntPtr read;
+ 3094: 
+ 3095:             bool ok = ReadProcessMemory(
+ 3096:                 handle,
+ 3097:                 new IntPtr(address),
+ 3098:                 buffer,
+ 3099:                 new UIntPtr((uint)length),
+ 3100:                 out read);
+ 3101: 
+ 3102:             if (!ok || read.ToUInt64() != (ulong)length)
+ 3103:             {
+ 3104:                 throw new System.ComponentModel.Win32Exception(
+ 3105:                     System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+ 3106:                     "EEメモリの名前データ領域を最後まで読み取れませんでした。");
+ 3107:             }
+ 3108:         }
+ 3109:         finally
+ 3110:         {
+ 3111:             CloseHandle(handle);
+ 3112:         }
+ 3113: 
+ 3222: 
+ 3223:                 int idLength = idEnd - idStart;
+ 3224: 
+ 3225:                 if (idLength < 2 ||
+ 3226:                     idLength > 32 ||
+ 3227:                     idEnd >= data.Length ||
+ 3228:                     data[idEnd] != 0)
+ 3229:                 {
+ 3230:                     i++;
+ 3231:                     continue;
+ 3232:                 }
+ 3233: 
+ 3234:                 string id = System.Text.Encoding.ASCII.GetString(
+ 3235:                     data, idStart, idLength);
+ 3236: 
+ 3237:                 if (id.Length == 0 ||
+ 3238:                     !char.IsLetter(id[0]) ||
+ 3239:                     IsExcludedId(id))
+ 3240:                 {
+ 3241:                     i++;
+ 3242:                     continue;
+ 3243:                 }
+ 3244: 
+ 3245:                 int nameStart = idEnd + 1;
+ 3246:                 int nameEnd = nameStart;
+ 3247: 
+ 3248:                 while (nameEnd < data.Length &&
+ 3249:                        nameEnd - nameStart <= 64 &&
+ 3250:                        data[nameEnd] != 0)
+ 3251:                 {
+ 3252:                     nameEnd++;
+ 3255:                 if (nameEnd >= data.Length ||
+ 3256:                     nameEnd == nameStart ||
+ 3257:                     nameEnd - nameStart > 64)
+ 3258:                 {
+ 3259:                     i++;
+ 3260:                     continue;
+ 3261:                 }
+ 3262: 
+ 3263:                 string name;
+ 3264: 
+ 3265:                 try
+ 3266:                 {
+ 3267:                     name = JapaneseEncoding.GetString(
+ 3268:                         data,
+ 3269:                         nameStart,
+ 3270:                         nameEnd - nameStart);
+ 3271:                 }
+ 3272:                 catch
+ 3273:                 {
+ 3274:                     i++;
+ 3275:                     continue;
+ 3276:                 }
+ 3277: 
+ 3278:                 if (IsJapaneseName(name))
+ 3279:                 {
+ 3280:                     int absoluteOffset = ScanStart + idStart;
+ 3281: 
+ 3282:                     bool duplicate = _entries.Exists(
+ 3283:                         x => x.Id == id &&
+ 3284:                              x.Offset == absoluteOffset);
+ 3285: 
+ 5559:     static MonsterNameEditor20261114()
+ 5560:     {
+ 5561:         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+ 5562:     }
+ 5563: 
+ 5564:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+ 5565:     private static extern IntPtr OpenProcess(uint access, bool inherit, int pid);
+ 5566: 
+ 5567:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+ 5568:     private static extern bool CloseHandle(IntPtr handle);
+ 5569: 
+ 5570:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+ 5571:     private static extern bool ReadProcessMemory(
+ 5572:         IntPtr process, IntPtr address, byte[] buffer,
+ 5573:         UIntPtr size, out UIntPtr read);
+ 5574: 
+ 5575:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+ 5576:     private static extern bool WriteProcessMemory(
+ 5577:         IntPtr process, IntPtr address, byte[] buffer,
+ 5578:         UIntPtr size, out UIntPtr written);
+ 5579: 
+ 5580:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+ 5581:     private static extern bool VirtualProtectEx(
+ 5582:         IntPtr process,
+ 5583:         IntPtr address,
+ 5584:         UIntPtr size,
+ 5585:         uint newProtect,
+ 5586:         out uint oldProtect);
+ 5587: 
+ 5588:     private sealed class MemoryMessageEntry
+ 5589:     {
+ 5590:         public string Id = "メモリ文字列";
+ 5591:         public string Name = "";
+ 5592:         public long Address;
+ 5593:         public int Capacity;
+ 5594: 
+ 5595:         public override string ToString()
+ 5596:         {
+ 5597:             return Name + "  [読取専用 / 0x" +
+ 5598:                 Address.ToString("X") + "]";
+ 5599:         }
+ 5600:     }
+ 5601: 
+ 5602:     [System.Runtime.InteropServices.StructLayout(
+ 5603:         System.Runtime.InteropServices.LayoutKind.Sequential)]
+ 5604:     private struct MESSAGE_MEMORY_BASIC_INFORMATION
+ 5605:     {
+ 5606:         public IntPtr BaseAddress;
+ 5630:         public long Address;
+ 5631:         public int Capacity;
+ 5632:         public byte[] OriginalBytes = Array.Empty<byte>();
+ 5633:         public override string ToString() => Name + "  [" + Id + "]";
+ 5634:     }
+ 5635: 
+ 5636:     private readonly int _pid;
+ 5637:     private readonly ListBox _list = new ListBox();
+ 5638:     private readonly TextBox _name = new TextBox();
+ 5639:     private readonly Label _status = new Label();
+ 5640:     private readonly List<MonsterEntry> _entries = new List<MonsterEntry>();
+ 5641: 
+ 5642:     private readonly List<MemoryMessageEntry> _messages =
+ 5643:         new List<MemoryMessageEntry>();
+ 5644: 
+ 5645:     private readonly List<object> _displayEntries =
+ 5646:         new List<object>();
+ 5647: 
+ 5648:     private readonly TextBox _search = new TextBox();
+ 5649:     private readonly Button _scanMessagesButton = new Button();
+ 5650:     private bool _scanInProgress = false;
+ 5651: 
+ 5652:     private readonly Encoding _sjis = Encoding.GetEncoding(932);
+ 5653: 
+ 5654:     private static bool _decodeDiagnosticShown = false;
+ 5655: 
+ 5656: private static string DecodeMonsterName(byte[] data, int offset, int count)
+ 5657:     {
+ 5658:         string utf8 = "";
+ 5659:         string cp932 = "";
+ 5660: 
+ 5661:         try {
+ 5662:             utf8 = new UTF8Encoding(false, true).GetString(data, offset, count);
+ 5663:         } catch { }
+ 5664: 
+ 5665:         try {
+ 5666:             cp932 = Encoding.GetEncoding(932).GetString(data, offset, count);
+ 5667:         } catch { }
+ 5668: 
+ 5669:         int Score(string value)
+ 5670:         {
+ 5671:             int score = 0;
+ 5672:             foreach (char c in value)
+ 5673:             {
+ 5674:                 if ((c >= '\u3040' && c <= '\u30ff') ||
+ 5675:                     (c >= '\u4e00' && c <= '\u9fff'))
+ 5676:                     score += 3;
+ 5677:                 else if (c == '\ufffd' || c == '\u0000')
+ 5678:                     score -= 10;
+ 5679:                 else if (c == '縺' || c == '繧' || c == '譁')
+ 5680:                     score -= 8;
+ 5681:             }
+ 5682:             return score;
+ 5683:         }
+ 5684: 
+ 5733:         var apply = new Button {
+ 5734:             Text = "ゲームメモリへ書き込む",
+ 5735:             Dock = DockStyle.Top,
+ 5736:             Height = 42
+ 5737:         };
+ 5738:         apply.Click += (_, _) => ApplyName();
+ 5739: 
+ 5740:         var reload = new Button {
+ 5741:             Text = "一覧を再読み込み",
+ 5742:             Dock = DockStyle.Top,
+ 5743:             Height = 36
+ 5744:         };
+ 5745:         reload.Click += (_, _) => LoadEntries();
+ 5746: 
+ 5747:         _scanMessagesButton.Text = "セリフ・メッセージを検索";
+ 5748:         _scanMessagesButton.Dock = DockStyle.Top;
+ 5749:         _scanMessagesButton.Height = 42;
+ 5750:         _scanMessagesButton.Click += (_, _) => ScanMessagesAsync();
+ 5751:         var save = new Button {
+ 5752:             Text = "一覧をテキスト保存",
+ 5753:             Dock = DockStyle.Top,
+ 5754:             Height = 36
+ 5755:         };
+ 5756:         save.Click += (_, _) => SaveEntries();
+ 5757: 
+ 5758:         _status.Dock = DockStyle.Bottom;
+ 5759:         _status.Height = 100;
+ 5760:         _status.Text = "PCSX2に接続してください。";
+ 5761: 
+ 5762:         right.Controls.Add(_status);
+ 5763:         right.Controls.Add(reload);
+ 5788: 
+ 5789:                     foreach (string path in paths)
+ 5790:                     {
+ 5791:                         try { File.AppendAllText(path, line, new UTF8Encoding(true)); }
+ 5792:                         catch { }
+ 5793:                     }
+ 5794:                 };
+ 5795: 
+ 5796:                 writeLog("モンスター名編集画面 LOAD EVENT 開始");
+ 5797: 
+ 5798:                 try
+ 5799:                 {
+ 5800:                     LoadEntries();
+ 5801:                     writeLog("LoadEntries 正常終了");
+ 5802:                 }
+ 5803:                 catch (Exception ex)
+ 5804:                 {
+ 5805:                     writeLog("LoadEntries ERROR: " + ex.ToString());
+ 5806:                 }
+ 5807:             };
+ 5808:     }
+ 5809: 
+ 5810:     private byte[] Read(IntPtr h, long address, int length)
+ 5811:     {
+ 5812:         byte[] b = new byte[length];
+ 5813:         UIntPtr read;
+ 5814:         if (!ReadProcessMemory(h, new IntPtr(address), b,
+ 5815:             new UIntPtr((uint)length), out read) ||
+ 5816:             read.ToUInt64() != (ulong)length)
+ 5817:             throw new InvalidOperationException(
+ 5818:                 "メモリ読み取り失敗: 0x" + address.ToString("X"));
+ 5819:         return b;
+ 5820:     }
+ 5821: 
+ 5822:     private long ResolveEEmem(IntPtr h)
+ 5823:     {
+ 5824:         using (var p = System.Diagnostics.Process.GetProcessById(_pid))
+ 5825:         {
+ 5826:             long module = p.MainModule!.BaseAddress.ToInt64();
+ 5827:             byte[] dos = Read(h, module, 64);
+ 5828:             if (dos[0] != 0x4D || dos[1] != 0x5A)
+ 5829:                 throw new InvalidOperationException("PCSX2 PEヘッダーが不正です。");
+ 5830: 
+ 5831:             int peOffset = BitConverter.ToInt32(dos, 0x3C);
+ 5832:             byte[] pe = Read(h, module + peOffset, 144);
+ 5846: 
+ 5847:             if (count > 200000)
+ 5848:                 throw new InvalidOperationException("Export数が不正です。");
+ 5849: 
+ 5850:             for (uint i = 0; i < count; i++)
+ 5851:             {
+ 5852:                 uint nr = BitConverter.ToUInt32(
+ 5853:                     Read(h, module + names + i * 4L, 4), 0);
+ 5854:                 byte[] nb = Read(h, module + nr, 32);
+ 5855:                 int end = Array.IndexOf(nb, (byte)0);
+ 5856:                 if (end < 0) end = nb.Length;
+ 5857: 
+ 5858:                 if (Encoding.ASCII.GetString(nb, 0, end) != "EEmem")
+ 5859:                     continue;
+ 5860: 
+ 5861:                 ushort ordinal = BitConverter.ToUInt16(
+ 5862:                     Read(h, module + ords + i * 2L, 2), 0);
+ 5863:                 uint variableRva = BitConverter.ToUInt32(
+ 5864:                     Read(h, module + funcs + ordinal * 4L, 4), 0);
+ 5865: 
+ 5866:                 if (variableRva == 0 ||
+ 5867:                     (variableRva >= exportRva &&
+ 5868:                      variableRva < exportRva + exportSize))
+ 5869:                     throw new InvalidOperationException("EEmem exportが不正です。");
+ 5870: 
+ 5871:                 long ee = BitConverter.ToInt64(
+ 5872:                     Read(h, module + variableRva, 8), 0);
+ 5873:                 if (ee <= 0)
+ 5874:                     throw new InvalidOperationException("EEmemポインタが無効です。");
+ 5875:                 return ee;
+ 5876:             }
+ 5882:     private void RefreshDisplayList()
+ 5883:     {
+ 5884:         string keyword = (_search.Text ?? "").Trim();
+ 5885: 
+ 5886:         object selected = _list.SelectedItem;
+ 5887: 
+ 5888:         _list.BeginUpdate();
+ 5889: 
+ 5890:         try
+ 5891:         {
+ 5892:             _list.Items.Clear();
+ 5893: 
+ 5894:             foreach (object item in _displayEntries)
+ 5895:             {
+ 5896:                 bool match = keyword.Length == 0;
+ 5897: 
+ 5898:                 if (!match && item is MonsterEntry e)
+ 5899:                 {
+ 5900:                     match =
+ 5901:                         e.Id.IndexOf(keyword,
+ 5902:                             StringComparison.OrdinalIgnoreCase) >= 0 ||
+ 5903:                         e.Name.IndexOf(keyword,
+ 5904:                             StringComparison.OrdinalIgnoreCase) >= 0;
+ 5905:                 }
+ 5906:                 else if (!match && item is MemoryMessageEntry m)
+ 5907:                 {
+ 5908:                     match =
+ 5909:                         m.Id.IndexOf(keyword,
+ 5910:                             StringComparison.OrdinalIgnoreCase) >= 0 ||
+ 5911:                         m.Name.IndexOf(keyword,
+ 5912:                             StringComparison.OrdinalIgnoreCase) >= 0;
+ 5913:                 }
+ 5914: 
+ 5915:                 if (match)
+ 5916:                     _list.Items.Add(item);
+ 5917:             }
+ 5918: 
+ 5919:             if (selected != null)
+ 5920:                 _list.SelectedItem = selected;
+ 5921:         }
+ 5922:         finally
+ 5923:         {
+ 5924:             _list.EndUpdate();
+ 5930:             "メッセージ候補: " + _messages.Count + " 件";
+ 5931:     }
+ 5932: 
+ 5933:     private static bool IsJapaneseCharacter(char c)
+ 5934:     {
+ 5935:         return
+ 5936:             (c >= '\u3040' && c <= '\u309F') ||
+ 5937:             (c >= '\u30A0' && c <= '\u30FF') ||
+ 5938:             (c >= '\u4E00' && c <= '\u9FFF') ||
+ 5939:             (c >= '\uFF66' && c <= '\uFF9D');
+ 5940:     }
+ 5941: 
+ 5942:     private void ExtractJapaneseStrings(
+ 5943:         byte[] data,
+ 5944:         int count,
+ 5945:         long baseAddress,
+ 5946:         HashSet<long> seen)
+ 5947:     {
+ 5948:         int pos = 0;
+ 5949: 
+ 5950:         while (pos < count && _messages.Count < 2000)
+ 5951:         {
+ 5952:             int start = pos;
+ 5953:             int japaneseBytes = 0;
+ 5954: 
+ 5955:             while (pos < count)
+ 5956:             {
+ 5957:                 byte b = data[pos];
+ 5958: 
+ 5959:                 if (b == 0)
+ 5960:                     break;
+ 5992:                 break;
+ 5993:             }
+ 5994: 
+ 5995:             int length = pos - start;
+ 5996: 
+ 5997:             if (length >= 4 &&
+ 5998:                 length <= 512 &&
+ 5999:                 japaneseBytes >= 4)
+ 6000:             {
+ 6001:                 try
+ 6002:                 {
+ 6003:                     string value =
+ 6004:                         MessageTextAutoDecoder.DecodeText(data, start, length).Trim();
+ 6005: 
+ 6006:                     int japaneseCount =
+ 6007:                         value.Count(IsJapaneseCharacter);
+ 6008: 
+ 6009:                     bool valid =
+ 6010:                         japaneseCount >= 2 &&
+ 6011:                         value.Length >= 2 &&
+ 6012:                         value.Length <= 220 &&
+ 6013:                         !value.Any(char.IsControl) &&
+ 6014:                         !value.Contains('\uFFFD');
+ 6015: 
+ 6016:                     long address = baseAddress + start;
+ 6017: 
+ 6018:                     if (valid && seen.Add(address))
+ 6019:                     {
+ 6020:                         _messages.Add(new MemoryMessageEntry
+ 6021:                         {
+ 6022:                             Id = "メモリ文字列",
+ 6023:                             Name = value,
+ 6024:                             Address = address,
+ 6025:                             Capacity = length
+ 6026:                         });
+ 6027:                     }
+ 6028:                 }
+ 6029:                 catch
+ 6030:                 {
+ 6031:                     // 不正なCP932列は読み飛ばす
+ 6032:                 }
+ 6033:             }
+ 6034: 
+ 6035:             if (pos <= start)
+ 6036:                 pos++;
+ 6037: 
+ 6038:             while (pos < count &&
+ 6136:                     int amount = (int)Math.Min(
+ 6137:                         (ulong)chunkSize,
+ 6138:                         Math.Min(
+ 6139:                             regionEnd - current,
+ 6140:                             maximumScanBytes - scanned));
+ 6141: 
+ 6142:                     if (amount <= 0)
+ 6143:                         break;
+ 6144: 
+ 6145:                     byte[] buffer = new byte[amount];
+ 6146:                     UIntPtr bytesRead;
+ 6147: 
+ 6148:                     bool ok = ReadProcessMemory(
+ 6149:                         handle,
+ 6150:                         new IntPtr(unchecked((long)current)),
+ 6151:                         buffer,
+ 6152:                         new UIntPtr((uint)amount),
+ 6153:                         out bytesRead);
+ 6154: 
+ 6155:                     int actual = (int)Math.Min(
+ 6156:                         (ulong)amount,
+ 6157:                         bytesRead.ToUInt64());
+ 6158: 
+ 6159:                     if (actual >= 4)
+ 6160:                     {
+ 6161:                         ExtractJapaneseStrings(
+ 6162:                             buffer,
+ 6163:                             actual,
+ 6164:                             unchecked((long)current),
+ 6165:                             seen);
+ 6166:                     }
+ 6167: 
+ 6168:                     scanned += (ulong)actual;
+ 6169: 
+ 6170:                     if (!ok || actual <= 0)
+ 6171:                         break;
+ 6172: 
+ 6173:                     if (amount <= overlap)
+ 6174:                         break;
+ 6175: 
+ 6176:                     current += (ulong)(amount - overlap);
+ 6177:                 }
+ 6178:             }
+ 6179: 
+ 6218:                 {
+ 6219:                     return ScanProcessMessages(handle);
+ 6220:                 }
+ 6221:                 finally
+ 6222:                 {
+ 6223:                     CloseHandle(handle);
+ 6224:                 }
+ 6225:             });
+ 6226: 
+ 6227:             if (IsDisposed || Disposing)
+ 6228:                 return;
+ 6229: 
+ 6230:             _displayEntries.Clear();
+ 6231: 
+ 6232: 
+ 6233:             foreach (MemoryMessageEntry message in _messages)
+ 6234:                 _displayEntries.Add(message);
+ 6235: 
+ 6236:             RefreshDisplayList();
+ 6237: 
+ 6238:             _status.Text =
+ 6239:                 "検索完了\r\n" +
+ 6240:                 "既存リソース: " + _entries.Count + " 件\r\n" +
+ 6241:                 "メッセージ候補: " + count + " 件";
+ 6242: 
+ 6243:             MessageBox.Show(
+ 6244:                 this,
+ 6245:                 "メッセージ検索が完了しました。\r\n\r\n" +
+ 6246:                 "取得候補: " + count + " 件",
+ 6247:                 "検索完了",
+ 6248:                 MessageBoxButtons.OK,
+ 6249:                 MessageBoxIcon.Information);
+ 6250:         }
+ 6251:         catch (Exception ex)
+ 6252:         {
+ 6266:         {
+ 6267:             _scanInProgress = false;
+ 6268: 
+ 6269:             if (!IsDisposed && !Disposing)
+ 6270:             {
+ 6271:                 _scanMessagesButton.Enabled = true;
+ 6272:                 _list.Enabled = true;
+ 6273:                 _search.Enabled = true;
+ 6274:                 _name.Enabled = true;
+ 6275:             }
+ 6276:         }
+ 6277:     }
+ 6278:     private void LoadEntries()
+ 6279:     {
+ 6280:         if (_scanInProgress)
+ 6281:             return;
+ 6282: 
+ 6283:         IntPtr h = IntPtr.Zero;
+ 6284: 
+ 6285:         _entries.Clear();
+ 6286:         _messages.Clear();
+ 6287:         _displayEntries.Clear();
+ 6288: 
+ 6289:         _list.BeginUpdate();
+ 6290:         _list.Items.Clear();
+ 6291: 
+ 6292:         try
+ 6293:         {
+ 6294:             h = OpenProcess(0x0410, false, _pid);
+ 6295: 
+ 6296:             if (h == IntPtr.Zero)
+ 6297:                 throw new InvalidOperationException(
+ 6298:                     "PCSX2を読み取り権限で開けません。");
+ 6299: 
+ 6300:             _eeBase = ResolveEEmem(h);
+ 6301: 
+ 6302:             // ここはポインタテーブルではなく、
+ 6303:             // ID\0名前\0 のリソースデータが存在する領域。
+ 6304:             const int scanStart = 0x000000;
+ 6305:             const int scanEnd = 0x02000000;
+ 6387:                     pos++;
+ 6388:                     continue;
+ 6389:                 }
+ 6390: 
+ 6391:                 int nameLength = nameEnd - nameStart;
+ 6392: 
+ 6393:                 if (nameLength > 100)
+ 6394:                 {
+ 6395:                     pos++;
+ 6396:                     continue;
+ 6397:                 }
+ 6398: 
+ 6399:                 string id = Encoding.ASCII.GetString(
+ 6400:                     region,
+ 6401:                     pos,
+ 6402:                     idEnd - pos
+ 6403:                 );
+ 6404: 
+ 6405:                 // 会話・感情差分・パーティ名などを除外
+ 6406:                 if (id.StartsWith(
+ 6407:                     "partyname_",
+ 6408:                     StringComparison.OrdinalIgnoreCase
+ 6409:                 ))
+ 6410:                 {
+ 6411:                     pos = nameEnd + 1;
+ 6412:                     continue;
+ 6413:                 }
+ 6414: 
+ 6415:                 if (System.Text.RegularExpressions.Regex.IsMatch(
+ 6416:                     id,
+ 6417:                     @"_(angry|happy|sad|talk|attack|damage|death|wait|move|win|lose)(_[0-9]+)?$",
+ 6418:                     System.Text.RegularExpressions.RegexOptions.IgnoreCase
+ 6419:                 ))
+ 6420:                 {
+ 6421:                     pos = nameEnd + 1;
+ 6422:                     continue;
+ 6423:                 }
+ 6424: 
+ 6425:                 string name;
+ 6426: 
+ 6427:                 try
+ 6428:                 {
+ 6429:                     name = _sjis.GetString(
+ 6430:                         region,
+ 6431:                         nameStart,
+ 6432:                         nameLength
+ 6433:                     );
+ 6434:                 }
+ 6435:                 catch
+ 6436:                 {
+ 6437:                     pos = nameEnd + 1;
+ 6438:                     continue;
+ 6439:                 }
+ 6440: 
+ 6441:                 if (string.IsNullOrWhiteSpace(name) ||
+ 6442:                     name.Contains('\0') ||
+ 6443:                     name.Any(char.IsControl))
+ 6444:                 {
+ 6445:                     pos = nameEnd + 1;
+ 6446:                     continue;
+ 6447:                 }
+ 6482:                 pos = nameEnd + 1;
+ 6483:             }
+ 6484: 
+ 6485:             // 有効な項目だけを一覧表示
+ 6486:             foreach (MonsterEntry entry in found)
+ 6487:             {
+ 6488:                 _entries.Add(entry);
+ 6489:             }
+ 6490: 
+ 6491:             // 画面表示前の大規模プロセスメモリ検索は実行しない。
+ 6492:             // UIフリーズを防ぎ、既存のモンスター名編集を優先する。
+ 6493:             _messages.Clear();
+ 6494:             _displayEntries.Clear();
+ 6495: 
+ 6496:             foreach (MonsterEntry entry in _entries)
+ 6497:                 _displayEntries.Add(entry);
+ 6498: 
+ 6499:             RefreshDisplayList();
+ 6500: 
+ 6501:             _status.Text =
+ 6502:                 "モンスター名一覧の読み込み完了\r\n" +
+ 6503:                 "既存リソース: " + found.Count + " 件\r\n" +
+ 6504:                 "EE検索範囲: 32MB\r\n" +
+ 6505:                 "追加メッセージ検索: 停止中\r\n" +
+ 6506:                 "名前変更・ゲームメモリ書き込みは使用できます。";
+ 6507:         }
+ 6508:         catch (Exception ex)
+ 6509:         {
+ 6510:             _status.Text = "読み込みエラー: " + ex.Message;
+ 6511: 
+ 6512:             MessageBox.Show(
+ 6513:                 this,
+ 6514:                 ex.ToString(),
+ 6515:                 "モンスター名読み込みエラー",
+ 6574:                 output.Append('\t');
+ 6575:                 output.Append("既存リソース\t");
+ 6576:                 output.Append(e.Id);
+ 6577:                 output.Append('\t');
+ 6578:                 output.Append(e.Name);
+ 6579:                 output.Append('\t');
+ 6580:                 output.Append("EE+0x");
+ 6581:                 output.Append((e.Address - _eeBase).ToString("X6"));
+ 6582:                 output.Append('\t');
+ 6583:                 output.AppendLine(e.Capacity.ToString());
+ 6584:             }
+ 6585: 
+ 6586:             foreach (MemoryMessageEntry m in _messages)
+ 6587:             {
+ 6588:                 row++;
+ 6589:                 output.Append(row);
+ 6590:                 output.Append('\t');
+ 6591:                 output.Append("読取専用メッセージ\t");
+ 6592:                 output.Append(m.Id);
+ 6593:                 output.Append('\t');
+ 6594:                 output.Append(m.Name.Replace("\r", " ").Replace("\n", " "));
+ 6595:                 output.Append('\t');
+ 6596:                 output.Append("0x");
+ 6597:                 output.Append(m.Address.ToString("X"));
+ 6598:                 output.Append('\t');
+ 6599:                 output.AppendLine(m.Capacity.ToString());
+ 6600:             }
+ 6601: 
+ 6602:             File.WriteAllText(
+ 6603:                 dialog.FileName,
+ 6604:                 output.ToString(),
+ 6619:     private void SelectEntry()
+ 6620:     {
+ 6621:         if (_list.SelectedItem is MonsterEntry e)
+ 6622:         {
+ 6623:             _name.ReadOnly = false;
+ 6624:             _name.Text = e.Name;
+ 6625: 
+ 6626:             _status.Text = "既存リソース\r\nID: " + e.Id +
+ 6627:                 "\r\n名前容量: " + e.Capacity + " bytes" +
+ 6628:                 "\r\nEEアドレス: 0x" + e.Address.ToString("X") +
+ 6629:                 "\r\n従来どおり編集できます。";
+ 6630:         }
+ 6631:         else if (_list.SelectedItem is MemoryMessageEntry m)
+ 6632:         {
+ 6633:             _name.ReadOnly = true;
+ 6634:             _name.Text = m.Name;
+ 6635: 
+ 6636:             _status.Text = "読み取り専用メッセージ候補\r\n" +
+ 6637:                 "アドレス: 0x" + m.Address.ToString("X") +
+ 6638:                 "\r\n容量: " + m.Capacity + " bytes" +
+ 6639:                 "\r\n検索・保存のみ可能です。";
+ 6640:         }
+ 6641:     }
+ 6642: 
+ 6643:     private void ApplyName()
+ 6644:     {
+ 6645:         if (_scanInProgress)
+ 6646:             return;
+ 6647: 
+ 6648:         if (!(_list.SelectedItem is MonsterEntry e))
+ 6649:         {
