@@ -560,6 +560,152 @@ internal static class Pcsx2MemoryLayoutBuilder
             Read(handle, address, 4), 0);
     }
 
+    // PCSX2 v2.8.2 専用:
+    // メインモジュールのPEエクスポートからEEmem変数を探し、
+    // EEメモリの実際のホストアドレスを取得する。
+    private static long ResolveEEmemBase(
+        int processId,
+        System.IntPtr handle)
+    {
+        using (var process =
+            System.Diagnostics.Process.GetProcessById(processId))
+        {
+            if (process.MainModule == null)
+                throw new System.InvalidOperationException(
+                    "PCSX2のメインモジュールを取得できません。");
+
+            long moduleBase =
+                process.MainModule.BaseAddress.ToInt64();
+
+            byte[] dos = Read(handle, moduleBase, 64);
+
+            if (dos[0] != 0x4D || dos[1] != 0x5A)
+                throw new System.InvalidOperationException(
+                    "PCSX2のDOSヘッダーが不正です。");
+
+            int peOffset =
+                System.BitConverter.ToInt32(dos, 0x3C);
+
+            if (peOffset <= 0 || peOffset > 1024 * 1024)
+                throw new System.InvalidOperationException(
+                    "PCSX2のPEヘッダー位置が不正です。");
+
+            byte[] pe = Read(
+                handle,
+                checked(moduleBase + peOffset),
+                24 + 120);
+
+            if (pe[0] != 0x50 || pe[1] != 0x45 ||
+                pe[2] != 0 || pe[3] != 0)
+                throw new System.InvalidOperationException(
+                    "PCSX2のPEシグネチャが不正です。");
+
+            ushort magic =
+                System.BitConverter.ToUInt16(pe, 24);
+
+            if (magic != 0x20B)
+                throw new System.InvalidOperationException(
+                    "PCSX2 v2.8.2の64bit実行ファイルではありません。");
+
+            uint exportRva =
+                System.BitConverter.ToUInt32(pe, 24 + 112);
+
+            uint exportSize =
+                System.BitConverter.ToUInt32(pe, 24 + 116);
+
+            if (exportRva == 0 || exportSize < 40)
+                throw new System.InvalidOperationException(
+                    "PCSX2のエクスポートテーブルがありません。");
+
+            byte[] exportDirectory = Read(
+                handle,
+                checked(moduleBase + exportRva),
+                40);
+
+            uint numberOfNames =
+                System.BitConverter.ToUInt32(exportDirectory, 24);
+
+            uint functionsRva =
+                System.BitConverter.ToUInt32(exportDirectory, 28);
+
+            uint namesRva =
+                System.BitConverter.ToUInt32(exportDirectory, 32);
+
+            uint ordinalsRva =
+                System.BitConverter.ToUInt32(exportDirectory, 36);
+
+            if (numberOfNames == 0 || numberOfNames > 200000)
+                throw new System.InvalidOperationException(
+                    "PCSX2のエクスポート名数が不正です。");
+
+            for (uint i = 0; i < numberOfNames; i++)
+            {
+                uint nameRva = ReadUInt32(
+                    handle,
+                    checked(moduleBase + namesRva + (long)i * 4));
+
+                byte[] nameBytes = Read(
+                    handle,
+                    checked(moduleBase + nameRva),
+                    32);
+
+                int terminator =
+                    System.Array.IndexOf(nameBytes, (byte)0);
+
+                int nameLength =
+                    terminator < 0 ? nameBytes.Length : terminator;
+
+                string name =
+                    System.Text.Encoding.ASCII.GetString(
+                        nameBytes, 0, nameLength);
+
+                if (name != "EEmem")
+                    continue;
+
+                byte[] ordinalBytes = Read(
+                    handle,
+                    checked(moduleBase + ordinalsRva + (long)i * 2),
+                    2);
+
+                ushort ordinal =
+                    System.BitConverter.ToUInt16(ordinalBytes, 0);
+
+                uint variableRva = ReadUInt32(
+                    handle,
+                    checked(moduleBase + functionsRva +
+                        (long)ordinal * 4));
+
+                // 転送先関数などを誤認しない。
+                if (variableRva == 0 ||
+                    (variableRva >= exportRva &&
+                     variableRva < exportRva + exportSize))
+                {
+                    throw new System.InvalidOperationException(
+                        "EEmemエクスポートの位置が不正です。");
+                }
+
+                // EEmemはポインタ変数。
+                // 変数の格納場所から実際のEEメモリ先頭を読む。
+                byte[] pointerBytes = Read(
+                    handle,
+                    checked(moduleBase + variableRva),
+                    8);
+
+                long eeBase =
+                    System.BitConverter.ToInt64(pointerBytes, 0);
+
+                if (eeBase <= 0)
+                    throw new System.InvalidOperationException(
+                        "PCSX2のEEmemポインタが無効です。");
+
+                return eeBase;
+            }
+
+            throw new System.InvalidOperationException(
+                "PCSX2 v2.8.2のEEmemエクスポートが見つかりません。");
+        }
+    }
+
     private static long AddOffset(long address, long offset)
     {
         return checked(address + offset);
@@ -618,6 +764,9 @@ long b = signatureB;
 
 var map = layout.Addresses;
 
+// PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
+long eeMemoryBase = ResolveEEmemBase(processId, handle);
+
 // 第2識別アドレスを基準にする領域
 map["var_150"] = AddOffset(b, 87592);
 map["var_152"] = AddOffset(b, 89224);
@@ -645,8 +794,8 @@ map["var_162"] = AddOffset(a, -297238);
 map["var_164"] = AddOffset(a, 1371800);
 
 // 補正値を基準にする領域
-map["var_166"] = AddOffset(9384904L, correction);
-map["var_168"] = AddOffset(9385504L, correction);
+map["var_166"] = AddOffset(eeMemoryBase, 9384904L + correction);
+map["var_168"] = AddOffset(eeMemoryBase, 9385504L + correction);
 
 // 旧HSPの固定アドレス差分。
 // すべて var_134 + (固定値 - 538443776)
@@ -1067,6 +1216,7 @@ internal static class Pcsx2LiveSession
     public static bool VanillaDataLoaded { get; private set; }
     public static int ProcessId { get; private set; }
     public static byte[]? VanillaBin { get; private set; }
+    public static Pcsx2MemoryLayout? MemoryLayout { get; private set; }
 
     public static event System.Action? StateChanged;
 
@@ -1078,6 +1228,7 @@ internal static class Pcsx2LiveSession
         // 新しい接続では新しい取得を待つ。
         VanillaDataLoaded = false;
         VanillaBin = null;
+        MemoryLayout = null;
 
         StateChanged?.Invoke();
     }
@@ -1094,10 +1245,19 @@ internal static class Pcsx2LiveSession
         StateChanged?.Invoke();
     }
 
+    public static void SetMemoryLayout(Pcsx2MemoryLayout layout)
+    {
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        MemoryLayout = layout;
+        StateChanged?.Invoke();
+    }
     public static void SetDisconnected()
     {
         IsConnected = false;
         ProcessId = 0;
+        MemoryLayout = null;
 
         // 取得済みBINはメイン画面の編集バッファに残す。
         StateChanged?.Invoke();
@@ -1425,6 +1585,311 @@ internal sealed class Pcsx2ConnectionForm :
     }
 }
 
+
+internal static class Pcsx2BinApplier
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_VM_WRITE = 0x0020;
+    private const uint PROCESS_VM_OPERATION = 0x0008;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private sealed class WriteBlock
+    {
+        public string Name { get; }
+        public long Address { get; }
+        public byte[] Data { get; }
+        public byte[] Original { get; set; } = System.Array.Empty<byte>();
+
+        public WriteBlock(string name, long address, byte[] data)
+        {
+            Name = name;
+            Address = address;
+            Data = data;
+        }
+    }
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr read);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool WriteProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr written);
+
+    private static byte[] ReadExact(
+        System.IntPtr handle, long address, int length, string name)
+    {
+        if (address <= 0 || length <= 0)
+            throw new System.InvalidOperationException("不正な読み取り範囲: " + name);
+
+        checked { long unused = address + length; }
+        byte[] buffer = new byte[length];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+            handle, new System.IntPtr(address), buffer,
+            new System.UIntPtr((uint)length), out read);
+
+        int error = ok ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+
+        if (!ok || read.ToUInt64() != (ulong)length)
+        {
+            throw new System.InvalidOperationException(
+                "メモリ読み取り失敗: " + name +
+                " / Address=0x" + address.ToString("X") +
+                " / Required=" + length +
+                " / Read=" + read.ToUInt64() +
+                " / Win32Error=" + error);
+        }
+
+        return buffer;
+    }
+
+    private static void WriteExact(
+        System.IntPtr handle, long address, byte[] data, string name)
+    {
+        System.UIntPtr written;
+
+        bool ok = WriteProcessMemory(
+            handle, new System.IntPtr(address), data,
+            new System.UIntPtr((uint)data.Length), out written);
+
+        int error = ok ? 0 : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+
+        if (!ok || written.ToUInt64() != (ulong)data.Length)
+        {
+            throw new System.InvalidOperationException(
+                "メモリ書き込み失敗: " + name +
+                " / Address=0x" + address.ToString("X") +
+                " / Required=" + data.Length +
+                " / Written=" + written.ToUInt64() +
+                " / Win32Error=" + error);
+        }
+    }
+
+    private static long GetAddress(Pcsx2MemoryLayout layout, string key)
+    {
+        if (!layout.Addresses.TryGetValue(key, out long value) || value <= 0)
+            throw new System.InvalidOperationException("アドレス未定義または不正: " + key);
+        return value;
+    }
+
+    private static int GetSize(Pcsx2MemoryLayout layout, string key)
+    {
+        if (!layout.Addresses.TryGetValue(key, out long value) || value <= 0 || value > BaseSize)
+            throw new System.InvalidOperationException("サイズ未定義または不正: " + key);
+        return (int)value;
+    }
+
+    private static void CheckBinRange(byte[] bin, int offset, int length)
+    {
+        if (offset < 0 || length < 0 || offset > bin.Length - length)
+            throw new System.InvalidOperationException(
+                "BIN内の適用データ範囲が不正です。位置=" + offset + " サイズ=" + length);
+    }
+
+    private static void AddBlock(
+        System.Collections.Generic.List<WriteBlock> blocks,
+        byte[] bin, ref int cursor, long address, int length, string name)
+    {
+        CheckBinRange(bin, cursor, length);
+        if (address <= 0)
+            throw new System.InvalidOperationException("書き込み先アドレスが不正: " + name);
+
+        checked { long unused = address + length; }
+        byte[] data = new byte[length];
+        System.Buffer.BlockCopy(bin, cursor, data, 0, length);
+        blocks.Add(new WriteBlock(name, address, data));
+        cursor = checked(cursor + length + 16);
+    }
+
+    private static void AddKeyBlock(
+        System.Collections.Generic.List<WriteBlock> blocks,
+        byte[] bin, ref int cursor, Pcsx2MemoryLayout layout,
+        string addressKey, string sizeKey)
+    {
+        AddBlock(blocks, bin, ref cursor,
+            GetAddress(layout, addressKey), GetSize(layout, sizeKey), addressKey);
+    }
+
+    private static void SkipFlag(byte[] bin, ref int cursor)
+    {
+        CheckBinRange(bin, cursor, 1);
+        cursor = checked(cursor + 17);
+    }
+
+    public static string Apply(
+        int processId, Pcsx2MemoryLayout layout, byte[] bin)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (bin == null || bin.Length != BaseSize)
+            throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+
+        int version = bin[VersionOffset];
+        int cursor = ExtensionOffset;
+
+        // 旧HSP label_153: バージョン85以外は追加領域を順番に適用。
+        if (version != 85)
+        {
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_150", "var_151_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_152", "var_153_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_154", "var_155_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_156", "var_157_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_158", "var_159_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_160", "var_161_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_162", "var_163_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_164", "var_165_size");
+
+            CheckBinRange(bin, cursor, 2);
+            if (bin[cursor] != 85 && bin[cursor + 1] != 85)
+            {
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_166", "var_167_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_168", "var_169_size");
+            }
+
+            if (version >= 2)
+            {
+                SkipFlag(bin, ref cursor);
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_170", "var_171_size");
+            }
+
+            if (version >= 3)
+            {
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_220", "var_221_constant");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_222", "var_223_size");
+            }
+
+            if (version >= 4)
+            {
+                SkipFlag(bin, ref cursor);
+            }
+
+            if (version >= 5)
+            {
+                AddBlock(blocks, bin, ref cursor,
+                    GetAddress(layout, "var_644") - 6,
+                    GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
+
+            int attempted = -1;
+            try
+            {
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    WriteBlock block = blocks[i];
+                    attempted = i;
+                    WriteExact(handle, block.Address, block.Data, block.Name);
+
+                    byte[] verify = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の書き込み確認");
+                    if (!System.Linq.Enumerable.SequenceEqual(verify, block.Data))
+                        throw new System.InvalidOperationException("書き込み後の読み戻しが一致しません: " + block.Name);
+                }
+            }
+            catch (System.Exception applyError)
+            {
+                var rollbackErrors = new System.Collections.Generic.List<string>();
+                for (int i = attempted; i >= 0; i--)
+                {
+                    WriteBlock block = blocks[i];
+                    try
+                    {
+                        WriteExact(handle, block.Address, block.Original, block.Name + "の復元");
+                        byte[] restored = ReadExact(handle, block.Address, block.Original.Length, block.Name + "の復元確認");
+                        if (!System.Linq.Enumerable.SequenceEqual(restored, block.Original))
+                            throw new System.InvalidOperationException("復元後の読み戻しが一致しません。");
+                    }
+                    catch (System.Exception rollbackError)
+                    {
+                        rollbackErrors.Add(block.Name + ": " + rollbackError.Message);
+                    }
+                }
+
+                if (rollbackErrors.Count > 0)
+                    throw new System.InvalidOperationException(
+                        "BIN適用に失敗し、一部メモリの復元も確認できませんでした。\r\n" +
+                        string.Join("\r\n", rollbackErrors), applyError);
+
+                throw new System.InvalidOperationException(
+                    "BIN適用に失敗しました。書き込み済み領域は元の内容へ復元しました。", applyError);
+            }
+
+            int totalBytes = 0;
+            foreach (WriteBlock block in blocks)
+                totalBytes = checked(totalBytes + block.Data.Length);
+
+            return "BINバージョン: " + version +
+                "\r\n書き込み領域数: " + blocks.Count +
+                "\r\n書き込み総量: " + totalBytes.ToString("N0") + " bytes";
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+}
 
 internal static class Program
 {
@@ -1772,34 +2237,43 @@ internal static class UiFactory
 
     public static void Error(IWin32Window owner, Exception ex)
     {
+        string errorText = ex == null
+            ? "詳細不明のエラーです。"
+            : ex.ToString();
+
         var errorForm = new System.Windows.Forms.Form
         {
-            Text = "エラー",
-            Width = 820,
-            Height = 500,
-            MinimumSize = new System.Drawing.Size(500, 300),
+            Text = "エラー詳細 - 全文コピーできます",
+            Width = 900,
+            Height = 620,
+            MinimumSize = new System.Drawing.Size(600, 400),
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent,
-            ShowIcon = false
+            ShowIcon = false,
+            KeyPreview = true
         };
 
-        var message = new System.Windows.Forms.TextBox
+        var message = new System.Windows.Forms.RichTextBox
         {
             Multiline = true,
             ReadOnly = true,
+            DetectUrls = false,
             WordWrap = false,
-            ScrollBars = System.Windows.Forms.ScrollBars.Both,
+            ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Both,
             Dock = System.Windows.Forms.DockStyle.Fill,
             Font = new System.Drawing.Font("Consolas", 10),
             BackColor = System.Drawing.SystemColors.Window,
             ForeColor = System.Drawing.SystemColors.WindowText,
-            Text = ex.ToString(),
-            HideSelection = false
+            Text = errorText,
+            HideSelection = false,
+            BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
+            TabStop = true,
+            ShortcutsEnabled = true
         };
 
         var buttons = new System.Windows.Forms.FlowLayoutPanel
         {
             Dock = System.Windows.Forms.DockStyle.Bottom,
-            Height = 48,
+            Height = 58,
             FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft,
             Padding = new System.Windows.Forms.Padding(8),
             WrapContents = false
@@ -1809,51 +2283,144 @@ internal static class UiFactory
         {
             Text = "閉じる",
             Width = 100,
-            Height = 30,
+            Height = 34,
             DialogResult = System.Windows.Forms.DialogResult.OK
         };
 
-        var copyButton = new System.Windows.Forms.Button
+        var copyAllButton = new System.Windows.Forms.Button
         {
             Text = "全文コピー",
-            Width = 110,
-            Height = 30
+            Width = 120,
+            Height = 34
         };
 
-        copyButton.Click += (sender, e) =>
+        var selectAllButton = new System.Windows.Forms.Button
+        {
+            Text = "全選択",
+            Width = 100,
+            Height = 34
+        };
+
+        var statusLabel = new System.Windows.Forms.Label
+        {
+            Text = "文字をドラッグして選択できます。Ctrl+A で全選択、Ctrl+C でコピー。",
+            AutoSize = true,
+            TextAlign = System.Drawing.ContentAlignment.MiddleLeft,
+            Padding = new System.Windows.Forms.Padding(5, 8, 5, 0)
+        };
+
+        // 右クリックメニュー
+        var contextMenu = new System.Windows.Forms.ContextMenuStrip();
+
+        var selectAllMenu = new System.Windows.Forms.ToolStripMenuItem("すべて選択");
+        selectAllMenu.Click += (sender, e) =>
+        {
+            message.Focus();
+            message.SelectAll();
+        };
+
+        var copyMenu = new System.Windows.Forms.ToolStripMenuItem("選択部分をコピー");
+        copyMenu.Click += (sender, e) =>
+        {
+            if (message.SelectionLength > 0)
+            {
+                message.Copy();
+                statusLabel.Text = "選択部分をコピーしました。";
+            }
+        };
+
+        var copyAllMenu = new System.Windows.Forms.ToolStripMenuItem("全文コピー");
+        copyAllMenu.Click += (sender, e) =>
         {
             try
             {
-                System.Windows.Forms.Clipboard.SetText(message.Text);
-                copyButton.Text = "コピーしました";
+                System.Windows.Forms.Clipboard.SetText(errorText);
+                statusLabel.Text = "全文をコピーしました。";
             }
             catch (System.Exception copyError)
             {
-                System.Windows.Forms.MessageBox.Show(
-                    errorForm,
-                    copyError.Message,
-                    "コピー失敗",
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Warning);
+                statusLabel.Text = "コピー失敗: " + copyError.Message;
             }
         };
 
+        contextMenu.Items.Add(selectAllMenu);
+        contextMenu.Items.Add(copyMenu);
+        contextMenu.Items.Add(copyAllMenu);
+        message.ContextMenuStrip = contextMenu;
+
+        // 全文コピー
+        copyAllButton.Click += (sender, e) =>
+        {
+            try
+            {
+                System.Windows.Forms.Clipboard.SetText(errorText);
+                copyAllButton.Text = "コピー成功！";
+                statusLabel.Text = "エラー全文をクリップボードにコピーしました。";
+            }
+            catch (System.Exception copyError)
+            {
+                copyAllButton.Text = "コピー失敗";
+                statusLabel.Text = "コピー失敗: " + copyError.Message;
+            }
+        };
+
+        // 全選択
+        selectAllButton.Click += (sender, e) =>
+        {
+            message.Focus();
+            message.SelectAll();
+            statusLabel.Text = "全文を選択しました。Ctrl+C でコピーできます。";
+        };
+
         buttons.Controls.Add(closeButton);
-        buttons.Controls.Add(copyButton);
+        buttons.Controls.Add(copyAllButton);
+        buttons.Controls.Add(selectAllButton);
+        buttons.Controls.Add(statusLabel);
 
         errorForm.Controls.Add(message);
         errorForm.Controls.Add(buttons);
+
         errorForm.AcceptButton = closeButton;
         errorForm.CancelButton = closeButton;
 
-        message.Select(0, 0);
+        // キーボード操作
+        errorForm.KeyDown += (sender, e) =>
+        {
+            if (e.Control && e.KeyCode == System.Windows.Forms.Keys.A)
+            {
+                message.Focus();
+                message.SelectAll();
+                e.SuppressKeyPress = true;
+            }
+            else if (e.Control && e.KeyCode == System.Windows.Forms.Keys.C)
+            {
+                if (message.SelectionLength > 0)
+                    message.Copy();
 
-        if (owner != null)
-            errorForm.ShowDialog(owner);
-        else
-            errorForm.ShowDialog();
+                e.SuppressKeyPress = true;
+            }
+        };
 
-        errorForm.Dispose();
+        // 表示後にテキスト欄へフォーカス
+        errorForm.Shown += (sender, e) =>
+        {
+            message.Focus();
+            message.SelectionStart = 0;
+            message.SelectionLength = 0;
+        };
+
+        try
+        {
+            if (owner != null)
+                errorForm.ShowDialog(owner);
+            else
+                errorForm.ShowDialog();
+        }
+        finally
+        {
+            contextMenu.Dispose();
+            errorForm.Dispose();
+        }
     }
 }
 
@@ -1878,57 +2445,6 @@ internal sealed class MainForm : Form
 
     public MainForm()
     {
-        // TornekoIjiriPort 統合データ編集画面
-        try
-        {
-            var __twMenu = new global::System.Windows.Forms.MenuStrip();
-            var __twRoot = new global::System.Windows.Forms.ToolStripMenuItem("追加データ編集");
-            var __twOpen = new global::System.Windows.Forms.ToolStripMenuItem("統合データ編集画面");
-
-            __twOpen.Click += (sender, e) =>
-            {
-                try
-                {
-                    byte[] __twBuffer =
-                        TornekoDataBufferLocator.Find(this);
-
-                    if (__twBuffer == null)
-                    {
-                        global::System.Windows.Forms.MessageBox.Show(
-                            this,
-                            "BIN編集用のbyte配列をMainFormから取得できませんでした。\n" +
-                            "既存のBIN読み込み機能でファイルを開いているか確認してください。",
-                            "統合データ編集",
-                            global::System.Windows.Forms.MessageBoxButtons.OK,
-                            global::System.Windows.Forms.MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    var __twForm =
-                        new TornekoDataWorkbenchForm(__twBuffer);
-
-                    __twForm.Show(this);
-                }
-                catch (global::System.Exception ex)
-                {
-                    global::System.Windows.Forms.MessageBox.Show(
-                        this,
-                        ex.ToString(),
-                        "統合データ編集エラー");
-                }
-            };
-
-            __twRoot.DropDownItems.Add(__twOpen);
-            __twMenu.Items.Add(__twRoot);
-            this.Controls.Add(__twMenu);
-            this.MainMenuStrip = __twMenu;
-            __twMenu.BringToFront();
-        }
-        catch
-        {
-            // メニュー追加に失敗しても既存画面の起動を妨げない。
-        }
-
         Text = "トルネコいじり Port";
         StartPosition = FormStartPosition.CenterScreen;
         Width = 1050;
@@ -2020,6 +2536,7 @@ internal sealed class MainForm : Form
         header.Controls.Add(title);
         header.Controls.Add(subtitle);
 
+        // V1_UI_BUTTONS_REMOVED_20261114: 未実装編集機能のボタンを一時非表示
         var buttons = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
@@ -2029,33 +2546,18 @@ internal sealed class MainForm : Form
         };
 
         buttons.Controls.Add(UiFactory.Button(
-            "BINファイルを開く", (_, _) => OpenBin()));
+            "改造ダンジョンのデータ読み込み", (_, _) => OpenBin()));
 
         buttons.Controls.Add(UiFactory.Button(
-            "別名でBIN保存", (_, _) => SaveBinAs()));
+            "改造ダンジョンを適用", (_, _) => ApplyBinToPcsx2()));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "BINを上書き保存", (_, _) => SaveBin()));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "フロアデータ編集", (_, _) => OpenFloorEditor()));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "モンスター出現テーブル", (_, _) => OpenSpawnEditor()));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "アイテムデータ編集", (_, _) =>
-                OpenGenericEditor("アイテムデータ", 20)));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "モンスター基本データ", (_, _) =>
-                OpenGenericEditor("モンスター基本データ", 24)));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "共通設定", (_, _) => OpenSettings()));
 
-        buttons.Controls.Add(UiFactory.Button(
-            "BIN情報", (_, _) => ShowBinInfo()));
+
 
 
         _status = new Label
@@ -2168,6 +2670,8 @@ internal sealed class MainForm : Form
             _pcsx2DataStatus.Text =
                 "バニラBIN取得中...";
 
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
             byte[] vanillaBin =
                 await System.Threading.Tasks.Task.Run(
                     () => Pcsx2VanillaBinReader.Capture(
@@ -2201,6 +2705,8 @@ internal sealed class MainForm : Form
 
             _pcsx2DataStatus.Text =
                 "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
         }
         finally
         {
@@ -2284,7 +2790,7 @@ internal sealed class MainForm : Form
     {
         using var dialog = new OpenFileDialog
         {
-            Title = "編集するBINファイルを選択",
+            Title = "適用する改造ダンジョンのBINファイルを選択",
             Filter = "BINファイル (*.bin)|*.bin|すべてのファイル (*.*)|*.*"
         };
 
@@ -2328,7 +2834,59 @@ internal sealed class MainForm : Form
         }
     }
 
-        private void SaveBin()
+        private void ApplyBinToPcsx2()
+    {
+        if (_bin == null || _bin.Length != 524288)
+        {
+            MessageBox.Show(this, "先に改造ダンジョンのBINデータを読み込んでください。");
+            return;
+        }
+
+        if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(this, "先にPCSX2へ接続してください。");
+            return;
+        }
+
+        Pcsx2MemoryLayout? layout = Pcsx2LiveSession.MemoryLayout;
+        if (layout == null)
+        {
+            MessageBox.Show(this, "メモリアドレスが未確定です。PCSX2への接続とメモリ検索を完了してください。");
+            return;
+        }
+
+        if (MessageBox.Show(
+            this,
+            "読み込んだBINをPCSX2のゲームメモリへ適用します。\\r\\n" +
+            "適用中はPCSX2やゲームを終了しないでください。\\r\\n\\r\\n続行しますか？",
+            "改造ダンジョン適用確認",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning) != DialogResult.Yes)
+            return;
+
+        try
+        {
+            string result = Pcsx2BinApplier.Apply(
+                Pcsx2LiveSession.ProcessId, layout, _bin);
+
+            _status.Text = "改造ダンジョン適用済み";
+            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+
+            MessageBox.Show(
+                this,
+                "メモリへの適用と読み戻し確認が完了しました。\\r\\n\\r\\n" + result +
+                "\\r\\n\\r\\nゲーム内でダンジョンに入れるか確認してください。",
+                "適用処理完了",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            UiFactory.Error(this, ex);
+        }
+    }
+
+    private void SaveBin()
     {
         if (_bin == null ||
             _binSnapshot == null ||
