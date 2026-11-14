@@ -751,7 +751,7 @@ long b = signatureB;
 var map = layout.Addresses;
 
 // PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
-long eeMemoryBase = ResolveEEmemBase(processId, handle);
+// 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
 
 // 第2識別アドレスを基準にする領域
 map["var_150"] = AddOffset(b, 87592);
@@ -780,8 +780,8 @@ map["var_162"] = AddOffset(a, -297238);
 map["var_164"] = AddOffset(a, 1371800);
 
 // 補正値を基準にする領域
-map["var_166"] = AddOffset(eeMemoryBase, 9384904L);
-map["var_168"] = AddOffset(eeMemoryBase, 9385504L);
+map["var_166"] = AddOffset((long)layout.Correction, 9384904L);
+map["var_168"] = AddOffset((long)layout.Correction, 9385504L);
 
 // 旧HSPの固定アドレス差分。
 // すべて var_134 + (固定値 - 538443776)
