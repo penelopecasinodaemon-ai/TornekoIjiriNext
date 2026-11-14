@@ -135,33 +135,43 @@ internal static class Pcsx2MemoryScanner
         return -1;
     }
 
-    public static System.Collections.Generic.List<System.Diagnostics.Process>
-        FindProcesses()
+    public static System.Collections.Generic.List<System.Diagnostics.Process> FindProcesses()
+{
+    var result = new System.Collections.Generic.List<System.Diagnostics.Process>();
+    foreach (var process in System.Diagnostics.Process.GetProcesses())
     {
-        var result =
-            new System.Collections.Generic.List<System.Diagnostics.Process>();
-
-        foreach (var process in System.Diagnostics.Process.GetProcesses())
+        try
         {
-            try
+            if (process.ProcessName.IndexOf("pcsx2", System.StringComparison.OrdinalIgnoreCase) < 0)
             {
-                string name = process.ProcessName;
-
-                if (name.IndexOf(
-                    "pcsx2",
-                    System.StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    result.Add(process);
-                }
+                process.Dispose();
+                continue;
             }
-            catch
+            var module = process.MainModule;
+            if (module == null)
             {
-                // 終了済みプロセスなどは無視
+                process.Dispose();
+                continue;
             }
+            var versionInfo = module.FileVersionInfo;
+            string productVersion = versionInfo.ProductVersion ?? string.Empty;
+            string fileVersion = versionInfo.FileVersion ?? string.Empty;
+            string versionText = productVersion + " " + fileVersion;
+            bool isExact282 = System.Text.RegularExpressions.Regex.IsMatch(versionText, @"(?<![0-9])2\.8\.2(?![0-9])");
+            if (!isExact282)
+            {
+                process.Dispose();
+                continue;
+            }
+            result.Add(process);
         }
-
-        return result;
+        catch
+        {
+            try { process.Dispose(); } catch { }
+        }
     }
+    return result;
+}
 
     // メモリ全域を検索せず、PCSX2プロセスを開くだけの接続処理。
     public static IntPtr OpenConnection(int processId)
@@ -189,261 +199,237 @@ internal static class Pcsx2MemoryScanner
         }
     }
 
-    public static Pcsx2ScanResult Scan(
-    int processId,
-    System.Action<string> report)
-{
-    var result = new Pcsx2ScanResult();
-    result.ProcessId = processId;
-
-    IntPtr handle = OpenProcess(
-        PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
-        false,
-        processId);
-
-    if (handle == IntPtr.Zero)
+        public static Pcsx2ScanResult Scan(
+        int processId,
+        System.Action<string> report)
     {
-        throw new System.ComponentModel.Win32Exception(
-            System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
-            "PCSX2プロセスを開けませんでした。");
-    }
+        var result = new Pcsx2ScanResult();
+        result.ProcessId = processId;
 
-    try
-    {
-        using (var process = System.Diagnostics.Process.GetProcessById(processId))
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
         {
-            result.ProcessName = process.ProcessName;
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2プロセスを開けませんでした。");
         }
 
-        bool isWow64 = false;
-        bool architectureKnown = IsWow64Process(handle, out isWow64);
-
-        ulong maximumAddress;
-
-        if (architectureKnown && isWow64)
-            maximumAddress = 0x7FFEFFFF;
-        else if (!System.Environment.Is64BitOperatingSystem)
-            maximumAddress = 0x7FFEFFFF;
-        else
-            maximumAddress = 0x00007FFFFFFEFFFF;
-
-        ulong address = 0x10000;
-
-        ulong mbiSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(
-            typeof(MEMORY_BASIC_INFORMATION));
-
-        const int CHUNK_SIZE = 1024 * 1024;
-        const int FALLBACK_SIZE = 4096;
-
-        byte[] buffer = new byte[CHUNK_SIZE + 32];
-
-        ulong firstAddress = 0;
-        ulong secondAddress = 0;
-
-        while (address < maximumAddress)
+        try
         {
-            MEMORY_BASIC_INFORMATION mbi;
-
-            UIntPtr queryResult = VirtualQueryEx(
-                handle,
-                ToIntPtr(address),
-                out mbi,
-                new UIntPtr(mbiSize));
-
-            if (queryResult == UIntPtr.Zero)
-                break;
-
-            ulong baseAddress = ToUInt64(mbi.BaseAddress);
-            ulong regionSize = mbi.RegionSize.ToUInt64();
-
-            if (regionSize == 0)
+            using (var process = System.Diagnostics.Process.GetProcessById(processId))
             {
-                address += 0x1000;
-                continue;
+                result.ProcessName = process.ProcessName;
             }
 
-            ulong nextAddress = baseAddress + regionSize;
+            bool isWow64 = false;
+            bool architectureKnown = IsWow64Process(handle, out isWow64);
 
-            bool readable =
-                mbi.State == MEM_COMMIT &&
-                (mbi.Protect & PAGE_NOACCESS) == 0 &&
-                (mbi.Protect & PAGE_GUARD) == 0;
+            ulong maximumAddress;
+            if (architectureKnown && isWow64)
+                maximumAddress = 0x7FFEFFFF;
+            else if (!System.Environment.Is64BitOperatingSystem)
+                maximumAddress = 0x7FFEFFFF;
+            else
+                maximumAddress = 0x00007FFFFFFEFFFF;
 
-            if (readable && regionSize <= 1024UL * 1024UL * 1024UL)
+            ulong address = 0x10000;
+            ulong mbiSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(
+                typeof(MEMORY_BASIC_INFORMATION));
+
+            const int CHUNK_SIZE = 1024 * 1024;
+            const int FALLBACK_SIZE = 4096;
+
+            ulong firstAddress = 0;
+            ulong secondAddress = 0;
+
+            bool ScanRun(ulong runStart, ulong runEnd)
             {
-                report?.Invoke(
-                    "メモリ領域を検索中: 0x" +
-                    baseAddress.ToString("X") +
-                    " / " +
-                    (regionSize / 1024).ToString() +
-                    " KB");
+                if (runEnd <= runStart)
+                    return false;
 
+                report?.Invoke(
+                    "旧HSP互換の連続領域を検索中: 0x" +
+                    runStart.ToString("X") + " - 0x" + runEnd.ToString("X"));
+
+                ulong runA = 0;
+                ulong runB = 0;
                 ulong offset = 0;
                 int carry = 0;
+                int maxPatternLength = System.Math.Max(
+                    SignatureA.Length, SignatureB.Length);
+                byte[] buffer = new byte[CHUNK_SIZE + 32];
 
-                while (offset < regionSize)
+                while (offset < runEnd - runStart)
                 {
                     int request = (int)System.Math.Min(
                         (ulong)CHUNK_SIZE,
-                        regionSize - offset);
-
-                    if (carry > 0)
-                    {
-                        System.Array.Copy(
-                            buffer,
-                            CHUNK_SIZE,
-                            buffer,
-                            0,
-                            carry);
-                    }
+                        (runEnd - runStart) - offset);
 
                     byte[] chunkBuffer = new byte[request];
                     UIntPtr bytesRead;
 
-                    bool readOk = ReadProcessMemory(
+                    ReadProcessMemory(
                         handle,
-                        ToIntPtr(baseAddress + offset),
+                        ToIntPtr(runStart + offset),
                         chunkBuffer,
                         new UIntPtr((uint)request),
                         out bytesRead);
 
-                    // ReadProcessMemoryがfalseでも、
-                    // 実際に読み取れたバイト数があれば利用する。
                     int actual = (int)System.Math.Min(
                         bytesRead.ToUInt64(),
                         (ulong)request);
 
                     if (actual <= 0)
                     {
-                        // 大きな読み取りに失敗した場合は
-                        // 4KBずつ先へ進み、読み取り可能な場所を探す。
                         ulong skip = System.Math.Min(
                             (ulong)FALLBACK_SIZE,
-                            regionSize - offset);
-
+                            (runEnd - runStart) - offset);
                         offset += skip;
                         carry = 0;
                         continue;
                     }
 
                     System.Array.Copy(
-                        chunkBuffer,
-                        0,
-                        buffer,
-                        carry,
-                        actual);
+                        chunkBuffer, 0, buffer, carry, actual);
 
                     int total = carry + actual;
 
-                    // AとBは別々のメモリ領域に存在してもよい。
-                    if (firstAddress == 0)
+                    if (runA == 0)
                     {
-                        int foundA = FindPattern(
-                            buffer,
-                            total,
-                            SignatureA);
-
+                        int foundA = FindPattern(buffer, total, SignatureA);
                         if (foundA >= 0)
-                        {
-                            firstAddress =
-                                baseAddress + offset -
-                                (ulong)carry + (ulong)foundA;
-
-                            report?.Invoke(
-                                "シグネチャA検出: 0x" +
-                                firstAddress.ToString("X"));
-                        }
+                            runA = runStart + offset - (ulong)carry + (ulong)foundA;
                     }
 
-                    if (secondAddress == 0)
+                    if (runB == 0)
                     {
-                        int foundB = FindPattern(
-                            buffer,
-                            total,
-                            SignatureB);
-
+                        int foundB = FindPattern(buffer, total, SignatureB);
                         if (foundB >= 0)
-                        {
-                            secondAddress =
-                                baseAddress + offset -
-                                (ulong)carry + (ulong)foundB;
-
-                            report?.Invoke(
-                                "シグネチャB検出: 0x" +
-                                secondAddress.ToString("X"));
-                        }
+                            runB = runStart + offset - (ulong)carry + (ulong)foundB;
                     }
 
                     result.ScannedBytes += actual;
 
-                    if (firstAddress != 0 && secondAddress != 0)
-                        break;
+                    if (runA != 0 && runB != 0)
+                    {
+                        firstAddress = runA;
+                        secondAddress = runB;
+                        report?.Invoke("シグネチャA検出: 0x" + runA.ToString("X"));
+                        report?.Invoke("シグネチャB検出: 0x" + runB.ToString("X"));
+                        return true;
+                    }
 
-                    int maxPatternLength = System.Math.Max(
-                        SignatureA.Length,
-                        SignatureB.Length);
-
-                    carry = System.Math.Min(
-                        maxPatternLength - 1,
-                        total);
-
+                    carry = System.Math.Min(maxPatternLength - 1, total);
                     if (carry > 0)
                     {
                         System.Array.Copy(
-                            buffer,
-                            total - carry,
-                            buffer,
-                            CHUNK_SIZE,
-                            carry);
+                            buffer, total - carry, buffer, 0, carry);
                     }
 
                     offset += (ulong)actual;
                 }
+
+                return false;
             }
 
-            if (firstAddress != 0 && secondAddress != 0)
-                break;
+            ulong runStartAddress = 0;
+            ulong runEndAddress = 0;
+            bool runActive = false;
+            bool foundPair = false;
 
-            if (nextAddress <= address)
-                break;
+            while (address < maximumAddress)
+            {
+                MEMORY_BASIC_INFORMATION mbi;
+                UIntPtr queryResult = VirtualQueryEx(
+                    handle,
+                    ToIntPtr(address),
+                    out mbi,
+                    new UIntPtr(mbiSize));
 
-            address = nextAddress;
+                if (queryResult == UIntPtr.Zero)
+                    break;
+
+                ulong baseAddress = ToUInt64(mbi.BaseAddress);
+                ulong regionSize = mbi.RegionSize.ToUInt64();
+
+                if (regionSize == 0)
+                {
+                    if (runActive)
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        runActive = false;
+                        if (foundPair) break;
+                    }
+                    address += 0x1000;
+                    continue;
+                }
+
+                ulong nextAddress = baseAddress + regionSize;
+                bool readable =
+                    mbi.State == MEM_COMMIT &&
+                    (mbi.Protect & PAGE_NOACCESS) == 0 &&
+                    (mbi.Protect & PAGE_GUARD) == 0;
+
+                if (readable)
+                {
+                    if (!runActive)
+                    {
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                    else if (baseAddress == runEndAddress)
+                    {
+                        runEndAddress = nextAddress;
+                    }
+                    else
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        if (foundPair) break;
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "同一の連続読み取り可能領域内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
         }
-
-        result.FirstSignatureAddress =
-            unchecked((long)firstAddress);
-
-        result.SecondSignatureAddress =
-            unchecked((long)secondAddress);
-
-        if (firstAddress != 0 && secondAddress != 0)
+        finally
         {
-            result.Message =
-                "旧版の2種類の識別パターンを検出しました。";
+            CloseHandle(handle);
         }
-        else if (firstAddress != 0)
-        {
-            result.Message =
-                "シグネチャAのみ検出。シグネチャBは未検出です。";
-        }
-        else if (secondAddress != 0)
-        {
-            result.Message =
-                "シグネチャBのみ検出。シグネチャAは未検出です。";
-        }
-        else
-        {
-            result.Message =
-                "両方のシグネチャを検出できませんでした。";
-        }
-
-        return result;
     }
-    finally
-    {
-        CloseHandle(handle);
-    }
-}
 
 // =========================================================
 }
@@ -1643,6 +1629,89 @@ internal static class Pcsx2BinApplier
         System.IntPtr process, System.IntPtr address, byte[] buffer,
         System.UIntPtr size, out System.UIntPtr written);
 
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct APPLY_MEMORY_BASIC_INFORMATION
+    {
+        public System.IntPtr BaseAddress;
+        public System.IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public System.UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.UIntPtr VirtualQueryEx(
+        System.IntPtr process,
+        System.IntPtr address,
+        out APPLY_MEMORY_BASIC_INFORMATION information,
+        System.UIntPtr length);
+
+    private static void ValidateWritableRange(
+        System.IntPtr handle, WriteBlock block)
+    {
+        if (block.Address <= 0 || block.Data == null || block.Data.Length <= 0)
+            throw new System.InvalidOperationException("検証対象の範囲が不正です: " + block.Name);
+
+        ulong current = unchecked((ulong)block.Address);
+        ulong end = checked(current + (ulong)block.Data.Length);
+        ulong mbiLength = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(typeof(APPLY_MEMORY_BASIC_INFORMATION));
+
+        while (current < end)
+        {
+            APPLY_MEMORY_BASIC_INFORMATION mbi;
+            System.UIntPtr queried = VirtualQueryEx(
+                handle,
+                new System.IntPtr(unchecked((long)current)),
+                out mbi,
+                new System.UIntPtr(mbiLength));
+
+            if (queried == System.UIntPtr.Zero)
+            {
+                int error = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                throw new System.InvalidOperationException(
+                    "VirtualQueryEx失敗: " + block.Name +
+                    " / Address=0x" + current.ToString("X") +
+                    " / Win32Error=" + error);
+            }
+
+            ulong regionStart = unchecked((ulong)mbi.BaseAddress.ToInt64());
+            ulong regionSize = mbi.RegionSize.ToUInt64();
+            ulong regionEnd = checked(regionStart + regionSize);
+
+            if (regionSize == 0 || current < regionStart || regionEnd <= current)
+                throw new System.InvalidOperationException(
+                    "メモリ領域の範囲が不正です: " + block.Name +
+                    " / Address=0x" + current.ToString("X"));
+
+            uint protection = mbi.Protect & 0xFF;
+            bool committed = mbi.State == 0x1000;
+            bool guarded = (mbi.Protect & 0x100) != 0;
+            bool noAccess = protection == 0x01;
+            bool writable = protection == 0x04 ||
+                             protection == 0x08 ||
+                             protection == 0x40 ||
+                             protection == 0x80;
+
+            if (!committed || guarded || noAccess || !writable)
+            {
+                throw new System.InvalidOperationException(
+                    "書き込み予定領域の事前検証に失敗: " + block.Name +
+                    " / Address=0x" + current.ToString("X") +
+                    " / RegionBase=0x" + regionStart.ToString("X") +
+                    " / RegionSize=0x" + regionSize.ToString("X") +
+                    " / State=0x" + mbi.State.ToString("X") +
+                    " / Protect=0x" + mbi.Protect.ToString("X") +
+                    " / Committed=" + committed +
+                    " / Guard=" + guarded +
+                    " / Writable=" + writable);
+            }
+
+            current = regionEnd < end ? regionEnd : end;
+        }
+    }
+
     private static byte[] ReadExact(
         System.IntPtr handle, long address, int length, string name)
     {
@@ -1745,7 +1814,7 @@ internal static class Pcsx2BinApplier
         cursor = checked(cursor + 17);
     }
 
-    public static string Apply(
+    public static string ValidateOnly(
         int processId, Pcsx2MemoryLayout layout, byte[] bin)
     {
         if (processId <= 0)
@@ -1811,7 +1880,7 @@ internal static class Pcsx2BinApplier
             throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
 
         System.IntPtr handle = OpenProcess(
-            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
             false, processId);
 
         if (handle == System.IntPtr.Zero)
@@ -1830,9 +1899,55 @@ internal static class Pcsx2BinApplier
                 throw new System.InvalidOperationException(
                     "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
 
+            // 書き込み予定領域をVirtualQueryExで検査する。
+            // この処理ではゲームメモリを書き換えない。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ValidateWritableRange(handle, blocks[i]);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
             // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
             foreach (WriteBlock block in blocks)
                 block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
+
+            // ここで終了。WriteProcessMemoryは実行しない。
+            var report = new System.Text.StringBuilder();
+            report.AppendLine("書き込み先の事前検証が完了しました。");
+            report.AppendLine("ゲームメモリへの書き込みは一切行っていません。");
+            report.AppendLine("検証ブロック数: " + blocks.Count);
+            report.AppendLine("各領域の読み取り事前保存: 成功");
+            report.AppendLine("メモリ保護属性の検査: 成功");
+            report.AppendLine("領域重複検査: 成功");
+            foreach (WriteBlock block in blocks)
+            {
+                report.AppendLine(
+                    block.Name + " / Address=0x" +
+                    block.Address.ToString("X") +
+                    " / Size=" + block.Data.Length);
+            }
+            return report.ToString();
 
             int attempted = -1;
             try
@@ -2607,7 +2722,7 @@ internal sealed class MainForm : Form
             if (processes.Count == 0)
             {
                 throw new System.InvalidOperationException(
-                    "PCSX2が見つかりません。PCSX2を起動し、ゲームを開始してから再度接続してください。");
+                    "PCSX2 v2.8.2 が見つかりません。v2.8.2以外のPCSX2（v1.5など）は接続対象から除外しています。v2.8.2を起動してから再接続してください。");
             }
 
             // 最初に検出されたPCSX2を使用
@@ -2857,26 +2972,26 @@ internal sealed class MainForm : Form
 
         if (MessageBox.Show(
             this,
-            "読み込んだBINをPCSX2のゲームメモリへ適用します。\\r\\n" +
-            "適用中はPCSX2やゲームを終了しないでください。\\r\\n\\r\\n続行しますか？",
-            "改造ダンジョン適用確認",
+            "読み込んだBINの書き込み予定領域を検証します。\\r\\n" +
+            "検証中はPCSX2やゲームを終了しないでください。メモリへの書き込みは行いません。\\r\\n\\r\\n続行しますか？",
+            "書き込み先検証確認",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Warning) != DialogResult.Yes)
             return;
 
         try
         {
-            string result = Pcsx2BinApplier.Apply(
+            string result = Pcsx2BinApplier.ValidateOnly(
                 Pcsx2LiveSession.ProcessId, layout, _bin);
 
-            _status.Text = "改造ダンジョン適用済み";
-            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+            _status.Text = "書き込み先検証済み";
+            _pcsx2DataStatus.Text = "書き込み先検証済み";
 
             MessageBox.Show(
                 this,
-                "メモリへの適用と読み戻し確認が完了しました。\\r\\n\\r\\n" + result +
+                "書き込み予定領域の検証が完了しました。メモリへの書き込みは行っていません。\\r\\n\\r\\n" + result +
                 "\\r\\n\\r\\nゲーム内でダンジョンに入れるか確認してください。",
-                "適用処理完了",
+                "事前検証完了",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
