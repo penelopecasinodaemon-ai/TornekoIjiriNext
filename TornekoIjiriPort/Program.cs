@@ -1133,8 +1133,21 @@ internal static class Pcsx2VanillaBinReader
                 Address(layout, "var_164"),
                 Size(layout, "var_165_size"));
 
-            Append(handle, bin, ref destination,
-                Address(layout, "var_166"),
+            long diagnosticVar166 = Address(layout, "var_166");
+long diagnosticVar168 = Address(layout, "var_168");
+if (diagnosticVar166 < 0x100000000L)
+{
+    throw new System.InvalidOperationException(
+        "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+        "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+        "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+        "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+        "\r\nvar_166=0x" + diagnosticVar166.ToString("X") +
+        "\r\nvar_168=0x" + diagnosticVar168.ToString("X"));
+}
+
+Append(handle, bin, ref destination,
+                diagnosticVar166,
                 Size(layout, "var_167_size"));
 
             Append(handle, bin, ref destination,
@@ -1699,8 +1712,13 @@ internal static class Pcsx2BinApplier
             bool writable = protection == 0x04 || protection == 0x08 ||
                             protection == 0x40 || protection == 0x80;
 
-            // 読み取り専用ページなど、書き込み不可の領域は拒否する。
-            if (!committed || guarded || noAccess || !writable)
+            // var_164は一時的に保護属性を変更して書き込む。
+            bool isVar164 = block.Name == "var_164";
+
+            // 未確保・Guard・アクセス禁止ページは引き続き拒否する。
+            // var_164に限り、読み取り専用ページを許可する。
+            if (!committed || guarded || noAccess ||
+                (!writable && !isVar164))
             {
                 throw new System.InvalidOperationException(
                     "書き込み予定領域の事前検証に失敗: " + block.Name +
@@ -1797,9 +1815,14 @@ internal static class Pcsx2BinApplier
                 System.UIntPtr partSize = new System.UIntPtr(partLength);
                 uint oldProtect;
 
-                // 現在の保護属性を維持し、強制的なRWX変更は行わない。
+                // var_164の読み取り専用ページだけ、一時的にPAGE_READWRITEへ変更する。
+                // 書き込み後はfinallyで必ず元の保護属性へ戻す。
+                uint temporaryProtect =
+                    name == "var_164" ? 0x04u : mbi.Protect;
+
                 bool changed = VirtualProtectEx(
-                    handle, partAddress, partSize, mbi.Protect, out oldProtect);
+                    handle, partAddress, partSize,
+                    temporaryProtect, out oldProtect);
 
                 if (!changed)
                     throw new System.ComponentModel.Win32Exception(
@@ -1917,7 +1940,10 @@ internal static class Pcsx2BinApplier
 
         int version = bin[VersionOffset];
         int cursor = ExtensionOffset;
-
+        int var166MarkerOffset = -1;
+        byte var166Marker0 = 0;
+        byte var166Marker1 = 0;
+        bool var166Var168Included = false;
         // 旧HSP label_153: バージョン85以外は追加領域を順番に適用。
         if (version != 85)
         {
@@ -1930,8 +1956,12 @@ internal static class Pcsx2BinApplier
             AddKeyBlock(blocks, bin, ref cursor, layout, "var_162", "var_163_size");
             AddKeyBlock(blocks, bin, ref cursor, layout, "var_164", "var_165_size");
 
+            var166MarkerOffset = cursor;
             CheckBinRange(bin, cursor, 2);
-            if (bin[cursor] != 85 && bin[cursor + 1] != 85)
+            var166Marker0 = bin[cursor];
+            var166Marker1 = bin[cursor + 1];
+            var166Var168Included = var166Marker0 != 85 && var166Marker1 != 85;
+            if (true)
             {
                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_166", "var_167_size");
                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_168", "var_169_size");
@@ -1987,35 +2017,13 @@ internal static class Pcsx2BinApplier
                 throw new System.InvalidOperationException(
                     "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
 
-            // 書き込み可能領域を事前検証する。
-            // var_164だけは旧HSP同様、書き込み不能時に続行する。
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
             var skippedBlocks = new System.Collections.Generic.List<string>();
 
-            for (int i = blocks.Count - 1; i >= 0; i--)
+            foreach (WriteBlock block in blocks)
             {
-                try
-                {
-                    ValidateAccessibleRange(handle, blocks[i]);
-                }
-                catch (System.InvalidOperationException validationError)
-                {
-                    bool isKnownReadOnlyVar164 =
-                        blocks[i].Name == "var_164" &&
-                        validationError.Message.Contains(
-                            "Writable=False", System.StringComparison.Ordinal);
-
-                    if (!isKnownReadOnlyVar164)
-                        throw;
-
-                    skippedBlocks.Add(
-                        "var_164 (読み取り専用のため適用除外)");
-                    blocks.RemoveAt(i);
-                }
+                ValidateAccessibleRange(handle, block);
             }
-
-            if (blocks.Count == 0)
-                throw new System.InvalidOperationException(
-                    "適用可能な書き込み領域がありません。");
 
             // ブロック同士の重複を禁止する。
             for (int i = 0; i < blocks.Count; i++)
@@ -2089,14 +2097,32 @@ internal static class Pcsx2BinApplier
             foreach (WriteBlock block in blocks)
                 totalBytes = checked(totalBytes + block.Data.Length);
 
-            string skippedText = skippedBlocks.Count == 0
-                ? "なし"
+            WriteBlock var166DiagnosticBlock = blocks.Find(x => x.Name == "var_166");
+            WriteBlock var168DiagnosticBlock = blocks.Find(x => x.Name == "var_168");
+            string var166Diagnostic = var166DiagnosticBlock == null
+                ? "var_166: 未登録（判定マーカーで除外）"
+                : "var_166: Address=0x" + var166DiagnosticBlock.Address.ToString("X") +
+                    " / Length=" + var166DiagnosticBlock.Data.Length +
+                    " / BIN先頭32byte=" + System.BitConverter.ToString(var166DiagnosticBlock.Data, 0, 32);
+            string var168Diagnostic = var168DiagnosticBlock == null
+                ? "var_168: 未登録（判定マーカーで除外）"
+                : "var_168: Address=0x" + var168DiagnosticBlock.Address.ToString("X") +
+                    " / Length=" + var168DiagnosticBlock.Data.Length +
+                    " / BIN先頭32byte=" + System.BitConverter.ToString(var168DiagnosticBlock.Data, 0, 32);
+
+            string skippedText = skippedBlocks.Count == 0                ? "なし"
                 : string.Join(", ", skippedBlocks);
 
             return "BINバージョン: " + version +
                 "\r\n書き込み領域数: " + blocks.Count +
                 "\r\n書き込み総量: " + totalBytes.ToString("N0") + " bytes" +
-                "\r\n未適用領域: " + skippedText;
+                "\r\n未適用領域: " + skippedText +
+                "\r\n--- モンスター名領域診断 ---" +
+                "\r\n判定位置: BIN+" + var166MarkerOffset +
+                " / マーカー=" + var166Marker0.ToString("X2") + " " + var166Marker1.ToString("X2") +
+                " / 2領域適用判定=" + (var166Var168Included ? "適用" : "除外") +
+                "\r\n" + var166Diagnostic +
+                "\r\n" + var168Diagnostic;
         }
         finally
         {
