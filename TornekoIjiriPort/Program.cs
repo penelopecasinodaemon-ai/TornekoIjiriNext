@@ -692,6 +692,27 @@ internal static class Pcsx2MemoryLayoutBuilder
         }
     }
 
+    public static long GetEEmemBase(int processId)
+    {
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2のメモリを開けません。");
+
+        try
+        {
+            return ResolveEEmemBase(processId, handle);
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
     private static long AddOffset(long address, long offset)
     {
         return checked(address + offset);
@@ -750,6 +771,12 @@ long b = signatureB;
 
 var map = layout.Addresses;
 
+// TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
+// 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
+// EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
+long eeMemBaseForFixedAddresses =
+    ResolveEEmemBase(processId, handle);
+
 // PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
 // 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
 
@@ -780,8 +807,8 @@ map["var_162"] = AddOffset(a, -297238);
 map["var_164"] = AddOffset(a, 1371800);
 
 // 補正値を基準にする領域
-map["var_166"] = AddOffset((long)layout.Correction, 9384904L);
-map["var_168"] = AddOffset((long)layout.Correction, 9385504L);
+map["var_166"] = AddOffset(eeMemBaseForFixedAddresses, 9384904L);
+map["var_168"] = AddOffset(eeMemBaseForFixedAddresses, 9385504L);
 
 // 旧HSPの固定アドレス差分。
 // すべて var_134 + (固定値 - 538443776)
@@ -2667,6 +2694,646 @@ internal static class UiFactory
 // ============================================================
 // メイン画面
 // ============================================================
+internal sealed class MonsterNameEditorForm : Form
+{
+    private const string TNI_MONSTER_NAME_EDITOR_20261114 = "TNI_MONSTER_NAME_EDITOR_20261114";
+
+    private const string MappingText = @"
+�H�Z�����X�^�[,2013A3C8,23
+�H�}�l�}�l(CG���ݸ�),2013B328,23
+�H�p�ײ�(�u؃U��h),2013B449,22
+�H�p�ײ�(�t���C��),2013AEC6,25
+�H�{�����K(����),2013ACCA,21
+�H�pƾ��(�|�|��),2013A626,25
+���r���O�f�b�h,20139D07,24
+���T,20139D28,23
+�C�l�X,20139D49,22
+�x���A��,20139D67,24
+�C�G�e�B,20139D85,26
+�L����,20139DA7,24
+�����_�[�G�b�O,20139DCA,21
+�悤�����,20139DE7,24
+�͂˂���ɂ�,20139E0A,21
+�ǂ�����m,20139E29,22
+�]���r�}�X�^�[,20139E4B,20
+�~�X�e���h�[��,20139E68,23
+�ǂ��ǂ��]���r,20139E8C,19
+���҂�,20139EA7,24
+�̂�������,20139ECB,20
+�g�����{���o�[,20139EEA,21
+�g�����L���O,20139F0B,20
+�g����,20139F26,25
+�΂��Ԃ���,20139F4A,21
+�ǂ��₸����,20139F69,22
+�g���l�R,20139F88,23
+�x���x��,20139FA9,22
+�}�^���S,20139FCA,21
+�T���_�[���b�g,20139FEB,20
+�e���c�N,2013A008,23
+�^�b�v�y���M�[,2013A02A,21
+�^�z�h���L�[,2013A04B,20
+�^�}�S����,2013A069,22
+�X�[�p�[�e���c�N,2013A08A,21
+�X�g���[�}�E�X,2013A0AB,20
+��������������,2013A0CA,21
+�X�^�[�L����,2013A0EC,19
+�S�[�X�g,2013A107,24
+�X�y�N�e�b�g,2013A128,23
+�w���S�[�X�g,2013A148,23
+�X���C���G���y���[,2013A16A,21
+�X���C���u���X,2013A18C,19
+�X���C���x�z�}�Y��,2013A1AD,18
+�X���C���i�C�g,2013A1CB,20
+�X���C��,2013A1E6,25
+�X�J�C�t���b�O,2013A208,23
+����������,2013A229,22
+���т�}�C�}�C,2013A24D,18
+�V���[�}��,2013A267,24
+�����̂���,2013A28B,20
+���₵������,2013A2A9,22
+�V���h�[,2013A2C7,24
+�����肩�܂���,2013A2EC,19
+���܂悤��낢,2013A30A,21
+��Ƃт�����,2013A32B,20
+�X�g�[���}��,2013A34B,20
+�����ɂ񂬂傤,2013A36A,21
+�L���[�}�V��,2013A389,22
+���K�U�����b�N,2013A3A9,22
+���m�t�@�C�^�[,2013A3EC,19
+�X���C���x�X,2013A40A,21
+�_�[�X�h���S��,2013A42B,20
+���ɂ���,2013A447,24
+�����K�[,2013A467,24
+�v�����^�[�Q�b�g,2013A48B,20
+�v�`�}�[�W,2013A4AA,21
+�v�`�q�[���[,2013A4CA,21
+�v�`�t�@�C�^�[,2013A4ED,18
+�v�`�v���[�X�g,2013A50B,20
+�p�y�b�g�}��,2013A52B,20
+�_��,2013A547,24
+�|���|���{��,2013A56B,20
+���g���S�[�X�g,2013A58C,19
+�v���`�i�L���O,2013A5AB,20
+�v���Y�}�}�E�X,2013A5CC,19
+�t�@�[���b�g,2013A5EB,20
+�䂤�ꂢ,2013A608,23
+�I�j�I�[��,2013A647,24
+���܂˂��}��,2013A66A,21
+���ǂ���,2013A687,24
+�����X�^�[�̐�,2013A6AD,18
+���񂶂��,2013A6CA,21
+�~�C�����Ƃ�,2013A6EA,21
+�}�~�[,2013A706,25
+�ǂ�ɂ񂬂傤,2013A729,22
+���V���X�i�C�g,2013A747,24
+�H�_�[�N�A�[�}�[,2013A767,24
+�V���h�[�i�C�g,2013A787,24
+���񂶂�,2013A7A9,22
+�~�j�f�[����,2013A7CA,21
+�~�~�b�N,2013A7E6,25
+�U�g���l�R,2013A809,22
+���^���X���C��,2013A827,24
+���^���L���O,2013A84A,21
+���^�����C�_�[,2013A86C,19
+���^���n���^�[,2013A88D,18
+�͂��ꃁ�^��,2013A8A9,22
+�������U�[�h,2013A8CB,20
+���_�p�j�V�b�N��,2013A8ED,18
+�}���h���S��,2013A908,23
+���C�W�L����,2013A92B,20
+�����z�[�A���g,2013A94A,21
+�}�[�W�}�^���S,2013A96A,21
+�}�[�W�X�^�[,2013A98D,18
+���C�W���񂶂�,2013A9AB,20
+�L���[�X�R�b�v,2013A9CB,20
+���r���O�n���}�[,2013A9ED,18
+�����p�b�g,2013AA07,24
+�悤����܂���,2013AA28,23
+���X�g�e���c�N,2013AA49,22
+�����h�A�[�}�[,2013AA6C,19
+�L���O�X���C��,2013AA8A,21
+�L���[�X�^�[,2013AAAB,20
+�L���[�}���e�B�X,2013AACD,18
+�L���[�v���X�^�[,2013AAEC,19
+�L���[�A�[�}�[,2013AB0A,21
+���тꂭ�炰,2013AB2A,21
+�����Ă܂���,2013AB4A,21
+�A�C�A���^�[�g��,2013AB6C,19
+�A�C�A���A���g,2013AB89,22
+�Ђ傤���܂���,2013ABA7,24
+���΂��q�g�f,2013ABCD,18
+������������,2013ABE5,26
+�������̂�낢,2013AC09,22
+�������̃n�T�~,2013AC29,22
+�z�C�~�X���C��,2013AC47,24
+�͂肹������,2013AC6C,19
+�������Â�,2013AC8A,21
+�O���C�g�}�[�}��,2013ACAB,20
+�O���C�g�z�[��,2013ACCA,21
+�����܂���,2013ACEC,19
+�W���X�e�B�X�Z,2013AD08,23
+�u���b�h�n���h,2013AD29,22
+�h���S���^��,2013AD4D,18
+�}�h�n���h,2013AD66,25
+�S�[����,2013AD86,25
+�S�[���h�}��,2013ADA8,23
+�S�[���f���X���C��,2013ADCB,20
+�M�K���e�X,2013ADE9,22
+�����i���N�W,2013AE0B,20
+�O�[��,2013AE26,25
+�K�[�S�C��,2013AE49,22
+�t���C���O�f�r��,2013AE6C,19
+�n�G�܂ǂ�,2013AE89,22
+�P�_����,2013AEAA,21
+�t�@�C���[�P���b�O,2013AEEB,20
+�����߂���,2013AF09,22
+������,2013AF29,22
+�G�r���G�X�^�[�N,2013AF4A,21
+�G�r���|�b�g,2013AF68,23
+�������̂���,2013AF8B,20
+���Ƃ���,2013AFAA,21
+�G���~�l�[�^�[,2013AFCA,21
+�����܂ǂ�,2013AFEA,21
+�܂ǂ���,2013B006,25
+�h���C�h,2013B026,25
+�h���S�X���C��,2013B04B,20
+�h���S���L�b�Y,2013B06B,20
+�h���S��,2013B087,24
+�h���L�[,2013B0A7,24
+�h���L�[�},2013B0CA,21
+war_doll,2013B0EC,19
+�h�b�O�X�i�C�p�[,2013B10B,20
+�f�r���A���J�[,2013B12C,19
+�����܂��񂩂�,2013B14C,19
+���߂�ǂ���,2013B169,22
+�f�[�����g�[�h,2013B18A,21
+�x�r�[�T�^��,2013B1A9,22
+������,2013B1C9,22
+�X���[���O�[��,2013B1EA,21
+�f�X�}�V�[��,2013B20D,18
+����傤�̂���,2013B22A,21
+�_���X�L�����b�g,2013B24B,20
+�x�z�}�X���C��,2013B266,25
+�K�j���X,2013B287,24
+�R���v���[�X�g,2013B2AB,20
+�R���}�[�W,2013B2CA,21
+�R���q�[���[,2013B2E9,22
+�R���t�@�C�^�[,2013B30C,19
+���イ�܂��イ,2013B349,22
+�ЂƂ����΂�,2013B369,22
+�o�u����,2013B389,22
+�o�u���X���C��,2013B3AC,19
+�u���E�j�[,2013B3C7,24
+�{�����K,2013B3E8,23
+�΂������,2013B40A,21
+�L�[�X�h���S��,2013B42C,19
+���΂��L�m�R,2013B46A,21
+�w���W���X�e�B�X,2013B488,23
+�r�b�O�X���[�X,2013B4AA,21
+�o�[�T�[�J�[,2013B4CA,21
+�o�Y�Y,2013B4E7,24
+�f�r�����[�h,2013B508,23
+������������,2013B52B,20
+�x�r�[�j���[�g,2013B549,22
+�f�X�X�g�[�J�[,2013B568,23
+�A�g���X,2013B586,25
+�A���[�C���v,2013B5A6,25
+���񂽂��K�j,2013B5CA,21
+���񂽂��A��,2013B5E9,22
+�A�[�N�f�[����,2013B60A,21
+���񂱂��ނ�,2013B62D,18
+���߂ӂ炵,2013B64A,21
+�V���o�[�f�r��,2013B669,22
+";
+
+    private sealed class Entry
+    {
+        public string Name = "";
+        public uint Ps2Address;
+        public int Length;
+        public override string ToString() => Name;
+    }
+
+    private readonly int _processId;
+    private readonly long _eeBase;
+    private readonly ListBox _list = new ListBox();
+    private readonly TextBox _name = new TextBox();
+    private readonly Label _info = new Label();
+    private readonly Button _read = new Button();
+    private readonly Button _write = new Button();
+    private readonly List<Entry> _entries = new List<Entry>();
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process, System.IntPtr address,
+        byte[] buffer, System.UIntPtr size,
+        out System.UIntPtr read);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool WriteProcessMemory(
+        System.IntPtr process, System.IntPtr address,
+        byte[] buffer, System.UIntPtr size,
+        out System.UIntPtr written);
+
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_VM_WRITE = 0x0020;
+    private const uint PROCESS_VM_OPERATION = 0x0008;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private static readonly System.Text.Encoding JapaneseEncoding =
+        CreateJapaneseEncoding();
+
+    private static System.Text.Encoding CreateJapaneseEncoding()
+    {
+        System.Text.Encoding.RegisterProvider(
+            System.Text.CodePagesEncodingProvider.Instance);
+        return System.Text.Encoding.GetEncoding(932);
+    }
+
+    public MonsterNameEditorForm(int processId)
+    {
+        _processId = processId;
+        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        Text = "モンスター名変更";
+        StartPosition = FormStartPosition.CenterParent;
+        Width = 650;
+        Height = 620;
+        MinimumSize = new Size(550, 450);
+        Font = new Font("Yu Gothic UI", 10);
+
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 3,
+            Padding = new Padding(10)
+        };
+
+        root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 42));
+        root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 55));
+
+        _list.Dock = DockStyle.Fill;
+        _list.IntegralHeight = false;
+        _list.SelectedIndexChanged += (_, _) => LoadSelected();
+
+        var right = new Panel { Dock = DockStyle.Fill };
+
+        var label = new Label
+        {
+            Text = "種族名",
+            AutoSize = true,
+            Location = new Point(8, 12)
+        };
+
+        _name.Location = new Point(8, 40);
+        _name.Width = 300;
+        _name.MaxLength = 100;
+
+        _info.Location = new Point(8, 70);
+        _info.AutoSize = true;
+        _info.MaximumSize = new Size(350, 0);
+
+        right.Controls.Add(label);
+        right.Controls.Add(_name);
+        right.Controls.Add(_info);
+
+        var editPanel = new Panel { Dock = DockStyle.Fill };
+        editPanel.Controls.Add(right);
+
+        _read.Text = "メモリから再読み込み";
+        _read.Width = 170;
+        _read.Height = 36;
+        _read.Location = new Point(8, 8);
+        _read.Click += (_, _) => LoadSelected();
+
+        _write.Text = "名前をPCSX2へ書き込む";
+        _write.Width = 210;
+        _write.Height = 36;
+        _write.Location = new Point(190, 8);
+        _write.Click += (_, _) => WriteSelected();
+
+        var bottom = new Panel { Dock = DockStyle.Fill };
+        bottom.Controls.Add(_read);
+        bottom.Controls.Add(_write);
+
+        root.Controls.Add(_list, 0, 0);
+        root.Controls.Add(editPanel, 1, 0);
+        root.Controls.Add(bottom, 0, 1);
+        root.SetColumnSpan(bottom, 2);
+
+        var note = new Label
+        {
+            Dock = DockStyle.Fill,
+            Text = "旧HSPの最終対応表を使用しています。名前の読み書きはPCSX2のEEメモリに対して行います。",
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+        root.Controls.Add(note, 0, 2);
+        root.SetColumnSpan(note, 2);
+
+        Controls.Add(root);
+
+        LoadMapping();
+        _write.Enabled = false;
+        _read.Enabled = false;
+
+        if (_entries.Count > 0)
+            _list.SelectedIndex = 0;
+    }
+
+    private void LoadMapping()
+    {
+        foreach (string line in MappingText.Split(
+            new[] { '\r', '\n' },
+            StringSplitOptions.RemoveEmptyEntries))
+        {
+            string[] parts = line.Split(',');
+            if (parts.Length != 3)
+                continue;
+
+            if (!uint.TryParse(
+                parts[1],
+                System.Globalization.NumberStyles.HexNumber,
+                null,
+                out uint address))
+                continue;
+
+            if (!int.TryParse(parts[2], out int length))
+                continue;
+
+            if (length < 2 || length > 512)
+                continue;
+
+            _entries.Add(new Entry
+            {
+                Name = parts[0],
+                Ps2Address = address,
+                Length = length
+            });
+        }
+
+        foreach (Entry entry in _entries)
+            _list.Items.Add(entry);
+
+        _info.Text = "対応表: " + _entries.Count + "件";
+    }
+
+    private long GetHostAddress(Entry entry)
+    {
+        // 旧HSPのEEアドレス 0x20000000 をEEメモリ先頭に対応させる。
+        ulong offset = checked((ulong)entry.Ps2Address - 0x20000000UL);
+        ulong address = checked((ulong)_eeBase + offset);
+
+        if (address > long.MaxValue)
+            throw new InvalidOperationException("変換後アドレスが不正です。");
+
+        return (long)address;
+    }
+
+    private byte[] ReadMemory(long address, int length)
+    {
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            _processId);
+
+        if (handle == IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の読み取りハンドルを取得できません。");
+
+        try
+        {
+            byte[] buffer = new byte[length];
+            UIntPtr read;
+
+            bool ok = ReadProcessMemory(
+                handle,
+                new IntPtr(address),
+                buffer,
+                new UIntPtr((uint)length),
+                out read);
+
+            if (!ok || read.ToUInt64() != (ulong)length)
+                throw new System.ComponentModel.Win32Exception(
+                    System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                    "モンスター名メモリの読み取りに失敗しました。");
+
+            return buffer;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+    private void LoadSelected()
+    {
+        Entry entry = _list.SelectedItem as Entry;
+        if (entry == null)
+        {
+            _write.Enabled = false;
+            return;
+        }
+
+        try
+        {
+            long address = GetHostAddress(entry);
+            byte[] data = ReadMemory(address, entry.Length);
+
+            bool allZero = true;
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (data[i] != 0)
+                {
+                    allZero = false;
+                    break;
+                }
+            }
+
+            if (allZero)
+            {
+                _name.Text = "";
+                _write.Enabled = false;
+                _info.Text =
+                    "読み込み先の検証に失敗しました。\r\n" +
+                    "取得したデータが全バイト0です。\r\n" +
+                    "このアドレスへの書き込みは禁止しました。\r\n" +
+                    "EEアドレス: 0x" + entry.Ps2Address.ToString("X8") +
+                    "\r\nホストアドレス: 0x" + address.ToString("X") +
+                    "\r\n生データ: " + BitConverter.ToString(data);
+                return;
+            }
+
+            int end = Array.IndexOf(data, (byte)0);
+            if (end < 0)
+                end = data.Length;
+
+            string value = JapaneseEncoding.GetString(data, 0, end);
+
+            _name.Text = value;
+            _info.Text =
+                "EEアドレス: 0x" + entry.Ps2Address.ToString("X8") +
+                "\r\nホストアドレス: 0x" + address.ToString("X") +
+                "\r\n最大バイト数: " + entry.Length +
+                "\r\n生データ: " + BitConverter.ToString(data);
+
+            _write.Enabled = true;
+            _read.Enabled = true;
+        }
+        catch (Exception ex)
+        {
+            _name.Text = "";
+            _write.Enabled = false;
+            _info.Text = "読み込み失敗:\r\n" + ex.Message;
+        }
+    }
+
+    private void WriteSelected()
+    {
+        Entry entry = _list.SelectedItem as Entry;
+        if (entry == null)
+            return;
+
+        try
+        {
+            byte[] encoded = JapaneseEncoding.GetBytes(_name.Text);
+
+            if (encoded.Length >= entry.Length)
+            {
+                MessageBox.Show(
+                    this,
+                    "名前が長すぎます。\r\n最大 " +
+                    (entry.Length - 1) + " bytes 以内にしてください。",
+                    "入力エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show(
+                this,
+                "次の名前をPCSX2のメモリへ書き込みます。\r\n\r\n" +
+                entry.Name + " → " + _name.Text +
+                "\r\n\r\nゲームを一時停止してから実行してください。",
+                "モンスター名書き込み確認",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            long address = GetHostAddress(entry);
+
+            // 旧HSPと同じく、最大長までゼロ埋めして書き込む。
+            byte[] before = ReadMemory(address, entry.Length);
+
+            bool beforeAllZero = true;
+            for (int i = 0; i < before.Length; i++)
+            {
+                if (before[i] != 0)
+                {
+                    beforeAllZero = false;
+                    break;
+                }
+            }
+
+            if (beforeAllZero)
+                throw new InvalidOperationException(
+                    "書き込みを中止しました。書き込み先の元データが全バイト0です。");
+
+            byte[] output = new byte[entry.Length];
+            Array.Copy(encoded, output, encoded.Length);
+
+            IntPtr handle = OpenProcess(
+                PROCESS_VM_READ | PROCESS_VM_WRITE |
+                PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+                false,
+                _processId);
+
+            if (handle == IntPtr.Zero)
+                throw new System.ComponentModel.Win32Exception(
+                    System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                    "PCSX2の書き込みハンドルを取得できません。");
+
+            try
+            {
+                UIntPtr written;
+                bool ok = WriteProcessMemory(
+                    handle,
+                    new IntPtr(address),
+                    output,
+                    new UIntPtr((uint)output.Length),
+                    out written);
+
+                if (!ok || written.ToUInt64() != (ulong)output.Length)
+                    throw new System.ComponentModel.Win32Exception(
+                        System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                        "モンスター名の書き込みに失敗しました。");
+
+                byte[] verify = new byte[entry.Length];
+                UIntPtr read;
+
+                ok = ReadProcessMemory(
+                    handle,
+                    new IntPtr(address),
+                    verify,
+                    new UIntPtr((uint)verify.Length),
+                    out read);
+
+                if (!ok || read.ToUInt64() != (ulong)verify.Length ||
+                    !System.Linq.Enumerable.SequenceEqual(output, verify))
+                {
+                    // 読み戻しに失敗した場合は元データへ戻す。
+                    UIntPtr rollbackWritten;
+                    WriteProcessMemory(
+                        handle,
+                        new IntPtr(address),
+                        before,
+                        new UIntPtr((uint)before.Length),
+                        out rollbackWritten);
+
+                    throw new InvalidOperationException(
+                        "書き込み後の読み戻し検証に失敗しました。元データへの復元を試みました。");
+                }
+            }
+            finally
+            {
+                CloseHandle(handle);
+            }
+
+            MessageBox.Show(
+                this,
+                "モンスター名を書き込み、読み戻し確認に成功しました。\r\n\r\n" +
+                entry.Name + " → " + _name.Text,
+                "書き込み成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                ex.ToString(),
+                "モンスター名書き込みエラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+}
+
 internal sealed class MainForm : Form
 {
     private byte[]? _bin;
@@ -2790,6 +3457,21 @@ internal sealed class MainForm : Form
 
         buttons.Controls.Add(UiFactory.Button(
             "改造ダンジョンを適用", (_, _) => ApplyBinToPcsx2()));
+
+        buttons.Controls.Add(UiFactory.Button(
+            "モンスター名変更", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var nameForm = new MonsterNameEditorForm(
+                    Pcsx2LiveSession.ProcessId);
+                nameForm.ShowDialog(this);
+            }));
 
 
 
