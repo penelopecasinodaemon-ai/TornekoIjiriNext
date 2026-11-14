@@ -61,35 +61,15 @@ internal static class MessageTextAutoDecoder
             offset > data.Length - count)
             return "";
 
-        byte[] bytes = new byte[count];
-
-        System.Buffer.BlockCopy(
-            data, offset, bytes, 0, count);
-
-        var candidates =
-            new System.Collections.Generic.List<Candidate>();
-
-        AddCandidate(bytes, Cp932, "CP932", candidates);
-        AddCandidate(bytes, Utf8, "UTF-8", candidates);
-
-        if ((bytes.Length & 1) == 0)
+        try
         {
-            AddCandidate(bytes, Utf16LE, "UTF-16 LE", candidates);
-            AddCandidate(bytes, Utf16BE, "UTF-16 BE", candidates);
+            return Cp932.GetString(data, offset, count);
         }
-
-        Candidate best = null;
-
-        foreach (Candidate candidate in candidates)
+        catch
         {
-            if (best == null || candidate.Score > best.Score)
-                best = candidate;
+            // CP932として成立しないバイト列は候補にしない
+            return "";
         }
-
-        if (best == null || best.Score < 15)
-            return SafeCp932(bytes);
-
-        return best.Text;
     }
 
     private static string SafeCp932(byte[] bytes)
@@ -5591,10 +5571,11 @@ internal sealed class MonsterNameEditor20261114 : Form
         public string Name = "";
         public long Address;
         public int Capacity;
+        public byte[] OriginalBytes = Array.Empty<byte>();
 
         public override string ToString()
         {
-            return Name + "  [読取専用 / 0x" +
+            return Name + "  [書込候補 / 0x" +
                 Address.ToString("X") + "]";
         }
     }
@@ -5731,11 +5712,11 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
         _name.Font = new Font("Yu Gothic UI", 12);
 
         var apply = new Button {
-            Text = "ゲームメモリへ書き込む",
+            Text = "選択項目をゲームメモリへ書き込む",
             Dock = DockStyle.Top,
             Height = 42
         };
-        apply.Click += (_, _) => ApplyName();
+        apply.Click += (_, _) => ApplySelectedEntry();
 
         var reload = new Button {
             Text = "一覧を再読み込み",
@@ -5943,11 +5924,12 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
         byte[] data,
         int count,
         long baseAddress,
-        HashSet<long> seen)
+        HashSet<long> seen,
+        List<MemoryMessageEntry> found)
     {
         int pos = 0;
 
-        while (pos < count && _messages.Count < 2000)
+        while (pos < count)
         {
             int start = pos;
             int japaneseBytes = 0;
@@ -5994,14 +5976,20 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
 
             int length = pos - start;
 
-            if (length >= 4 &&
+            // 実際にNUL終端されていることを確認する。
+            bool nullTerminated =
+                pos < count && data[pos] == 0;
+
+            if (nullTerminated &&
+                length >= 4 &&
                 length <= 512 &&
                 japaneseBytes >= 4)
             {
                 try
                 {
                     string value =
-                        MessageTextAutoDecoder.DecodeText(data, start, length).Trim();
+                        MessageTextAutoDecoder.DecodeText(
+                            data, start, length).Trim();
 
                     int japaneseCount =
                         value.Count(IsJapaneseCharacter);
@@ -6017,18 +6005,22 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
 
                     if (valid && seen.Add(address))
                     {
-                        _messages.Add(new MemoryMessageEntry
+                        found.Add(new MemoryMessageEntry
                         {
                             Id = "メモリ文字列",
                             Name = value,
                             Address = address,
-                            Capacity = length
+                            Capacity = length,
+                            OriginalBytes = data
+                                .Skip(start)
+                                .Take(length + 1)
+                                .ToArray()
                         });
                     }
                 }
                 catch
                 {
-                    // 不正なCP932列は読み飛ばす
+                    // 不正な文字列は除外する。
                 }
             }
 
@@ -6044,143 +6036,103 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
             }
         }
     }
-
-    private int ScanProcessMessages(IntPtr handle)
+    private int ScanProcessMessages(
+        IntPtr handle,
+        Action<List<MemoryMessageEntry>> reportBatch)
     {
-        _messages.Clear();
-
         var seen = new HashSet<long>();
-        var scanTimer = System.Diagnostics.Stopwatch.StartNew();
+        var pending = new List<MemoryMessageEntry>();
 
-        ulong address = 0x10000;
-        const ulong maximumAddress = 0x00007FFFFFFEFFFF;
+        // PCSX2のEEmemからゲームのEEメモリ先頭を取得する。
+        long eeBase = ResolveEEmem(handle);
+
+        const int totalSize = 0x02000000;
         const int chunkSize = 1024 * 1024;
         const int overlap = 512;
-        const ulong maximumScanBytes = 64UL * 1024 * 1024;
-        const int maximumRegions = 20000;
-        const int maximumCandidates = 2000;
-        const long maximumScanMilliseconds = 15000;
+        const int batchSize = 250;
 
-        ulong scanned = 0;
-        int regionCount = 0;
+        int totalFound = 0;
+        int offset = 0;
 
-        ulong mbiSize = (ulong)
-            System.Runtime.InteropServices.Marshal.SizeOf(
-                typeof(MESSAGE_MEMORY_BASIC_INFORMATION));
-
-        while (address < maximumAddress &&
-               scanned < maximumScanBytes &&
-               regionCount < maximumRegions &&
-               scanTimer.ElapsedMilliseconds < maximumScanMilliseconds &&
-               _messages.Count < maximumCandidates)
+        while (offset < totalSize)
         {
-            MESSAGE_MEMORY_BASIC_INFORMATION mbi;
+            int amount = Math.Min(
+                chunkSize,
+                totalSize - offset);
 
-            UIntPtr queried = MessageVirtualQueryEx(
+            byte[] buffer = new byte[amount];
+            UIntPtr bytesRead;
+
+            long currentAddress = checked(eeBase + offset);
+
+            bool ok = ReadProcessMemory(
                 handle,
-                new IntPtr(unchecked((long)address)),
-                out mbi,
-                new UIntPtr(mbiSize));
+                new IntPtr(currentAddress),
+                buffer,
+                new UIntPtr((uint)amount),
+                out bytesRead);
 
-            if (queried == UIntPtr.Zero)
-                break;
+            int actual = (int)Math.Min(
+                (ulong)amount,
+                bytesRead.ToUInt64());
 
-            regionCount++;
-
-            ulong regionBase =
-                unchecked((ulong)mbi.BaseAddress.ToInt64());
-
-            ulong regionSize = mbi.RegionSize.ToUInt64();
-
-            if (regionSize == 0)
-                break;
-
-            ulong regionEnd;
-
-            try
+            if (actual >= 4)
             {
-                regionEnd = checked(regionBase + regionSize);
-            }
-            catch
-            {
-                break;
-            }
+                var found =
+                    new List<MemoryMessageEntry>();
 
-            if (regionEnd <= address)
-                break;
+                ExtractJapaneseStrings(
+                    buffer,
+                    actual,
+                    currentAddress,
+                    seen,
+                    found);
 
-            uint protection = mbi.Protect & 0xFF;
-
-            bool readable =
-                mbi.State == 0x1000 &&
-                (mbi.Protect & 0x100) == 0 &&
-                (
-                    protection == 0x02 ||
-                    protection == 0x04 ||
-                    protection == 0x08 ||
-                    protection == 0x20 ||
-                    protection == 0x40 ||
-                    protection == 0x80
-                );
-
-            if (readable)
-            {
-                ulong current =
-                    address > regionBase ? address : regionBase;
-
-                while (current < regionEnd &&
-                       scanned < maximumScanBytes &&
-                       scanTimer.ElapsedMilliseconds < maximumScanMilliseconds &&
-                       _messages.Count < maximumCandidates)
+                foreach (var entry in found)
                 {
-                    int amount = (int)Math.Min(
-                        (ulong)chunkSize,
-                        Math.Min(
-                            regionEnd - current,
-                            maximumScanBytes - scanned));
-
-                    if (amount <= 0)
-                        break;
-
-                    byte[] buffer = new byte[amount];
-                    UIntPtr bytesRead;
-
-                    bool ok = ReadProcessMemory(
-                        handle,
-                        new IntPtr(unchecked((long)current)),
-                        buffer,
-                        new UIntPtr((uint)amount),
-                        out bytesRead);
-
-                    int actual = (int)Math.Min(
-                        (ulong)amount,
-                        bytesRead.ToUInt64());
-
-                    if (actual >= 4)
-                    {
-                        ExtractJapaneseStrings(
-                            buffer,
-                            actual,
-                            unchecked((long)current),
-                            seen);
-                    }
-
-                    scanned += (ulong)actual;
-
-                    if (!ok || actual <= 0)
-                        break;
-
-                    if (amount <= overlap)
-                        break;
-
-                    current += (ulong)(amount - overlap);
+                    pending.Add(entry);
                 }
             }
 
-            address = regionEnd;
+            if (pending.Count >= batchSize)
+            {
+                var batch =
+                    new List<MemoryMessageEntry>(pending);
+
+                totalFound += batch.Count;
+                pending.Clear();
+
+                reportBatch?.Invoke(batch);
+            }
+
+            if (!ok || actual != amount)
+            {
+                throw new InvalidOperationException(
+                    "EEメモリの読み取りが途中で失敗しました。\r\n" +
+                    "オフセット: 0x" + offset.ToString("X") +
+                    "\r\n読み取りサイズ: " + actual +
+                    " / " + amount);
+            }
+
+            if (offset + amount >= totalSize)
+                break;
+
+            // チャンク境界にある文字列を拾うため512バイト重複。
+            offset += amount - overlap;
         }
 
-        return _messages.Count;
+        if (pending.Count > 0)
+        {
+            var batch =
+                new List<MemoryMessageEntry>(pending);
+
+            totalFound += batch.Count;
+            pending.Clear();
+
+            reportBatch?.Invoke(batch);
+        }
+
+        return totalFound;
     }
     private async void ScanMessagesAsync()
     {
@@ -6188,16 +6140,49 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
             return;
 
         _scanInProgress = true;
-
         _scanMessagesButton.Enabled = false;
-        _list.Enabled = false;
-        _search.Enabled = false;
-        _name.Enabled = false;
 
-        _status.Text = "セリフ・メッセージ検索中...";
+        // 一覧・検索欄・編集欄は無効化しない。
+        _list.Enabled = true;
+        _search.Enabled = true;
+        _name.Enabled = true;
+
+        _messages.Clear();
+        _displayEntries.RemoveAll(
+            item => item is MemoryMessageEntry);
+
+        RefreshDisplayList();
+
+        _status.Text =
+            "バックグラウンド検索中...\r\n" +
+            "一覧・検索欄は引き続き操作できます。\r\n" +
+            "検索対象の全領域を調査しています。";
 
         try
         {
+            // UIスレッドに結果を戻すProgress。
+            IProgress<List<MemoryMessageEntry>> progress =
+                new Progress<List<MemoryMessageEntry>>(batch =>
+                {
+                    if (IsDisposed || Disposing)
+                        return;
+
+                    foreach (MemoryMessageEntry message in batch)
+                    {
+                        _messages.Add(message);
+                        _displayEntries.Add(message);
+                    }
+
+                    // 現在入力されている検索語を維持して再表示。
+                    RefreshDisplayList();
+
+                    _status.Text =
+                        "バックグラウンド検索中...\r\n" +
+                        "既存リソース: " + _entries.Count + " 件\r\n" +
+                        "メッセージ候補: " + _messages.Count + " 件\r\n" +
+                        "一覧・検索欄は操作可能です。";
+                });
+
             int count = await Task.Run(() =>
             {
                 IntPtr handle = OpenProcess(
@@ -6207,7 +6192,9 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
 
                 if (handle == IntPtr.Zero)
                 {
-                    int error = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                    int error =
+                        System.Runtime.InteropServices.Marshal
+                            .GetLastWin32Error();
 
                     throw new InvalidOperationException(
                         "PCSX2プロセスを開けませんでした。エラー: " +
@@ -6216,7 +6203,9 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
 
                 try
                 {
-                    return ScanProcessMessages(handle);
+                    return ScanProcessMessages(
+                        handle,
+                        batch => progress.Report(batch));
                 }
                 finally
                 {
@@ -6226,14 +6215,6 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
 
             if (IsDisposed || Disposing)
                 return;
-
-            _displayEntries.Clear();
-
-
-            foreach (MemoryMessageEntry message in _messages)
-                _displayEntries.Add(message);
-
-            RefreshDisplayList();
 
             _status.Text =
                 "検索完了\r\n" +
@@ -6252,7 +6233,8 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
         {
             if (!IsDisposed && !Disposing)
             {
-                _status.Text = "検索エラー\r\n" + ex.Message;
+                _status.Text =
+                    "検索エラー\r\n" + ex.Message;
 
                 MessageBox.Show(
                     this,
@@ -6630,13 +6612,313 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
         }
         else if (_list.SelectedItem is MemoryMessageEntry m)
         {
-            _name.ReadOnly = true;
+            _name.ReadOnly = false;
             _name.Text = m.Name;
 
-            _status.Text = "読み取り専用メッセージ候補\r\n" +
+            _status.Text =
+                "メモリ上のメッセージ候補\r\n" +
                 "アドレス: 0x" + m.Address.ToString("X") +
                 "\r\n容量: " + m.Capacity + " bytes" +
-                "\r\n検索・保存のみ可能です。";
+                "\r\n元データ照合後に書き込みます。";
+        }
+    }
+
+    private void ApplySelectedEntry()
+    {
+        if (_list.SelectedItem is MonsterEntry)
+        {
+            ApplyName();
+            return;
+        }
+
+        if (_list.SelectedItem is MemoryMessageEntry message)
+        {
+            ApplyMessageText(message);
+            return;
+        }
+
+        MessageBox.Show(
+            this,
+            "先に書き込み対象を選択してください。");
+    }
+    private void ApplyMessageText(MemoryMessageEntry entry)
+    {
+        if (entry == null ||
+            entry.Address <= 0 ||
+            entry.Capacity <= 0 ||
+            entry.OriginalBytes == null ||
+            entry.OriginalBytes.Length != entry.Capacity + 1)
+        {
+            MessageBox.Show(
+                this,
+                "このメッセージ候補は安全な書き込み対象ではありません。");
+            return;
+        }
+
+        IntPtr handle = IntPtr.Zero;
+
+        try
+        {
+            string value = _name.Text.Trim();
+
+            if (value.Length == 0)
+                throw new InvalidOperationException(
+                    "メッセージを空にはできません。");
+
+            byte[] encoded = _sjis.GetBytes(value);
+
+            if (encoded.Length > entry.Capacity)
+            {
+                throw new InvalidOperationException(
+                    "入力文字列が元のメモリ容量を超えています。\r\n" +
+                    "元の容量: " + entry.Capacity + " bytes\r\n" +
+                    "入力容量: " + encoded.Length + " bytes");
+            }
+
+            handle = OpenProcess(0x0438, false, _pid);
+
+            if (handle == IntPtr.Zero)
+            {
+                throw new System.ComponentModel.Win32Exception(
+                    System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                    "PCSX2を読み書き用に開けませんでした。");
+            }
+
+            byte[] before =
+                Read(handle, entry.Address, entry.Capacity + 1);
+
+            if (!before.SequenceEqual(entry.OriginalBytes))
+            {
+                throw new InvalidOperationException(
+                    "書き込み前のメモリ内容が検索時から変化しています。\r\n" +
+                    "安全のため書き込みを中止しました。\r\n" +
+                    "ゲーム内の場面を確認してから再検索してください。");
+            }
+
+            byte[] replacement =
+                new byte[entry.Capacity + 1];
+
+            Array.Copy(
+                encoded,
+                replacement,
+                encoded.Length);
+
+            // ページ保護属性を一時変更して書き込む。
+            WriteProtectedMessage(
+                handle,
+                entry.Address,
+                replacement);
+
+            // 保護属性を戻した後に読み戻し検証。
+            byte[] verify =
+                Read(handle, entry.Address, replacement.Length);
+
+            if (!verify.SequenceEqual(replacement))
+            {
+                throw new InvalidOperationException(
+                    "書き込み後の読み戻し検証に失敗しました。");
+            }
+
+            entry.Name = value;
+            entry.OriginalBytes =
+                (byte[])replacement.Clone();
+
+            int index = _list.SelectedIndex;
+
+            if (index >= 0)
+            {
+                _list.Items[index] = entry;
+                _list.SelectedIndex = index;
+            }
+
+            _status.Text =
+                "メッセージ書き込み成功\r\n" +
+                "アドレス: 0x" + entry.Address.ToString("X") +
+                "\r\n容量: " + entry.Capacity + " bytes";
+
+            MessageBox.Show(
+                this,
+                "メッセージの書き込みと読み戻し検証が成功しました。",
+                "書き込み成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            _status.Text =
+                "メッセージ書き込みエラー\r\n" + ex.Message;
+
+            MessageBox.Show(
+                this,
+                ex.ToString(),
+                "メッセージ書き込みエラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+        finally
+        {
+            if (handle != IntPtr.Zero)
+                CloseHandle(handle);
+        }
+    }
+
+    private void WriteProtectedMessage(
+        IntPtr handle,
+        long address,
+        byte[] data)
+    {
+        if (address <= 0 || data == null || data.Length == 0)
+            throw new InvalidOperationException(
+                "書き込み範囲が不正です。");
+
+        var changes =
+            new List<Tuple<IntPtr, UIntPtr, uint>>();
+
+        ulong current =
+            unchecked((ulong)address);
+
+        ulong end =
+            checked(current + (ulong)data.Length);
+
+        try
+        {
+            ulong mbiLength = (ulong)
+                System.Runtime.InteropServices.Marshal.SizeOf(
+                    typeof(MESSAGE_MEMORY_BASIC_INFORMATION));
+
+            while (current < end)
+            {
+                MESSAGE_MEMORY_BASIC_INFORMATION mbi;
+
+                UIntPtr queried = MessageVirtualQueryEx(
+                    handle,
+                    new IntPtr(unchecked((long)current)),
+                    out mbi,
+                    new UIntPtr(mbiLength));
+
+                if (queried == UIntPtr.Zero)
+                {
+                    throw new System.ComponentModel.Win32Exception(
+                        System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                        "書き込み対象のメモリ領域を取得できません。");
+                }
+
+                ulong regionStart =
+                    unchecked((ulong)mbi.BaseAddress.ToInt64());
+
+                ulong regionSize =
+                    mbi.RegionSize.ToUInt64();
+
+                ulong regionEnd =
+                    checked(regionStart + regionSize);
+
+                if (regionSize == 0 ||
+                    current < regionStart ||
+                    regionEnd <= current)
+                {
+                    throw new InvalidOperationException(
+                        "メモリ領域の境界が不正です。");
+                }
+
+                bool committed = mbi.State == 0x1000;
+                bool guarded = (mbi.Protect & 0x100) != 0;
+                bool noAccess = (mbi.Protect & 0xFF) == 0x01;
+
+                if (!committed || guarded || noAccess)
+                {
+                    throw new InvalidOperationException(
+                        "このメモリ領域には安全に書き込めません。\r\n" +
+                        "Address: 0x" + current.ToString("X") +
+                        "\r\nProtect: 0x" + mbi.Protect.ToString("X"));
+                }
+
+                ulong partEnd =
+                    regionEnd < end ? regionEnd : end;
+
+                ulong partLength =
+                    partEnd - current;
+
+                IntPtr partAddress =
+                    new IntPtr(unchecked((long)current));
+
+                UIntPtr partSize =
+                    new UIntPtr(partLength);
+
+                uint oldProtect;
+
+                bool changed = VirtualProtectEx(
+                    handle,
+                    partAddress,
+                    partSize,
+                    0x04,
+                    out oldProtect);
+
+                if (!changed)
+                {
+                    throw new System.ComponentModel.Win32Exception(
+                        System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                        "読み取り専用ページの一時変更に失敗しました。");
+                }
+
+                changes.Add(
+                    Tuple.Create(
+                        partAddress,
+                        partSize,
+                        oldProtect));
+
+                current = partEnd;
+            }
+
+            UIntPtr written;
+
+            bool writeOk = WriteProcessMemory(
+                handle,
+                new IntPtr(address),
+                data,
+                new UIntPtr((uint)data.Length),
+                out written);
+
+            int error = writeOk
+                ? 0
+                : System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+
+            if (!writeOk ||
+                written.ToUInt64() != (ulong)data.Length)
+            {
+                throw new System.ComponentModel.Win32Exception(
+                    error,
+                    "メッセージの書き込みに失敗しました。");
+            }
+        }
+        finally
+        {
+            // 成功・失敗にかかわらず元の保護属性へ戻す。
+            Exception restoreError = null;
+
+            for (int i = changes.Count - 1; i >= 0; i--)
+            {
+                var item = changes[i];
+
+                uint ignored;
+
+                bool restored = VirtualProtectEx(
+                    handle,
+                    item.Item1,
+                    item.Item2,
+                    item.Item3,
+                    out ignored);
+
+                if (!restored)
+                {
+                    restoreError =
+                        new System.ComponentModel.Win32Exception(
+                            System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                            "メモリ保護属性の復元に失敗しました。");
+                }
+            }
+
+            if (restoreError != null)
+                throw restoreError;
         }
     }
 
