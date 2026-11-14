@@ -1,0 +1,4 @@
+﻿===== 002A09B4 呼び出し元調査 =====
+Target VA: 0x002A09B4
+Call count: 0
+
