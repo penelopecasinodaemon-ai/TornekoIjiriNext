@@ -4916,3 +4916,77 @@ Program.cs 内に以下のクラス・機能をまとめる。
 - 既存の別プロジェクトや旧レビュー用フォルダは編集しない。
 
 ============================================================
+---
+
+## 2026-11-14 開発状況・作業環境の固定ルール
+
+### 1. 作業環境の絶対固定
+
+今後の開発では以下のパスを必ず使用すること。
+
+- ワークスペース: `C:\Users\penelope\Desktop\トルネコいじり作業環境`
+- C#プロジェクト: `C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort`
+- メインソース: `C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs`
+- プロジェクトファイル: `C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\TornekoIjiriPort.csproj`
+- ビルド・発行先: `C:\Users\penelope\Desktop\トルネコいじりネクスト`
+
+これらのパスを勝手に変更しないこと。
+
+### 2. ビルド名と最終EXE名
+
+ビルド時のアセンブリ名は英語で構わない。発行後は必ず `トルネコいじりネクスト.exe` にリネームすること。
+
+推奨発行手順:
+
+```powershell
+$ErrorActionPreference = "Stop"
+$project = "C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort"
+$csproj = Join-Path $project "TornekoIjiriPort.csproj"
+$output = "C:\Users\penelope\Desktop\トルネコいじりネクスト"
+dotnet publish $csproj -c Release -o $output -p:AssemblyName=TornekoIjiriNext
+if ($LASTEXITCODE -ne 0) { throw "Release発行に失敗しました。" }
+$builtExe = Join-Path $output "TornekoIjiriNext.exe"
+$finalExe = Join-Path $output "トルネコいじりネクスト.exe"
+if (!(Test-Path $builtExe)) { throw "ビルドされたEXEが見つかりません: $builtExe" }
+if (Test-Path $finalExe) { Remove-Item $finalExe -Force }
+Move-Item $builtExe $finalExe
+if (!(Test-Path $finalExe)) { throw "最終EXEのリネームに失敗しました。" }
+Get-Item $finalExe | Select-Object FullName, Length, LastWriteTime
+Get-FileHash $finalExe -Algorithm SHA256
+```
+
+### 3. PCSX2接続
+
+- 対象はPCSX2 v2.8.2のみ。
+- メインメニューの「PCSX2に接続」ボタンを押したら、そのまま接続する。不要なアドレス検索画面を表示しない。
+- メモリアドレス解決ではEEmem基準の方式を使用する。
+- 過去にReadProcessMemoryの失敗（Win32Error 299、ERROR_PARTIAL_COPY）が発生した。原因調査では実際のメモリ読み取り結果を確認すること。
+- 接続やBIN読み取りの成功を実機確認前に断言しない。
+
+### 4. エラー表示
+
+- エラー全文をドラッグ選択・コピーできること。
+- RichTextBox等を使い、Ctrl+A、Ctrl+C、右クリックコピー、全文コピーを利用できるようにする。
+- エラー原因を隠したり、読み取り失敗を無視したりしない。
+
+### 5. 開発方針
+
+- 旧版トルネコいじりとの.bin互換性を維持する。
+- 読み取り失敗時にゼロ埋めして正常扱いしない。
+- 可能な限り複数機能をまとめて実装し、最後に一括ビルド・検証する。
+- 作業前にバックアップを作成する。
+- 発行時はアプリを終了し、ファイルロックを避ける。
+- ビルド先と最終EXE名を毎回確認する。
+
+### 6. 2026-11-14 発行記録
+
+- Release発行はエラー0件、警告23件で成功。
+- 日本語名EXE `トルネコいじりネクスト.exe` の存在とファイル情報を確認した。
+- 発行後のSHA256確認を実施した。
+- ユーザーから「やっと想定通りの感じになりました」との報告あり。
+
+### 7. GitHub
+
+リポジトリ: https://github.com/penelopecasinodaemon-ai/TornekoIjiriNext
+
+ユーザーから明示的な依頼がない限り、GitHub側のファイルや設定を変更しないこと。
