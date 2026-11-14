@@ -1,0 +1,723 @@
+﻿===== CODE REGION 0x00270F00-0x00271900 =====
+0x00270F00 SW        rs=29 rt=6 rd=0 imm=0 raw=AFA60000
+0x00270F04 SPECIAL10 rs=8 rt=2 rd=12 imm=24586 raw=0102600A
+0x00270F08 OP10      rs=11 rt=2 rd=0 imm=448 raw=296201C0
+0x00270F0C ADDIU     rs=5 rt=10 rd=0 imm=8 raw=24AA0008
+0x00270F10 SPECIAL10 rs=9 rt=2 rd=11 imm=22538 raw=0122580A
+0x00270F14 LHU       rs=17 rt=2 rd=0 imm=0 raw=96220000
+0x00270F18 OP10      rs=10 rt=3 rd=0 imm=0 raw=29430000
+0x00270F1C OP10      rs=13 rt=5 rd=0 imm=512 raw=29A50200
+0x00270F20 SPECIAL11 rs=0 rt=3 rd=10 imm=20491 raw=0003500B
+0x00270F24 SH        rs=29 rt=2 rd=0 imm=16 raw=A7A20010
+0x00270F28 OP10      rs=10 rt=3 rd=0 imm=448 raw=294301C0
+0x00270F2C SPECIAL10 rs=8 rt=5 rd=13 imm=26634 raw=0105680A
+0x00270F30 SPECIAL10 rs=9 rt=3 rd=10 imm=20490 raw=0123500A
+0x00270F34 LHU       rs=17 rt=3 rd=0 imm=2 raw=96230002
+0x00270F38 SPECIAL42 rs=13 rt=12 rd=4 imm=8234 raw=01AC202A
+0x00270F3C DADDU     rs=15 rt=0 rd=2 imm=4141 raw=01E0102D
+0x00270F40 BEQ       rs=4 rt=0 rd=0 imm=463 raw=108001CF TARGET=0x00271680
+0x00270F44 SH        rs=29 rt=3 rd=0 imm=32 raw=A7A30020
+0x00270F48 SPECIAL42 rs=10 rt=11 rd=3 imm=6186 raw=014B182A
+0x00270F4C BEQL      rs=3 rt=0 rd=0 imm=461 raw=506001CD TARGET=0x00271684
+0x00270F50 LD        rs=29 rt=16 rd=0 imm=64 raw=DFB00040
+0x00270F54 DADDU     rs=12 rt=0 rd=2 imm=4141 raw=0180102D
+0x00270F58 SPECIAL60 rs=0 rt=11 rd=4 imm=9276 raw=000B243C
+0x00270F5C SPECIAL56 rs=0 rt=2 rd=2 imm=5176 raw=00021438
+0x00270F60 SPECIAL60 rs=0 rt=10 rd=3 imm=6204 raw=000A183C
+0x00270F64 OR        rs=3 rt=2 rd=3 imm=6181 raw=00621825
+0x00270F68 ADDIU     rs=0 rt=2 rd=0 imm=14 raw=2402000E
+0x00270F6C LUI       rs=0 rt=5 rd=2 imm=4096 raw=3C051000
+0x00270F70 OR        rs=13 rt=4 rd=4 imm=8229 raw=01A42025
+0x00270F74 ADDIU     rs=0 rt=6 rd=0 imm=6 raw=24060006
+0x00270F78 SW        rs=15 rt=2 rd=0 imm=8 raw=ADE20008
+0x00270F7C SW        rs=15 rt=5 rd=0 imm=4 raw=ADE50004
+0x00270F80 OR        rs=4 rt=3 rd=4 imm=8229 raw=00832025
+0x00270F84 SW        rs=15 rt=6 rd=0 imm=0 raw=ADE60000
+0x00270F88 ADDIU     rs=0 rt=2 rd=0 imm=64 raw=24020040
+0x00270F8C SW        rs=15 rt=0 rd=0 imm=12 raw=ADE0000C
+0x00270F90 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00270F94 SD        rs=15 rt=4 rd=0 imm=0 raw=FDE40000
+0x00270F98 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00270F9C ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00270FA0 BEQ       rs=20 rt=0 rd=0 imm=14 raw=1280000E TARGET=0x00270FDC
+0x00270FA4 ADDIU     rs=15 rt=5 rd=0 imm=16 raw=25E50010
+0x00270FA8 ADDIU     rs=0 rt=2 rd=0 imm=6 raw=24020006
+0x00270FAC LUI       rs=0 rt=3 rd=4 imm=8199 raw=3C032007
+0x00270FB0 ORI       rs=3 rt=3 rd=31 imm=-1147 raw=3463FB85
+0x00270FB4 SPECIAL56 rs=0 rt=3 rd=3 imm=7224 raw=00031C38
+0x00270FB8 ORI       rs=3 rt=3 rd=27 imm=-8912 raw=3463DD30
+0x00270FBC SPECIAL56 rs=0 rt=3 rd=3 imm=7224 raw=00031C38
+0x00270FC0 ORI       rs=3 rt=3 rd=23 imm=-16544 raw=3463BF60
+0x00270FC4 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00270FC8 ADDIU     rs=0 rt=2 rd=0 imm=20 raw=24020014
+0x00270FCC SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x00270FD0 DADDU     rs=5 rt=0 rd=15 imm=30765 raw=00A0782D
+0x00270FD4 BEQ       rs=0 rt=0 rd=0 imm=13 raw=1000000D TARGET=0x0027100C
+0x00270FD8 ADDIU     rs=0 rt=4 rd=0 imm=96 raw=24040060
+0x00270FDC ADDIU     rs=0 rt=2 rd=0 imm=6 raw=24020006
+0x00270FE0 LUI       rs=0 rt=3 rd=4 imm=8199 raw=3C032007
+0x00270FE4 ORI       rs=3 rt=3 rd=31 imm=-1146 raw=3463FB86
+0x00270FE8 SPECIAL56 rs=0 rt=3 rd=3 imm=7224 raw=00031C38
+0x00270FEC ORI       rs=3 rt=3 rd=4 imm=9538 raw=34632542
+0x00270FF0 SPECIAL56 rs=0 rt=3 rd=3 imm=7224 raw=00031C38
+0x00270FF4 ORI       rs=3 rt=3 rd=7 imm=15232 raw=34633B80
+0x00270FF8 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00270FFC ADDIU     rs=0 rt=2 rd=0 imm=20 raw=24020014
+0x00271000 SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x00271004 DADDU     rs=5 rt=0 rd=15 imm=30765 raw=00A0782D
+0x00271008 ADDIU     rs=0 rt=4 rd=0 imm=1 raw=24040001
+0x0027100C SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00271010 SD        rs=15 rt=4 rd=0 imm=0 raw=FDE40000
+0x00271014 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271018 ADDIU     rs=0 rt=2 rd=0 imm=128 raw=24020080
+0x0027101C SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x00271020 ORI       rs=2 rt=2 rd=0 imm=68 raw=34420044
+0x00271024 ADDIU     rs=0 rt=3 rd=0 imm=66 raw=24030042
+0x00271028 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x0027102C ADDIU     rs=0 rt=2 rd=0 imm=8 raw=24020008
+0x00271030 SD        rs=15 rt=3 rd=0 imm=8 raw=FDE30008
+0x00271034 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271038 ADDIU     rs=0 rt=4 rd=0 imm=5 raw=24040005
+0x0027103C SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00271040 SD        rs=15 rt=4 rd=0 imm=0 raw=FDE40000
+0x00271044 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271048 LUI       rs=0 rt=2 rd=0 imm=5 raw=3C020005
+0x0027104C ORI       rs=2 rt=2 rd=0 imm=13 raw=3442000D
+0x00271050 ADDIU     rs=0 rt=3 rd=0 imm=71 raw=24030047
+0x00271054 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271058 DADDU     rs=0 rt=0 rd=18 imm=-28627 raw=0000902D
+0x0027105C SD        rs=15 rt=3 rd=0 imm=8 raw=FDE30008
+0x00271060 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271064 SW        rs=29 rt=0 rd=0 imm=48 raw=AFA00030
+0x00271068 DADDU     rs=15 rt=0 rd=21 imm=-22483 raw=01E0A82D
+0x0027106C DADDU     rs=0 rt=0 rd=30 imm=-4051 raw=0000F02D
+0x00271070 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271074 DADDU     rs=0 rt=0 rd=23 imm=-18387 raw=0000B82D
+0x00271078 ADDIU     rs=0 rt=22 rd=0 imm=31 raw=2416001F
+0x0027107C LW        rs=29 rt=3 rd=0 imm=48 raw=8FA30030
+0x00271080 ADDU      rs=3 rt=23 rd=2 imm=4129 raw=00771021
+0x00271084 LUI       rs=0 rt=24 rd=0 imm=106 raw=3C18006A
+0x00271088 ADDIU     rs=24 rt=24 rd=4 imm=9120 raw=271823A0
+0x0027108C ADDU      rs=24 rt=2 rd=24 imm=-16351 raw=0302C021
+0x00271090 LHU       rs=24 rt=6 rd=0 imm=0 raw=97060000
+0x00271094 ANDI      rs=6 rt=3 rd=31 imm=-1 raw=30C3FFFF
+0x00271098 BEQ       rs=3 rt=0 rd=0 imm=358 raw=10600166 TARGET=0x00271634
+0x0027109C ORI       rs=0 rt=2 rd=31 imm=-1 raw=3402FFFF
+0x002710A0 BEQL      rs=3 rt=2 rd=0 imm=357 raw=50620165 TARGET=0x00271638
+0x002710A4 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x002710A8 LBU       rs=24 rt=2 rd=0 imm=34 raw=93020022
+0x002710AC BEQ       rs=2 rt=0 rd=0 imm=353 raw=10400161 TARGET=0x00271634
+0x002710B0 LW        rs=29 rt=3 rd=0 imm=0 raw=8FA30000
+0x002710B4 LBU       rs=24 rt=2 rd=0 imm=2 raw=93020002
+0x002710B8 BNEL      rs=2 rt=3 rd=0 imm=351 raw=5443015F TARGET=0x00271638
+0x002710BC ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x002710C0 OP61      rs=12 rt=18 rd=4 imm=8203 raw=F592200B
+0x002710C4 OP19      rs=29 rt=28 rd=17 imm=-30562 raw=4FBC889E
+0x002710C8 OP39      rs=18 rt=2 rd=14 imm=28842 raw=9E4270AA
+0x002710CC OP19      rs=1 rt=14 rd=1 imm=3932 raw=4C2E0F5C
+0x002710D0 JAL       rs=22 rt=11 rd=11 imm=23729 raw=0ECB5CB1 TARGET=0x0B2D72C4
+0x002710D4 BGTZ      rs=31 rt=10 rd=9 imm=19746 raw=1FEA4D22 TARGET=0x00284560
+0x002710D8 BNE       rs=0 rt=27 rd=9 imm=20230 raw=141B4F06 TARGET=0x00284CF4
+0x002710DC OP16      rs=16 rt=0 rd=14 imm=30592 raw=42007780
+0x002710E0 OP30      rs=20 rt=9 rd=11 imm=23373 raw=7A895B4D
+0x002710E4 OP54      rs=3 rt=12 rd=25 imm=-13027 raw=D86CCD1D
+0x002710E8 OP42      rs=2 rt=0 rd=20 imm=-23689 raw=A840A377
+0x002710EC OP49      rs=6 rt=4 rd=10 imm=21087 raw=C4C4525F
+0x002710F0 OP49      rs=6 rt=2 rd=5 imm=11231 raw=C4C22BDF
+0x002710F4 OP62      rs=15 rt=31 rd=0 imm=1531 raw=F9FF05FB
+0x002710F8 OP54      rs=11 rt=15 rd=2 imm=5638 raw=D96F1606
+0x002710FC BGTZ      rs=25 rt=18 rd=27 imm=-8703 raw=1F32DE01 TARGET=0x00268904
+0x00271100 SW        rs=30 rt=21 rd=8 imm=16880 raw=AFD541F0
+0x00271104 LB        rs=9 rt=10 rd=18 imm=-27695 raw=812A93D1
+0x00271108 OP46      rs=23 rt=25 rd=14 imm=29932 raw=BAF974EC
+0x0027110C LBU       rs=27 rt=22 rd=15 imm=31251 raw=93767A13
+0x00271110 OP29      rs=1 rt=31 rd=8 imm=16759 raw=743F4177
+0x00271114 BNEL      rs=19 rt=3 rd=8 imm=16641 raw=56634101 TARGET=0x0028151C
+0x00271118 OP19      rs=15 rt=24 rd=10 imm=21915 raw=4DF8559B
+0x0027111C BLEZ      rs=25 rt=7 rd=14 imm=28891 raw=1B2770DB TARGET=0x0028D48C
+0x00271120 OP28      rs=1 rt=15 rd=19 imm=-25936 raw=702F9AB0
+0x00271124 ADDI      rs=25 rt=16 rd=16 imm=-31095 raw=23308689
+0x00271128 BEQL      rs=16 rt=16 rd=11 imm=23765 raw=52105CD5 TARGET=0x00288480
+0x0027112C OP34      rs=19 rt=30 rd=30 imm=-2924 raw=8A7EF494
+0x00271130 JAL       rs=19 rt=4 rd=4 imm=9913 raw=0E6426B9 TARGET=0x09909AE4
+0x00271134 SPECIAL40 rs=19 rt=30 rd=21 imm=-21720 raw=027EAB28
+0x00271138 J         rs=10 rt=26 rd=6 imm=12560 raw=095A3110 TARGET=0x0568C440
+0x0027113C BNE       rs=16 rt=27 rd=4 imm=8247 raw=161B2037 TARGET=0x0027921C
+0x00271140 OP14      rs=16 rt=12 rd=31 imm=-25 raw=3A0CFFE7
+0x00271144 OP48      rs=20 rt=2 rd=5 imm=10634 raw=C282298A
+0x00271148 OP54      rs=13 rt=30 rd=0 imm=1183 raw=D9BE049F
+0x0027114C OP50      rs=21 rt=20 rd=29 imm=-4645 raw=CAB4EDDB
+0x00271150 OP26      rs=26 rt=25 rd=16 imm=-31123 raw=6B59866D
+0x00271154 OP30      rs=15 rt=22 rd=28 imm=-7185 raw=79F6E3EF
+0x00271158 REGIMM    rs=21 rt=0 rd=17 imm=-29502 raw=06A08CC2 TARGET=0x00254464
+0x0027115C OP59      rs=22 rt=14 rd=29 imm=-6024 raw=EECEE878
+0x00271160 BNEL      rs=17 rt=25 rd=5 imm=11836 raw=56392E3C TARGET=0x0027CA54
+0x00271164 OP11      rs=19 rt=12 rd=5 imm=11875 raw=2E6C2E63
+0x00271168 OP56      rs=1 rt=29 rd=11 imm=23038 raw=E03D59FE
+0x0027116C OP48      rs=14 rt=11 rd=14 imm=29031 raw=C1CB7167
+0x00271170 OP23      rs=5 rt=23 rd=1 imm=2961 raw=5CB70B91
+0x00271174 OP25      rs=2 rt=26 rd=11 imm=24363 raw=645A5F2B
+0x00271178 J         rs=25 rt=15 rd=18 imm=-28456 raw=0B2F90D8 TARGET=0x0CBE4360
+0x0027117C BNE       rs=2 rt=4 rd=6 imm=13324 raw=1444340C TARGET=0x0027E1B0
+0x00271180 J         rs=23 rt=29 rd=14 imm=30422 raw=0AFD76D6 TARGET=0x0BF5DB58
+0x00271184 OP30      rs=26 rt=27 rd=19 imm=-25018 raw=7B5B9E46
+0x00271188 LH        rs=24 rt=28 rd=9 imm=20078 raw=871C4E6E
+0x0027118C SW        rs=9 rt=12 rd=24 imm=-16089 raw=AD2CC127
+0x00271190 ANDI      rs=1 rt=17 rd=20 imm=-23317 raw=3031A4EB
+0x00271194 BNEL      rs=9 rt=0 rd=8 imm=17718 raw=55204536 TARGET=0x00282670
+0x00271198 BEQL      rs=26 rt=16 rd=31 imm=-1955 raw=5350F85D TARGET=0x0026F310
+0x0027119C LHU       rs=2 rt=25 rd=27 imm=-8940 raw=9459DD14
+0x002711A0 LB        rs=11 rt=0 rd=1 imm=3147 raw=81600C4B
+0x002711A4 OP49      rs=14 rt=19 rd=1 imm=3504 raw=C5D30DB0
+0x002711A8 OP59      rs=31 rt=14 rd=13 imm=27192 raw=EFEE6A38
+0x002711AC OP14      rs=9 rt=6 rd=21 imm=-21085 raw=3926ADA3
+0x002711B0 LBU       rs=24 rt=11 rd=30 imm=-2225 raw=930BF74F
+0x002711B4 ADDIU     rs=10 rt=17 rd=5 imm=10302 raw=2551283E
+0x002711B8 OP48      rs=19 rt=15 rd=10 imm=20494 raw=C26F500E
+0x002711BC OP28      rs=31 rt=26 rd=7 imm=15394 raw=73FA3C22
+0x002711C0 OP58      rs=20 rt=27 rd=1 imm=3201 raw=EA9B0C81
+0x002711C4 REGIMM    rs=21 rt=22 rd=20 imm=-23973 raw=06B6A25B TARGET=0x00259B34
+0x002711C8 LH        rs=14 rt=25 rd=5 imm=10900 raw=85D92A94
+0x002711CC OP34      rs=28 rt=2 rd=22 imm=-20445 raw=8B82B023
+0x002711D0 ADDIU     rs=27 rt=6 rd=20 imm=-22535 raw=2766A7F9
+0x002711D4 OP26      rs=7 rt=5 rd=10 imm=21443 raw=68E553C3
+0x002711D8 SD        rs=31 rt=31 rd=31 imm=-256 raw=FFFFFF00
+0x002711DC SD        rs=31 rt=31 rd=31 imm=-1 raw=FFFFFFFF
+0x002711E0 SPECIAL63 rs=7 rt=31 rd=31 imm=-1 raw=00FFFFFF
+0x002711E4 SPECIAL0  rs=18 rt=7 rd=0 imm=1280 raw=02470500
+0x002711E8 SPECIAL0  rs=0 rt=8 rd=0 imm=0 raw=00080000
+0x002711EC SPECIAL0  rs=0 rt=8 rd=0 imm=0 raw=00080000
+0x002711F0 LBU       rs=24 rt=2 rd=0 imm=35 raw=93020023
+0x002711F4 BNEL      rs=2 rt=0 rd=0 imm=348 raw=5440015C TARGET=0x00271768
+0x002711F8 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x002711FC LHU       rs=29 rt=3 rd=0 imm=16 raw=97A30010
+0x00271200 LH        rs=24 rt=19 rd=0 imm=4 raw=87130004
+0x00271204 SPECIAL0  rs=0 rt=3 rd=2 imm=5120 raw=00031400
+0x00271208 SPECIAL3  rs=0 rt=2 rd=10 imm=21507 raw=00025403
+0x0027120C ADDU      rs=10 rt=19 rd=25 imm=-14303 raw=0153C821
+0x00271210 OP10      rs=25 rt=2 rd=31 imm=-32 raw=2B22FFE0
+0x00271214 BNEL      rs=2 rt=0 rd=0 imm=340 raw=54400154 TARGET=0x00271768
+0x00271218 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x0027121C LHU       rs=29 rt=3 rd=0 imm=32 raw=97A30020
+0x00271220 LH        rs=24 rt=16 rd=0 imm=6 raw=87100006
+0x00271224 SPECIAL0  rs=0 rt=3 rd=2 imm=5120 raw=00031400
+0x00271228 SPECIAL3  rs=0 rt=2 rd=8 imm=17411 raw=00024403
+0x0027122C ADDU      rs=8 rt=16 rd=3 imm=6177 raw=01101821
+0x00271230 OP10      rs=3 rt=2 rd=31 imm=-32 raw=2862FFE0
+0x00271234 BNEL      rs=2 rt=0 rd=0 imm=332 raw=5440014C TARGET=0x00271768
+0x00271238 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x0027123C OP10      rs=25 rt=2 rd=0 imm=512 raw=2B220200
+0x00271240 BEQL      rs=2 rt=0 rd=0 imm=329 raw=50400149 TARGET=0x00271768
+0x00271244 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x00271248 OP10      rs=3 rt=2 rd=0 imm=512 raw=28620200
+0x0027124C BEQL      rs=2 rt=0 rd=0 imm=326 raw=50400146 TARGET=0x00271768
+0x00271250 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x00271254 LBU       rs=24 rt=3 rd=0 imm=36 raw=93030024
+0x00271258 ADDIU     rs=0 rt=2 rd=0 imm=1 raw=24020001
+0x0027125C BNE       rs=3 rt=2 rd=0 imm=59 raw=1462003B TARGET=0x0027134C
+0x00271260 ADDIU     rs=0 rt=2 rd=0 imm=3 raw=24020003
+0x00271264 BEQL      rs=20 rt=0 rd=0 imm=320 raw=52800140 TARGET=0x00271768
+0x00271268 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x0027126C LW        rs=24 rt=2 rd=0 imm=28 raw=8F02001C
+0x00271270 BNEL      rs=2 rt=0 rd=0 imm=317 raw=5440013D TARGET=0x00271768
+0x00271274 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x00271278 LH        rs=17 rt=3 rd=0 imm=8 raw=86230008
+0x0027127C ADDIU     rs=0 rt=13 rd=0 imm=128 raw=240D0080
+0x00271280 SPECIAL60 rs=0 rt=13 rd=13 imm=26684 raw=000D683C
+0x00271284 ORI       rs=13 rt=13 rd=0 imm=128 raw=35AD0080
+0x00271288 LHU       rs=24 rt=9 rd=0 imm=14 raw=9709000E
+0x0027128C SPECIAL0  rs=0 rt=25 rd=10 imm=20736 raw=00195100
+0x00271290 ADDU      rs=3 rt=8 rd=3 imm=6177 raw=00681821
+0x00271294 LH        rs=24 rt=8 rd=0 imm=10 raw=8708000A
+0x00271298 LHU       rs=24 rt=5 rd=0 imm=12 raw=9705000C
+0x0027129C ADDIU     rs=3 rt=3 rd=0 imm=1828 raw=24630724
+0x002712A0 SPECIAL0  rs=0 rt=9 rd=2 imm=4352 raw=00091100
+0x002712A4 LHU       rs=24 rt=11 rd=0 imm=16 raw=970B0010
+0x002712A8 SPECIAL0  rs=0 rt=5 rd=6 imm=12544 raw=00053100
+0x002712AC ADDU      rs=3 rt=16 rd=7 imm=14369 raw=00703821
+0x002712B0 ADDIU     rs=2 rt=2 rd=0 imm=8 raw=24420008
+0x002712B4 LHU       rs=24 rt=12 rd=0 imm=18 raw=970C0012
+0x002712B8 LH        rs=24 rt=4 rd=0 imm=8 raw=87040008
+0x002712BC SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x002712C0 ADDU      rs=5 rt=11 rd=5 imm=10273 raw=00AB2821
+0x002712C4 ADDU      rs=8 rt=16 rd=8 imm=16417 raw=01104021
+0x002712C8 ADDIU     rs=6 rt=6 rd=0 imm=8 raw=24C60008
+0x002712CC SPECIAL0  rs=0 rt=7 rd=7 imm=14592 raw=00073900
+0x002712D0 SD        rs=15 rt=13 rd=0 imm=8 raw=FDED0008
+0x002712D4 OR        rs=6 rt=2 rd=6 imm=12325 raw=00C23025
+0x002712D8 SD        rs=15 rt=13 rd=0 imm=0 raw=FDED0000
+0x002712DC ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002712E0 ADDU      rs=9 rt=12 rd=9 imm=18465 raw=012C4821
+0x002712E4 ADDU      rs=25 rt=4 rd=4 imm=8225 raw=03242021
+0x002712E8 ADDU      rs=3 rt=8 rd=3 imm=6177 raw=00681821
+0x002712EC ADDIU     rs=10 rt=10 rd=14 imm=28672 raw=254A7000
+0x002712F0 SPECIAL60 rs=0 rt=7 rd=7 imm=14396 raw=0007383C
+0x002712F4 SPECIAL0  rs=0 rt=5 rd=5 imm=10496 raw=00052900
+0x002712F8 SD        rs=15 rt=6 rd=0 imm=0 raw=FDE60000
+0x002712FC LUI       rs=0 rt=2 rd=0 imm=15 raw=3C02000F
+0x00271300 ORI       rs=2 rt=2 rd=31 imm=-80 raw=3442FFB0
+0x00271304 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271308 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x0027130C OR        rs=10 rt=7 rd=10 imm=20517 raw=01475025
+0x00271310 ADDIU     rs=5 rt=5 rd=31 imm=-8 raw=24A5FFF8
+0x00271314 SPECIAL60 rs=0 rt=9 rd=9 imm=18748 raw=0009493C
+0x00271318 SPECIAL0  rs=0 rt=4 rd=4 imm=8448 raw=00042100
+0x0027131C SPECIAL0  rs=0 rt=3 rd=3 imm=6400 raw=00031900
+0x00271320 SD        rs=15 rt=10 rd=0 imm=0 raw=FDEA0000
+0x00271324 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00271328 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x0027132C OR        rs=5 rt=9 rd=5 imm=10277 raw=00A92825
+0x00271330 ADDIU     rs=4 rt=4 rd=14 imm=28672 raw=24847000
+0x00271334 SPECIAL60 rs=0 rt=3 rd=3 imm=6204 raw=0003183C
+0x00271338 SD        rs=15 rt=5 rd=0 imm=0 raw=FDE50000
+0x0027133C SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271340 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271344 BEQ       rs=0 rt=0 rd=0 imm=162 raw=100000A2 TARGET=0x002715D0
+0x00271348 OR        rs=4 rt=3 rd=4 imm=8229 raw=00832025
+0x0027134C BNE       rs=3 rt=2 rd=0 imm=85 raw=14620055 TARGET=0x002714A4
+0x00271350 ADDIU     rs=25 rt=4 rd=0 imm=1776 raw=272406F0
+0x00271354 LH        rs=17 rt=2 rd=0 imm=8 raw=86220008
+0x00271358 ADDIU     rs=25 rt=3 rd=0 imm=1792 raw=27230700
+0x0027135C SPECIAL0  rs=0 rt=3 rd=9 imm=18688 raw=00034900
+0x00271360 ADDU      rs=8 rt=2 rd=2 imm=4129 raw=01021021
+0x00271364 SPECIAL0  rs=0 rt=4 rd=10 imm=20736 raw=00045100
+0x00271368 ADDU      rs=2 rt=16 rd=2 imm=4129 raw=00501021
+0x0027136C ADDIU     rs=2 rt=3 rd=0 imm=1848 raw=24430738
+0x00271370 ADDIU     rs=2 rt=2 rd=0 imm=1824 raw=24420720
+0x00271374 SPECIAL0  rs=0 rt=2 rd=5 imm=10496 raw=00022900
+0x00271378 BEQ       rs=20 rt=0 rd=0 imm=250 raw=128000FA TARGET=0x00271764
+0x0027137C SPECIAL0  rs=0 rt=3 rd=7 imm=14592 raw=00033900
+0x00271380 LW        rs=24 rt=2 rd=0 imm=28 raw=8F02001C
+0x00271384 BNEL      rs=2 rt=0 rd=0 imm=248 raw=544000F8 TARGET=0x00271768
+0x00271388 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x0027138C ANDI      rs=6 rt=2 rd=0 imm=1 raw=30C20001
+0x00271390 ANDI      rs=2 rt=2 rd=31 imm=-1 raw=3042FFFF
+0x00271394 BEQ       rs=2 rt=0 rd=0 imm=33 raw=10400021 TARGET=0x0027141C
+0x00271398 SPECIAL60 rs=0 rt=5 rd=3 imm=6204 raw=0005183C
+0x0027139C ADDIU     rs=0 rt=2 rd=0 imm=128 raw=24020080
+0x002713A0 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x002713A4 ORI       rs=2 rt=2 rd=0 imm=128 raw=34420080
+0x002713A8 ADDIU     rs=0 rt=4 rd=0 imm=96 raw=24040060
+0x002713AC SPECIAL60 rs=0 rt=4 rd=4 imm=8252 raw=0004203C
+0x002713B0 ORI       rs=4 rt=4 rd=0 imm=128 raw=34840080
+0x002713B4 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x002713B8 ADDIU     rs=0 rt=2 rd=0 imm=256 raw=24020100
+0x002713BC SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x002713C0 ORI       rs=2 rt=2 rd=0 imm=1024 raw=34420400
+0x002713C4 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x002713C8 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002713CC SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x002713D0 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x002713D4 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002713D8 OR        rs=10 rt=3 rd=3 imm=6181 raw=01431825
+0x002713DC LUI       rs=0 rt=4 rd=0 imm=15 raw=3C04000F
+0x002713E0 ORI       rs=4 rt=4 rd=31 imm=-80 raw=3484FFB0
+0x002713E4 SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x002713E8 SPECIAL60 rs=0 rt=7 rd=3 imm=6204 raw=0007183C
+0x002713EC SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x002713F0 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002713F4 ADDIU     rs=0 rt=2 rd=0 imm=512 raw=24020200
+0x002713F8 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x002713FC ORI       rs=2 rt=2 rd=0 imm=1280 raw=34420500
+0x00271400 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271404 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271408 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x0027140C OR        rs=9 rt=3 rd=3 imm=6181 raw=01231825
+0x00271410 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x00271414 BEQ       rs=0 rt=0 rd=0 imm=112 raw=10000070 TARGET=0x002715D8
+0x00271418 SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x0027141C ANDI      rs=6 rt=2 rd=0 imm=2 raw=30C20002
+0x00271420 BEQ       rs=2 rt=0 rd=0 imm=208 raw=104000D0 TARGET=0x00271764
+0x00271424 OR        rs=10 rt=3 rd=3 imm=6181 raw=01431825
+0x00271428 ADDIU     rs=0 rt=2 rd=0 imm=128 raw=24020080
+0x0027142C SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x00271430 ORI       rs=2 rt=2 rd=0 imm=128 raw=34420080
+0x00271434 ADDIU     rs=0 rt=4 rd=0 imm=96 raw=24040060
+0x00271438 SPECIAL60 rs=0 rt=4 rd=4 imm=8252 raw=0004203C
+0x0027143C ORI       rs=4 rt=4 rd=0 imm=128 raw=34840080
+0x00271440 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271444 ADDIU     rs=0 rt=2 rd=0 imm=256 raw=24020100
+0x00271448 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x0027144C ORI       rs=2 rt=2 rd=0 imm=1280 raw=34420500
+0x00271450 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x00271454 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271458 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x0027145C SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271460 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271464 LUI       rs=0 rt=4 rd=0 imm=15 raw=3C04000F
+0x00271468 ORI       rs=4 rt=4 rd=31 imm=-80 raw=3484FFB0
+0x0027146C SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x00271470 SPECIAL60 rs=0 rt=7 rd=3 imm=6204 raw=0007183C
+0x00271474 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x00271478 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x0027147C ADDIU     rs=0 rt=2 rd=0 imm=512 raw=24020200
+0x00271480 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x00271484 ORI       rs=2 rt=2 rd=0 imm=1536 raw=34420600
+0x00271488 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x0027148C SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271490 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271494 OR        rs=9 rt=3 rd=3 imm=6181 raw=01231825
+0x00271498 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x0027149C BEQ       rs=0 rt=0 rd=0 imm=78 raw=1000004E TARGET=0x002715D8
+0x002714A0 SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x002714A4 BNE       rs=3 rt=0 rd=0 imm=79 raw=1460004F TARGET=0x002715E4
+0x002714A8 ADDIU     rs=0 rt=2 rd=0 imm=2 raw=24020002
+0x002714AC BNEL      rs=20 rt=0 rd=0 imm=174 raw=568000AE TARGET=0x00271768
+0x002714B0 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x002714B4 LW        rs=24 rt=2 rd=0 imm=28 raw=8F02001C
+0x002714B8 BEQ       rs=2 rt=0 rd=0 imm=170 raw=104000AA TARGET=0x00271764
+0x002714BC LUI       rs=0 rt=6 rd=0 imm=145 raw=3C060091
+0x002714C0 LBU       rs=24 rt=3 rd=0 imm=32 raw=93030020
+0x002714C4 ADDIU     rs=6 rt=6 rd=21 imm=-20640 raw=24C6AF60
+0x002714C8 LH        rs=17 rt=7 rd=0 imm=8 raw=86270008
+0x002714CC SPECIAL0  rs=0 rt=3 rd=2 imm=4160 raw=00031040
+0x002714D0 LH        rs=24 rt=4 rd=0 imm=10 raw=8704000A
+0x002714D4 ADDU      rs=2 rt=3 rd=2 imm=4129 raw=00431021
+0x002714D8 ADDU      rs=7 rt=16 rd=5 imm=10273 raw=00F02821
+0x002714DC SPECIAL0  rs=0 rt=2 rd=2 imm=4160 raw=00021040
+0x002714E0 ADDU      rs=7 rt=4 rd=7 imm=14369 raw=00E43821
+0x002714E4 ADDU      rs=2 rt=6 rd=3 imm=6177 raw=00461821
+0x002714E8 ADDU      rs=6 rt=2 rd=2 imm=4129 raw=00C21021
+0x002714EC LH        rs=3 rt=3 rd=0 imm=0 raw=84630000
+0x002714F0 ADDU      rs=5 rt=8 rd=5 imm=10273 raw=00A82821
+0x002714F4 LH        rs=2 rt=2 rd=0 imm=2 raw=84420002
+0x002714F8 SPECIAL0  rs=0 rt=5 rd=5 imm=10496 raw=00052900
+0x002714FC SPECIAL60 rs=0 rt=3 rd=3 imm=6204 raw=0003183C
+0x00271500 LHU       rs=24 rt=9 rd=0 imm=12 raw=9709000C
+0x00271504 OR        rs=2 rt=3 rd=2 imm=4133 raw=00431025
+0x00271508 LHU       rs=24 rt=11 rd=0 imm=14 raw=970B000E
+0x0027150C SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271510 ADDIU     rs=8 rt=2 rd=0 imm=1824 raw=25020720
+0x00271514 ADDU      rs=7 rt=2 rd=7 imm=14369 raw=00E23821
+0x00271518 LH        rs=24 rt=4 rd=0 imm=8 raw=87040008
+0x0027151C LBU       rs=24 rt=3 rd=0 imm=32 raw=93030020
+0x00271520 ORI       rs=0 rt=14 rd=16 imm=-32768 raw=340E8000
+0x00271524 SPECIAL56 rs=0 rt=14 rd=14 imm=30264 raw=000E7638
+0x00271528 LHU       rs=24 rt=13 rd=0 imm=16 raw=970D0010
+0x0027152C ADDU      rs=10 rt=4 rd=4 imm=8225 raw=01442021
+0x00271530 SPECIAL0  rs=0 rt=3 rd=2 imm=4160 raw=00031040
+0x00271534 LHU       rs=24 rt=12 rd=0 imm=18 raw=970C0012
+0x00271538 ADDU      rs=2 rt=3 rd=2 imm=4129 raw=00431021
+0x0027153C SPECIAL56 rs=0 rt=9 rd=8 imm=16696 raw=00094138
+0x00271540 SPECIAL0  rs=0 rt=2 rd=2 imm=4160 raw=00021040
+0x00271544 SPECIAL0  rs=0 rt=25 rd=10 imm=20736 raw=00195100
+0x00271548 ADDU      rs=6 rt=2 rd=6 imm=12321 raw=00C23021
+0x0027154C SPECIAL60 rs=0 rt=11 rd=2 imm=4412 raw=000B113C
+0x00271550 LH        rs=6 rt=3 rd=0 imm=4 raw=84C30004
+0x00271554 ADDIU     rs=5 rt=5 rd=14 imm=29184 raw=24A57200
+0x00271558 OR        rs=8 rt=2 rd=8 imm=16421 raw=01024025
+0x0027155C LUI       rs=0 rt=2 rd=0 imm=15 raw=3C02000F
+0x00271560 ORI       rs=2 rt=2 rd=31 imm=-80 raw=3442FFB0
+0x00271564 OR        rs=3 rt=14 rd=3 imm=6181 raw=006E1825
+0x00271568 ADDU      rs=9 rt=13 rd=9 imm=18465 raw=012D4821
+0x0027156C SD        rs=15 rt=3 rd=0 imm=8 raw=FDE30008
+0x00271570 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271574 ADDU      rs=11 rt=12 rd=11 imm=22561 raw=016C5821
+0x00271578 ADDU      rs=4 rt=19 rd=4 imm=8225 raw=00932021
+0x0027157C ADDU      rs=7 rt=16 rd=7 imm=14369 raw=00F03821
+0x00271580 ADDIU     rs=10 rt=10 rd=14 imm=28672 raw=254A7000
+0x00271584 SPECIAL60 rs=0 rt=5 rd=5 imm=10300 raw=0005283C
+0x00271588 SD        rs=15 rt=8 rd=0 imm=0 raw=FDE80000
+0x0027158C SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271590 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271594 OR        rs=10 rt=5 rd=10 imm=20517 raw=01455025
+0x00271598 SPECIAL56 rs=0 rt=9 rd=9 imm=18744 raw=00094938
+0x0027159C SPECIAL60 rs=0 rt=11 rd=11 imm=22844 raw=000B593C
+0x002715A0 SPECIAL0  rs=0 rt=4 rd=4 imm=8448 raw=00042100
+0x002715A4 SPECIAL0  rs=0 rt=7 rd=7 imm=14592 raw=00073900
+0x002715A8 SD        rs=15 rt=10 rd=0 imm=0 raw=FDEA0000
+0x002715AC SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x002715B0 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002715B4 OR        rs=9 rt=11 rd=9 imm=18469 raw=012B4825
+0x002715B8 ADDIU     rs=4 rt=4 rd=14 imm=28672 raw=24847000
+0x002715BC SPECIAL60 rs=0 rt=7 rd=7 imm=14396 raw=0007383C
+0x002715C0 SD        rs=15 rt=9 rd=0 imm=0 raw=FDE90000
+0x002715C4 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x002715C8 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002715CC OR        rs=4 rt=7 rd=4 imm=8229 raw=00872025
+0x002715D0 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x002715D4 SD        rs=15 rt=4 rd=0 imm=0 raw=FDE40000
+0x002715D8 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002715DC BEQ       rs=0 rt=0 rd=0 imm=97 raw=10000061 TARGET=0x00271764
+0x002715E0 ADDIU     rs=18 rt=18 rd=0 imm=1 raw=26520001
+0x002715E4 BNEL      rs=3 rt=2 rd=0 imm=96 raw=54620060 TARGET=0x00271768
+0x002715E8 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x002715EC LH        rs=17 rt=2 rd=0 imm=8 raw=86220008
+0x002715F0 ADDIU     rs=25 rt=3 rd=0 imm=1800 raw=27230708
+0x002715F4 ADDIU     rs=25 rt=4 rd=0 imm=1792 raw=27240700
+0x002715F8 SPECIAL0  rs=0 rt=3 rd=9 imm=18688 raw=00034900
+0x002715FC ADDU      rs=8 rt=2 rd=2 imm=4129 raw=01021021
+0x00271600 SPECIAL0  rs=0 rt=4 rd=10 imm=20736 raw=00045100
+0x00271604 ADDU      rs=2 rt=16 rd=2 imm=4129 raw=00501021
+0x00271608 ADDIU     rs=2 rt=4 rd=0 imm=1848 raw=24440738
+0x0027160C ADDIU     rs=2 rt=3 rd=0 imm=1824 raw=24430720
+0x00271610 ADDIU     rs=2 rt=2 rd=0 imm=1836 raw=2442072C
+0x00271614 SPECIAL0  rs=0 rt=3 rd=8 imm=16640 raw=00034100
+0x00271618 SPECIAL0  rs=0 rt=2 rd=5 imm=10496 raw=00022900
+0x0027161C BEQ       rs=20 rt=0 rd=0 imm=81 raw=12800051 TARGET=0x00271764
+0x00271620 SPECIAL0  rs=0 rt=4 rd=7 imm=14592 raw=00043900
+0x00271624 ANDI      rs=6 rt=2 rd=0 imm=4 raw=30C20004
+0x00271628 BEQ       rs=2 rt=0 rd=0 imm=31 raw=1040001F TARGET=0x002716A8
+0x0027162C SPECIAL60 rs=0 rt=5 rd=2 imm=4156 raw=0005103C
+0x00271630 ADDIU     rs=0 rt=3 rd=0 imm=128 raw=24030080
+0x00271634 SPECIAL60 rs=0 rt=3 rd=3 imm=6204 raw=0003183C
+0x00271638 ORI       rs=3 rt=3 rd=0 imm=128 raw=34630080
+0x0027163C ADDIU     rs=0 rt=4 rd=0 imm=288 raw=24040120
+0x00271640 SPECIAL60 rs=0 rt=4 rd=4 imm=8252 raw=0004203C
+0x00271644 ORI       rs=4 rt=4 rd=0 imm=1856 raw=34840740
+0x00271648 SD        rs=15 rt=3 rd=0 imm=8 raw=FDE30008
+0x0027164C SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x00271650 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271654 SD        rs=15 rt=4 rd=0 imm=0 raw=FDE40000
+0x00271658 LUI       rs=0 rt=4 rd=0 imm=15 raw=3C04000F
+0x0027165C ORI       rs=4 rt=4 rd=31 imm=-80 raw=3484FFB0
+0x00271660 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271664 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271668 OR        rs=10 rt=2 rd=2 imm=4133 raw=01421025
+0x0027166C SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x00271670 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271674 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271678 SPECIAL60 rs=0 rt=7 rd=3 imm=6204 raw=0007183C
+0x0027167C ADDIU     rs=0 rt=2 rd=0 imm=480 raw=240201E0
+0x00271680 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x00271684 ORI       rs=2 rt=2 rd=0 imm=1984 raw=344207C0
+0x00271688 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x0027168C OR        rs=9 rt=3 rd=3 imm=6181 raw=01231825
+0x00271690 SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271694 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x00271698 SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x0027169C ADDIU     rs=18 rt=18 rd=0 imm=1 raw=26520001
+0x002716A0 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x002716A4 ADDIU     rs=15 rt=15 rd=0 imm=16 raw=25EF0010
+0x002716A8 ANDI      rs=6 rt=2 rd=0 imm=8 raw=30C20008
+0x002716AC BEQ       rs=2 rt=0 rd=0 imm=45 raw=1040002D TARGET=0x00271764
+0x002716B0 ANDI      rs=6 rt=2 rd=0 imm=2 raw=30C20002
+0x002716B4 ADDIU     rs=8 rt=6 rd=31 imm=-64 raw=2506FFC0
+0x002716B8 ADDIU     rs=18 rt=11 rd=0 imm=1 raw=264B0001
+0x002716BC ADDIU     rs=10 rt=9 rd=0 imm=192 raw=254900C0
+0x002716C0 ADDIU     rs=8 rt=7 rd=0 imm=192 raw=250700C0
+0x002716C4 ADDIU     rs=15 rt=5 rd=0 imm=16 raw=25E50010
+0x002716C8 BEQ       rs=2 rt=0 rd=0 imm=10 raw=1040000A TARGET=0x002716F4
+0x002716CC ADDIU     rs=10 rt=4 rd=31 imm=-64 raw=2544FFC0
+0x002716D0 ADDIU     rs=0 rt=3 rd=0 imm=20 raw=24030014
+0x002716D4 SPECIAL60 rs=0 rt=3 rd=3 imm=6204 raw=0003183C
+0x002716D8 ORI       rs=3 rt=3 rd=0 imm=128 raw=34630080
+0x002716DC ADDIU     rs=0 rt=2 rd=0 imm=128 raw=24020080
+0x002716E0 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x002716E4 ORI       rs=2 rt=2 rd=0 imm=20 raw=34420014
+0x002716E8 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x002716EC BEQ       rs=0 rt=0 rd=0 imm=6 raw=10000006 TARGET=0x00271708
+0x002716F0 SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x002716F4 ADDIU     rs=0 rt=2 rd=0 imm=128 raw=24020080
+0x002716F8 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x002716FC ORI       rs=2 rt=2 rd=0 imm=128 raw=34420080
+0x00271700 SD        rs=15 rt=2 rd=0 imm=8 raw=FDE20008
+0x00271704 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271708 SPECIAL60 rs=0 rt=6 rd=2 imm=4156 raw=0006103C
+0x0027170C ADDIU     rs=5 rt=15 rd=0 imm=16 raw=24AF0010
+0x00271710 OR        rs=4 rt=2 rd=2 imm=4133 raw=00821025
+0x00271714 LUI       rs=0 rt=4 rd=0 imm=15 raw=3C04000F
+0x00271718 ORI       rs=4 rt=4 rd=31 imm=-80 raw=3484FFB0
+0x0027171C ADDIU     rs=0 rt=3 rd=0 imm=1792 raw=24030700
+0x00271720 SD        rs=5 rt=0 rd=0 imm=8 raw=FCA00008
+0x00271724 SD        rs=5 rt=3 rd=0 imm=0 raw=FCA30000
+0x00271728 SPECIAL60 rs=0 rt=7 rd=3 imm=6204 raw=0007183C
+0x0027172C SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271730 ADDIU     rs=0 rt=2 rd=0 imm=256 raw=24020100
+0x00271734 SPECIAL60 rs=0 rt=2 rd=2 imm=4156 raw=0002103C
+0x00271738 ORI       rs=2 rt=2 rd=1 imm=2048 raw=34420800
+0x0027173C SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x00271740 ADDIU     rs=5 rt=15 rd=0 imm=32 raw=24AF0020
+0x00271744 SD        rs=15 rt=2 rd=0 imm=0 raw=FDE20000
+0x00271748 OR        rs=9 rt=3 rd=3 imm=6181 raw=01231825
+0x0027174C SD        rs=15 rt=0 rd=0 imm=8 raw=FDE00008
+0x00271750 ADDIU     rs=5 rt=15 rd=0 imm=48 raw=24AF0030
+0x00271754 SD        rs=15 rt=4 rd=0 imm=8 raw=FDE40008
+0x00271758 DADDU     rs=11 rt=0 rd=18 imm=-28627 raw=0160902D
+0x0027175C SD        rs=15 rt=3 rd=0 imm=0 raw=FDE30000
+0x00271760 ADDIU     rs=5 rt=15 rd=0 imm=64 raw=24AF0040
+0x00271764 ADDIU     rs=22 rt=22 rd=31 imm=-1 raw=26D6FFFF
+0x00271768 REGIMM    rs=22 rt=1 rd=31 imm=-368 raw=06C1FE90 TARGET=0x002711AC
+0x0027176C ADDIU     rs=23 rt=23 rd=0 imm=40 raw=26F70028
+0x00271770 LW        rs=29 rt=2 rd=0 imm=48 raw=8FA20030
+0x00271774 ADDIU     rs=30 rt=30 rd=0 imm=1 raw=27DE0001
+0x00271778 ADDIU     rs=2 rt=2 rd=0 imm=1280 raw=24420500
+0x0027177C SW        rs=29 rt=2 rd=0 imm=48 raw=AFA20030
+0x00271780 OP10      rs=30 rt=2 rd=0 imm=10 raw=2BC2000A
+0x00271784 BNE       rs=2 rt=0 rd=31 imm=-376 raw=1440FE88 TARGET=0x002711A8
+0x00271788 DADDU     rs=0 rt=0 rd=23 imm=-18387 raw=0000B82D
+0x0027178C LUI       rs=0 rt=3 rd=0 imm=4 raw=3C030004
+0x00271790 LUI       rs=0 rt=4 rd=10 imm=20651 raw=3C0450AB
+0x00271794 ORI       rs=3 rt=3 rd=6 imm=13361 raw=34633431
+0x00271798 ORI       rs=4 rt=4 rd=8 imm=16384 raw=34844000
+0x0027179C SW        rs=21 rt=18 rd=0 imm=0 raw=AEB20000
+0x002717A0 DADDU     rs=15 rt=0 rd=2 imm=4141 raw=01E0102D
+0x002717A4 SW        rs=21 rt=3 rd=0 imm=8 raw=AEA30008
+0x002717A8 SW        rs=21 rt=4 rd=0 imm=4 raw=AEA40004
+0x002717AC SW        rs=21 rt=0 rd=0 imm=12 raw=AEA0000C
+0x002717B0 LD        rs=29 rt=16 rd=0 imm=64 raw=DFB00040
+0x002717B4 LD        rs=29 rt=17 rd=0 imm=72 raw=DFB10048
+0x002717B8 LD        rs=29 rt=18 rd=0 imm=80 raw=DFB20050
+0x002717BC LD        rs=29 rt=19 rd=0 imm=88 raw=DFB30058
+0x002717C0 LD        rs=29 rt=20 rd=0 imm=96 raw=DFB40060
+0x002717C4 LD        rs=29 rt=21 rd=0 imm=104 raw=DFB50068
+0x002717C8 LD        rs=29 rt=22 rd=0 imm=112 raw=DFB60070
+0x002717CC LD        rs=29 rt=23 rd=0 imm=120 raw=DFB70078
+0x002717D0 LD        rs=29 rt=30 rd=0 imm=128 raw=DFBE0080
+0x002717D4 JR        rs=31 rt=0 rd=0 imm=8 raw=03E00008
+0x002717D8 ADDIU     rs=29 rt=29 rd=0 imm=144 raw=27BD0090
+0x002717DC DADDU     rs=5 rt=0 rd=14 imm=28717 raw=00A0702D
+0x002717E0 DADDU     rs=4 rt=0 rd=9 imm=18477 raw=0080482D
+0x002717E4 LH        rs=14 rt=24 rd=0 imm=0 raw=85D80000
+0x002717E8 ADDIU     rs=0 rt=7 rd=0 imm=511 raw=240701FF
+0x002717EC LH        rs=14 rt=2 rd=0 imm=4 raw=85C20004
+0x002717F0 ADDIU     rs=0 rt=8 rd=0 imm=447 raw=240801BF
+0x002717F4 LH        rs=14 rt=15 rd=0 imm=2 raw=85CF0002
+0x002717F8 ADDIU     rs=24 rt=13 rd=0 imm=4 raw=270D0004
+0x002717FC ADDU      rs=24 rt=2 rd=25 imm=-14303 raw=0302C821
+0x00271800 LH        rs=14 rt=2 rd=0 imm=6 raw=85C20006
+0x00271804 ADDIU     rs=25 rt=12 rd=31 imm=-4 raw=272CFFFC
+0x00271808 OP10      rs=13 rt=4 rd=0 imm=0 raw=29A40000
+0x0027180C ADDU      rs=15 rt=2 rd=2 imm=4129 raw=01E21021
+0x00271810 OP10      rs=12 rt=3 rd=0 imm=0 raw=29830000
+0x00271814 ADDIU     rs=2 rt=11 rd=31 imm=-8 raw=244BFFF8
+0x00271818 SPECIAL11 rs=0 rt=4 rd=13 imm=26635 raw=0004680B
+0x0027181C SPECIAL11 rs=0 rt=3 rd=12 imm=24587 raw=0003600B
+0x00271820 ADDIU     rs=15 rt=10 rd=0 imm=8 raw=25EA0008
+0x00271824 OP10      rs=12 rt=2 rd=0 imm=512 raw=29820200
+0x00271828 OP10      rs=10 rt=3 rd=0 imm=0 raw=29430000
+0x0027182C OP10      rs=11 rt=4 rd=0 imm=0 raw=29640000
+0x00271830 OP10      rs=13 rt=5 rd=0 imm=512 raw=29A50200
+0x00271834 SPECIAL11 rs=0 rt=4 rd=11 imm=22539 raw=0004580B
+0x00271838 SPECIAL10 rs=7 rt=2 rd=12 imm=24586 raw=00E2600A
+0x0027183C SPECIAL11 rs=0 rt=3 rd=10 imm=20491 raw=0003500B
+0x00271840 SPECIAL10 rs=7 rt=5 rd=13 imm=26634 raw=00E5680A
+0x00271844 OP10      rs=11 rt=2 rd=0 imm=448 raw=296201C0
+0x00271848 OP10      rs=10 rt=3 rd=0 imm=448 raw=294301C0
+0x0027184C SPECIAL42 rs=13 rt=12 rd=4 imm=8234 raw=01AC202A
+0x00271850 SPECIAL10 rs=8 rt=2 rd=11 imm=22538 raw=0102580A
+0x00271854 ANDI      rs=6 rt=6 rd=0 imm=255 raw=30C600FF
+0x00271858 SPECIAL10 rs=8 rt=3 rd=10 imm=20490 raw=0103500A
+0x0027185C BEQ       rs=4 rt=0 rd=0 imm=97 raw=10800061 TARGET=0x002719E4
+0x00271860 DADDU     rs=9 rt=0 rd=2 imm=4141 raw=0120102D
+0x00271864 SPECIAL42 rs=10 rt=11 rd=3 imm=6186 raw=014B182A
+0x00271868 BEQ       rs=3 rt=0 rd=0 imm=94 raw=1060005E TARGET=0x002719E4
+0x0027186C SPECIAL0  rs=0 rt=0 rd=0 imm=0 raw=00000000
+0x00271870 LH        rs=14 rt=8 rd=0 imm=10 raw=85C8000A
+0x00271874 BEQ       rs=8 rt=0 rd=0 imm=91 raw=1100005B TARGET=0x002719E4
+0x00271878 ADDU      rs=15 rt=8 rd=3 imm=6177 raw=01E81821
+0x0027187C LH        rs=14 rt=14 rd=0 imm=8 raw=85CE0008
+0x00271880 ADDU      rs=3 rt=14 rd=7 imm=14369 raw=006E3821
+0x00271884 OP10      rs=7 rt=3 rd=0 imm=512 raw=28E30200
+0x00271888 BEQ       rs=3 rt=0 rd=0 imm=86 raw=10600056 TARGET=0x002719E4
+0x0027188C SPECIAL0  rs=0 rt=0 rd=0 imm=0 raw=00000000
+0x00271890 BEQ       rs=6 rt=0 rd=0 imm=84 raw=10C00054 TARGET=0x002719E4
+0x00271894 SPECIAL60 rs=0 rt=11 rd=4 imm=9276 raw=000B243C
+0x00271898 DADDU     rs=12 rt=0 rd=2 imm=4141 raw=0180102D
+0x0027189C SPECIAL56 rs=0 rt=2 rd=2 imm=5176 raw=00021438
+0x002718A0 SPECIAL60 rs=0 rt=10 rd=3 imm=6204 raw=000A183C
+0x002718A4 OR        rs=3 rt=2 rd=3 imm=6181 raw=00621825
+0x002718A8 ADDIU     rs=0 rt=2 rd=0 imm=14 raw=2402000E
+0x002718AC LUI       rs=0 rt=5 rd=2 imm=4096 raw=3C051000
+0x002718B0 ADDIU     rs=0 rt=6 rd=0 imm=5 raw=24060005
+0x002718B4 OR        rs=13 rt=4 rd=4 imm=8229 raw=01A42025
+0x002718B8 SW        rs=9 rt=2 rd=0 imm=8 raw=AD220008
+0x002718BC SW        rs=9 rt=5 rd=0 imm=4 raw=AD250004
+0x002718C0 ADDU      rs=15 rt=14 rd=5 imm=10273 raw=01EE2821
+0x002718C4 OR        rs=4 rt=3 rd=4 imm=8229 raw=00832025
+0x002718C8 LUI       rs=0 rt=3 rd=4 imm=8199 raw=3C032007
+0x002718CC ORI       rs=3 rt=3 rd=31 imm=-1147 raw=3463FB85
+0x002718D0 SPECIAL56 rs=0 rt=3 rd=3 imm=7224 raw=00031C38
+0x002718D4 ORI       rs=3 rt=3 rd=27 imm=-8912 raw=3463DD30
+0x002718D8 SPECIAL56 rs=0 rt=3 rd=3 imm=7224 raw=00031C38
+0x002718DC ORI       rs=3 rt=3 rd=23 imm=-16544 raw=3463BF60
+0x002718E0 SW        rs=9 rt=6 rd=0 imm=0 raw=AD260000
+0x002718E4 ADDIU     rs=24 rt=6 rd=0 imm=1812 raw=27060714
+0x002718E8 ADDIU     rs=0 rt=2 rd=0 imm=64 raw=24020040
+0x002718EC SW        rs=9 rt=0 rd=0 imm=12 raw=AD20000C
+0x002718F0 ADDIU     rs=9 rt=9 rd=0 imm=16 raw=25290010
+0x002718F4 ADDIU     rs=7 rt=7 rd=0 imm=1824 raw=24E70720
+0x002718F8 SD        rs=9 rt=4 rd=0 imm=0 raw=FD240000
+0x002718FC LUI       rs=0 rt=4 rd=6 imm=12419 raw=3C043083
+
+===== ALL INBOUND REFERENCES =====
+FROM=0x0024F820 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x0024F8A0 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x0024F8EC OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x0024F97C OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x0024FE44 OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x00251784 OP=1 TO=0x00270F0C RAW=047A7DE1
+FROM=0x002517F0 OP=5 TO=0x00270FC0 RAW=15817DF3
+FROM=0x00257D40 OP=7 TO=0x00271524 RAW=1DDE65F8
+FROM=0x00262BB4 OP=6 TO=0x002711F8 RAW=1B163990
+FROM=0x00266B98 OP=4 TO=0x00271574 RAW=111A2A76
+FROM=0x00266C2C OP=5 TO=0x00271540 RAW=14F52A44
+FROM=0x0026D124 OP=6 TO=0x00271014 RAW=18FC0FBB
+FROM=0x00270884 OP=7 TO=0x002713A8 RAW=1DC302C8
+FROM=0x0027088C OP=1 TO=0x002713D8 RAW=06FE02D2
+FROM=0x00270F40 OP=4 TO=0x00271680 RAW=108001CF
+FROM=0x00270F4C OP=20 TO=0x00271684 RAW=506001CD
+FROM=0x00270FA0 OP=4 TO=0x00270FDC RAW=1280000E
+FROM=0x00270FD4 OP=4 TO=0x0027100C RAW=1000000D
+FROM=0x00271098 OP=4 TO=0x00271634 RAW=10600166
+FROM=0x002710A0 OP=20 TO=0x00271638 RAW=50620165
+FROM=0x002710AC OP=4 TO=0x00271634 RAW=10400161
+FROM=0x002710B8 OP=21 TO=0x00271638 RAW=5443015F
+FROM=0x002711F4 OP=21 TO=0x00271768 RAW=5440015C
+FROM=0x00271214 OP=21 TO=0x00271768 RAW=54400154
+FROM=0x00271234 OP=21 TO=0x00271768 RAW=5440014C
+FROM=0x00271240 OP=20 TO=0x00271768 RAW=50400149
+FROM=0x0027124C OP=20 TO=0x00271768 RAW=50400146
+FROM=0x0027125C OP=5 TO=0x0027134C RAW=1462003B
+FROM=0x00271264 OP=20 TO=0x00271768 RAW=52800140
+FROM=0x00271270 OP=21 TO=0x00271768 RAW=5440013D
+FROM=0x00271344 OP=4 TO=0x002715D0 RAW=100000A2
+FROM=0x0027134C OP=5 TO=0x002714A4 RAW=14620055
+FROM=0x00271378 OP=4 TO=0x00271764 RAW=128000FA
+FROM=0x00271384 OP=21 TO=0x00271768 RAW=544000F8
+FROM=0x00271394 OP=4 TO=0x0027141C RAW=10400021
+FROM=0x00271414 OP=4 TO=0x002715D8 RAW=10000070
+FROM=0x00271420 OP=4 TO=0x00271764 RAW=104000D0
+FROM=0x0027149C OP=4 TO=0x002715D8 RAW=1000004E
+FROM=0x002714A4 OP=5 TO=0x002715E4 RAW=1460004F
+FROM=0x002714AC OP=21 TO=0x00271768 RAW=568000AE
+FROM=0x002714B8 OP=4 TO=0x00271764 RAW=104000AA
+FROM=0x002715DC OP=4 TO=0x00271764 RAW=10000061
+FROM=0x002715E4 OP=21 TO=0x00271768 RAW=54620060
+FROM=0x0027161C OP=4 TO=0x00271764 RAW=12800051
+FROM=0x00271628 OP=4 TO=0x002716A8 RAW=1040001F
+FROM=0x002716AC OP=4 TO=0x00271764 RAW=1040002D
+FROM=0x002716C8 OP=4 TO=0x002716F4 RAW=1040000A
+FROM=0x002716EC OP=4 TO=0x00271708 RAW=10000006
+FROM=0x00271768 OP=1 TO=0x002711AC RAW=06C1FE90
+FROM=0x00271784 OP=5 TO=0x002711A8 RAW=1440FE88
+FROM=0x00276B9C OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x00276C94 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x0027B64C OP=21 TO=0x00271208 RAW=54EFD6EE
+FROM=0x00281BB4 OP=6 TO=0x002713EC RAW=1AABBE0D
+FROM=0x0028218C OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x002823A0 OP=3 TO=0x0027148C RAW=0C09C523
+FROM=0x00282C9C OP=3 TO=0x0027148C RAW=0C09C523
+FROM=0x00287780 OP=1 TO=0x0027106C RAW=044EA63A
+FROM=0x00288054 OP=5 TO=0x0027160C RAW=16F6A56D
+FROM=0x002A3254 OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002A34A8 OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002B273C OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002B332C OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002B3350 OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x002C7154 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002C7F00 OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002CC184 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002CC270 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002CC2CC OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x002CC878 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002CC970 OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x002D96B0 OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002D98CC OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x002D9A1C OP=3 TO=0x0027187C RAW=0C09C61F
+FROM=0x002D9E14 OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002D9F6C OP=3 TO=0x00271478 RAW=0C09C51E
+FROM=0x002DB5BC OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002DB5E4 OP=3 TO=0x0027171C RAW=0C09C5C7
+FROM=0x002DB640 OP=3 TO=0x002714A0 RAW=0C09C528
+FROM=0x002E4754 OP=3 TO=0x0027148C RAW=0C09C523
