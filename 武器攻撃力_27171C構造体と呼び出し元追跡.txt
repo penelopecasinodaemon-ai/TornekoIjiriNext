@@ -1,0 +1,39 @@
+﻿TORNEKO NEXT - 27171C STRUCTURE / CALLER TRACE
+ELF SIZE: 7526424
+
+================================================
+1. FULL TARGET REGION 0x002716C0 - 0x00271880
+================================================
+VA=0x002716C0 RAW=250700C0 ADDIU    rs= 8 rt= 7 rd= 0 imm=   192 
+VA=0x002716C4 RAW=25E50010 ADDIU    rs=15 rt= 5 rd= 0 imm=    16 
+VA=0x002716C8 RAW=1040000A BEQ      rs= 2 rt= 0 rd= 0 imm=    10 BRANCH=0x002716F4
+
+================================================
+2. CALLER CONTEXT 0x002A31C0 - 0x002A32B0
+================================================
+
+================================================
+3. ALL JAL REFERENCES TO 0x002716C0 / 0x0027171C
+================================================
+TOTAL MATCHES: 0
+
+================================================
+4. CALLER WINDOWS
+================================================
+
+================================================
+5. ALL r14 BASE REGISTER MEMORY ACCESSES IN TARGET
+================================================
+VA=0x002717E4 RAW=85D80000 LH       rs=14 rt=24 rd= 0 imm=     0 BASE=r14 OFFSET=0
+VA=0x002717EC RAW=85C20004 LH       rs=14 rt= 2 rd= 0 imm=     4 BASE=r14 OFFSET=4
+VA=0x002717F4 RAW=85CF0002 LH       rs=14 rt=15 rd= 0 imm=     2 BASE=r14 OFFSET=2
+VA=0x00271800 RAW=85C20006 LH       rs=14 rt= 2 rd= 0 imm=     6 BASE=r14 OFFSET=6
+VA=0x00271870 RAW=85C8000A LH       rs=14 rt= 8 rd= 0 imm=    10 BASE=r14 OFFSET=10
+VA=0x0027187C RAW=85CE0008 LH       rs=14 rt=14 rd= 0 imm=     8 BASE=r14 OFFSET=8
+
+================================================
+6. SUMMARY
+================================================
+TOTAL JAL MATCHES: 0
+READ ONLY: TRUE
+ANALYSIS COMPLETE
