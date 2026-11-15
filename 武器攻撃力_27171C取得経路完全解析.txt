@@ -1,0 +1,80 @@
+﻿TORNEKO NEXT - WEAPON DATA PATH ANALYSIS
+ELF SIZE: 7526424
+TARGET: 0x0027171C
+
+================================================
+1. TARGET ROUTINE 0x002716C0 - 0x00271880
+================================================
+VA=0x002716C0 FILE=0x000716C0 RAW=250700C0 ADDIU    rs= 8 rt= 7 rd= 0 imm=   192
+VA=0x002716C4 FILE=0x000716C4 RAW=25E50010 ADDIU    rs=15 rt= 5 rd= 0 imm=    16
+VA=0x002716C8 FILE=0x000716C8 RAW=1040000A BEQ      rs= 2 rt= 0 rd= 0 imm=    10 BRANCH=0x002716F4
+
+================================================
+2. ALL DIRECT JAL REFERENCES TO 0x0027171C
+================================================
+TOTAL CALLERS: 1
+
+================================================
+3. CALLER CONTEXT - 20 INSTRUCTIONS EACH SIDE
+================================================
+
+----- CALLER 0x002A3254 -----
+VA=0x002A3204 FILE=0x000A3204 RAW=0C087991 JAL      rs= 0 rt= 8 rd=15 imm= 31121 TARGET=0x0021E644
+VA=0x002A3208 FILE=0x000A3208 RAW=00C42021 ADDU     rs= 6 rt= 4 rd= 4 imm=  8225
+VA=0x002A320C FILE=0x000A320C RAW=3C030400 LUI      rs= 0 rt= 3 rd= 0 imm=  1024
+VA=0x002A3210 FILE=0x000A3210 RAW=8C420000 LW       rs= 2 rt= 2 rd= 0 imm=     0
+VA=0x002A3214 FILE=0x000A3214 RAW=00431024 AND      rs= 2 rt= 3 rd= 2 imm=  4132
+VA=0x002A3218 FILE=0x000A3218 RAW=0002182B SLTU     rs= 0 rt= 2 rd= 3 imm=  6187
+VA=0x002A321C FILE=0x000A321C RAW=92021F40 LBU      rs=16 rt= 2 rd= 3 imm=  8000
+VA=0x002A3220 FILE=0x000A3220 RAW=0002180B SPECIAL  rs= 0 rt= 2 rd= 3 imm=  6155
+VA=0x002A3224 FILE=0x000A3224 RAW=10600064 BEQ      rs= 3 rt= 0 rd= 0 imm=   100 BRANCH=0x002A33B8
+VA=0x002A3228 FILE=0x000A3228 RAW=3C020069 LUI      rs= 0 rt= 2 rd= 0 imm=   105
+VA=0x002A322C FILE=0x000A322C RAW=0240202D DADDU    rs=18 rt= 0 rd= 4 imm=  8237
+VA=0x002A3230 FILE=0x000A3230 RAW=8C4521D0 LW       rs= 2 rt= 5 rd= 4 imm=  8656
+VA=0x002A3234 FILE=0x000A3234 RAW=0000302D DADDU    rs= 0 rt= 0 rd= 6 imm= 12333
+
+================================================
+4. MEMORY ACCESS IN TARGET REGION
+================================================
+VA=0x002716E8 FILE=0x000716E8 RAW=FDE20008 SD       rs=15 rt= 2 rd= 0 imm=     8
+VA=0x002716F0 FILE=0x000716F0 RAW=FDE30000 SD       rs=15 rt= 3 rd= 0 imm=     0
+VA=0x00271700 FILE=0x00071700 RAW=FDE20008 SD       rs=15 rt= 2 rd= 0 imm=     8
+VA=0x00271704 FILE=0x00071704 RAW=FDE20000 SD       rs=15 rt= 2 rd= 0 imm=     0
+VA=0x00271720 FILE=0x00071720 RAW=FCA00008 SD       rs= 5 rt= 0 rd= 0 imm=     8
+VA=0x00271724 FILE=0x00071724 RAW=FCA30000 SD       rs= 5 rt= 3 rd= 0 imm=     0
+VA=0x0027172C FILE=0x0007172C RAW=FDE20000 SD       rs=15 rt= 2 rd= 0 imm=     0
+VA=0x0027173C FILE=0x0007173C RAW=FDE40008 SD       rs=15 rt= 4 rd= 0 imm=     8
+VA=0x00271744 FILE=0x00071744 RAW=FDE20000 SD       rs=15 rt= 2 rd= 0 imm=     0
+VA=0x0027174C FILE=0x0007174C RAW=FDE00008 SD       rs=15 rt= 0 rd= 0 imm=     8
+VA=0x00271754 FILE=0x00071754 RAW=FDE40008 SD       rs=15 rt= 4 rd= 0 imm=     8
+VA=0x0027175C FILE=0x0007175C RAW=FDE30000 SD       rs=15 rt= 3 rd= 0 imm=     0
+VA=0x00271770 FILE=0x00071770 RAW=8FA20030 LW       rs=29 rt= 2 rd= 0 imm=    48
+VA=0x0027177C FILE=0x0007177C RAW=AFA20030 SW       rs=29 rt= 2 rd= 0 imm=    48
+VA=0x0027179C FILE=0x0007179C RAW=AEB20000 SW       rs=21 rt=18 rd= 0 imm=     0
+VA=0x002717A4 FILE=0x000717A4 RAW=AEA30008 SW       rs=21 rt= 3 rd= 0 imm=     8
+VA=0x002717A8 FILE=0x000717A8 RAW=AEA40004 SW       rs=21 rt= 4 rd= 0 imm=     4
+VA=0x002717AC FILE=0x000717AC RAW=AEA0000C SW       rs=21 rt= 0 rd= 0 imm=    12
+VA=0x002717B0 FILE=0x000717B0 RAW=DFB00040 LD       rs=29 rt=16 rd= 0 imm=    64
+VA=0x002717B4 FILE=0x000717B4 RAW=DFB10048 LD       rs=29 rt=17 rd= 0 imm=    72
+VA=0x002717B8 FILE=0x000717B8 RAW=DFB20050 LD       rs=29 rt=18 rd= 0 imm=    80
+VA=0x002717BC FILE=0x000717BC RAW=DFB30058 LD       rs=29 rt=19 rd= 0 imm=    88
+VA=0x002717C0 FILE=0x000717C0 RAW=DFB40060 LD       rs=29 rt=20 rd= 0 imm=    96
+VA=0x002717C4 FILE=0x000717C4 RAW=DFB50068 LD       rs=29 rt=21 rd= 0 imm=   104
+VA=0x002717C8 FILE=0x000717C8 RAW=DFB60070 LD       rs=29 rt=22 rd= 0 imm=   112
+VA=0x002717CC FILE=0x000717CC RAW=DFB70078 LD       rs=29 rt=23 rd= 0 imm=   120
+VA=0x002717D0 FILE=0x000717D0 RAW=DFBE0080 LD       rs=29 rt=30 rd= 0 imm=   128
+VA=0x002717E4 FILE=0x000717E4 RAW=85D80000 LH       rs=14 rt=24 rd= 0 imm=     0
+VA=0x002717EC FILE=0x000717EC RAW=85C20004 LH       rs=14 rt= 2 rd= 0 imm=     4
+VA=0x002717F4 FILE=0x000717F4 RAW=85CF0002 LH       rs=14 rt=15 rd= 0 imm=     2
+VA=0x00271800 FILE=0x00071800 RAW=85C20006 LH       rs=14 rt= 2 rd= 0 imm=     6
+VA=0x00271870 FILE=0x00071870 RAW=85C8000A LH       rs=14 rt= 8 rd= 0 imm=    10
+VA=0x0027187C FILE=0x0007187C RAW=85CE0008 LH       rs=14 rt=14 rd= 0 imm=     8
+
+================================================
+5. ANALYSIS SUMMARY
+================================================
+ELF SIZE: 7526424
+TARGET: 0x0027171C
+TOTAL CALLERS: 1
+READ ONLY: TRUE
+ANALYSIS COMPLETE
