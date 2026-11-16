@@ -1,0 +1,103 @@
+﻿第26弾 可逆候補詳細解析
+============================================
+候補CSV: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\3状態_装備可逆差分解析\全メモリ可逆候補.csv
+うみどりメモリ: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_武器差分比較_20261117_023908\A_うみどりの爪_eeMemory.bin
+エレファントメモリ: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_武器差分比較_20261117_023908\B_エレファントクロウ_eeMemory.bin
+候補元行数: 1166
+A=CかつA≠B: 1166
+解析不能行: 0
+周辺バイト比較行数: 38478
+連続候補範囲数: 517
+
+【アラインメント】
+全候補: 1166
+2バイト境界: 685
+4バイト境界: 428
+奇数アドレス: 481
+
+【領域別候補数】
+0x0600000: 443
+0x0500000: 383
+0x0300000: 108
+0x1F00000: 91
+0x0000000: 78
+0x0900000: 32
+0x0700000: 29
+0x0800000: 2
+
+【変化量別候補数】
+Delta=5: 189
+Delta=1: 107
+Delta=255: 61
+Delta=-3: 33
+Delta=-2: 29
+Delta=-1: 29
+Delta=2: 22
+Delta=-255: 21
+Delta=128: 17
+Delta=3: 16
+Delta=-59: 11
+Delta=79: 11
+Delta=-128: 11
+Delta=-40: 10
+Delta=66: 10
+Delta=-112: 10
+Delta=-32: 8
+Delta=192: 8
+Delta=129: 7
+Delta=-16: 7
+Delta=16: 6
+Delta=-121: 6
+Delta=-144: 6
+Delta=-100: 6
+Delta=4: 6
+Delta=-38: 6
+Delta=6: 6
+Delta=-58: 6
+Delta=-168: 5
+Delta=94: 5
+
+【連続範囲 上位30件】
+0x005D1A74 - 0x005D1AAF / 60 bytes
+0x005D19F4 - 0x005D1A2F / 60 bytes
+0x005D1A34 - 0x005D1A6F / 60 bytes
+0x005D19B4 - 0x005D19D5 / 34 bytes
+0x005D1AB4 - 0x005D1AD2 / 31 bytes
+0x005D19D7 - 0x005D19EF / 25 bytes
+0x0064C839 - 0x0064C84C / 20 bytes
+0x0064C74B - 0x0064C758 / 14 bytes
+0x00929A57 - 0x00929A63 / 13 bytes
+0x0064C4EE - 0x0064C4F8 / 11 bytes
+0x0064C98E - 0x0064C998 / 11 bytes
+0x0064C739 - 0x0064C741 / 9 bytes
+0x0064C94B - 0x0064C953 / 9 bytes
+0x0064CBCD - 0x0064CBD4 / 8 bytes
+0x005D1BA0 - 0x005D1BA7 / 8 bytes
+0x0064CAC1 - 0x0064CAC8 / 8 bytes
+0x005D19A1 - 0x005D19A7 / 7 bytes
+0x0064C70B - 0x0064C711 / 7 bytes
+0x0064C5AE - 0x0064C5B3 / 6 bytes
+0x0001F1E4 - 0x0001F1E9 / 6 bytes
+0x0001F1F1 - 0x0001F1F6 / 6 bytes
+0x0064C7C6 - 0x0064C7CA / 5 bytes
+0x00602510 - 0x00602514 / 5 bytes
+0x0064C814 - 0x0064C818 / 5 bytes
+0x00603C44 - 0x00603C48 / 5 bytes
+0x006022B8 - 0x006022BC / 5 bytes
+0x00601F34 - 0x00601F38 / 5 bytes
+0x0001F1D4 - 0x0001F1D8 / 5 bytes
+0x0001F240 - 0x0001F244 / 5 bytes
+0x0064C574 - 0x0064C578 / 5 bytes
+
+【出力ファイル】
+可逆候補_全件.csv
+可逆候補_数値詳細.csv
+可逆候補_前後16バイト.csv
+アラインメント集計.csv
+領域別候補数.csv
+変化量別候補数.csv
+既知アドレス周辺.csv
+可逆候補_連続範囲.csv
+解析不能行.csv
+
+元メモリ・元CSVへの書き込み: なし
