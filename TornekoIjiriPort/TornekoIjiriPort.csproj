@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -5,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>TornekoIjiriPort</AssemblyName>
+    <AssemblyName>トルネコいじりネクスト</AssemblyName>
     <RootNamespace>TornekoIjiriPort</RootNamespace>
     <StartupObject>TornekoIjiriPort.Program</StartupObject>
   </PropertyGroup>
