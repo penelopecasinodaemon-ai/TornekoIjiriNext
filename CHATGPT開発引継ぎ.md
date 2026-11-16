@@ -65,11 +65,11 @@ Trimによる機能欠落や既存機能の破壊を避けるため、PublishTri
 ### 1. 現在の開発環境
 
 - 正式な開発フォルダ：
-  `C:\Users\penelope\Desktop\TornekoIjiriNext_GitHubUpload`
+  `C:\Users\penelope\Desktop\トルネコいじり作業環境`
 - C#プロジェクト：
-  `C:\Users\penelope\Desktop\TornekoIjiriNext_GitHubUpload\TornekoIjiriNext`
+  `C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext`
 - 引継ぎファイル：
-  `C:\Users\penelope\Desktop\TornekoIjiriNext_GitHubUpload\CHATGPT開発引継ぎ.md`
+  `C:\Users\penelope\Desktop\トルネコいじり作業環境\CHATGPT開発引継ぎ.md`
 - 配布フォルダ：
   `C:\Users\penelope\Desktop\トルネコいじりネクスト`
 - GitHubリポジトリ：
@@ -233,11 +233,11 @@ CSV保存を試した際は「保存する履歴が無い」と表示された�
 
 正式なローカル開発フォルダ：
 
-C:\Users\penelope\Desktop\TornekoIjiriNext_GitHubUpload
+C:\Users\penelope\Desktop\トルネコいじり作業環境
 
 C#プロジェクト：
 
-C:\Users\penelope\Desktop\TornekoIjiriNext_GitHubUpload\TornekoIjiriNext
+C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriNext
 
 GitHub：
 
@@ -5264,6 +5264,17 @@ Program.cs 内で確認済みの主なクラス：
 4. BIN保存と再読み込みの検証。
 5. 旧版との互換性の総合検証。
 
-最終目標は、武器攻撃力とモンスター名の両方を自由に編集・保存できるトルネコいじり Next の完成である。
+最終目標は、武器攻撃力とモンスター名の両方を自由に編集・保存できるトルネコいじりネクストの完成である。
+
+## 実装したいことリスト
+
+１．武器攻撃力を自由に変更
+２．武器の説明文を自由に変更
+３．改造データの保存
+４．旧いじりで変更したはずのモンスターの名前が反映されない問題の解決
+５．イカリ状態じゃなくても特技使用率0％組が特技を使うように変更
+６．誰にでも魔法無効やガニラスバリア付与
+７．仲間モンスターの初期ネーム一覧から簡単に初期ネームを登録できるように
+８．モンスターの特技変更
 
 <!-- TORNEKO_NEXT_CURRENT_STATUS_END -->
