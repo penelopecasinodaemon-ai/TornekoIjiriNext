@@ -1,0 +1,4 @@
+﻿"LUI","LUIInstruction","LUIOperands","ADDIU","ADDIUOperands","ComputedBase","Distance"
+"0x00329964","lui","$v1, 0x0093","0x00329968","$v1, $v1, 5920","0x00931720","4"
+"0x00329B08","lui","$v1, 0x0093","0x00329B10","$t4, $v1, 5920","0x00931720","8"
+"0x0032A46C","lui","$s6, 0x0093","0x0032A474","$v1, $s6, 5920","0x00931720","8"
