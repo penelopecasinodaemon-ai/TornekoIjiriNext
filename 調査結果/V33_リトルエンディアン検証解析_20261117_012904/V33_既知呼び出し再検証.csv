@@ -1,0 +1,5 @@
+﻿"VA","ExpectedTarget","FoundInFullScan","Result"
+"0x0032ABE0","0x00213524","True","PASS"
+"0x0032ABE8","0x002A7CD0","True","PASS"
+"0x0032A674","0x00213524","True","PASS"
+"0x0032A67C","0x002A7CD0","True","PASS"

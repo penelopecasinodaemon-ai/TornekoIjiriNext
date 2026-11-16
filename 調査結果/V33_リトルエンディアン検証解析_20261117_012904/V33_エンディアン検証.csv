@@ -1,0 +1,5 @@
+﻿"Name","VA","ExpectedTarget","LittleEndianWord","LittleEndianMnemonic","LittleEndianTarget","BigEndianWord","Result"
+"Builder_213524_A","0x0032ABE0","0x00213524","0x0C084D49","jal","0x00213524","0x494D080C","PASS"
+"Apply_2A7CD0_A","0x0032ABE8","0x002A7CD0","0x0C0A9F34","jal","0x002A7CD0","0x349F0A0C","PASS"
+"Builder_213524_B","0x0032A674","0x00213524","0x0C084D49","jal","0x00213524","0x494D080C","PASS"
+"Apply_2A7CD0_B","0x0032A67C","0x002A7CD0","0x0C0A9F34","jal","0x002A7CD0","0x349F0A0C","PASS"
