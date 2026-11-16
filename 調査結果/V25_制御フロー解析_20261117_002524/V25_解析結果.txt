@@ -1,0 +1,608 @@
+﻿TORNEKO IJIRI NEXT - V25 CONTROL FLOW ANALYSIS
+================================================
+Date: 2026-11-17 00:30:49
+ELF SHA256: 05DF41B593F86DC42D4E91A0239FD6818575B52696F2812ABBC3A19E2D941FCA
+
+【JAL呼び出し元】
+0x00329B94 -> 0x00213968
+0x00329BB8 -> 0x00213968
+0x00329BE0 -> 0x00213968
+0x00329C08 -> 0x00213968
+0x00329C30 -> 0x00213968
+0x00329C60 -> 0x00213968
+0x00329C84 -> 0x00213968
+0x00329CB0 -> 0x00213968
+0x00329CD4 -> 0x00213968
+0x00329D00 -> 0x00213968
+0x00329D24 -> 0x00213968
+0x00329D4C -> 0x00213968
+0x00329D70 -> 0x00213968
+0x00329D94 -> 0x00213968
+0x00329DB8 -> 0x00213968
+0x00329DDC -> 0x00213968
+0x00329E00 -> 0x00213968
+0x00329E24 -> 0x00213968
+0x00329E48 -> 0x00213968
+0x00329E6C -> 0x00213968
+0x00329E90 -> 0x00213968
+0x00329EB8 -> 0x00213968
+0x0032A0A0 -> 0x00213968
+0x0032A0CC -> 0x00213968
+0x0032A124 -> 0x00213968
+0x0032A14C -> 0x00213968
+0x0032A174 -> 0x00213968
+0x0032A19C -> 0x00213968
+0x0032A1C8 -> 0x00213968
+0x0032A24C -> 0x00213A28
+0x0032A560 -> 0x00213A28
+0x0032A634 -> 0x00213A28
+0x0032A9DC -> 0x00213A28
+0x0032AA70 -> 0x00213968
+0x0032AAA0 -> 0x00213968
+0x0032AB80 -> 0x00213968
+0x0032ABB0 -> 0x00213968
+0x0032AC24 -> 0x00213A28
+0x0032ADBC -> 0x00213968
+0x0032AE64 -> 0x00213A28
+0x0032AE9C -> 0x00213A28
+0x0032AF38 -> 0x00213A28
+0x0032AFF0 -> 0x00213A28
+0x0032B2EC -> 0x00213A28
+0x0032B348 -> 0x00213A28
+0x0032B36C -> 0x00213A28
+0x0032B3D8 -> 0x00213A28
+0x0032B6EC -> 0x00213968
+0x0032B718 -> 0x00213968
+0x0032B744 -> 0x00213968
+0x0032B770 -> 0x00213968
+0x0032B7C0 -> 0x00213968
+0x0032B830 -> 0x00213968
+0x0032B858 -> 0x00213968
+0x0032B880 -> 0x00213968
+0x0032BC80 -> 0x00213968
+0x0032BCA4 -> 0x00213968
+0x0032BCCC -> 0x00213968
+0x0032BCF4 -> 0x00213968
+0x0032BD1C -> 0x00213968
+0x0032BD40 -> 0x00213968
+0x0032BD64 -> 0x00213968
+0x0032BD88 -> 0x00213968
+0x0032BDAC -> 0x00213968
+0x0032C0D0 -> 0x00213968
+0x0032C654 -> 0x00213968
+0x0032CAB4 -> 0x00213968
+0x0032CAFC -> 0x00213968
+0x0032CC30 -> 0x00213968
+0x0032CD08 -> 0x00213968
+0x0032CE6C -> 0x00213968
+0x0032CF30 -> 0x00213968
+0x0032D580 -> 0x00213968
+0x0032D8B4 -> 0x00213A28
+0x0032DABC -> 0x00213A28
+0x0032DB40 -> 0x00213A28
+0x0032DBC0 -> 0x00213A28
+0x0032DC44 -> 0x00213A28
+0x0032DCC0 -> 0x00213968
+0x0032DE84 -> 0x00213A28
+0x0032DEAC -> 0x00213A28
+
+【主処理 0x00213900-0x00213D80】
+0x00213900 0x241EFFFF addiu    $fp, $zero, -1
+0x00213904 0xAFA00020 sw       $zero, 32($sp)
+0x00213908 0x2417FFFF addiu    $s7, $zero, -1
+0x0021390C 0x26B2FFFF addiu    $s2, $s5, -1
+0x00213910 0x02DE9821 addu     $s3, $s6, $fp
+0x00213914 0x0240282D daddu    $a1, $s2, $zero
+0x00213918 0x0260202D daddu    $a0, $s3, $zero
+0x0021391C 0x0C087991 jal      0x0021E644
+0x00213920 0x0000882D daddu    $s1, $zero, $zero
+0x00213924 0x0040802D daddu    $s0, $v0, $zero
+0x00213928 0x00111080 sll      $v0, $s1, 2
+0x0021392C 0x03A21821 addu     $v1, $sp, $v0
+0x00213930 0x0060102D daddu    $v0, $v1, $zero
+0x00213934 0x8C420000 lw       $v0, 0($v0)
+0x00213938 0x12620008 beq      $s3, $v0, 0x0021395C
+0x0021393C 0x26310001 addiu    $s1, $s1, 1
+0x00213940 0x8C620010 lw       $v0, 16($v1)
+0x00213944 0x52420006 beql     $s2, $v0, 0x00213960
+0x00213948 0x2A220003 slti     $v0, $s1, 3
+0x0021394C 0x0C0971E2 jal      0x0025C788
+0x00213950 0x0200202D daddu    $a0, $s0, $zero
+0x00213954 0x144000F2 bne      $v0, $zero, 0x00213D20
+0x00213958 0x0000102D daddu    $v0, $zero, $zero
+0x0021395C 0x2A220003 slti     $v0, $s1, 3
+0x00213960 0x1440FFF2 bne      $v0, $zero, 0x0021392C
+0x00213964 0x00111080 sll      $v0, $s1, 2
+0x00213968 0x9203000A lbu      $v1, 10($s0)
+0x0021396C 0x24020014 addiu    $v0, $zero, 20
+0x00213970 0x1062FFD5 beq      $v1, $v0, 0x002138C8
+0x00213974 0x3C030200 lui      $v1, 0x0200
+0x00213978 0x8E040000 lw       $a0, 0($s0)
+0x0021397C 0x00831824 and      $v1, $a0, $v1
+0x00213980 0x146000E7 bne      $v1, $zero, 0x00213D20
+0x00213984 0x0000102D daddu    $v0, $zero, $zero
+0x00213988 0x30820040 andi     $v0, $a0, 0x0040
+0x0021398C 0x144000E4 bne      $v0, $zero, 0x00213D20
+0x00213990 0x0000102D daddu    $v0, $zero, $zero
+0x00213994 0x8F82999C lw       $v0, -26212($gp)
+0x00213998 0x8C420008 lw       $v0, 8($v0)
+0x0021399C 0x9042003A lbu      $v0, 58($v0)
+0x002139A0 0x30420001 andi     $v0, $v0, 0x0001
+0x002139A4 0x304200FF andi     $v0, $v0, 0x00FF
+0x002139A8 0x10400010 beq      $v0, $zero, 0x002139EC
+0x002139AC 0x00000000 sll      $zero, $zero, 0
+0x002139B0 0x9202000B lbu      $v0, 11($s0)
+0x002139B4 0x30420080 andi     $v0, $v0, 0x0080
+0x002139B8 0x50400006 beql     $v0, $zero, 0x002139D4
+0x002139BC 0x8E020000 lw       $v0, 0($s0)
+0x002139C0 0x0C0A040A jal      0x00281028
+0x002139C4 0x0200202D daddu    $a0, $s0, $zero
+0x002139C8 0x144000D5 bne      $v0, $zero, 0x00213D20
+0x002139CC 0x0000102D daddu    $v0, $zero, $zero
+0x002139D0 0x8E020000 lw       $v0, 0($s0)
+0x002139D4 0x3C030100 lui      $v1, 0x0100
+0x002139D8 0x00431024 and      $v0, $v0, $v1
+0x002139DC 0x10400014 beq      $v0, $zero, 0x00213A30
+0x002139E0 0x00000000 sll      $zero, $zero, 0
+0x002139E4 0x100000CE beq      $zero, $zero, 0x00213D20
+0x002139E8 0x0000102D daddu    $v0, $zero, $zero
+0x002139EC 0x53C00004 beql     $fp, $zero, 0x00213A00
+0x002139F0 0x9202000B lbu      $v0, 11($s0)
+0x002139F4 0x16E0000E bne      $s7, $zero, 0x00213A30
+0x002139F8 0x00000000 sll      $zero, $zero, 0
+0x002139FC 0x9202000B lbu      $v0, 11($s0)
+0x00213A00 0x30420080 andi     $v0, $v0, 0x0080
+0x00213A04 0x50400006 beql     $v0, $zero, 0x00213A20
+0x00213A08 0x8E030000 lw       $v1, 0($s0)
+0x00213A0C 0x0C0A040A jal      0x00281028
+0x00213A10 0x0200202D daddu    $a0, $s0, $zero
+0x00213A14 0x144000C2 bne      $v0, $zero, 0x00213D20
+0x00213A18 0x0000102D daddu    $v0, $zero, $zero
+0x00213A1C 0x8E030000 lw       $v1, 0($s0)
+0x00213A20 0x3C040100 lui      $a0, 0x0100
+0x00213A24 0x00641824 and      $v1, $v1, $a0
+0x00213A28 0x146000BD bne      $v1, $zero, 0x00213D20
+0x00213A2C 0x0000102D daddu    $v0, $zero, $zero
+0x00213A30 0x13C00005 beq      $fp, $zero, 0x00213A48
+0x00213A34 0x00000000 sll      $zero, $zero, 0
+0x00213A38 0x56E00013 bnel     $s7, $zero, 0x00213A88
+0x00213A3C 0x26F70001 addiu    $s7, $s7, 1
+0x00213A40 0x10000004 beq      $zero, $zero, 0x00213A54
+0x00213A44 0x0260202D daddu    $a0, $s3, $zero
+0x00213A48 0x52E0000F beql     $s7, $zero, 0x00213A88
+0x00213A4C 0x26F70001 addiu    $s7, $s7, 1
+0x00213A50 0x0260202D daddu    $a0, $s3, $zero
+0x00213A54 0x0C0B1FA7 jal      0x002C7E9C
+0x00213A58 0x0240282D daddu    $a1, $s2, $zero
+0x00213A5C 0x5440000A bnel     $v0, $zero, 0x00213A88
+0x00213A60 0x26F70001 addiu    $s7, $s7, 1
+0x00213A64 0x8FA40020 lw       $a0, 32($sp)
+0x00213A68 0x3403FFFF ori      $v1, $zero, 0xFFFF
+0x00213A6C 0x24840001 addiu    $a0, $a0, 1
+0x00213A70 0x12830004 beq      $s4, $v1, 0x00213A84
+0x00213A74 0xAFA40020 sw       $a0, 32($sp)
+0x00213A78 0x96030008 lhu      $v1, 8($s0)
+0x00213A7C 0x168300A9 bne      $s4, $v1, 0x00213D24
+0x00213A80 0xDFB00030 ld       $s0, 48($sp)
+0x00213A84 0x26F70001 addiu    $s7, $s7, 1
+0x00213A88 0x2AE20002 slti     $v0, $s7, 2
+0x00213A8C 0x1440FFA0 bne      $v0, $zero, 0x00213910
+0x00213A90 0x26520001 addiu    $s2, $s2, 1
+0x00213A94 0x27DE0001 addiu    $fp, $fp, 1
+0x00213A98 0x2BC20002 slti     $v0, $fp, 2
+0x00213A9C 0x5440FF9B bnel     $v0, $zero, 0x0021390C
+0x00213AA0 0x2417FFFF addiu    $s7, $zero, -1
+0x00213AA4 0x02C0202D daddu    $a0, $s6, $zero
+0x00213AA8 0x0C087991 jal      0x0021E644
+0x00213AAC 0x02A0282D daddu    $a1, $s5, $zero
+0x00213AB0 0x3C030008 lui      $v1, 0x0008
+0x00213AB4 0x8C420000 lw       $v0, 0($v0)
+0x00213AB8 0x00431024 and      $v0, $v0, $v1
+0x00213ABC 0x10400004 beq      $v0, $zero, 0x00213AD0
+0x00213AC0 0x8FA20020 lw       $v0, 32($sp)
+0x00213AC4 0x28430003 slti     $v1, $v0, 3
+0x00213AC8 0x10600095 beq      $v1, $zero, 0x00213D20
+0x00213ACC 0x0000102D daddu    $v0, $zero, $zero
+0x00213AD0 0x8F82999C lw       $v0, -26212($gp)
+0x00213AD4 0x8C420008 lw       $v0, 8($v0)
+0x00213AD8 0x9043003A lbu      $v1, 58($v0)
+0x00213ADC 0x30620001 andi     $v0, $v1, 0x0001
+0x00213AE0 0x304200FF andi     $v0, $v0, 0x00FF
+0x00213AE4 0x54400052 bnel     $v0, $zero, 0x00213C30
+0x00213AE8 0x24050001 addiu    $a1, $zero, 1
+0x00213AEC 0x306300FF andi     $v1, $v1, 0x00FF
+0x00213AF0 0x26D3FFFF addiu    $s3, $s6, -1
+0x00213AF4 0x10600004 beq      $v1, $zero, 0x00213B08
+0x00213AF8 0x26B4FFFF addiu    $s4, $s5, -1
+0x00213AFC 0x24020004 addiu    $v0, $zero, 4
+0x00213B00 0x14620027 bne      $v1, $v0, 0x00213BA0
+0x00213B04 0x0260202D daddu    $a0, $s3, $zero
+0x00213B08 0x0260202D daddu    $a0, $s3, $zero
+0x00213B0C 0x0C0B1FA7 jal      0x002C7E9C
+0x00213B10 0x0280282D daddu    $a1, $s4, $zero
+0x00213B14 0x0260202D daddu    $a0, $s3, $zero
+0x00213B18 0x02A0282D daddu    $a1, $s5, $zero
+0x00213B1C 0x0040902D daddu    $s2, $v0, $zero
+0x00213B20 0x0C0B1FA7 jal      0x002C7E9C
+0x00213B24 0x26B70001 addiu    $s7, $s5, 1
+0x00213B28 0x0040882D daddu    $s1, $v0, $zero
+0x00213B2C 0x0260202D daddu    $a0, $s3, $zero
+0x00213B30 0x0C0B1FA7 jal      0x002C7E9C
+0x00213B34 0x02E0282D daddu    $a1, $s7, $zero
+0x00213B38 0x16200006 bne      $s1, $zero, 0x00213B54
+0x00213B3C 0x26D00001 addiu    $s0, $s6, 1
+0x00213B40 0x56510077 bnel     $s2, $s1, 0x00213D20
+0x00213B44 0x0000102D daddu    $v0, $zero, $zero
+0x00213B48 0x14510075 bne      $v0, $s1, 0x00213D20
+0x00213B4C 0x0000102D daddu    $v0, $zero, $zero
+0x00213B50 0x26D00001 addiu    $s0, $s6, 1
+0x00213B54 0x0280282D daddu    $a1, $s4, $zero
+0x00213B58 0x0C0B1FA7 jal      0x002C7E9C
+0x00213B5C 0x0200202D daddu    $a0, $s0, $zero
+0x00213B60 0x0200202D daddu    $a0, $s0, $zero
+0x00213B64 0x02A0282D daddu    $a1, $s5, $zero
+0x00213B68 0x0C0B1FA7 jal      0x002C7E9C
+0x00213B6C 0x0040902D daddu    $s2, $v0, $zero
+0x00213B70 0x0200202D daddu    $a0, $s0, $zero
+0x00213B74 0x0040882D daddu    $s1, $v0, $zero
+0x00213B78 0x0C0B1FA7 jal      0x002C7E9C
+0x00213B7C 0x02E0282D daddu    $a1, $s7, $zero
+0x00213B80 0x5620002B bnel     $s1, $zero, 0x00213C30
+0x00213B84 0x24050001 addiu    $a1, $zero, 1
+0x00213B88 0x56510065 bnel     $s2, $s1, 0x00213D20
+0x00213B8C 0x0000102D daddu    $v0, $zero, $zero
+0x00213B90 0x10510026 beq      $v0, $s1, 0x00213C2C
+0x00213B94 0x0000102D daddu    $v0, $zero, $zero
+0x00213B98 0x10000062 beq      $zero, $zero, 0x00213D24
+0x00213B9C 0xDFB00030 ld       $s0, 48($sp)
+0x00213BA0 0x0C0B1FA7 jal      0x002C7E9C
+0x00213BA4 0x0280282D daddu    $a1, $s4, $zero
+0x00213BA8 0x02C0202D daddu    $a0, $s6, $zero
+0x00213BAC 0x0280282D daddu    $a1, $s4, $zero
+0x00213BB0 0x0040902D daddu    $s2, $v0, $zero
+0x00213BB4 0x0C0B1FA7 jal      0x002C7E9C
+0x00213BB8 0x26D70001 addiu    $s7, $s6, 1
+0x00213BBC 0x0040882D daddu    $s1, $v0, $zero
+0x00213BC0 0x02E0202D daddu    $a0, $s7, $zero
+0x00213BC4 0x0C0B1FA7 jal      0x002C7E9C
+0x00213BC8 0x0280282D daddu    $a1, $s4, $zero
+0x00213BCC 0x16200006 bne      $s1, $zero, 0x00213BE8
+0x00213BD0 0x26B00001 addiu    $s0, $s5, 1
+0x00213BD4 0x56510052 bnel     $s2, $s1, 0x00213D20
+0x00213BD8 0x0000102D daddu    $v0, $zero, $zero
+0x00213BDC 0x14510050 bne      $v0, $s1, 0x00213D20
+0x00213BE0 0x0000102D daddu    $v0, $zero, $zero
+0x00213BE4 0x26B00001 addiu    $s0, $s5, 1
+0x00213BE8 0x0260202D daddu    $a0, $s3, $zero
+0x00213BEC 0x0C0B1FA7 jal      0x002C7E9C
+0x00213BF0 0x0200282D daddu    $a1, $s0, $zero
+0x00213BF4 0x02C0202D daddu    $a0, $s6, $zero
+0x00213BF8 0x0200282D daddu    $a1, $s0, $zero
+0x00213BFC 0x0C0B1FA7 jal      0x002C7E9C
+0x00213C00 0x0040902D daddu    $s2, $v0, $zero
+0x00213C04 0x02E0202D daddu    $a0, $s7, $zero
+0x00213C08 0x0040882D daddu    $s1, $v0, $zero
+0x00213C0C 0x0C0B1FA7 jal      0x002C7E9C
+0x00213C10 0x0200282D daddu    $a1, $s0, $zero
+0x00213C14 0x56200006 bnel     $s1, $zero, 0x00213C30
+0x00213C18 0x24050001 addiu    $a1, $zero, 1
+0x00213C1C 0x56510040 bnel     $s2, $s1, 0x00213D20
+0x00213C20 0x0000102D daddu    $v0, $zero, $zero
+0x00213C24 0x1451003E bne      $v0, $s1, 0x00213D20
+0x00213C28 0x0000102D daddu    $v0, $zero, $zero
+0x00213C2C 0x24050001 addiu    $a1, $zero, 1
+0x00213C30 0x00051080 sll      $v0, $a1, 2
+0x00213C34 0x24A50001 addiu    $a1, $a1, 1
+0x00213C38 0x3C030060 lui      $v1, 0x0060
+0x00213C3C 0x00621821 addu     $v1, $v1, $v0
+0x00213C40 0x8C636180 lw       $v1, 24960($v1)
+0x00213C44 0x8C620000 lw       $v0, 0($v1)
+0x00213C48 0x0441001D bgez     $v0, 0x00213CC0
+0x00213C4C 0x28A60028 slti     $a2, $a1, 40
+0x00213C50 0x8C630008 lw       $v1, 8($v1)
+0x00213C54 0x8C640010 lw       $a0, 16($v1)
+0x00213C58 0x00961023 subu     $v0, $a0, $s6
+0x00213C5C 0x24420001 addiu    $v0, $v0, 1
+0x00213C60 0x2C420003 sltiu    $v0, $v0, 3
+0x00213C64 0x10400016 beq      $v0, $zero, 0x00213CC0
+0x00213C68 0x00000000 sll      $zero, $zero, 0
+0x00213C6C 0x8C630014 lw       $v1, 20($v1)
+0x00213C70 0x00751023 subu     $v0, $v1, $s5
+0x00213C74 0x24420001 addiu    $v0, $v0, 1
+0x00213C78 0x2C420003 sltiu    $v0, $v0, 3
+0x00213C7C 0x10400010 beq      $v0, $zero, 0x00213CC0
+0x00213C80 0x8FA20000 lw       $v0, 0($sp)
+0x00213C84 0x14820004 bne      $a0, $v0, 0x00213C98
+0x00213C88 0x8FA20004 lw       $v0, 4($sp)
+0x00213C8C 0x8FA20010 lw       $v0, 16($sp)
+0x00213C90 0x1062000B beq      $v1, $v0, 0x00213CC0
+0x00213C94 0x8FA20004 lw       $v0, 4($sp)
+0x00213C98 0x14820004 bne      $a0, $v0, 0x00213CAC
+0x00213C9C 0x8FA20008 lw       $v0, 8($sp)
+0x00213CA0 0x8FA20014 lw       $v0, 20($sp)
+0x00213CA4 0x10620006 beq      $v1, $v0, 0x00213CC0
+0x00213CA8 0x8FA20008 lw       $v0, 8($sp)
+0x00213CAC 0x1482001C bne      $a0, $v0, 0x00213D20
+0x00213CB0 0x0000102D daddu    $v0, $zero, $zero
+0x00213CB4 0x8FA20018 lw       $v0, 24($sp)
+0x00213CB8 0x14620019 bne      $v1, $v0, 0x00213D20
+0x00213CBC 0x0000102D daddu    $v0, $zero, $zero
+0x00213CC0 0x14C0FFDC bne      $a2, $zero, 0x00213C34
+0x00213CC4 0x00051080 sll      $v0, $a1, 2
+0x00213CC8 0x3C030065 lui      $v1, 0x0065
+0x00213CCC 0x9063C269 lbu      $v1, -15767($v1)
+0x00213CD0 0x14600013 bne      $v1, $zero, 0x00213D20
+0x00213CD4 0x0000102D daddu    $v0, $zero, $zero
+0x00213CD8 0x02C0202D daddu    $a0, $s6, $zero
+0x00213CDC 0x0C087991 jal      0x0021E644
+0x00213CE0 0x02A0282D daddu    $a1, $s5, $zero
+0x00213CE4 0x9043000B lbu      $v1, 11($v0)
+0x00213CE8 0x30630080 andi     $v1, $v1, 0x0080
+0x00213CEC 0x1460000C bne      $v1, $zero, 0x00213D20
+0x00213CF0 0x0000102D daddu    $v0, $zero, $zero
+0x00213CF4 0x02C0202D daddu    $a0, $s6, $zero
+0x00213CF8 0x02A0282D daddu    $a1, $s5, $zero
+0x00213CFC 0x0C0B1FBF jal      0x002C7EFC
+0x00213D00 0x0000302D daddu    $a2, $zero, $zero
+0x00213D04 0x54400006 bnel     $v0, $zero, 0x00213D20
+0x00213D08 0x0000102D daddu    $v0, $zero, $zero
+0x00213D0C 0x8FA40024 lw       $a0, 36($sp)
+0x00213D10 0x0000302D daddu    $a2, $zero, $zero
+0x00213D14 0x0C0B1FBF jal      0x002C7EFC
+0x00213D18 0x8FA50028 lw       $a1, 40($sp)
+0x00213D1C 0x2C420001 sltiu    $v0, $v0, 1
+0x00213D20 0xDFB00030 ld       $s0, 48($sp)
+0x00213D24 0xDFB10038 ld       $s1, 56($sp)
+0x00213D28 0xDFB20040 ld       $s2, 64($sp)
+0x00213D2C 0xDFB30048 ld       $s3, 72($sp)
+0x00213D30 0xDFB40050 ld       $s4, 80($sp)
+0x00213D34 0xDFB50058 ld       $s5, 88($sp)
+0x00213D38 0xDFB60060 ld       $s6, 96($sp)
+0x00213D3C 0xDFB70068 ld       $s7, 104($sp)
+0x00213D40 0xDFBE0070 ld       $fp, 112($sp)
+0x00213D44 0xDFBF0078 ld       $ra, 120($sp)
+0x00213D48 0x03E00008 jr       $ra
+0x00213D4C 0x27BD0080 addiu    $sp, $sp, 128
+0x00213D50 0x3C014120 lui      $at, 0x4120
+0x00213D54 0x44810800 UNKNOWN  raw=0x44810800
+0x00213D58 0xC7809278 UNKNOWN  raw=0xC7809278
+0x00213D5C 0xC783804C UNKNOWN  raw=0xC783804C
+0x00213D60 0x46010001 UNKNOWN  raw=0x46010001
+0x00213D64 0xC7819960 UNKNOWN  raw=0xC7819960
+0x00213D68 0x3C013FA0 lui      $at, 0x3FA0
+0x00213D6C 0x44811000 UNKNOWN  raw=0x44811000
+0x00213D70 0xE7819964 UNKNOWN  raw=0xE7819964
+0x00213D74 0x46030002 UNKNOWN  raw=0x46030002
+0x00213D78 0x46020000 UNKNOWN  raw=0x46020000
+0x00213D7C 0x03E00008 jr       $ra
+
+【メモリアクセス】
+主処理全体 0x00213904 sw $zero, 32($sp)
+主処理全体 0x00213934 lw $v0, 0($v0)
+主処理全体 0x00213940 lw $v0, 16($v1)
+主処理全体 0x00213968 lbu $v1, 10($s0)
+主処理全体 0x00213978 lw $a0, 0($s0)
+主処理全体 0x00213994 lw $v0, -26212($gp)
+主処理全体 0x00213998 lw $v0, 8($v0)
+主処理全体 0x0021399C lbu $v0, 58($v0)
+主処理全体 0x002139B0 lbu $v0, 11($s0)
+主処理全体 0x002139BC lw $v0, 0($s0)
+主処理全体 0x002139D0 lw $v0, 0($s0)
+主処理全体 0x002139F0 lbu $v0, 11($s0)
+主処理全体 0x002139FC lbu $v0, 11($s0)
+主処理全体 0x00213A08 lw $v1, 0($s0)
+主処理全体 0x00213A1C lw $v1, 0($s0)
+主処理全体 0x00213A64 lw $a0, 32($sp)
+主処理全体 0x00213A74 sw $a0, 32($sp)
+主処理全体 0x00213A78 lhu $v1, 8($s0)
+主処理全体 0x00213A80 ld $s0, 48($sp)
+主処理全体 0x00213AB4 lw $v0, 0($v0)
+主処理全体 0x00213AC0 lw $v0, 32($sp)
+主処理全体 0x00213AD0 lw $v0, -26212($gp)
+主処理全体 0x00213AD4 lw $v0, 8($v0)
+主処理全体 0x00213AD8 lbu $v1, 58($v0)
+主処理全体 0x00213B9C ld $s0, 48($sp)
+主処理全体 0x00213C40 lw $v1, 24960($v1)
+主処理全体 0x00213C44 lw $v0, 0($v1)
+主処理全体 0x00213C50 lw $v1, 8($v1)
+主処理全体 0x00213C54 lw $a0, 16($v1)
+主処理全体 0x00213C6C lw $v1, 20($v1)
+主処理全体 0x00213C80 lw $v0, 0($sp)
+主処理全体 0x00213C88 lw $v0, 4($sp)
+主処理全体 0x00213C8C lw $v0, 16($sp)
+主処理全体 0x00213C94 lw $v0, 4($sp)
+主処理全体 0x00213C9C lw $v0, 8($sp)
+主処理全体 0x00213CA0 lw $v0, 20($sp)
+主処理全体 0x00213CA8 lw $v0, 8($sp)
+主処理全体 0x00213CB4 lw $v0, 24($sp)
+主処理全体 0x00213CCC lbu $v1, -15767($v1)
+主処理全体 0x00213CE4 lbu $v1, 11($v0)
+主処理全体 0x00213D0C lw $a0, 36($sp)
+主処理全体 0x00213D18 lw $a1, 40($sp)
+主処理全体 0x00213D20 ld $s0, 48($sp)
+主処理全体 0x00213D24 ld $s1, 56($sp)
+主処理全体 0x00213D28 ld $s2, 64($sp)
+主処理全体 0x00213D2C ld $s3, 72($sp)
+主処理全体 0x00213D30 ld $s4, 80($sp)
+主処理全体 0x00213D34 ld $s5, 88($sp)
+主処理全体 0x00213D38 ld $s6, 96($sp)
+主処理全体 0x00213D3C ld $s7, 104($sp)
+主処理全体 0x00213D40 ld $fp, 112($sp)
+主処理全体 0x00213D44 ld $ra, 120($sp)
+呼び出し先00281028 0x00281004 lw $v1, -16000($v1)
+呼び出し先00281028 0x0028100C lw $v0, 1756($sp)
+呼び出し先00281028 0x00281014 lw $a3, -20500($gp)
+呼び出し先00281028 0x00281060 lh $v1, -28904($gp)
+呼び出し先00281028 0x0028106C lw $a1, -26212($gp)
+呼び出し先00281028 0x00281084 lw $a1, 12($a1)
+呼び出し先00281028 0x0028108C lw $a3, -20500($gp)
+呼び出し先00281028 0x00281098 lw $a2, 0($v0)
+呼び出し先00281028 0x002810A0 lw $v0, 1756($sp)
+呼び出し先00281028 0x002810F4 lh $v1, -28904($gp)
+呼び出し先00281028 0x002810F8 lw $a0, -26212($gp)
+呼び出し先00281028 0x00281104 lw $t0, -20500($gp)
+呼び出し先00281028 0x0028110C lw $a1, 12($a0)
+呼び出し先002C7E9C 0x002C7E68 lw $t3, 3588($sp)
+呼び出し先002C7E9C 0x002C7E84 ld $s0, 3616($sp)
+呼び出し先002C7E9C 0x002C7E88 ld $s1, 3624($sp)
+呼び出し先002C7E9C 0x002C7E8C ld $s2, 3632($sp)
+呼び出し先002C7E9C 0x002C7E90 ld $s3, 3640($sp)
+呼び出し先002C7E9C 0x002C7E94 ld $s4, 3648($sp)
+呼び出し先002C7E9C 0x002C7E98 ld $s5, 3656($sp)
+呼び出し先002C7E9C 0x002C7E9C ld $s6, 3664($sp)
+呼び出し先002C7E9C 0x002C7EA0 ld $s7, 3672($sp)
+呼び出し先002C7E9C 0x002C7EA4 ld $fp, 3680($sp)
+呼び出し先002C7E9C 0x002C7EA8 ld $ra, 3688($sp)
+呼び出し先002C7E9C 0x002C7EC4 sd $s1, 712($sp)
+呼び出し先002C7E9C 0x002C7EC8 sd $s0, 704($sp)
+呼び出し先002C7E9C 0x002C7ECC sd $s2, 720($sp)
+呼び出し先002C7E9C 0x002C7ED0 sd $s3, 728($sp)
+呼び出し先002C7E9C 0x002C7ED4 sd $ra, 736($sp)
+呼び出し先002C7E9C 0x002C7EE0 lw $a0, -26212($gp)
+呼び出し先002C7E9C 0x002C7EEC sb $zero, -23674($gp)
+呼び出し先002C7E9C 0x002C7EF0 lw $v0, -26212($gp)
+呼び出し先002C7E9C 0x002C7EFC lw $v0, 8($v0)
+呼び出し先002C7E9C 0x002C7F04 lbu $a2, 59($v0)
+呼び出し先002C7E9C 0x002C7F08 lw $a0, -26212($gp)
+呼び出し先002C7E9C 0x002C7F1C lw $a0, -26212($gp)
+呼び出し先002C7E9C 0x002C7F30 lh $v0, 14($s1)
+呼び出し先002C7E9C 0x002C7F3C lhu $a1, 14($s1)
+全JAL呼び出し元前後 0x00329B84 sb $zero, 105($t4)
+全JAL呼び出し元前後 0x00329B8C sb $zero, 104($t4)
+全JAL呼び出し元前後 0x00329B98 sb $v0, -28340($gp)
+全JAL呼び出し元前後 0x0032A0DC sb $zero, 5904($at)
+全JAL呼び出し元前後 0x0032A1CC sw $zero, 192($sp)
+全JAL呼び出し元前後 0x0032A1E0 sb $zero, 5904($at)
+全JAL呼び出し元前後 0x0032A208 lw $s1, 192($sp)
+全JAL呼び出し元前後 0x0032A28C sb $zero, -28340($gp)
+全JAL呼び出し元前後 0x0032A534 sb $v0, -1($v1)
+全JAL呼び出し元前後 0x0032A59C lw $v0, 76($s3)
+全JAL呼び出し元前後 0x0032A5FC lbu $v0, 0($s0)
+全JAL呼び出し元前後 0x0032A608 sb $v0, 0($s0)
+全JAL呼び出し元前後 0x0032A60C lbu $v1, 0($s0)
+全JAL呼び出し元前後 0x0032A63C lw $v0, 76($s3)
+全JAL呼び出し元前後 0x0032A654 lbu $v0, 0($s2)
+全JAL呼び出し元前後 0x0032AA4C lw $t2, 200($sp)
+全JAL呼び出し元前後 0x0032AA54 lw $a1, 0($s0)
+全JAL呼び出し元前後 0x0032AA80 lw $a1, 8($s0)
+全JAL呼び出し元前後 0x0032AAD4 lw $v0, 76($s0)
+全JAL呼び出し元前後 0x0032AB5C lw $a1, 0($s0)
+全JAL呼び出し元前後 0x0032AB8C lw $a1, 8($s0)
+全JAL呼び出し元前後 0x0032ABBC lbu $s1, 1($v0)
+全JAL呼び出し元前後 0x0032ABC4 lbu $a3, 0($v0)
+全JAL呼び出し元前後 0x0032ABE4 sw $v0, 200($sp)
+全JAL呼び出し元前後 0x0032AC58 lw $v0, 76($s0)
+全JAL呼び出し元前後 0x0032AE50 lbu $t0, 0($v0)
+全JAL呼び出し元前後 0x0032AEB8 sw $v0, -28336($gp)
+全JAL呼び出し元前後 0x0032AEDC lw $v0, 160($v1)
+全JAL呼び出し元前後 0x0032AEF8 sw $s3, 164($v1)
+全JAL呼び出し元前後 0x0032AF24 lbu $t0, 5904($t0)
+全JAL呼び出し元前後 0x0032AFDC lbu $t0, 5904($t0)
+全JAL呼び出し元前後 0x0032B2C0 sd $s2, 80($sp)
+全JAL呼び出し元前後 0x0032B2C4 sd $s0, 64($sp)
+全JAL呼び出し元前後 0x0032B2C8 sd $ra, 88($sp)
+全JAL呼び出し元前後 0x0032B30C lw $a2, -568($a2)
+全JAL呼び出し元前後 0x0032B334 lbu $t0, 0($s0)
+全JAL呼び出し元前後 0x0032B354 lbu $t0, 0($s0)
+全JAL呼び出し元前後 0x0032B380 ld $s0, 64($sp)
+全JAL呼び出し元前後 0x0032B384 ld $s1, 72($sp)
+全JAL呼び出し元前後 0x0032B388 ld $s2, 80($sp)
+全JAL呼び出し元前後 0x0032B38C ld $ra, 88($sp)
+全JAL呼び出し元前後 0x0032B3A0 sd $ra, 64($sp)
+全JAL呼び出し元前後 0x0032B3E0 ld $ra, 64($sp)
+全JAL呼び出し元前後 0x0032B3F4 sd $ra, 0($sp)
+全JAL呼び出し元前後 0x0032B6AC sb $v1, -28340($gp)
+全JAL呼び出し元前後 0x0032B6B4 sw $t4, -17344($gp)
+全JAL呼び出し元前後 0x0032B6BC sw $s1, -17360($gp)
+全JAL呼び出し元前後 0x0032B6C4 sw $t5, 0($v0)
+全JAL呼び出し元前後 0x0032B6CC sb $zero, 2($t6)
+全JAL呼び出し元前後 0x0032B6D4 sw $s1, -28336($gp)
+全JAL呼び出し元前後 0x0032B6DC sw $t7, 4($v0)
+全JAL呼び出し元前後 0x0032B6E4 sb $zero, 0($t6)
+全JAL呼び出し元前後 0x0032B6E8 sb $zero, 1($t6)
+全JAL呼び出し元前後 0x0032B6F0 sb $zero, -17340($gp)
+全JAL呼び出し元前後 0x0032B750 lw $a2, -17344($gp)
+全JAL呼び出し元前後 0x0032B778 sw $zero, 4($sp)
+全JAL呼び出し元前後 0x0032B780 sw $zero, 8($sp)
+全JAL呼び出し元前後 0x0032B784 sb $zero, -17340($gp)
+全JAL呼び出し元前後 0x0032B788 sb $zero, -17336($gp)
+全JAL呼び出し元前後 0x0032B78C sb $zero, -17335($gp)
+全JAL呼び出し元前後 0x0032B790 sb $zero, -17334($gp)
+全JAL呼び出し元前後 0x0032B7CC lw $a0, 4($sp)
+全JAL呼び出し元前後 0x0032B800 sb $zero, -28340($gp)
+全JAL呼び出し元前後 0x0032B808 lbu $v0, -17348($gp)
+全JAL呼び出し元前後 0x0032B88C lw $v1, 16($sp)
+全JAL呼び出し元前後 0x0032B894 sw $zero, 8($sp)
+全JAL呼び出し元前後 0x0032B89C sw $v1, 4($sp)
+全JAL呼び出し元前後 0x0032B8A0 lw $v1, 4($sp)
+全JAL呼び出し元前後 0x0032B8B8 sw $v0, 4($sp)
+全JAL呼び出し元前後 0x0032BC5C lw $v0, 4($sp)
+全JAL呼び出し元前後 0x0032BC84 sw $v0, 16($sp)
+全JAL呼び出し元前後 0x0032BDBC sb $zero, 0($v0)
+全JAL呼び出し元前後 0x0032C0A4 lbu $v0, -17340($gp)
+全JAL呼び出し元前後 0x0032C104 lw $t0, 6452($v1)
+全JAL呼び出し元前後 0x0032C688 lw $t0, 6456($v1)
+全JAL呼び出し元前後 0x0032CA84 lbu $v0, -17340($gp)
+全JAL呼び出し元前後 0x0032CACC lbu $v0, -17340($gp)
+全JAL呼び出し元前後 0x0032CC44 lw $a0, 0($s4)
+全JAL呼び出し元前後 0x0032CCC8 lw $v0, 0($s4)
+全JAL呼び出し元前後 0x0032CD18 sb $t3, 4794($at)
+全JAL呼び出し元前後 0x0032CD1C sw $s5, -5734($s0)
+全JAL呼び出し元前後 0x0032CD2C lhu $a3, -7034($t1)
+全JAL呼び出し元前後 0x0032CD38 lbu $t6, -8412($s1)
+全JAL呼び出し元前後 0x0032CD44 lbu $k1, 5633($t7)
+全JAL呼び出し元前後 0x0032CE2C sd $ra, -1($ra)
+全JAL呼び出し元前後 0x0032CE74 lw $v0, -17360($gp)
+全JAL呼び出し元前後 0x0032CE78 lw $v1, 0($s4)
+全JAL呼び出し元前後 0x0032CE80 sw $v0, -17360($gp)
+全JAL呼び出し元前後 0x0032CEA4 lw $v0, 168($v1)
+全JAL呼び出し元前後 0x0032CEF8 sw $s6, -17356($gp)
+全JAL呼び出し元前後 0x0032CF40 sb $zero, 0($v0)
+全JAL呼び出し元前後 0x0032CF6C sw $a1, -17360($gp)
+全JAL呼び出し元前後 0x0032D54C lbu $v0, 832($v0)
+全JAL呼び出し元前後 0x0032D57C sb $v0, 848($sp)
+全JAL呼び出し元前後 0x0032D584 sb $zero, 849($sp)
+全JAL呼び出し元前後 0x0032D5A8 sw $v1, 0($a0)
+全JAL呼び出し元前後 0x0032D5B4 sw $v0, 4($a0)
+全JAL呼び出し元前後 0x0032D87C sw $v0, 4($a0)
+全JAL呼び出し元前後 0x0032D884 lw $v1, 8($a0)
+全JAL呼び出し元前後 0x0032D898 sw $v0, 8($a0)
+全JAL呼び出し元前後 0x0032D89C lw $a2, -17344($gp)
+全JAL呼び出し元前後 0x0032D8D0 ld $ra, 0($sp)
+全JAL呼び出し元前後 0x0032D8E4 sd $s1, 24($sp)
+全JAL呼び出し元前後 0x0032DA90 sd $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DA94 sd $ra, 72($sp)
+全JAL呼び出し元前後 0x0032DACC lw $a2, -17360($gp)
+全JAL呼び出し元前後 0x0032DB48 ld $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DB4C ld $ra, 72($sp)
+全JAL呼び出し元前後 0x0032DB5C lw $v0, -17356($gp)
+全JAL呼び出し元前後 0x0032DB60 sd $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DB68 sd $ra, 72($sp)
+全JAL呼び出し元前後 0x0032DBD0 lw $a2, -17360($gp)
+全JAL呼び出し元前後 0x0032DC4C ld $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DC50 ld $ra, 72($sp)
+全JAL呼び出し元前後 0x0032DC60 sd $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DC68 sd $s1, 72($sp)
+全JAL呼び出し元前後 0x0032DC6C sd $ra, 80($sp)
+全JAL呼び出し元前後 0x0032DC98 lw $a2, 6448($a2)
+全JAL呼び出し元前後 0x0032DCC8 ld $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DCCC ld $s1, 72($sp)
+全JAL呼び出し元前後 0x0032DCD0 ld $ra, 80($sp)
+全JAL呼び出し元前後 0x0032DCE0 sd $s0, 832($sp)
+全JAL呼び出し元前後 0x0032DCE4 sd $s1, 840($sp)
+全JAL呼び出し元前後 0x0032DCE8 sd $ra, 848($sp)
+全JAL呼び出し元前後 0x0032DE54 lw $a2, 1384($a2)
+全JAL呼び出し元前後 0x0032DE70 lbu $t0, 0($s1)
+全JAL呼び出し元前後 0x0032DE90 lbu $t0, 0($s1)
+全JAL呼び出し元前後 0x0032DEC0 ld $s0, 64($sp)
+全JAL呼び出し元前後 0x0032DEC4 ld $s1, 72($sp)
+全JAL呼び出し元前後 0x0032DEC8 ld $s2, 80($sp)
+全JAL呼び出し元前後 0x0032DECC ld $ra, 88($sp)
+全JAL呼び出し元前後 0x0032DEDC sd $ra, 0($sp)
+
+【注意】
+・ELF静的解析のみ。ゲームメモリへの書き込みなし。
+・daddu等のMIPS命令を追加デコードした。
+・レジスタ値の完全な実行時追跡ではない。
+・関数境界は未確定。
+・攻撃力フィールドは未確定。
