@@ -1,0 +1,2279 @@
+============================================================
+TORNEKO 3 WEAPON ATTACK POWER ANALYSIS
+NEXT DISASSEMBLY REPORT
+============================================================
+
+ELF: C:\Users\penelope\Desktop\トルネコいじり作業環境\Torneko3_MainCandidate.elf
+Length: 7526424
+SHA256: 05DF41B593F86DC42D4E91A0239FD6818575B52696F2812ABBC3A19E2D941FCA
+Format: ELF32 little-endian MIPS
+Code segment VA: 0x00200000
+Code segment file offset: 0x00000000
+Code segment file size: 0x0015D368
+
+
+============================================================
+SECTION 1: TARGET DISASSEMBLY
+============================================================
+
+----- TARGET 0x002AE574 -----
+      002AE514  00C0B02D  DADDU $s6,$a2,$zero
+      002AE518  FFB102F8  OP=63 rs=$sp rt=$s1 rd=$zero imm=760
+      002AE51C  FFB20300  OP=63 rs=$sp rt=$s2 rd=$zero imm=768
+      002AE520  FFB30308  OP=63 rs=$sp rt=$s3 rd=$zero imm=776
+      002AE524  148800B0  BNE $a0,$t0,0x002AE7E8
+      002AE528  FFBF0328  OP=63 rs=$sp rt=$ra rd=$zero imm=808
+      002AE52C  86830004  LH $v1,4($s4)
+      002AE530  2404024C  ADDIU $a0,$zero,588
+      002AE534  8F82991C  LW $v0,-26340($gp)
+      002AE538  00641818  MULT $v1,$a0
+      002AE53C  00431021  ADDU $v0,$v0,$v1
+      002AE540  3C13001D  LUI $s3,0x001D
+      002AE544  3673AEB0  ORI $s3,$s3,0xAEB0
+      002AE548  02629821  ADDU $s3,$s3,$v0
+      002AE54C  12600005  BEQ $s3,$zero,0x002AE564
+      002AE550  0000282D  DADDU $a1,$zero,$zero
+      002AE554  86620038  LH $v0,56($s3)
+      002AE558  14400002  BNE $v0,$zero,0x002AE564
+      002AE55C  0040282D  DADDU $a1,$v0,$zero
+      002AE560  8665000C  LH $a1,12($s3)
+      002AE564  24020151  ADDIU $v0,$zero,337
+      002AE568  54A200A0  BNEL $a1,$v0,0x002AE7EC
+      002AE56C  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE570  8E620180  LW $v0,384($s3)
+ >>>  002AE574  0442009D  REGIMM rs=$v0 rt=$v0 -> 0x002AE7EC
+      002AE578  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE57C  8E620040  LW $v0,64($s3)
+      002AE580  3C038000  LUI $v1,0x8000
+      002AE584  00431024  AND $v0,$v0,$v1
+      002AE588  1040000C  BEQ $v0,$zero,0x002AE5BC
+      002AE58C  0000882D  DADDU $s1,$zero,$zero
+      002AE590  26630040  ADDIU $v1,$s3,64
+      002AE594  26310001  ADDIU $s1,$s1,1
+      002AE598  2A220006  SLTI $v0,$s1,6
+      002AE59C  10400007  BEQ $v0,$zero,0x002AE5BC
+      002AE5A0  24630040  ADDIU $v1,$v1,64
+      002AE5A4  8C620000  LW $v0,0($v1)
+      002AE5A8  00000000  SLL $zero,$zero,0
+      002AE5AC  00000000  SLL $zero,$zero,0
+      002AE5B0  00000000  SLL $zero,$zero,0
+      002AE5B4  0442FFF8  REGIMM rs=$v0 rt=$v0 -> 0x002AE598
+      002AE5B8  26310001  ADDIU $s1,$s1,1
+      002AE5BC  0C09C7FE  JAL 0x00271FF8
+      002AE5C0  0100202D  DADDU $a0,$t0,$zero
+      002AE5C4  54400089  BNEL $v0,$zero,0x002AE7EC
+      002AE5C8  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE5CC  0C08748E  JAL 0x0021D238
+      002AE5D0  0000202D  DADDU $a0,$zero,$zero
+      002AE5D4  87839D0A  LH $v1,-25334($gp)
+      002AE5D8  0043102A  SLT $v0,$v0,$v1
+      002AE5DC  50400083  BEQL $v0,$zero,0x002AE7EC
+      002AE5E0  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE5E4  8F82999C  LW $v0,-26212($gp)
+      002AE5E8  8C42000C  LW $v0,12($v0)
+      002AE5EC  3C010001  LUI $at,0x0001
+      002AE5F0  00220821  ADDU $at,$at,$v0
+      002AE5F4  9422A110  LHU $v0,-24304($at)
+      002AE5F8  2442FFD4  ADDIU $v0,$v0,-44
+      002AE5FC  2C420009  SLTIU $v0,$v0,9
+      002AE600  50400005  BEQL $v0,$zero,0x002AE618
+      002AE604  00101080  SLL $v0,$s0,2
+      002AE608  0C0A6B17  JAL 0x0029AC5C
+      002AE60C  240400B1  ADDIU $a0,$zero,177
+      002AE610  1000FFF5  BEQ $zero,$zero,0x002AE5E8
+      002AE614  8F82999C  LW $v0,-26212($gp)
+
+----- TARGET 0x002AE618 -----
+      002AE5B8  26310001  ADDIU $s1,$s1,1
+      002AE5BC  0C09C7FE  JAL 0x00271FF8
+      002AE5C0  0100202D  DADDU $a0,$t0,$zero
+      002AE5C4  54400089  BNEL $v0,$zero,0x002AE7EC
+      002AE5C8  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE5CC  0C08748E  JAL 0x0021D238
+      002AE5D0  0000202D  DADDU $a0,$zero,$zero
+      002AE5D4  87839D0A  LH $v1,-25334($gp)
+      002AE5D8  0043102A  SLT $v0,$v0,$v1
+      002AE5DC  50400083  BEQL $v0,$zero,0x002AE7EC
+      002AE5E0  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE5E4  8F82999C  LW $v0,-26212($gp)
+      002AE5E8  8C42000C  LW $v0,12($v0)
+      002AE5EC  3C010001  LUI $at,0x0001
+      002AE5F0  00220821  ADDU $at,$at,$v0
+      002AE5F4  9422A110  LHU $v0,-24304($at)
+      002AE5F8  2442FFD4  ADDIU $v0,$v0,-44
+      002AE5FC  2C420009  SLTIU $v0,$v0,9
+      002AE600  50400005  BEQL $v0,$zero,0x002AE618
+      002AE604  00101080  SLL $v0,$s0,2
+      002AE608  0C0A6B17  JAL 0x0029AC5C
+      002AE60C  240400B1  ADDIU $a0,$zero,177
+      002AE610  1000FFF5  BEQ $zero,$zero,0x002AE5E8
+      002AE614  8F82999C  LW $v0,-26212($gp)
+ >>>  002AE618  0000382D  DADDU $a3,$zero,$zero
+      002AE61C  005D2821  ADDU $a1,$v0,$sp
+      002AE620  00073080  SLL $a2,$a3,2
+      002AE624  24E70001  ADDIU $a3,$a3,1
+      002AE628  3C040065  LUI $a0,0x0065
+      002AE62C  00862021  ADDU $a0,$a0,$a2
+      002AE630  8C84D180  LW $a0,-11904($a0)
+      002AE634  3C020065  LUI $v0,0x0065
+      002AE638  28E90014  SLTI $t1,$a3,20
+      002AE63C  0000182D  DADDU $v1,$zero,$zero
+      002AE640  10800003  BEQ $a0,$zero,0x002AE650
+      002AE644  2448D180  ADDIU $t0,$v0,-11904
+      002AE648  8C820000  LW $v0,0($a0)
+      002AE64C  00021FC2  SRL $v1,$v0,31
+      002AE650  306200FF  ANDI $v0,$v1,0x00FF
+      002AE654  1040000C  BEQ $v0,$zero,0x002AE688
+      002AE658  00C81021  ADDU $v0,$a2,$t0
+      002AE65C  3C030010  LUI $v1,0x0010
+      002AE660  8C440000  LW $a0,0($v0)
+      002AE664  8C820000  LW $v0,0($a0)
+      002AE668  00431824  AND $v1,$v0,$v1
+      002AE66C  10600006  BEQ $v1,$zero,0x002AE688
+      002AE670  30428000  ANDI $v0,$v0,0x8000
+      002AE674  14400004  BNE $v0,$zero,0x002AE688
+      002AE678  00000000  SLL $zero,$zero,0
+      002AE67C  ACA40000  SW $a0,0($a1)
+      002AE680  24A50004  ADDIU $a1,$a1,4
+      002AE684  26100001  ADDIU $s0,$s0,1
+      002AE688  5520FFE6  BNEL $t1,$zero,0x002AE624
+      002AE68C  00073080  SLL $a2,$a3,2
+      002AE690  52000056  BEQL $s0,$zero,0x002AE7EC
+      002AE694  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE698  0200202D  DADDU $a0,$s0,$zero
+      002AE69C  0C09CA3E  JAL 0x002728F8
+      002AE6A0  0000282D  DADDU $a1,$zero,$zero
+      002AE6A4  00118980  SLL $s1,$s1,6
+      002AE6A8  00021080  SLL $v0,$v0,2
+      002AE6AC  27B20050  ADDIU $s2,$sp,80
+      002AE6B0  03A28021  ADDU $s0,$sp,$v0
+      002AE6B4  0240202D  DADDU $a0,$s2,$zero
+      002AE6B8  0C095A73  JAL 0x002569CC
+
+----- TARGET 0x002AE808 -----
+      002AE7A8  2405087C  ADDIU $a1,$zero,2172
+      002AE7AC  0200202D  DADDU $a0,$s0,$zero
+      002AE7B0  8E850008  LW $a1,8($s4)
+      002AE7B4  3C01C1A0  LUI $at,0xC1A0
+      002AE7B8  44816000  COP1 rs=$a0 ft=$at fs=$t4 fd=0 fn=0
+      002AE7BC  0C0B1CD4  JAL 0x002C7350
+      002AE7C0  8E86000C  LW $a2,12($s4)
+      002AE7C4  3C0140A0  LUI $at,0x40A0
+      002AE7C8  44816000  COP1 rs=$a0 ft=$at fs=$t4 fd=0 fn=0
+      002AE7CC  0C08BA89  JAL 0x0022EA24
+      002AE7D0  6F07D2C7  OP=27 rs=$t8 rt=$a3 rd=$k0 imm=-11577
+      002AE7D4  908A2CB3  LBU $t2,11443($a0)
+      002AE7D8  D1DEBE53  OP=52 rs=$t6 rt=$fp rd=$s7 imm=-16813
+      002AE7DC  84CC3A92  LH $t4,14994($a2)
+      002AE7E0  DA6B25A6  OP=54 rs=$s3 rt=$t3 rd=$a0 imm=9638
+      002AE7E4  82E6AE13  LB $a2,-20973($s7)
+      002AE7E8  D47DEAAF  LDC1 ft=$sp,-5457($v1)
+      002AE7EC  CD5E4705  OP=51 rs=$t2 rt=$fp rd=$t0 imm=18181
+      002AE7F0  327F4DB3  ANDI $ra,$s3,0x4DB3
+      002AE7F4  0F8B414C  JAL 0x0E2D0530
+      002AE7F8  0A2D0298  J 0x08B40A60
+      002AE7FC  2F96D917  SLTIU $s6,$gp,-9961
+      002AE800  BB133E11  SWR $s3,15889($t8)
+      002AE804  E6CFBDD5  SWC1 ft=$t7,-16939($s6)
+ >>>  002AE808  FE3C01B2  OP=63 rs=$s1 rt=$gp rd=$zero imm=434
+      002AE80C  282276DE  SLTI $v0,$at,30430
+      002AE810  86B963AF  LH $t9,25519($s5)
+      002AE814  685EA1A1  OP=26 rs=$v0 rt=$fp rd=$s4 imm=-24159
+      002AE818  F7484942  SDC1 ft=$t0,18754($k0)
+      002AE81C  EA5D0CA8  OP=58 rs=$s2 rt=$sp rd=$at imm=3240
+      002AE820  AC62B649  SW $v0,-18871($v1)
+      002AE824  00D4C1AE  DSUB $t8,$a2,$s4
+      002AE828  2C10BFED  SLTIU $s0,$zero,-16403
+      002AE82C  9BAD4A1C  LWR $t5,18972($sp)
+      002AE830  7D843E8D  OP=31 rs=$t4 rt=$a0 rd=$a3 imm=16013
+      002AE834  5A33ED31  OP=22 rs=$s1 rt=$s3 rd=$sp imm=-4815
+      002AE838  A3EB60A4  SB $t3,24740($ra)
+      002AE83C  6EFD2CD6  OP=27 rs=$s7 rt=$sp rd=$a1 imm=11478
+      002AE840  8F2EB98A  LW $t6,-18038($t9)
+      002AE844  9F39A1E2  LWU $t9,-24094($t9)
+      002AE848  B8357A18  SWR $s5,31256($at)
+      002AE84C  1E2A4A3C  BGTZ $s1,0x002C1140
+      002AE850  170EA3FF  BNE $t8,$t6,0x00297850
+      002AE854  F6F0C9E2  SDC1 ft=$s0,-13854($s7)
+      002AE858  3F9BB3CE  LUI $k1,0xB3CE
+      002AE85C  C3ECADDC  OP=48 rs=$ra rt=$t4 rd=$s5 imm=-21028
+      002AE860  CDFCB648  OP=51 rs=$t7 rt=$gp rd=$s6 imm=-18872
+      002AE864  0E7C1642  JAL 0x09F05908
+      002AE868  24815D12  ADDIU $at,$a0,23826
+      002AE86C  DDCBA655  OP=55 rs=$t6 rt=$t3 rd=$s4 imm=-22955
+      002AE870  752202C1  OP=29 rs=$t1 rt=$v0 rd=$zero imm=705
+      002AE874  E85AC645  OP=58 rs=$v0 rt=$k0 rd=$t8 imm=-14779
+      002AE878  8CB692A4  LW $s6,-27996($a1)
+      002AE87C  F5BBC1CF  SDC1 ft=$k1,-15921($t5)
+      002AE880  44FF2327  COP1 rs=$a3 ft=$ra fs=$a0 fd=12 fn=39
+      002AE884  8261B818  LB $at,-18408($s3)
+      002AE888  E9DDF03C  OP=58 rs=$t6 rt=$sp rd=$fp imm=-4036
+      002AE88C  FE5D4FDA  OP=63 rs=$s2 rt=$sp rd=$t1 imm=20442
+      002AE890  5AF84E68  OP=22 rs=$s7 rt=$t8 rd=$t1 imm=20072
+      002AE894  EA5B003E  OP=58 rs=$s2 rt=$k1 rd=$zero imm=62
+      002AE898  49ACF223  OP=18 rs=$t5 rt=$t4 rd=$fp imm=-3549
+      002AE89C  B76E9940  SD $t6,-26304($k1)
+      002AE8A0  4C65B533  OP=19 rs=$v1 rt=$a1 rd=$s6 imm=-19149
+      002AE8A4  49C2F4D5  OP=18 rs=$t6 rt=$v0 rd=$fp imm=-2859
+      002AE8A8  DB285A15  OP=54 rs=$t9 rt=$t0 rd=$t3 imm=23061
+
+----- TARGET 0x002AE948 -----
+      002AE8E8  FFFFFF00  OP=63 rs=$ra rt=$ra rd=$ra imm=-256
+      002AE8EC  FFFFFFFF  OP=63 rs=$ra rt=$ra rd=$ra imm=-1
+      002AE8F0  00FFFFFF  DSRA32 $ra,$ra,31
+      002AE8F4  02040700  SLL $zero,$a0,28
+      002AE8F8  00080000  SLL $zero,$t0,0
+      002AE8FC  00080000  SLL $zero,$t0,0
+      002AE900  0200202D  DADDU $a0,$s0,$zero
+      002AE904  0000202D  DADDU $a0,$zero,$zero
+      002AE908  0C0AADE3  JAL 0x002AB78C
+      002AE90C  24050001  ADDIU $a1,$zero,1
+      002AE910  0C0AAC79  JAL 0x002AB1E4
+      002AE914  0000202D  DADDU $a0,$zero,$zero
+      002AE918  DFB002F0  OP=55 rs=$sp rt=$s0 rd=$zero imm=752
+      002AE91C  DFB102F8  OP=55 rs=$sp rt=$s1 rd=$zero imm=760
+      002AE920  DFB20300  OP=55 rs=$sp rt=$s2 rd=$zero imm=768
+      002AE924  DFB30308  OP=55 rs=$sp rt=$s3 rd=$zero imm=776
+      002AE928  DFB40310  OP=55 rs=$sp rt=$s4 rd=$zero imm=784
+      002AE92C  DFB50318  OP=55 rs=$sp rt=$s5 rd=$zero imm=792
+      002AE930  DFB60320  OP=55 rs=$sp rt=$s6 rd=$zero imm=800
+      002AE934  DFBF0328  OP=55 rs=$sp rt=$ra rd=$zero imm=808
+      002AE938  03E00008  JR $ra
+      002AE93C  27BD0330  ADDIU $sp,$sp,816
+      002AE940  27BDFFF0  ADDIU $sp,$sp,-16
+      002AE944  3084007F  ANDI $a0,$a0,0x007F
+ >>>  002AE948  FFBF0000  OP=63 rs=$sp rt=$ra rd=$zero imm=0
+      002AE94C  00042100  SLL $a0,$a0,4
+      002AE950  3C080065  LUI $t0,0x0065
+      002AE954  2508CF0C  ADDIU $t0,$t0,-12532
+      002AE958  01044021  ADDU $t0,$t0,$a0
+      002AE95C  91020000  LBU $v0,0($t0)
+      002AE960  10400017  BEQ $v0,$zero,0x002AE9C0
+      002AE964  2404024C  ADDIU $a0,$zero,588
+      002AE968  85030004  LH $v1,4($t0)
+      002AE96C  8F82991C  LW $v0,-26340($gp)
+      002AE970  00641818  MULT $v1,$a0
+      002AE974  00431021  ADDU $v0,$v0,$v1
+      002AE978  3C07001D  LUI $a3,0x001D
+      002AE97C  34E7AEB0  ORI $a3,$a3,0xAEB0
+      002AE980  00E23821  ADDU $a3,$a3,$v0
+      002AE984  8CE20000  LW $v0,0($a3)
+      002AE988  0441000D  REGIMM rs=$v0 rt=$at -> 0x002AE9C0
+      002AE98C  2402000C  ADDIU $v0,$zero,12
+      002AE990  90E3003A  LBU $v1,58($a3)
+      002AE994  1462000B  BNE $v1,$v0,0x002AE9C4
+      002AE998  DFBF0000  OP=55 rs=$sp rt=$ra rd=$zero imm=0
+      002AE99C  84E20038  LH $v0,56($a3)
+      002AE9A0  8D05000C  LW $a1,12($t0)
+      002AE9A4  0040302D  DADDU $a2,$v0,$zero
+      002AE9A8  14400003  BNE $v0,$zero,0x002AE9B8
+      002AE9AC  8D040008  LW $a0,8($t0)
+      002AE9B0  84E6000C  LH $a2,12($a3)
+      002AE9B4  DFBF0000  OP=55 rs=$sp rt=$ra rd=$zero imm=0
+      002AE9B8  080A6033  J 0x002980CC
+      002AE9BC  27BD0010  ADDIU $sp,$sp,16
+      002AE9C0  DFBF0000  OP=55 rs=$sp rt=$ra rd=$zero imm=0
+      002AE9C4  03E00008  JR $ra
+      002AE9C8  27BD0010  ADDIU $sp,$sp,16
+      002AE9CC  27BDFFD0  ADDIU $sp,$sp,-48
+      002AE9D0  FFB00010  OP=63 rs=$sp rt=$s0 rd=$zero imm=16
+      002AE9D4  0080802D  DADDU $s0,$a0,$zero
+      002AE9D8  FFB10018  OP=63 rs=$sp rt=$s1 rd=$zero imm=24
+      002AE9DC  00A0882D  DADDU $s1,$a1,$zero
+      002AE9E0  FFB20020  OP=63 rs=$sp rt=$s2 rd=$zero imm=32
+      002AE9E4  FFBF0028  OP=63 rs=$sp rt=$ra rd=$zero imm=40
+      002AE9E8  0C08E02C  JAL 0x002380B0
+
+----- TARGET 0x002AED00 -----
+      002AECA0  45000002  COP1 rs=$t0 ft=$zero fs=$zero fd=0 fn=2
+      002AECA4  0040882D  DADDU $s1,$v0,$zero
+      002AECA8  4616A501  COP1 rs=$s0 ft=$s6 fs=$s4 fd=20 fn=1
+      002AECAC  4600A306  COP1 rs=$s0 ft=$zero fs=$s4 fd=12 fn=6
+      002AECB0  0C0B799C  JAL 0x002DE670
+      002AECB4  27DEFFFF  ADDIU $fp,$fp,-1
+      002AECB8  0C0B7A4D  JAL 0x002DE934
+      002AECBC  46000306  COP1 rs=$s0 ft=$zero fs=$zero fd=12 fn=6
+      002AECC0  4600A306  COP1 rs=$s0 ft=$zero fs=$s4 fd=12 fn=6
+      002AECC4  0C0B79BE  JAL 0x002DE6F8
+      002AECC8  0040802D  DADDU $s0,$v0,$zero
+      002AECCC  0C0B7A4D  JAL 0x002DE934
+      002AECD0  46150302  COP1 rs=$s0 ft=$s5 fs=$zero fd=12 fn=2
+      002AECD4  0220202D  DADDU $a0,$s1,$zero
+      002AECD8  0200282D  DADDU $a1,$s0,$zero
+      002AECDC  0040302D  DADDU $a2,$v0,$zero
+      002AECE0  0280382D  DADDU $a3,$s4,$zero
+      002AECE4  0260402D  DADDU $t0,$s3,$zero
+      002AECE8  02E0482D  DADDU $t1,$s7,$zero
+      002AECEC  02C0502D  DADDU $t2,$s6,$zero
+      002AECF0  0C0A62B5  JAL 0x00298AD4
+      002AECF4  02A0582D  DADDU $t3,$s5,$zero
+      002AECF8  07C1FFAB  REGIMM rs=$fp rt=$at -> 0x002AEBA8
+      002AECFC  0040882D  DADDU $s1,$v0,$zero
+ >>>  002AED00  34038000  ORI $v1,$zero,0x8000
+      002AED04  2402000E  ADDIU $v0,$zero,14
+      002AED08  AE230000  SW $v1,0($s1)
+      002AED0C  26250010  ADDIU $a1,$s1,16
+      002AED10  AE220008  SW $v0,8($s1)
+      002AED14  AE20000C  SW $zero,12($s1)
+      002AED18  AE200004  SW $zero,4($s1)
+      002AED1C  0C0B7AA5  JAL 0x002DEA94
+      002AED20  8F84AFB8  LW $a0,-20552($gp)
+      002AED24  DFB00080  OP=55 rs=$sp rt=$s0 rd=$zero imm=128
+      002AED28  DFB10088  OP=55 rs=$sp rt=$s1 rd=$zero imm=136
+      002AED2C  DFB20090  OP=55 rs=$sp rt=$s2 rd=$zero imm=144
+      002AED30  DFB30098  OP=55 rs=$sp rt=$s3 rd=$zero imm=152
+      002AED34  DFB400A0  OP=55 rs=$sp rt=$s4 rd=$zero imm=160
+      002AED38  DFB500A8  OP=55 rs=$sp rt=$s5 rd=$zero imm=168
+      002AED3C  DFB600B0  OP=55 rs=$sp rt=$s6 rd=$zero imm=176
+      002AED40  DFB700B8  OP=55 rs=$sp rt=$s7 rd=$zero imm=184
+      002AED44  DFBE00C0  OP=55 rs=$sp rt=$fp rd=$zero imm=192
+      002AED48  DFBF00C8  OP=55 rs=$sp rt=$ra rd=$zero imm=200
+      002AED4C  C7B700E8  LWC1 ft=$s7,232($sp)
+      002AED50  C7B600E0  LWC1 ft=$s6,224($sp)
+      002AED54  C7B500D8  LWC1 ft=$s5,216($sp)
+      002AED58  C7B400D0  LWC1 ft=$s4,208($sp)
+      002AED5C  03E00008  JR $ra
+      002AED60  27BD00F0  ADDIU $sp,$sp,240
+      002AED64  27BDFF20  ADDIU $sp,$sp,-224
+      002AED68  8F84AFB8  LW $a0,-20552($gp)
+      002AED6C  3C02006F  LUI $v0,0x006F
+      002AED70  FFB600B0  OP=63 rs=$sp rt=$s6 rd=$zero imm=176
+      002AED74  3C062000  LUI $a2,0x2000
+      002AED78  24050004  ADDIU $a1,$zero,4
+      002AED7C  27B60040  ADDIU $s6,$sp,64
+      002AED80  3C030091  LUI $v1,0x0091
+      002AED84  24421F80  ADDIU $v0,$v0,8064
+      002AED88  FFB400A0  OP=63 rs=$sp rt=$s4 rd=$zero imm=160
+      002AED8C  FFB500A8  OP=63 rs=$sp rt=$s5 rd=$zero imm=168
+      002AED90  0000A82D  DADDU $s5,$zero,$zero
+      002AED94  FFB700B8  OP=63 rs=$sp rt=$s7 rd=$zero imm=184
+      002AED98  24170002  ADDIU $s7,$zero,2
+      002AED9C  E7B500D0  SWC1 ft=$s5,208($sp)
+      002AEDA0  E7B400C8  SWC1 ft=$s4,200($sp)
+
+----- TARGET 0x002AED38 -----
+      002AECD8  0200282D  DADDU $a1,$s0,$zero
+      002AECDC  0040302D  DADDU $a2,$v0,$zero
+      002AECE0  0280382D  DADDU $a3,$s4,$zero
+      002AECE4  0260402D  DADDU $t0,$s3,$zero
+      002AECE8  02E0482D  DADDU $t1,$s7,$zero
+      002AECEC  02C0502D  DADDU $t2,$s6,$zero
+      002AECF0  0C0A62B5  JAL 0x00298AD4
+      002AECF4  02A0582D  DADDU $t3,$s5,$zero
+      002AECF8  07C1FFAB  REGIMM rs=$fp rt=$at -> 0x002AEBA8
+      002AECFC  0040882D  DADDU $s1,$v0,$zero
+      002AED00  34038000  ORI $v1,$zero,0x8000
+      002AED04  2402000E  ADDIU $v0,$zero,14
+      002AED08  AE230000  SW $v1,0($s1)
+      002AED0C  26250010  ADDIU $a1,$s1,16
+      002AED10  AE220008  SW $v0,8($s1)
+      002AED14  AE20000C  SW $zero,12($s1)
+      002AED18  AE200004  SW $zero,4($s1)
+      002AED1C  0C0B7AA5  JAL 0x002DEA94
+      002AED20  8F84AFB8  LW $a0,-20552($gp)
+      002AED24  DFB00080  OP=55 rs=$sp rt=$s0 rd=$zero imm=128
+      002AED28  DFB10088  OP=55 rs=$sp rt=$s1 rd=$zero imm=136
+      002AED2C  DFB20090  OP=55 rs=$sp rt=$s2 rd=$zero imm=144
+      002AED30  DFB30098  OP=55 rs=$sp rt=$s3 rd=$zero imm=152
+      002AED34  DFB400A0  OP=55 rs=$sp rt=$s4 rd=$zero imm=160
+ >>>  002AED38  DFB500A8  OP=55 rs=$sp rt=$s5 rd=$zero imm=168
+      002AED3C  DFB600B0  OP=55 rs=$sp rt=$s6 rd=$zero imm=176
+      002AED40  DFB700B8  OP=55 rs=$sp rt=$s7 rd=$zero imm=184
+      002AED44  DFBE00C0  OP=55 rs=$sp rt=$fp rd=$zero imm=192
+      002AED48  DFBF00C8  OP=55 rs=$sp rt=$ra rd=$zero imm=200
+      002AED4C  C7B700E8  LWC1 ft=$s7,232($sp)
+      002AED50  C7B600E0  LWC1 ft=$s6,224($sp)
+      002AED54  C7B500D8  LWC1 ft=$s5,216($sp)
+      002AED58  C7B400D0  LWC1 ft=$s4,208($sp)
+      002AED5C  03E00008  JR $ra
+      002AED60  27BD00F0  ADDIU $sp,$sp,240
+      002AED64  27BDFF20  ADDIU $sp,$sp,-224
+      002AED68  8F84AFB8  LW $a0,-20552($gp)
+      002AED6C  3C02006F  LUI $v0,0x006F
+      002AED70  FFB600B0  OP=63 rs=$sp rt=$s6 rd=$zero imm=176
+      002AED74  3C062000  LUI $a2,0x2000
+      002AED78  24050004  ADDIU $a1,$zero,4
+      002AED7C  27B60040  ADDIU $s6,$sp,64
+      002AED80  3C030091  LUI $v1,0x0091
+      002AED84  24421F80  ADDIU $v0,$v0,8064
+      002AED88  FFB400A0  OP=63 rs=$sp rt=$s4 rd=$zero imm=160
+      002AED8C  FFB500A8  OP=63 rs=$sp rt=$s5 rd=$zero imm=168
+      002AED90  0000A82D  DADDU $s5,$zero,$zero
+      002AED94  FFB700B8  OP=63 rs=$sp rt=$s7 rd=$zero imm=184
+      002AED98  24170002  ADDIU $s7,$zero,2
+      002AED9C  E7B500D0  SWC1 ft=$s5,208($sp)
+      002AEDA0  E7B400C8  SWC1 ft=$s4,200($sp)
+      002AEDA4  FFB00080  OP=63 rs=$sp rt=$s0 rd=$zero imm=128
+      002AEDA8  FFB10088  OP=63 rs=$sp rt=$s1 rd=$zero imm=136
+      002AEDAC  FFB20090  OP=63 rs=$sp rt=$s2 rd=$zero imm=144
+      002AEDB0  FFB30098  OP=63 rs=$sp rt=$s3 rd=$zero imm=152
+      002AEDB4  FFBF00C0  OP=63 rs=$sp rt=$ra rd=$zero imm=192
+      002AEDB8  3C014120  LUI $at,0x4120
+      002AEDBC  4481A000  COP1 rs=$a0 ft=$at fs=$s4 fd=0 fn=0
+      002AEDC0  246A5EF0  ADDIU $t2,$v1,24304
+      002AEDC4  69470007  OP=26 rs=$t2 rt=$a3 rd=$zero imm=7
+      002AEDC8  6D470000  OP=27 rs=$t2 rt=$a3 rd=$zero imm=0
+      002AEDCC  6948000F  OP=26 rs=$t2 rt=$t0 rd=$zero imm=15
+      002AEDD0  6D480008  OP=27 rs=$t2 rt=$t0 rd=$zero imm=8
+      002AEDD4  69490017  OP=26 rs=$t2 rt=$t1 rd=$zero imm=23
+      002AEDD8  6D490010  OP=27 rs=$t2 rt=$t1 rd=$zero imm=16
+
+----- TARGET 0x002AEE40 -----
+      002AEDE0  B6C70000  SD $a3,0($s6)
+      002AEDE4  B2C8000F  SDL $t0,15($s6)
+      002AEDE8  B6C80008  SD $t0,8($s6)
+      002AEDEC  B2C90017  SDL $t1,23($s6)
+      002AEDF0  B6C90010  SD $t1,16($s6)
+      002AEDF4  6947001F  OP=26 rs=$t2 rt=$a3 rd=$zero imm=31
+      002AEDF8  6D470018  OP=27 rs=$t2 rt=$a3 rd=$zero imm=24
+      002AEDFC  69480027  OP=26 rs=$t2 rt=$t0 rd=$zero imm=39
+      002AEE00  6D480020  OP=27 rs=$t2 rt=$t0 rd=$zero imm=32
+      002AEE04  6949002F  OP=26 rs=$t2 rt=$t1 rd=$zero imm=47
+      002AEE08  6D490028  OP=27 rs=$t2 rt=$t1 rd=$zero imm=40
+      002AEE0C  B2C7001F  SDL $a3,31($s6)
+      002AEE10  B6C70018  SD $a3,24($s6)
+      002AEE14  B2C80027  SDL $t0,39($s6)
+      002AEE18  B6C80020  SD $t0,32($s6)
+      002AEE1C  B2C9002F  SDL $t1,47($s6)
+      002AEE20  B6C90028  SD $t1,40($s6)
+      002AEE24  69470037  OP=26 rs=$t2 rt=$a3 rd=$zero imm=55
+      002AEE28  6D470030  OP=27 rs=$t2 rt=$a3 rd=$zero imm=48
+      002AEE2C  8D480038  LW $t0,56($t2)
+      002AEE30  B2C70037  SDL $a3,55($s6)
+      002AEE34  B6C70030  SD $a3,48($s6)
+      002AEE38  AEC80038  SW $t0,56($s6)
+      002AEE3C  0C0B7B80  JAL 0x002DEE00
+ >>>  002AEE40  0046A025  OR $s4,$v0,$a2
+      002AEE44  C7809278  LWC1 ft=$zero,-28040($gp)
+      002AEE48  3C014040  LUI $at,0x4040
+      002AEE4C  4481A800  COP1 rs=$a0 ft=$at fs=$s5 fd=0 fn=0
+      002AEE50  46140001  COP1 rs=$s0 ft=$s4 fs=$zero fd=0 fn=1
+      002AEE54  8F83A8E0  LW $v1,-22304($gp)
+      002AEE58  8F82A8E4  LW $v0,-22300($gp)
+      002AEE5C  00431023  SUBU $v0,$v0,$v1
+      002AEE60  00000000  SLL $zero,$zero,0
+      002AEE64  00000000  SLL $zero,$zero,0
+      002AEE68  46150003  COP1 rs=$s0 ft=$s5 fs=$zero fd=0 fn=3
+      002AEE6C  44826000  COP1 rs=$a0 ft=$v0 fs=$t4 fd=0 fn=0
+      002AEE70  46806320  COP1 rs=$s4 ft=$zero fs=$t4 fd=12 fn=32
+      002AEE74  0C0B7A47  JAL 0x002DE91C
+      002AEE78  46006302  COP1 rs=$s0 ft=$zero fs=$t4 fd=12 fn=2
+      002AEE7C  8F83A8E0  LW $v1,-22304($gp)
+      002AEE80  C78C9278  LWC1 ft=$t4,-28040($gp)
+      002AEE84  00621821  ADDU $v1,$v1,$v0
+      002AEE88  8F82A8E8  LW $v0,-22296($gp)
+      002AEE8C  46146301  COP1 rs=$s0 ft=$s4 fs=$t4 fd=12 fn=1
+      002AEE90  8F84A8EC  LW $a0,-22292($gp)
+      002AEE94  AFA30008  SW $v1,8($sp)
+      002AEE98  00822023  SUBU $a0,$a0,$v0
+      002AEE9C  AFA30018  SW $v1,24($sp)
+      002AEEA0  44840000  COP1 rs=$a0 ft=$a0 fs=$zero fd=0 fn=0
+      002AEEA4  46800020  COP1 rs=$s4 ft=$zero fs=$zero fd=0 fn=32
+      002AEEA8  00000000  SLL $zero,$zero,0
+      002AEEAC  00000000  SLL $zero,$zero,0
+      002AEEB0  46156303  COP1 rs=$s0 ft=$s5 fs=$t4 fd=12 fn=3
+      002AEEB4  0C0B7A47  JAL 0x002DE91C
+      002AEEB8  460C0302  COP1 rs=$s0 ft=$t4 fs=$zero fd=12 fn=2
+      002AEEBC  8F83A8E8  LW $v1,-22296($gp)
+      002AEEC0  00621821  ADDU $v1,$v1,$v0
+      002AEEC4  AFA30028  SW $v1,40($sp)
+      002AEEC8  AFA30038  SW $v1,56($sp)
+      002AEECC  02B61821  ADDU $v1,$s5,$s6
+      002AEED0  02D51021  ADDU $v0,$s6,$s5
+      002AEED4  8C710004  LW $s1,4($v1)
+      002AEED8  0280202D  DADDU $a0,$s4,$zero
+      002AEEDC  8C500000  LW $s0,0($v0)
+      002AEEE0  0060102D  DADDU $v0,$v1,$zero
+
+----- TARGET 0x002AEEC4 -----
+      002AEE64  00000000  SLL $zero,$zero,0
+      002AEE68  46150003  COP1 rs=$s0 ft=$s5 fs=$zero fd=0 fn=3
+      002AEE6C  44826000  COP1 rs=$a0 ft=$v0 fs=$t4 fd=0 fn=0
+      002AEE70  46806320  COP1 rs=$s4 ft=$zero fs=$t4 fd=12 fn=32
+      002AEE74  0C0B7A47  JAL 0x002DE91C
+      002AEE78  46006302  COP1 rs=$s0 ft=$zero fs=$t4 fd=12 fn=2
+      002AEE7C  8F83A8E0  LW $v1,-22304($gp)
+      002AEE80  C78C9278  LWC1 ft=$t4,-28040($gp)
+      002AEE84  00621821  ADDU $v1,$v1,$v0
+      002AEE88  8F82A8E8  LW $v0,-22296($gp)
+      002AEE8C  46146301  COP1 rs=$s0 ft=$s4 fs=$t4 fd=12 fn=1
+      002AEE90  8F84A8EC  LW $a0,-22292($gp)
+      002AEE94  AFA30008  SW $v1,8($sp)
+      002AEE98  00822023  SUBU $a0,$a0,$v0
+      002AEE9C  AFA30018  SW $v1,24($sp)
+      002AEEA0  44840000  COP1 rs=$a0 ft=$a0 fs=$zero fd=0 fn=0
+      002AEEA4  46800020  COP1 rs=$s4 ft=$zero fs=$zero fd=0 fn=32
+      002AEEA8  00000000  SLL $zero,$zero,0
+      002AEEAC  00000000  SLL $zero,$zero,0
+      002AEEB0  46156303  COP1 rs=$s0 ft=$s5 fs=$t4 fd=12 fn=3
+      002AEEB4  0C0B7A47  JAL 0x002DE91C
+      002AEEB8  460C0302  COP1 rs=$s0 ft=$t4 fs=$zero fd=12 fn=2
+      002AEEBC  8F83A8E8  LW $v1,-22296($gp)
+      002AEEC0  00621821  ADDU $v1,$v1,$v0
+ >>>  002AEEC4  AFA30028  SW $v1,40($sp)
+      002AEEC8  AFA30038  SW $v1,56($sp)
+      002AEECC  02B61821  ADDU $v1,$s5,$s6
+      002AEED0  02D51021  ADDU $v0,$s6,$s5
+      002AEED4  8C710004  LW $s1,4($v1)
+      002AEED8  0280202D  DADDU $a0,$s4,$zero
+      002AEEDC  8C500000  LW $s0,0($v0)
+      002AEEE0  0060102D  DADDU $v0,$v1,$zero
+      002AEEE4  8C720010  LW $s2,16($v1)
+      002AEEE8  0220302D  DADDU $a2,$s1,$zero
+      002AEEEC  8C53000C  LW $s3,12($v0)
+      002AEEF0  0C0A622E  JAL 0x002988B8
+      002AEEF4  0200282D  DADDU $a1,$s0,$zero
+      002AEEF8  0000282D  DADDU $a1,$zero,$zero
+      002AEEFC  03A0582D  DADDU $t3,$sp,$zero
+      002AEF00  0040202D  DADDU $a0,$v0,$zero
+      002AEF04  0000302D  DADDU $a2,$zero,$zero
+      002AEF08  0200382D  DADDU $a3,$s0,$zero
+      002AEF0C  0220402D  DADDU $t0,$s1,$zero
+      002AEF10  0260482D  DADDU $t1,$s3,$zero
+      002AEF14  0240502D  DADDU $t2,$s2,$zero
+      002AEF18  0C0A634A  JAL 0x00298D28
+      002AEF1C  26F7FFFF  ADDIU $s7,$s7,-1
+      002AEF20  0200382D  DADDU $a3,$s0,$zero
+      002AEF24  0040A02D  DADDU $s4,$v0,$zero
+      002AEF28  0220402D  DADDU $t0,$s1,$zero
+      002AEF2C  0280202D  DADDU $a0,$s4,$zero
+      002AEF30  0260482D  DADDU $t1,$s3,$zero
+      002AEF34  0240502D  DADDU $t2,$s2,$zero
+      002AEF38  0000282D  DADDU $a1,$zero,$zero
+      002AEF3C  0000302D  DADDU $a2,$zero,$zero
+      002AEF40  0C0A634A  JAL 0x00298D28
+      002AEF44  03A0582D  DADDU $t3,$sp,$zero
+      002AEF48  26B50014  ADDIU $s5,$s5,20
+      002AEF4C  06E1FFDF  REGIMM rs=$s7 rt=$at -> 0x002AEECC
+      002AEF50  0040A02D  DADDU $s4,$v0,$zero
+      002AEF54  34038000  ORI $v1,$zero,0x8000
+      002AEF58  2402000E  ADDIU $v0,$zero,14
+      002AEF5C  AE830000  SW $v1,0($s4)
+      002AEF60  26850010  ADDIU $a1,$s4,16
+      002AEF64  AE820008  SW $v0,8($s4)
+
+----- TARGET 0x002AEF64 -----
+      002AEF04  0000302D  DADDU $a2,$zero,$zero
+      002AEF08  0200382D  DADDU $a3,$s0,$zero
+      002AEF0C  0220402D  DADDU $t0,$s1,$zero
+      002AEF10  0260482D  DADDU $t1,$s3,$zero
+      002AEF14  0240502D  DADDU $t2,$s2,$zero
+      002AEF18  0C0A634A  JAL 0x00298D28
+      002AEF1C  26F7FFFF  ADDIU $s7,$s7,-1
+      002AEF20  0200382D  DADDU $a3,$s0,$zero
+      002AEF24  0040A02D  DADDU $s4,$v0,$zero
+      002AEF28  0220402D  DADDU $t0,$s1,$zero
+      002AEF2C  0280202D  DADDU $a0,$s4,$zero
+      002AEF30  0260482D  DADDU $t1,$s3,$zero
+      002AEF34  0240502D  DADDU $t2,$s2,$zero
+      002AEF38  0000282D  DADDU $a1,$zero,$zero
+      002AEF3C  0000302D  DADDU $a2,$zero,$zero
+      002AEF40  0C0A634A  JAL 0x00298D28
+      002AEF44  03A0582D  DADDU $t3,$sp,$zero
+      002AEF48  26B50014  ADDIU $s5,$s5,20
+      002AEF4C  06E1FFDF  REGIMM rs=$s7 rt=$at -> 0x002AEECC
+      002AEF50  0040A02D  DADDU $s4,$v0,$zero
+      002AEF54  34038000  ORI $v1,$zero,0x8000
+      002AEF58  2402000E  ADDIU $v0,$zero,14
+      002AEF5C  AE830000  SW $v1,0($s4)
+      002AEF60  26850010  ADDIU $a1,$s4,16
+ >>>  002AEF64  AE820008  SW $v0,8($s4)
+      002AEF68  AE80000C  SW $zero,12($s4)
+      002AEF6C  AE800004  SW $zero,4($s4)
+      002AEF70  0C0B7AA5  JAL 0x002DEA94
+      002AEF74  8F84AFB8  LW $a0,-20552($gp)
+      002AEF78  DFB00080  OP=55 rs=$sp rt=$s0 rd=$zero imm=128
+      002AEF7C  DFB10088  OP=55 rs=$sp rt=$s1 rd=$zero imm=136
+      002AEF80  DFB20090  OP=55 rs=$sp rt=$s2 rd=$zero imm=144
+      002AEF84  DFB30098  OP=55 rs=$sp rt=$s3 rd=$zero imm=152
+      002AEF88  DFB400A0  OP=55 rs=$sp rt=$s4 rd=$zero imm=160
+      002AEF8C  DFB500A8  OP=55 rs=$sp rt=$s5 rd=$zero imm=168
+      002AEF90  DFB600B0  OP=55 rs=$sp rt=$s6 rd=$zero imm=176
+      002AEF94  DFB700B8  OP=55 rs=$sp rt=$s7 rd=$zero imm=184
+      002AEF98  DFBF00C0  OP=55 rs=$sp rt=$ra rd=$zero imm=192
+      002AEF9C  C7B500D0  LWC1 ft=$s5,208($sp)
+      002AEFA0  C7B400C8  LWC1 ft=$s4,200($sp)
+      002AEFA4  03E00008  JR $ra
+      002AEFA8  27BD00E0  ADDIU $sp,$sp,224
+      002AEFAC  2402000E  ADDIU $v0,$zero,14
+      002AEFB0  3C031000  LUI $v1,0x1000
+      002AEFB4  24070009  ADDIU $a3,$zero,9
+      002AEFB8  AC820008  SW $v0,8($a0)
+      002AEFBC  AC830004  SW $v1,4($a0)
+      002AEFC0  2403004C  ADDIU $v1,$zero,76
+      002AEFC4  AC870000  SW $a3,0($a0)
+      002AEFC8  24070018  ADDIU $a3,$zero,24
+      002AEFCC  AC80000C  SW $zero,12($a0)
+      002AEFD0  24840010  ADDIU $a0,$a0,16
+      002AEFD4  3C020004  LUI $v0,0x0004
+      002AEFD8  34420138  ORI $v0,$v0,0x0138
+      002AEFDC  FC830008  OP=63 rs=$a0 rt=$v1 rd=$zero imm=8
+      002AEFE0  FC820000  OP=63 rs=$a0 rt=$v0 rd=$zero imm=0
+      002AEFE4  24840010  ADDIU $a0,$a0,16
+      002AEFE8  FC870008  OP=63 rs=$a0 rt=$a3 rd=$zero imm=8
+      002AEFEC  3C0801BF  LUI $t0,0x01BF
+      002AEFF0  00084438  DSLL $t0,$t0,16
+      002AEFF4  350800FF  ORI $t0,$t0,0x00FF
+      002AEFF8  00084438  DSLL $t0,$t0,16
+      002AEFFC  FC800000  OP=63 rs=$a0 rt=$zero rd=$zero imm=0
+      002AF000  24840010  ADDIU $a0,$a0,16
+      002AF004  24020040  ADDIU $v0,$zero,64
+
+============================================================
+SECTION 2: CALL REFERENCES TO TARGETS
+============================================================
+
+----- CALLERS OF 0x002AE574 -----
+CALL COUNT: 2
+
+CALLER 0x0020CE7C
+      0020CE5C  10000031  BEQ $zero,$zero,0x0020CF24
+      0020CE60  00000000  SLL $zero,$zero,0
+      0020CE64  906201D4  LBU $v0,468($v1)
+      0020CE68  54400033  BNEL $v0,$zero,0x0020CF38
+      0020CE6C  2A620028  SLTI $v0,$s3,40
+      0020CE70  A460015A  SH $zero,346($v1)
+      0020CE74  0220282D  DADDU $a1,$s1,$zero
+      0020CE78  A4600158  SH $zero,344($v1)
+ >>>  0020CE7C  0C0AB95D  JAL 0x002AE574
+      0020CE80  8F84999C  LW $a0,-26212($gp)
+      0020CE84  1040001B  BEQ $v0,$zero,0x0020CEF4
+      0020CE88  8F85999C  LW $a1,-26212($gp)
+      0020CE8C  0C08DCC7  JAL 0x0023731C
+      0020CE90  0220202D  DADDU $a0,$s1,$zero
+      0020CE94  10400017  BEQ $v0,$zero,0x0020CEF4
+      0020CE98  8F85999C  LW $a1,-26212($gp)
+      0020CE9C  0000302D  DADDU $a2,$zero,$zero
+
+CALLER 0x002B41A8
+      002B4188  24060002  ADDIU $a2,$zero,2
+      002B418C  8CA20014  LW $v0,20($a1)
+      002B4190  8F83BBEC  LW $v1,-17428($gp)
+      002B4194  00431023  SUBU $v0,$v0,$v1
+      002B4198  24420001  ADDIU $v0,$v0,1
+      002B419C  2C420003  SLTIU $v0,$v0,3
+      002B41A0  50400009  BEQL $v0,$zero,0x002B41C8
+      002B41A4  24060002  ADDIU $a2,$zero,2
+ >>>  002B41A8  0C0AB95D  JAL 0x002AE574
+      002B41AC  8F85999C  LW $a1,-26212($gp)
+      002B41B0  10400005  BEQ $v0,$zero,0x002B41C8
+      002B41B4  24060002  ADDIU $a2,$zero,2
+      002B41B8  24060001  ADDIU $a2,$zero,1
+      002B41BC  2A02000A  SLTI $v0,$s0,10
+      002B41C0  1440FFDF  BNE $v0,$zero,0x002B4140
+      002B41C4  00101080  SLL $v0,$s0,2
+      002B41C8  24020001  ADDIU $v0,$zero,1
+
+----- CALLERS OF 0x002AE618 -----
+CALL COUNT: 1
+
+CALLER 0x0020CED4
+      0020CEB4  0C0ABB4E  JAL 0x002AED38
+      0020CEB8  A38099A9  SB $zero,-26199($gp)
+      0020CEBC  2404000C  ADDIU $a0,$zero,12
+      0020CEC0  0C0A6AF8  JAL 0x0029ABE0
+      0020CEC4  240501BA  ADDIU $a1,$zero,442
+      0020CEC8  8E220000  LW $v0,0($s1)
+      0020CECC  0220202D  DADDU $a0,$s1,$zero
+      0020CED0  34424000  ORI $v0,$v0,0x4000
+ >>>  0020CED4  0C0AB986  JAL 0x002AE618
+      0020CED8  AE220000  SW $v0,0($s1)
+      0020CEDC  A39099A9  SB $s0,-26199($gp)
+      0020CEE0  2403BFFF  ADDIU $v1,$zero,-16385
+      0020CEE4  8E220000  LW $v0,0($s1)
+      0020CEE8  00431024  AND $v0,$v0,$v1
+      0020CEEC  1000000D  BEQ $zero,$zero,0x0020CF24
+      0020CEF0  AE220000  SW $v0,0($s1)
+      0020CEF4  8FA40154  LW $a0,340($sp)
+
+----- CALLERS OF 0x002AE808 -----
+CALL COUNT: 4
+
+CALLER 0x0020BADC
+      0020BABC  0C08DCC7  JAL 0x0023731C
+      0020BAC0  0200282D  DADDU $a1,$s0,$zero
+      0020BAC4  10400008  BEQ $v0,$zero,0x0020BAE8
+      0020BAC8  0200282D  DADDU $a1,$s0,$zero
+      0020BACC  8E450000  LW $a1,0($s2)
+      0020BAD0  0C0B1D4B  JAL 0x002C752C
+      0020BAD4  0200202D  DADDU $a0,$s0,$zero
+      0020BAD8  0200202D  DADDU $a0,$s0,$zero
+ >>>  0020BADC  0C0ABA02  JAL 0x002AE808
+      0020BAE0  0220282D  DADDU $a1,$s1,$zero
+      0020BAE4  0200282D  DADDU $a1,$s0,$zero
+      0020BAE8  0000202D  DADDU $a0,$zero,$zero
+      0020BAEC  0C08DF5B  JAL 0x00237D6C
+      0020BAF0  0000302D  DADDU $a2,$zero,$zero
+      0020BAF4  24020001  ADDIU $v0,$zero,1
+      0020BAF8  DFB00080  OP=55 rs=$sp rt=$s0 rd=$zero imm=128
+      0020BAFC  DFB10088  OP=55 rs=$sp rt=$s1 rd=$zero imm=136
+
+CALLER 0x002C84D4
+      002C84B4  1040000B  BEQ $v0,$zero,0x002C84E4
+      002C84B8  8E040008  LW $a0,8($s0)
+      002C84BC  84850004  LH $a1,4($a0)
+      002C84C0  0C08CD44  JAL 0x00233510
+      002C84C4  0200202D  DADDU $a0,$s0,$zero
+      002C84C8  1440001A  BNE $v0,$zero,0x002C8534
+      002C84CC  24020001  ADDIU $v0,$zero,1
+      002C84D0  0200202D  DADDU $a0,$s0,$zero
+ >>>  002C84D4  0C0ABA02  JAL 0x002AE808
+      002C84D8  0220282D  DADDU $a1,$s1,$zero
+      002C84DC  10000015  BEQ $zero,$zero,0x002C8534
+      002C84E0  24020001  ADDIU $v0,$zero,1
+      002C84E4  84830004  LH $v1,4($a0)
+      002C84E8  2402008B  ADDIU $v0,$zero,139
+      002C84EC  5462000E  BNEL $v1,$v0,0x002C8528
+      002C84F0  0200202D  DADDU $a0,$s0,$zero
+      002C84F4  908301DD  LBU $v1,477($a0)
+
+CALLER 0x002C8528
+      002C8508  0200202D  DADDU $a0,$s0,$zero
+      002C850C  10400009  BEQ $v0,$zero,0x002C8534
+      002C8510  24020001  ADDIU $v0,$zero,1
+      002C8514  8E030008  LW $v1,8($s0)
+      002C8518  8C620000  LW $v0,0($v1)
+      002C851C  34424000  ORI $v0,$v0,0x4000
+      002C8520  10000003  BEQ $zero,$zero,0x002C8530
+      002C8524  AC620000  SW $v0,0($v1)
+ >>>  002C8528  0C0ABA02  JAL 0x002AE808
+      002C852C  0220282D  DADDU $a1,$s1,$zero
+      002C8530  24020001  ADDIU $v0,$zero,1
+      002C8534  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      002C8538  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      002C853C  DFBF0010  OP=55 rs=$sp rt=$ra rd=$zero imm=16
+      002C8540  6080C453  DADDI $zero,$a0,-15277
+      002C8544  689F0CDF  OP=26 rs=$a0 rt=$ra rd=$at imm=3295
+      002C8548  8D623542  LW $v0,13634($t3)
+
+CALLER 0x002DDE88
+      002DDE68  8F84999C  LW $a0,-26212($gp)
+      002DDE6C  0C08DCC7  JAL 0x0023731C
+      002DDE70  0220282D  DADDU $a1,$s1,$zero
+      002DDE74  10400006  BEQ $v0,$zero,0x002DDE90
+      002DDE78  8E4521E0  LW $a1,8672($s2)
+      002DDE7C  0C0B1D4B  JAL 0x002C752C
+      002DDE80  0220202D  DADDU $a0,$s1,$zero
+      002DDE84  0220202D  DADDU $a0,$s1,$zero
+ >>>  002DDE88  0C0ABA02  JAL 0x002AE808
+      002DDE8C  0200282D  DADDU $a1,$s0,$zero
+      002DDE90  0260282D  DADDU $a1,$s3,$zero
+      002DDE94  0000202D  DADDU $a0,$zero,$zero
+      002DDE98  0C08DF5B  JAL 0x00237D6C
+      002DDE9C  0000302D  DADDU $a2,$zero,$zero
+      002DDEA0  10000004  BEQ $zero,$zero,0x002DDEB4
+      002DDEA4  DFB00040  OP=55 rs=$sp rt=$s0 rd=$zero imm=64
+      002DDEA8  0C08E2B6  JAL 0x00238AD8
+
+----- CALLERS OF 0x002AE948 -----
+CALL COUNT: 1
+
+CALLER 0x002C3A38
+      002C3A18  92031136  LBU $v1,4406($s0)
+      002C3A1C  00031840  SLL $v1,$v1,1
+      002C3A20  3C01008F  LUI $at,0x008F
+      002C3A24  00230821  ADDU $at,$at,$v1
+      002C3A28  8423EA10  LH $v1,-5616($at)
+      002C3A2C  0043102A  SLT $v0,$v0,$v1
+      002C3A30  50400008  BEQL $v0,$zero,0x002C3A54
+      002C3A34  8FA40018  LW $a0,24($sp)
+ >>>  002C3A38  0C0ABA52  JAL 0x002AE948
+      002C3A3C  A2001136  SB $zero,4406($s0)
+      002C3A40  0C092310  JAL 0x00248C40
+      002C3A44  0000202D  DADDU $a0,$zero,$zero
+      002C3A48  144002CE  BNE $v0,$zero,0x002C4584
+      002C3A4C  24020001  ADDIU $v0,$zero,1
+      002C3A50  8FA40018  LW $a0,24($sp)
+      002C3A54  0C0B3934  JAL 0x002CE4D0
+      002C3A58  24050036  ADDIU $a1,$zero,54
+
+----- CALLERS OF 0x002AED00 -----
+CALL COUNT: 12
+
+CALLER 0x00210684
+      00210664  8E230008  LW $v1,8($s1)
+      00210668  8E26000C  LW $a2,12($s1)
+      0021066C  0220202D  DADDU $a0,$s1,$zero
+      00210670  8F82999C  LW $v0,-26212($gp)
+      00210674  A460015C  SH $zero,348($v1)
+      00210678  3C010001  LUI $at,0x0001
+      0021067C  00260821  ADDU $at,$at,$a2
+      00210680  AC22A118  SW $v0,-24296($at)
+ >>>  00210684  0C0ABB40  JAL 0x002AED00
+      00210688  0000282D  DADDU $a1,$zero,$zero
+      0021068C  0C098E3F  JAL 0x002638FC
+      00210690  00000000  SLL $zero,$zero,0
+      00210694  8E050000  LW $a1,0($s0)
+      00210698  0C0B1D4B  JAL 0x002C752C
+      0021069C  0220202D  DADDU $a0,$s1,$zero
+      002106A0  8E050000  LW $a1,0($s0)
+      002106A4  0C0D246C  JAL 0x003491B0
+
+CALLER 0x0022E6E4
+      0022E6C4  03A0202D  DADDU $a0,$sp,$zero
+      0022E6C8  FFB00020  OP=63 rs=$sp rt=$s0 rd=$zero imm=32
+      0022E6CC  FFB20030  OP=63 rs=$sp rt=$s2 rd=$zero imm=48
+      0022E6D0  FFB30038  OP=63 rs=$sp rt=$s3 rd=$zero imm=56
+      0022E6D4  FFBF0040  OP=63 rs=$sp rt=$ra rd=$zero imm=64
+      0022E6D8  0C08639F  JAL 0x00218E7C
+      0022E6DC  00A0902D  DADDU $s2,$a1,$zero
+      0022E6E0  0220202D  DADDU $a0,$s1,$zero
+ >>>  0022E6E4  0C0ABB40  JAL 0x002AED00
+      0022E6E8  0000282D  DADDU $a1,$zero,$zero
+      0022E6EC  2404000A  ADDIU $a0,$zero,10
+      0022E6F0  0C0A6AF8  JAL 0x0029ABE0
+      0022E6F4  240501C1  ADDIU $a1,$zero,449
+      0022E6F8  3C020069  LUI $v0,0x0069
+      0022E6FC  245321E0  ADDIU $s3,$v0,8672
+      0022E700  9A324959  LWR $s2,18777($s1)
+      0022E704  FCC8B939  OP=63 rs=$a2 rt=$t0 rd=$s7 imm=-18119
+
+CALLER 0x00233D70
+      00233D50  10000029  BEQ $zero,$zero,0x00233DF8
+      00233D54  0000102D  DADDU $v0,$zero,$zero
+      00233D58  8E440008  LW $a0,8($s2)
+      00233D5C  2405004E  ADDIU $a1,$zero,78
+      00233D60  2406002E  ADDIU $a2,$zero,46
+      00233D64  0C08755F  JAL 0x0021D57C
+      00233D68  24840038  ADDIU $a0,$a0,56
+      00233D6C  0240202D  DADDU $a0,$s2,$zero
+ >>>  00233D70  0C0ABB40  JAL 0x002AED00
+      00233D74  0000282D  DADDU $a1,$zero,$zero
+      00233D78  8E440008  LW $a0,8($s2)
+      00233D7C  24020001  ADDIU $v0,$zero,1
+      00233D80  9083003A  LBU $v1,58($a0)
+      00233D84  1000001C  BEQ $zero,$zero,0x00233DF8
+      00233D88  A083010F  SB $v1,271($a0)
+      00233D8C  8C51D16C  LW $s1,-11924($v0)
+      00233D90  2A220028  SLTI $v0,$s1,40
+
+CALLER 0x00233E5C
+      00233E3C  87839D36  LH $v1,-25290($gp)
+      00233E40  0043102A  SLT $v0,$v0,$v1
+      00233E44  1040000C  BEQ $v0,$zero,0x00233E78
+      00233E48  2406002F  ADDIU $a2,$zero,47
+      00233E4C  8E040008  LW $a0,8($s0)
+      00233E50  0C08755F  JAL 0x0021D57C
+      00233E54  24840038  ADDIU $a0,$a0,56
+      00233E58  0200202D  DADDU $a0,$s0,$zero
+ >>>  00233E5C  0C0ABB40  JAL 0x002AED00
+      00233E60  0000282D  DADDU $a1,$zero,$zero
+      00233E64  8E040008  LW $a0,8($s0)
+      00233E68  24020001  ADDIU $v0,$zero,1
+      00233E6C  9083003A  LBU $v1,58($a0)
+      00233E70  10000002  BEQ $zero,$zero,0x00233E7C
+      00233E74  A083010F  SB $v1,271($a0)
+      00233E78  0000102D  DADDU $v0,$zero,$zero
+      00233E7C  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+
+CALLER 0x00238014
+      00237FF4  0200202D  DADDU $a0,$s0,$zero
+      00237FF8  3C010001  LUI $at,0x0001
+      00237FFC  00220821  ADDU $at,$at,$v0
+      00238000  AC32A118  SW $s2,-24296($at)
+      00238004  0000282D  DADDU $a1,$zero,$zero
+      00238008  A06001E2  SB $zero,482($v1)
+      0023800C  8E020008  LW $v0,8($s0)
+      00238010  AC4001C8  SW $zero,456($v0)
+ >>>  00238014  0C0ABB40  JAL 0x002AED00
+      00238018  AC4001C4  SW $zero,452($v0)
+      0023801C  0C0AC5AB  JAL 0x002B16AC
+      00238020  0200202D  DADDU $a0,$s0,$zero
+      00238024  10000004  BEQ $zero,$zero,0x00238038
+      00238028  2A8200C8  SLTI $v0,$s4,200
+      0023802C  0C0A6B17  JAL 0x0029AC5C
+      00238030  00000000  SLL $zero,$zero,0
+      00238034  2A8200C8  SLTI $v0,$s4,200
+
+CALLER 0x0023A430
+      0023A410  0220202D  DADDU $a0,$s1,$zero
+      0023A414  0C098D92  JAL 0x00263648
+      0023A418  24A5D2F0  ADDIU $a1,$a1,-11536
+      0023A41C  8E22000C  LW $v0,12($s1)
+      0023A420  0220202D  DADDU $a0,$s1,$zero
+      0023A424  3C010001  LUI $at,0x0001
+      0023A428  00220821  ADDU $at,$at,$v0
+      0023A42C  AC33A118  SW $s3,-24296($at)
+ >>>  0023A430  0C0ABB40  JAL 0x002AED00
+      0023A434  0000282D  DADDU $a1,$zero,$zero
+      0023A438  10000004  BEQ $zero,$zero,0x0023A44C
+      0023A43C  2A8200C8  SLTI $v0,$s4,200
+      0023A440  0C0A6B17  JAL 0x0029AC5C
+      0023A444  00000000  SLL $zero,$zero,0
+      0023A448  2A8200C8  SLTI $v0,$s4,200
+      0023A44C  10400007  BEQ $v0,$zero,0x0023A46C
+      0023A450  26940001  ADDIU $s4,$s4,1
+
+CALLER 0x0023B434
+      0023B414  C794823C  LWC1 ft=$s4,-32196($gp)
+      0023B418  3C010001  LUI $at,0x0001
+      0023B41C  00220821  ADDU $at,$at,$v0
+      0023B420  AC32A118  SW $s2,-24296($at)
+      0023B424  26103128  ADDIU $s0,$s0,12584
+      0023B428  0C089772  JAL 0x00225DC8
+      0023B42C  0000982D  DADDU $s3,$zero,$zero
+      0023B430  0220202D  DADDU $a0,$s1,$zero
+ >>>  0023B434  0C0ABB40  JAL 0x002AED00
+      0023B438  24050001  ADDIU $a1,$zero,1
+      0023B43C  0220202D  DADDU $a0,$s1,$zero
+      0023B440  24050006  ADDIU $a1,$zero,6
+      0023B444  0C0894C4  JAL 0x00225310
+      0023B448  0000302D  DADDU $a2,$zero,$zero
+      0023B44C  8E420008  LW $v0,8($s2)
+      0023B450  9042003A  LBU $v0,58($v0)
+      0023B454  00021080  SLL $v0,$v0,2
+
+CALLER 0x0023D0E8
+      0023D0C8  0C09CA3E  JAL 0x002728F8
+      0023D0CC  A4460310  SH $a2,784($v0)
+      0023D0D0  0040802D  DADDU $s0,$v0,$zero
+      0023D0D4  8E420008  LW $v0,8($s2)
+      0023D0D8  84420146  LH $v0,326($v0)
+      0023D0DC  54400005  BNEL $v0,$zero,0x0023D0F4
+      0023D0E0  001010C0  SLL $v0,$s0,3
+      0023D0E4  0240202D  DADDU $a0,$s2,$zero
+ >>>  0023D0E8  0C0ABB40  JAL 0x002AED00
+      0023D0EC  24050001  ADDIU $a1,$zero,1
+      0023D0F0  001010C0  SLL $v0,$s0,3
+      0023D0F4  8E430008  LW $v1,8($s2)
+      0023D0F8  03A23021  ADDU $a2,$sp,$v0
+      0023D0FC  00C0202D  DADDU $a0,$a2,$zero
+      0023D100  84C60006  LH $a2,6($a2)
+      0023D104  0080282D  DADDU $a1,$a0,$zero
+      0023D108  84870000  LH $a3,0($a0)
+
+CALLER 0x00241AF4
+      00241AD4  DFB000A0  OP=55 rs=$sp rt=$s0 rd=$zero imm=160
+      00241AD8  84620158  LH $v0,344($v1)
+      00241ADC  54400010  BNEL $v0,$zero,0x00241B20
+      00241AE0  DFB000A0  OP=55 rs=$sp rt=$s0 rd=$zero imm=160
+      00241AE4  84620142  LH $v0,322($v1)
+      00241AE8  5440000D  BNEL $v0,$zero,0x00241B20
+      00241AEC  DFB000A0  OP=55 rs=$sp rt=$s0 rd=$zero imm=160
+      00241AF0  0200202D  DADDU $a0,$s0,$zero
+ >>>  00241AF4  0C0ABB40  JAL 0x002AED00
+      00241AF8  24050001  ADDIU $a1,$zero,1
+      00241AFC  8E03000C  LW $v1,12($s0)
+      00241B00  24028000  ADDIU $v0,$zero,-32768
+      00241B04  3C010001  LUI $at,0x0001
+      00241B08  00230821  ADDU $at,$at,$v1
+      00241B0C  A422A1B0  SH $v0,-24144($at)
+      00241B10  3C010001  LUI $at,0x0001
+      00241B14  00230821  ADDU $at,$at,$v1
+
+CALLER 0x00244080
+      00244060  0C0B33AD  JAL 0x002CCEB4
+      00244064  0000302D  DADDU $a2,$zero,$zero
+      00244068  8E020000  LW $v0,0($s0)
+      0024406C  8E030008  LW $v1,8($s0)
+      00244070  00521024  AND $v0,$v0,$s2
+      00244074  14400006  BNE $v0,$zero,0x00244090
+      00244078  A460018A  SH $zero,394($v1)
+      0024407C  0200202D  DADDU $a0,$s0,$zero
+ >>>  00244080  0C0ABB40  JAL 0x002AED00
+      00244084  0000282D  DADDU $a1,$zero,$zero
+      00244088  1000009B  BEQ $zero,$zero,0x002442F8
+      0024408C  DFB00100  OP=55 rs=$sp rt=$s0 rd=$zero imm=256
+      00244090  8E040008  LW $a0,8($s0)
+      00244094  84820158  LH $v0,344($a0)
+      00244098  14400007  BNE $v0,$zero,0x002440B8
+      0024409C  00000000  SLL $zero,$zero,0
+      002440A0  DC820150  OP=55 rs=$a0 rt=$v0 rd=$zero imm=336
+
+CALLER 0x0025913C
+      0025911C  0C08E2E7  JAL 0x00238B9C
+      00259120  00000000  SLL $zero,$zero,0
+      00259124  10400007  BEQ $v0,$zero,0x00259144
+      00259128  0000282D  DADDU $a1,$zero,$zero
+      0025912C  8E02000C  LW $v0,12($s0)
+      00259130  3C010001  LUI $at,0x0001
+      00259134  00220821  ADDU $at,$at,$v0
+      00259138  AC32A118  SW $s2,-24296($at)
+ >>>  0025913C  0C0ABB40  JAL 0x002AED00
+      00259140  0200202D  DADDU $a0,$s0,$zero
+      00259144  2A220028  SLTI $v0,$s1,40
+      00259148  5440FFED  BNEL $v0,$zero,0x00259100
+      0025914C  00111080  SLL $v0,$s1,2
+      00259150  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      00259154  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      00259158  DFB20010  OP=55 rs=$sp rt=$s2 rd=$zero imm=16
+      0025915C  DFBF0018  OP=55 rs=$sp rt=$ra rd=$zero imm=24
+
+CALLER 0x0027F08C
+      0027F06C  00000000  SLL $zero,$zero,0
+      0027F070  0200202D  DADDU $a0,$s0,$zero
+      0027F074  0C088F14  JAL 0x00223C50
+      0027F078  0000282D  DADDU $a1,$zero,$zero
+      0027F07C  0C08B041  JAL 0x0022C104
+      0027F080  0200202D  DADDU $a0,$s0,$zero
+      0027F084  14400003  BNE $v0,$zero,0x0027F094
+      0027F088  0200202D  DADDU $a0,$s0,$zero
+ >>>  0027F08C  0C0ABB40  JAL 0x002AED00
+      0027F090  0000282D  DADDU $a1,$zero,$zero
+      0027F094  52C00006  BEQL $s6,$zero,0x0027F0B0
+      0027F098  26B50001  ADDIU $s5,$s5,1
+      0027F09C  0C089051  JAL 0x00224144
+      0027F0A0  0200202D  DADDU $a0,$s0,$zero
+      0027F0A4  0C089098  JAL 0x00224260
+      0027F0A8  0200202D  DADDU $a0,$s0,$zero
+      0027F0AC  26B50001  ADDIU $s5,$s5,1
+
+----- CALLERS OF 0x002AED38 -----
+CALL COUNT: 21
+
+CALLER 0x0020BE18
+      0020BDF8  0C089B2E  JAL 0x00226CB8
+      0020BDFC  00000000  SLL $zero,$zero,0
+      0020BE00  14400007  BNE $v0,$zero,0x0020BE20
+      0020BE04  0220202D  DADDU $a0,$s1,$zero
+      0020BE08  0200282D  DADDU $a1,$s0,$zero
+      0020BE0C  24060001  ADDIU $a2,$zero,1
+      0020BE10  0000382D  DADDU $a3,$zero,$zero
+      0020BE14  0000402D  DADDU $t0,$zero,$zero
+ >>>  0020BE18  0C0ABB4E  JAL 0x002AED38
+      0020BE1C  0000482D  DADDU $t1,$zero,$zero
+      0020BE20  12000027  BEQ $s0,$zero,0x0020BEC0
+      0020BE24  0200202D  DADDU $a0,$s0,$zero
+      0020BE28  0C08DE7D  JAL 0x002379F4
+      0020BE2C  0220282D  DADDU $a1,$s1,$zero
+      0020BE30  54400024  BNEL $v0,$zero,0x0020BEC4
+      0020BE34  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0020BE38  0C08DCB1  JAL 0x002372C4
+
+CALLER 0x0020CE14
+      0020CDF4  0220202D  DADDU $a0,$s1,$zero
+      0020CDF8  54400010  BNEL $v0,$zero,0x0020CE3C
+      0020CDFC  8FA40154  LW $a0,340($sp)
+      0020CE00  8F85999C  LW $a1,-26212($gp)
+      0020CE04  24060001  ADDIU $a2,$zero,1
+      0020CE08  0000382D  DADDU $a3,$zero,$zero
+      0020CE0C  0000402D  DADDU $t0,$zero,$zero
+      0020CE10  24090001  ADDIU $t1,$zero,1
+ >>>  0020CE14  0C0ABB4E  JAL 0x002AED38
+      0020CE18  0220202D  DADDU $a0,$s1,$zero
+      0020CE1C  0220202D  DADDU $a0,$s1,$zero
+      0020CE20  0C08976B  JAL 0x00225DAC
+      0020CE24  24050001  ADDIU $a1,$zero,1
+      0020CE28  0C0A969F  JAL 0x002A5A7C
+      0020CE2C  0220202D  DADDU $a0,$s1,$zero
+      0020CE30  1000003C  BEQ $zero,$zero,0x0020CF24
+      0020CE34  00000000  SLL $zero,$zero,0
+
+CALLER 0x0020CEB4
+      0020CE94  10400017  BEQ $v0,$zero,0x0020CEF4
+      0020CE98  8F85999C  LW $a1,-26212($gp)
+      0020CE9C  0000302D  DADDU $a2,$zero,$zero
+      0020CEA0  0000382D  DADDU $a3,$zero,$zero
+      0020CEA4  0000402D  DADDU $t0,$zero,$zero
+      0020CEA8  24090001  ADDIU $t1,$zero,1
+      0020CEAC  0220202D  DADDU $a0,$s1,$zero
+      0020CEB0  939099A9  LBU $s0,-26199($gp)
+ >>>  0020CEB4  0C0ABB4E  JAL 0x002AED38
+      0020CEB8  A38099A9  SB $zero,-26199($gp)
+      0020CEBC  2404000C  ADDIU $a0,$zero,12
+      0020CEC0  0C0A6AF8  JAL 0x0029ABE0
+      0020CEC4  240501BA  ADDIU $a1,$zero,442
+      0020CEC8  8E220000  LW $v0,0($s1)
+      0020CECC  0220202D  DADDU $a0,$s1,$zero
+      0020CED0  34424000  ORI $v0,$v0,0x4000
+      0020CED4  0C0AB986  JAL 0x002AE618
+
+CALLER 0x0020E3E8
+      0020E3C8  0000102D  DADDU $v0,$zero,$zero
+      0020E3CC  10400008  BEQ $v0,$zero,0x0020E3F0
+      0020E3D0  8F85999C  LW $a1,-26212($gp)
+      0020E3D4  12250006  BEQ $s1,$a1,0x0020E3F0
+      0020E3D8  24060001  ADDIU $a2,$zero,1
+      0020E3DC  0220202D  DADDU $a0,$s1,$zero
+      0020E3E0  0000382D  DADDU $a3,$zero,$zero
+      0020E3E4  0000402D  DADDU $t0,$zero,$zero
+ >>>  0020E3E8  0C0ABB4E  JAL 0x002AED38
+      0020E3EC  0000482D  DADDU $t1,$zero,$zero
+      0020E3F0  2A820000  SLTI $v0,$s4,0
+      0020E3F4  0000202D  DADDU $a0,$zero,$zero
+      0020E3F8  0282200A  SPECIAL fn=10 rs=$s4 rt=$v0 rd=$a0 sa=0
+      0020E3FC  0000A02D  DADDU $s4,$zero,$zero
+      0020E400  240302BC  ADDIU $v1,$zero,700
+      0020E404  288202BD  SLTI $v0,$a0,701
+      0020E408  0C08401A  JAL 0x00210068
+
+CALLER 0x0020F574
+      0020F554  0C0834ED  JAL 0x0020D3B4
+      0020F558  0260202D  DADDU $a0,$s3,$zero
+      0020F55C  10400007  BEQ $v0,$zero,0x0020F57C
+      0020F560  8F85AD8C  LW $a1,-21108($gp)
+      0020F564  0260202D  DADDU $a0,$s3,$zero
+      0020F568  24060001  ADDIU $a2,$zero,1
+      0020F56C  0000382D  DADDU $a3,$zero,$zero
+      0020F570  0000402D  DADDU $t0,$zero,$zero
+ >>>  0020F574  0C0ABB4E  JAL 0x002AED38
+      0020F578  0000482D  DADDU $t1,$zero,$zero
+      0020F57C  8FA30100  LW $v1,256($sp)
+      0020F580  90620000  LBU $v0,0($v1)
+      0020F584  10400010  BEQ $v0,$zero,0x0020F5C8
+      0020F588  24110001  ADDIU $s1,$zero,1
+      0020F58C  8E420008  LW $v0,8($s2)
+      0020F590  0C09198A  JAL 0x00246628
+      0020F594  84440004  LH $a0,4($v0)
+
+CALLER 0x0021037C
+      0021035C  0C0834ED  JAL 0x0020D3B4
+      00210360  0200202D  DADDU $a0,$s0,$zero
+      00210364  10400007  BEQ $v0,$zero,0x00210384
+      00210368  8F85AD8C  LW $a1,-21108($gp)
+      0021036C  0200202D  DADDU $a0,$s0,$zero
+      00210370  24060001  ADDIU $a2,$zero,1
+      00210374  0000382D  DADDU $a3,$zero,$zero
+      00210378  24080001  ADDIU $t0,$zero,1
+ >>>  0021037C  0C0ABB4E  JAL 0x002AED38
+      00210380  0000482D  DADDU $t1,$zero,$zero
+      00210384  92220000  LBU $v0,0($s1)
+      00210388  54400005  BNEL $v0,$zero,0x002103A0
+      0021038C  92290001  LBU $t1,1($s1)
+      00210390  92220001  LBU $v0,1($s1)
+      00210394  10400008  BEQ $v0,$zero,0x002103B8
+      00210398  00000000  SLL $zero,$zero,0
+      0021039C  92290001  LBU $t1,1($s1)
+
+CALLER 0x00210EB4
+      00210E94  0C0834ED  JAL 0x0020D3B4
+      00210E98  0240202D  DADDU $a0,$s2,$zero
+      00210E9C  10400007  BEQ $v0,$zero,0x00210EBC
+      00210EA0  0280282D  DADDU $a1,$s4,$zero
+      00210EA4  0240202D  DADDU $a0,$s2,$zero
+      00210EA8  24060001  ADDIU $a2,$zero,1
+      00210EAC  0000382D  DADDU $a3,$zero,$zero
+      00210EB0  0000402D  DADDU $t0,$zero,$zero
+ >>>  00210EB4  0C0ABB4E  JAL 0x002AED38
+      00210EB8  0000482D  DADDU $t1,$zero,$zero
+      00210EBC  0C096817  JAL 0x0025A05C
+      00210EC0  8E640000  LW $a0,0($s3)
+      00210EC4  0C08401A  JAL 0x00210068
+      00210EC8  0040202D  DADDU $a0,$v0,$zero
+      00210ECC  0000202D  DADDU $a0,$zero,$zero
+      00210ED0  0C08748E  JAL 0x0021D238
+      00210ED4  46000506  COP1 rs=$s0 ft=$zero fs=$zero fd=20 fn=6
+
+CALLER 0x00211930
+      00211910  0C0834ED  JAL 0x0020D3B4
+      00211914  A38290E5  SB $v0,-28443($gp)
+      00211918  10400007  BEQ $v0,$zero,0x00211938
+      0021191C  0220202D  DADDU $a0,$s1,$zero
+      00211920  0240282D  DADDU $a1,$s2,$zero
+      00211924  24060001  ADDIU $a2,$zero,1
+      00211928  24070001  ADDIU $a3,$zero,1
+      0021192C  24080001  ADDIU $t0,$zero,1
+ >>>  00211930  0C0ABB4E  JAL 0x002AED38
+      00211934  24090001  ADDIU $t1,$zero,1
+      00211938  8E220000  LW $v0,0($s1)
+      0021193C  3C030002  LUI $v1,0x0002
+      00211940  8E24000C  LW $a0,12($s1)
+      00211944  00431025  OR $v0,$v0,$v1
+      00211948  AE220000  SW $v0,0($s1)
+      0021194C  3C010001  LUI $at,0x0001
+      00211950  00240821  ADDU $at,$at,$a0
+
+CALLER 0x00211F4C
+      00211F2C  00000000  SLL $zero,$zero,0
+      00211F30  8D420000  LW $v0,0($t2)
+      00211F34  30428000  ANDI $v0,$v0,0x8000
+      00211F38  14400004  BNE $v0,$zero,0x00211F4C
+      00211F3C  00000000  SLL $zero,$zero,0
+      00211F40  85420142  LH $v0,322($t2)
+      00211F44  50400005  BEQL $v0,$zero,0x00211F5C
+      00211F48  0000302D  DADDU $a2,$zero,$zero
+ >>>  00211F4C  0C0ABB4E  JAL 0x002AED38
+      00211F50  00000000  SLL $zero,$zero,0
+      00211F54  10000006  BEQ $zero,$zero,0x00211F70
+      00211F58  0260282D  DADDU $a1,$s3,$zero
+      00211F5C  0C0ABB4E  JAL 0x002AED38
+      00211F60  24090001  ADDIU $t1,$zero,1
+      00211F64  0C08DB8B  JAL 0x00236E2C
+      00211F68  0220202D  DADDU $a0,$s1,$zero
+      00211F6C  0260282D  DADDU $a1,$s3,$zero
+
+CALLER 0x00211F5C
+      00211F3C  00000000  SLL $zero,$zero,0
+      00211F40  85420142  LH $v0,322($t2)
+      00211F44  50400005  BEQL $v0,$zero,0x00211F5C
+      00211F48  0000302D  DADDU $a2,$zero,$zero
+      00211F4C  0C0ABB4E  JAL 0x002AED38
+      00211F50  00000000  SLL $zero,$zero,0
+      00211F54  10000006  BEQ $zero,$zero,0x00211F70
+      00211F58  0260282D  DADDU $a1,$s3,$zero
+ >>>  00211F5C  0C0ABB4E  JAL 0x002AED38
+      00211F60  24090001  ADDIU $t1,$zero,1
+      00211F64  0C08DB8B  JAL 0x00236E2C
+      00211F68  0220202D  DADDU $a0,$s1,$zero
+      00211F6C  0260282D  DADDU $a1,$s3,$zero
+      00211F70  0220202D  DADDU $a0,$s1,$zero
+      00211F74  0C0894C4  JAL 0x00225310
+      00211F78  24060001  ADDIU $a2,$zero,1
+      00211F7C  0220202D  DADDU $a0,$s1,$zero
+
+CALLER 0x0022ED80
+      0022ED60  8F85999C  LW $a1,-26212($gp)
+      0022ED64  0220202D  DADDU $a0,$s1,$zero
+      0022ED68  0000302D  DADDU $a2,$zero,$zero
+      0022ED6C  24070001  ADDIU $a3,$zero,1
+      0022ED70  3C010001  LUI $at,0x0001
+      0022ED74  00220821  ADDU $at,$at,$v0
+      0022ED78  AC25A118  SW $a1,-24296($at)
+      0022ED7C  0000402D  DADDU $t0,$zero,$zero
+ >>>  0022ED80  0C0ABB4E  JAL 0x002AED38
+      0022ED84  24090001  ADDIU $t1,$zero,1
+      0022ED88  24020001  ADDIU $v0,$zero,1
+      0022ED8C  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0022ED90  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      0022ED94  DFBF0010  OP=55 rs=$sp rt=$ra rd=$zero imm=16
+      0022ED98  03E00008  JR $ra
+      0022ED9C  27BD0020  ADDIU $sp,$sp,32
+      0022EDA0  27BDFEB0  ADDIU $sp,$sp,-336
+
+CALLER 0x00239798
+      00239778  0000382D  DADDU $a3,$zero,$zero
+      0023977C  03A21021  ADDU $v0,$sp,$v0
+      00239780  0000402D  DADDU $t0,$zero,$zero
+      00239784  8C420000  LW $v0,0($v0)
+      00239788  0000482D  DADDU $t1,$zero,$zero
+      0023978C  8C420008  LW $v0,8($v0)
+      00239790  90420004  LBU $v0,4($v0)
+      00239794  A062003B  SB $v0,59($v1)
+ >>>  00239798  0C0ABB4E  JAL 0x002AED38
+      0023979C  8E850000  LW $a1,0($s4)
+      002397A0  10000006  BEQ $zero,$zero,0x002397BC
+      002397A4  24020001  ADDIU $v0,$zero,1
+      002397A8  24630001  ADDIU $v1,$v1,1
+      002397AC  28620002  SLTI $v0,$v1,2
+      002397B0  1440FFD2  BNE $v0,$zero,0x002396FC
+      002397B4  26100001  ADDIU $s0,$s0,1
+      002397B8  0000102D  DADDU $v0,$zero,$zero
+
+CALLER 0x00241D2C
+      00241D0C  8E03000C  LW $v1,12($s0)
+      00241D10  0000302D  DADDU $a2,$zero,$zero
+      00241D14  0040282D  DADDU $a1,$v0,$zero
+      00241D18  24070001  ADDIU $a3,$zero,1
+      00241D1C  3C010001  LUI $at,0x0001
+      00241D20  00230821  ADDU $at,$at,$v1
+      00241D24  AC22A118  SW $v0,-24296($at)
+      00241D28  0000402D  DADDU $t0,$zero,$zero
+ >>>  00241D2C  0C0ABB4E  JAL 0x002AED38
+      00241D30  24090001  ADDIU $t1,$zero,1
+      00241D34  2404000C  ADDIU $a0,$zero,12
+      00241D38  0C0A6AF8  JAL 0x0029ABE0
+      00241D3C  240501BA  ADDIU $a1,$zero,442
+      00241D40  A38099A9  SB $zero,-26199($gp)
+      00241D44  3C04008F  LUI $a0,0x008F
+      00241D48  3C05008F  LUI $a1,0x008F
+      00241D4C  3C060024  LUI $a2,0x0024
+
+CALLER 0x0024FF08
+      0024FEE8  0200282D  DADDU $a1,$s0,$zero
+      0024FEEC  5440004C  BNEL $v0,$zero,0x00250020
+      0024FEF0  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0024FEF4  0200282D  DADDU $a1,$s0,$zero
+      0024FEF8  0240202D  DADDU $a0,$s2,$zero
+      0024FEFC  24060001  ADDIU $a2,$zero,1
+      0024FF00  24070001  ADDIU $a3,$zero,1
+      0024FF04  0000402D  DADDU $t0,$zero,$zero
+ >>>  0024FF08  0C0ABB4E  JAL 0x002AED38
+      0024FF0C  0000482D  DADDU $t1,$zero,$zero
+      0024FF10  8E430008  LW $v1,8($s2)
+      0024FF14  3C09008E  LUI $t1,0x008E
+      0024FF18  24040001  ADDIU $a0,$zero,1
+      0024FF1C  9062003A  LBU $v0,58($v1)
+      0024FF20  25291FD0  ADDIU $t1,$t1,8144
+      0024FF24  8C680014  LW $t0,20($v1)
+      0024FF28  24050001  ADDIU $a1,$zero,1
+
+CALLER 0x00258080
+      00258060  0C0A6AF8  JAL 0x0029ABE0
+      00258064  2405022A  ADDIU $a1,$zero,554
+      00258068  8F84999C  LW $a0,-26212($gp)
+      0025806C  0220282D  DADDU $a1,$s1,$zero
+      00258070  24060001  ADDIU $a2,$zero,1
+      00258074  0000382D  DADDU $a3,$zero,$zero
+      00258078  0000402D  DADDU $t0,$zero,$zero
+      0025807C  24090001  ADDIU $t1,$zero,1
+ >>>  00258080  0C0ABB4E  JAL 0x002AED38
+      00258084  3C1000F0  LUI $s0,0x00F0
+      00258088  0220202D  DADDU $a0,$s1,$zero
+      0025808C  8F85999C  LW $a1,-26212($gp)
+      00258090  0000382D  DADDU $a3,$zero,$zero
+      00258094  0000402D  DADDU $t0,$zero,$zero
+      00258098  24090001  ADDIU $t1,$zero,1
+      0025809C  24060001  ADDIU $a2,$zero,1
+      002580A0  0C0ABB4E  JAL 0x002AED38
+
+CALLER 0x002580A0
+      00258080  0C0ABB4E  JAL 0x002AED38
+      00258084  3C1000F0  LUI $s0,0x00F0
+      00258088  0220202D  DADDU $a0,$s1,$zero
+      0025808C  8F85999C  LW $a1,-26212($gp)
+      00258090  0000382D  DADDU $a3,$zero,$zero
+      00258094  0000402D  DADDU $t0,$zero,$zero
+      00258098  24090001  ADDIU $t1,$zero,1
+      0025809C  24060001  ADDIU $a2,$zero,1
+ >>>  002580A0  0C0ABB4E  JAL 0x002AED38
+      002580A4  3C150025  LUI $s5,0x0025
+      002580A8  8F83999C  LW $v1,-26212($gp)
+      002580AC  3C060002  LUI $a2,0x0002
+      002580B0  8E25000C  LW $a1,12($s1)
+      002580B4  8C620000  LW $v0,0($v1)
+      002580B8  0000902D  DADDU $s2,$zero,$zero
+      002580BC  8C64000C  LW $a0,12($v1)
+      002580C0  00461025  OR $v0,$v0,$a2
+
+CALLER 0x002592CC
+      002592AC  2404000A  ADDIU $a0,$zero,10
+      002592B0  0C0A6AF8  JAL 0x0029ABE0
+      002592B4  2405022A  ADDIU $a1,$zero,554
+      002592B8  8F84999C  LW $a0,-26212($gp)
+      002592BC  0220282D  DADDU $a1,$s1,$zero
+      002592C0  24060001  ADDIU $a2,$zero,1
+      002592C4  0000382D  DADDU $a3,$zero,$zero
+      002592C8  0000402D  DADDU $t0,$zero,$zero
+ >>>  002592CC  0C0ABB4E  JAL 0x002AED38
+      002592D0  24090001  ADDIU $t1,$zero,1
+      002592D4  0220202D  DADDU $a0,$s1,$zero
+      002592D8  8F85999C  LW $a1,-26212($gp)
+      002592DC  0000382D  DADDU $a3,$zero,$zero
+      002592E0  0000402D  DADDU $t0,$zero,$zero
+      002592E4  24090001  ADDIU $t1,$zero,1
+      002592E8  4480A000  COP1 rs=$a0 ft=$zero fs=$s4 fd=0 fn=0
+      002592EC  0C0ABB4E  JAL 0x002AED38
+
+CALLER 0x002592EC
+      002592CC  0C0ABB4E  JAL 0x002AED38
+      002592D0  24090001  ADDIU $t1,$zero,1
+      002592D4  0220202D  DADDU $a0,$s1,$zero
+      002592D8  8F85999C  LW $a1,-26212($gp)
+      002592DC  0000382D  DADDU $a3,$zero,$zero
+      002592E0  0000402D  DADDU $t0,$zero,$zero
+      002592E4  24090001  ADDIU $t1,$zero,1
+      002592E8  4480A000  COP1 rs=$a0 ft=$zero fs=$s4 fd=0 fn=0
+ >>>  002592EC  0C0ABB4E  JAL 0x002AED38
+      002592F0  24060001  ADDIU $a2,$zero,1
+      002592F4  8F83999C  LW $v1,-26212($gp)
+      002592F8  3C060002  LUI $a2,0x0002
+      002592FC  8E25000C  LW $a1,12($s1)
+      00259300  8C620000  LW $v0,0($v1)
+      00259304  3C150025  LUI $s5,0x0025
+      00259308  8C64000C  LW $a0,12($v1)
+      0025930C  24120077  ADDIU $s2,$zero,119
+
+CALLER 0x002BEBAC
+      002BEB8C  24090010  ADDIU $t1,$zero,16
+      002BEB90  8E420000  LW $v0,0($s2)
+      002BEB94  0441001C  REGIMM rs=$v0 rt=$at -> 0x002BEC08
+      002BEB98  8F84999C  LW $a0,-26212($gp)
+      002BEB9C  0240282D  DADDU $a1,$s2,$zero
+      002BEBA0  0000302D  DADDU $a2,$zero,$zero
+      002BEBA4  0000382D  DADDU $a3,$zero,$zero
+      002BEBA8  0000402D  DADDU $t0,$zero,$zero
+ >>>  002BEBAC  0C0ABB4E  JAL 0x002AED38
+      002BEBB0  24090001  ADDIU $t1,$zero,1
+      002BEBB4  0240202D  DADDU $a0,$s2,$zero
+      002BEBB8  8F85999C  LW $a1,-26212($gp)
+      002BEBBC  24060001  ADDIU $a2,$zero,1
+      002BEBC0  0000382D  DADDU $a3,$zero,$zero
+      002BEBC4  24080001  ADDIU $t0,$zero,1
+      002BEBC8  0C0ABB4E  JAL 0x002AED38
+      002BEBCC  24090001  ADDIU $t1,$zero,1
+
+CALLER 0x002BEBC8
+      002BEBA8  0000402D  DADDU $t0,$zero,$zero
+      002BEBAC  0C0ABB4E  JAL 0x002AED38
+      002BEBB0  24090001  ADDIU $t1,$zero,1
+      002BEBB4  0240202D  DADDU $a0,$s2,$zero
+      002BEBB8  8F85999C  LW $a1,-26212($gp)
+      002BEBBC  24060001  ADDIU $a2,$zero,1
+      002BEBC0  0000382D  DADDU $a3,$zero,$zero
+      002BEBC4  24080001  ADDIU $t0,$zero,1
+ >>>  002BEBC8  0C0ABB4E  JAL 0x002AED38
+      002BEBCC  24090001  ADDIU $t1,$zero,1
+      002BEBD0  0C0A96DB  JAL 0x002A5B6C
+      002BEBD4  00000000  SLL $zero,$zero,0
+      002BEBD8  0C0A9714  JAL 0x002A5C50
+      002BEBDC  0000202D  DADDU $a0,$zero,$zero
+      002BEBE0  26A2B220  ADDIU $v0,$s5,-19936
+      002BEBE4  8C431124  LW $v1,4388($v0)
+      002BEBE8  8C42111C  LW $v0,4380($v0)
+
+CALLER 0x002DAF6C
+      002DAF4C  0C0BD607  JAL 0x002F581C
+      002DAF50  03A0202D  DADDU $a0,$sp,$zero
+      002DAF54  AF82AD88  SW $v0,-21112($gp)
+      002DAF58  8F84999C  LW $a0,-26212($gp)
+      002DAF5C  0220282D  DADDU $a1,$s1,$zero
+      002DAF60  0000302D  DADDU $a2,$zero,$zero
+      002DAF64  24070001  ADDIU $a3,$zero,1
+      002DAF68  24080001  ADDIU $t0,$zero,1
+ >>>  002DAF6C  0C0ABB4E  JAL 0x002AED38
+      002DAF70  24090001  ADDIU $t1,$zero,1
+      002DAF74  2410000F  ADDIU $s0,$zero,15
+      002DAF78  8F82999C  LW $v0,-26212($gp)
+      002DAF7C  2610FFFF  ADDIU $s0,$s0,-1
+      002DAF80  C781845C  LWC1 ft=$at,-31652($gp)
+      002DAF84  24040019  ADDIU $a0,$zero,25
+      002DAF88  8C420008  LW $v0,8($v0)
+      002DAF8C  C440006C  LWC1 ft=$zero,108($v0)
+
+----- CALLERS OF 0x002AEE40 -----
+NO CALLER FOUND
+
+----- CALLERS OF 0x002AEEC4 -----
+CALL COUNT: 27
+
+CALLER 0x0020A188
+      0020A168  0C08DF33  JAL 0x00237CCC
+      0020A16C  0260282D  DADDU $a1,$s3,$zero
+      0020A170  10400009  BEQ $v0,$zero,0x0020A198
+      0020A174  8E430008  LW $v1,8($s2)
+      0020A178  8E620008  LW $v0,8($s3)
+      0020A17C  8C670014  LW $a3,20($v1)
+      0020A180  8C450014  LW $a1,20($v0)
+      0020A184  8C440010  LW $a0,16($v0)
+ >>>  0020A188  0C0ABBB1  JAL 0x002AEEC4
+      0020A18C  8C660010  LW $a2,16($v1)
+      0020A190  10000005  BEQ $zero,$zero,0x0020A1A8
+      0020A194  A38290E0  SB $v0,-28448($gp)
+      0020A198  9062003A  LBU $v0,58($v1)
+      0020A19C  24420004  ADDIU $v0,$v0,4
+      0020A1A0  30420007  ANDI $v0,$v0,0x0007
+      0020A1A4  A38290E0  SB $v0,-28448($gp)
+      0020A1A8  8E840000  LW $a0,0($s4)
+
+CALLER 0x0020A418
+      0020A3F8  8C470014  LW $a3,20($v0)
+      0020A3FC  10000006  BEQ $zero,$zero,0x0020A418
+      0020A400  8C460010  LW $a2,16($v0)
+      0020A404  8CE30008  LW $v1,8($a3)
+      0020A408  8C450014  LW $a1,20($v0)
+      0020A40C  8C670014  LW $a3,20($v1)
+      0020A410  8C440010  LW $a0,16($v0)
+      0020A414  8C660010  LW $a2,16($v1)
+ >>>  0020A418  0C0ABBB1  JAL 0x002AEEC4
+      0020A41C  00000000  SLL $zero,$zero,0
+      0020A420  1000000D  BEQ $zero,$zero,0x0020A458
+      0020A424  0040882D  DADDU $s1,$v0,$zero
+      0020A428  878390A8  LH $v1,-28504($gp)
+      0020A42C  2406FFFF  ADDIU $a2,$zero,-1
+      0020A430  BAE3EC33  SWR $v1,-5069($s7)
+      0020A434  28762E86  SLTI $s6,$v1,11910
+      0020A438  7AF3BE9A  OP=30 rs=$s7 rt=$s3 rd=$s7 imm=-16742
+
+CALLER 0x0020A9C0
+      0020A9A0  0040202D  DADDU $a0,$v0,$zero
+      0020A9A4  5040000A  BEQL $v0,$zero,0x0020A9D0
+      0020A9A8  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0020A9AC  8E020008  LW $v0,8($s0)
+      0020A9B0  8E230008  LW $v1,8($s1)
+      0020A9B4  8C450014  LW $a1,20($v0)
+      0020A9B8  8C670014  LW $a3,20($v1)
+      0020A9BC  8C440010  LW $a0,16($v0)
+ >>>  0020A9C0  0C0ABBB1  JAL 0x002AEEC4
+      0020A9C4  8C660010  LW $a2,16($v1)
+      0020A9C8  A38290E0  SB $v0,-28448($gp)
+      0020A9CC  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0020A9D0  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      0020A9D4  DFB20010  OP=55 rs=$sp rt=$s2 rd=$zero imm=16
+      0020A9D8  DFBF0018  OP=55 rs=$sp rt=$ra rd=$zero imm=24
+      0020A9DC  03E00008  JR $ra
+      0020A9E0  27BD0020  ADDIU $sp,$sp,32
+
+CALLER 0x0020A9EC
+      0020A9CC  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0020A9D0  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      0020A9D4  DFB20010  OP=55 rs=$sp rt=$s2 rd=$zero imm=16
+      0020A9D8  DFBF0018  OP=55 rs=$sp rt=$ra rd=$zero imm=24
+      0020A9DC  03E00008  JR $ra
+      0020A9E0  27BD0020  ADDIU $sp,$sp,32
+      0020A9E4  27BDFFF0  ADDIU $sp,$sp,-16
+      0020A9E8  FFBF0000  OP=63 rs=$sp rt=$ra rd=$zero imm=0
+ >>>  0020A9EC  0C0ABBB1  JAL 0x002AEEC4
+      0020A9F0  00000000  SLL $zero,$zero,0
+      0020A9F4  DFBF0000  OP=55 rs=$sp rt=$ra rd=$zero imm=0
+      0020A9F8  A78290A8  SH $v0,-28504($gp)
+      0020A9FC  03E00008  JR $ra
+      0020AA00  27BD0010  ADDIU $sp,$sp,16
+      0020AA04  27BDFF30  ADDIU $sp,$sp,-208
+      0020AA08  FFB10088  OP=63 rs=$sp rt=$s1 rd=$zero imm=136
+      0020AA0C  313100FF  ANDI $s1,$t1,0x00FF
+
+CALLER 0x0020BE70
+      0020BE50  324200FF  ANDI $v0,$s2,0x00FF
+      0020BE54  5040001B  BEQL $v0,$zero,0x0020BEC4
+      0020BE58  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0020BE5C  8E220008  LW $v0,8($s1)
+      0020BE60  8E030008  LW $v1,8($s0)
+      0020BE64  8C470014  LW $a3,20($v0)
+      0020BE68  8C650014  LW $a1,20($v1)
+      0020BE6C  8C640010  LW $a0,16($v1)
+ >>>  0020BE70  0C0ABBB1  JAL 0x002AEEC4
+      0020BE74  8C460010  LW $a2,16($v0)
+      0020BE78  0040282D  DADDU $a1,$v0,$zero
+      0020BE7C  93828F01  LBU $v0,-28927($gp)
+      0020BE80  1040000D  BEQ $v0,$zero,0x0020BEB8
+      0020BE84  8E040008  LW $a0,8($s0)
+      0020BE88  90830198  LBU $v1,408($a0)
+      0020BE8C  240200AA  ADDIU $v0,$zero,170
+      0020BE90  54620005  BNEL $v1,$v0,0x0020BEA8
+
+CALLER 0x0020D59C
+      0020D57C  0C0B3934  JAL 0x002CE4D0
+      0020D580  AFA6016C  SW $a2,364($sp)
+      0020D584  10400008  BEQ $v0,$zero,0x0020D5A8
+      0020D588  8F82999C  LW $v0,-26212($gp)
+      0020D58C  02C0202D  DADDU $a0,$s6,$zero
+      0020D590  02A0282D  DADDU $a1,$s5,$zero
+      0020D594  8C420008  LW $v0,8($v0)
+      0020D598  8C470014  LW $a3,20($v0)
+ >>>  0020D59C  0C0ABBB1  JAL 0x002AEEC4
+      0020D5A0  8C460010  LW $a2,16($v0)
+      0020D5A4  A38290E0  SB $v0,-28448($gp)
+      0020D5A8  24070001  ADDIU $a3,$zero,1
+      0020D5AC  AFA70158  SW $a3,344($sp)
+      0020D5B0  24130001  ADDIU $s3,$zero,1
+      0020D5B4  3C080060  LUI $t0,0x0060
+      0020D5B8  00131080  SLL $v0,$s3,2
+      0020D5BC  25036180  ADDIU $v1,$t0,24960
+
+CALLER 0x0020F060
+      0020F040  1200000B  BEQ $s0,$zero,0x0020F070
+      0020F044  878390A8  LH $v1,-28504($gp)
+      0020F048  1211000A  BEQ $s0,$s1,0x0020F074
+      0020F04C  2406FFFF  ADDIU $a2,$zero,-1
+      0020F050  8E020008  LW $v0,8($s0)
+      0020F054  8D060010  LW $a2,16($t0)
+      0020F058  8D070014  LW $a3,20($t0)
+      0020F05C  8C450014  LW $a1,20($v0)
+ >>>  0020F060  0C0ABBB1  JAL 0x002AEEC4
+      0020F064  8C440010  LW $a0,16($v0)
+      0020F068  1000000A  BEQ $zero,$zero,0x0020F094
+      0020F06C  0040302D  DADDU $a2,$v0,$zero
+      0020F070  2406FFFF  ADDIU $a2,$zero,-1
+      0020F074  14660005  BNE $v1,$a2,0x0020F08C
+      0020F078  2402FFFE  ADDIU $v0,$zero,-2
+      0020F07C  9102003A  LBU $v0,58($t0)
+      0020F080  24420004  ADDIU $v0,$v0,4
+
+CALLER 0x00210C94
+      00210C74  0240202D  DADDU $a0,$s2,$zero
+      00210C78  0C08DFA5  JAL 0x00237E94
+      00210C7C  0000282D  DADDU $a1,$zero,$zero
+      00210C80  8E820008  LW $v0,8($s4)
+      00210C84  8E430008  LW $v1,8($s2)
+      00210C88  8C450014  LW $a1,20($v0)
+      00210C8C  8C670014  LW $a3,20($v1)
+      00210C90  8C440010  LW $a0,16($v0)
+ >>>  00210C94  0C0ABBB1  JAL 0x002AEEC4
+      00210C98  8C660010  LW $a2,16($v1)
+      00210C9C  12200010  BEQ $s1,$zero,0x00210CE0
+      00210CA0  AFA20080  SW $v0,128($sp)
+      00210CA4  8E660000  LW $a2,0($s3)
+      00210CA8  0280202D  DADDU $a0,$s4,$zero
+      00210CAC  0C083EB3  JAL 0x0020FACC
+      00210CB0  0240282D  DADDU $a1,$s2,$zero
+      00210CB4  5040000B  BEQL $v0,$zero,0x00210CE4
+
+CALLER 0x0021E290
+      0021E270  10400003  BEQ $v0,$zero,0x0021E280
+      0021E274  8FB20010  LW $s2,16($sp)
+      0021E278  12800071  BEQ $s4,$zero,0x0021E440
+      0021E27C  00000000  SLL $zero,$zero,0
+      0021E280  8FB30014  LW $s3,20($sp)
+      0021E284  8FA60540  LW $a2,1344($sp)
+      0021E288  0240202D  DADDU $a0,$s2,$zero
+      0021E28C  8FA70544  LW $a3,1348($sp)
+ >>>  0021E290  0C0ABBB1  JAL 0x002AEEC4
+      0021E294  0260282D  DADDU $a1,$s3,$zero
+      0021E298  3C03008E  LUI $v1,0x008E
+      0021E29C  24631FD0  ADDIU $v1,$v1,8144
+      0021E2A0  000210C0  SLL $v0,$v0,3
+      0021E2A4  00622021  ADDU $a0,$v1,$v0
+      0021E2A8  00431021  ADDU $v0,$v0,$v1
+      0021E2AC  8C430000  LW $v1,0($v0)
+      0021E2B0  27B00070  ADDIU $s0,$sp,112
+
+CALLER 0x0023497C
+      0023495C  8C500020  LW $s0,32($v0)
+      00234960  8C850014  LW $a1,20($a0)
+      00234964  8E020008  LW $v0,8($s0)
+      00234968  3C010001  LUI $at,0x0001
+      0023496C  00230821  ADDU $at,$at,$v1
+      00234970  AC30A118  SW $s0,-24296($at)
+      00234974  8C470014  LW $a3,20($v0)
+      00234978  8C460010  LW $a2,16($v0)
+ >>>  0023497C  0C0ABBB1  JAL 0x002AEEC4
+      00234980  8C840010  LW $a0,16($a0)
+      00234984  0220202D  DADDU $a0,$s1,$zero
+      00234988  0040282D  DADDU $a1,$v0,$zero
+      0023498C  0C08E07A  JAL 0x002381E8
+      00234990  0000302D  DADDU $a2,$zero,$zero
+      00234994  2404000C  ADDIU $a0,$zero,12
+      00234998  0C0A6AF8  JAL 0x0029ABE0
+      0023499C  240501ED  ADDIU $a1,$zero,493
+
+CALLER 0x002363F4
+      002363D4  50600016  BEQL $v1,$zero,0x00236430
+      002363D8  0240282D  DADDU $a1,$s2,$zero
+      002363DC  2EE20003  SLTIU $v0,$s7,3
+      002363E0  50400013  BEQL $v0,$zero,0x00236430
+      002363E4  0240282D  DADDU $a1,$s2,$zero
+      002363E8  0240382D  DADDU $a3,$s2,$zero
+      002363EC  0260302D  DADDU $a2,$s3,$zero
+      002363F0  02C0202D  DADDU $a0,$s6,$zero
+ >>>  002363F4  0C0ABBB1  JAL 0x002AEEC4
+      002363F8  02A0282D  DADDU $a1,$s5,$zero
+      002363FC  0040802D  DADDU $s0,$v0,$zero
+      00236400  8FA40000  LW $a0,0($sp)
+      00236404  0200282D  DADDU $a1,$s0,$zero
+      00236408  0C09B91F  JAL 0x0026E47C
+      0023640C  26100004  ADDIU $s0,$s0,4
+      00236410  26230002  ADDIU $v1,$s1,2
+      00236414  0062880B  SPECIAL fn=11 rs=$v1 rt=$v0 rd=$s1 sa=0
+
+CALLER 0x0023AD28
+      0023AD08  00541021  ADDU $v0,$v0,$s4
+      0023AD0C  0C098D59  JAL 0x00263564
+      0023AD10  AFA20004  SW $v0,4($sp)
+      0023AD14  8E430008  LW $v1,8($s2)
+      0023AD18  8E220008  LW $v0,8($s1)
+      0023AD1C  8C670014  LW $a3,20($v1)
+      0023AD20  8C660010  LW $a2,16($v1)
+      0023AD24  8C450014  LW $a1,20($v0)
+ >>>  0023AD28  0C0ABBB1  JAL 0x002AEEC4
+      0023AD2C  8C440010  LW $a0,16($v0)
+      0023AD30  24040001  ADDIU $a0,$zero,1
+      0023AD34  03A0302D  DADDU $a2,$sp,$zero
+      0023AD38  0040402D  DADDU $t0,$v0,$zero
+      0023AD3C  0000482D  DADDU $t1,$zero,$zero
+      0023AD40  0000502D  DADDU $t2,$zero,$zero
+      0023AD44  0220282D  DADDU $a1,$s1,$zero
+      0023AD48  0C0AE85B  JAL 0x002BA16C
+
+CALLER 0x0024A47C
+      0024A45C  00021080  SLL $v0,$v0,2
+      0024A460  90C301A0  LBU $v1,416($a2)
+      0024A464  00501021  ADDU $v0,$v0,$s0
+      0024A468  8C420000  LW $v0,0($v0)
+      0024A46C  8CC40010  LW $a0,16($a2)
+      0024A470  10600011  BEQ $v1,$zero,0x0024A4B8
+      0024A474  8CC50014  LW $a1,20($a2)
+      0024A478  8CC701C0  LW $a3,448($a2)
+ >>>  0024A47C  0C0ABBB1  JAL 0x002AEEC4
+      0024A480  8CC601BC  LW $a2,444($a2)
+      0024A484  10000011  BEQ $zero,$zero,0x0024A4CC
+      0024A488  0040A82D  DADDU $s5,$v0,$zero
+      0024A48C  0220202D  DADDU $a0,$s1,$zero
+      0024A490  10000003  BEQ $zero,$zero,0x0024A4A0
+      0024A494  240600B2  ADDIU $a2,$zero,178
+      0024A498  0220202D  DADDU $a0,$s1,$zero
+      0024A49C  240600B4  ADDIU $a2,$zero,180
+
+CALLER 0x0024A4C0
+      0024A4A0  0C08939A  JAL 0x00224E68
+      0024A4A4  00000000  SLL $zero,$zero,0
+      0024A4A8  8E230008  LW $v1,8($s1)
+      0024A4AC  24020002  ADDIU $v0,$zero,2
+      0024A4B0  10000033  BEQ $zero,$zero,0x0024A580
+      0024A4B4  A062019C  SB $v0,412($v1)
+      0024A4B8  8C420008  LW $v0,8($v0)
+      0024A4BC  8C470014  LW $a3,20($v0)
+ >>>  0024A4C0  0C0ABBB1  JAL 0x002AEEC4
+      0024A4C4  8C460010  LW $a2,16($v0)
+      0024A4C8  0040A82D  DADDU $s5,$v0,$zero
+      0024A4CC  0260A02D  DADDU $s4,$s3,$zero
+      0024A4D0  0000B02D  DADDU $s6,$zero,$zero
+      0024A4D4  8E820000  LW $v0,0($s4)
+      0024A4D8  26940004  ADDIU $s4,$s4,4
+      0024A4DC  3C03008E  LUI $v1,0x008E
+      0024A4E0  8E290008  LW $t1,8($s1)
+
+CALLER 0x0024BCC8
+      0024BCA8  FFFFFF00  OP=63 rs=$ra rt=$ra rd=$ra imm=-256
+      0024BCAC  FFFFFFFF  OP=63 rs=$ra rt=$ra rd=$ra imm=-1
+      0024BCB0  00FFFFFF  DSRA32 $ra,$ra,31
+      0024BCB4  02570400  SLL $zero,$s7,16
+      0024BCB8  00080000  SLL $zero,$t0,0
+      0024BCBC  00080000  SLL $zero,$t0,0
+      0024BCC0  8D040010  LW $a0,16($t0)
+      0024BCC4  8C470014  LW $a3,20($v0)
+ >>>  0024BCC8  0C0ABBB1  JAL 0x002AEEC4
+      0024BCCC  8C460010  LW $a2,16($v0)
+      0024BCD0  8E030008  LW $v1,8($s0)
+      0024BCD4  0000302D  DADDU $a2,$zero,$zero
+      0024BCD8  0200202D  DADDU $a0,$s0,$zero
+      0024BCDC  A062010F  SB $v0,271($v1)
+      0024BCE0  8E020008  LW $v0,8($s0)
+      0024BCE4  0C08E07A  JAL 0x002381E8
+      0024BCE8  9045010F  LBU $a1,271($v0)
+
+CALLER 0x0024E1F0
+      0024E1D0  00000000  SLL $zero,$zero,0
+      0024E1D4  1280005F  BEQ $s4,$zero,0x0024E354
+      0024E1D8  00000000  SLL $zero,$zero,0
+      0024E1DC  8E420008  LW $v0,8($s2)
+      0024E1E0  8E630008  LW $v1,8($s3)
+      0024E1E4  8C450014  LW $a1,20($v0)
+      0024E1E8  8C670014  LW $a3,20($v1)
+      0024E1EC  8C440010  LW $a0,16($v0)
+ >>>  0024E1F0  0C0ABBB1  JAL 0x002AEEC4
+      0024E1F4  8C660010  LW $a2,16($v1)
+      0024E1F8  0240202D  DADDU $a0,$s2,$zero
+      0024E1FC  0260282D  DADDU $a1,$s3,$zero
+      0024E200  0040302D  DADDU $a2,$v0,$zero
+      0024E204  1000000E  BEQ $zero,$zero,0x0024E240
+      0024E208  0000382D  DADDU $a3,$zero,$zero
+      0024E20C  12800051  BEQ $s4,$zero,0x0024E354
+      0024E210  00000000  SLL $zero,$zero,0
+
+CALLER 0x0024E228
+      0024E208  0000382D  DADDU $a3,$zero,$zero
+      0024E20C  12800051  BEQ $s4,$zero,0x0024E354
+      0024E210  00000000  SLL $zero,$zero,0
+      0024E214  8E420008  LW $v0,8($s2)
+      0024E218  8E630008  LW $v1,8($s3)
+      0024E21C  8C450014  LW $a1,20($v0)
+      0024E220  8C670014  LW $a3,20($v1)
+      0024E224  8C440010  LW $a0,16($v0)
+ >>>  0024E228  0C0ABBB1  JAL 0x002AEEC4
+      0024E22C  8C660010  LW $a2,16($v1)
+      0024E230  0240202D  DADDU $a0,$s2,$zero
+      0024E234  0260282D  DADDU $a1,$s3,$zero
+      0024E238  0040302D  DADDU $a2,$v0,$zero
+      0024E23C  24070001  ADDIU $a3,$zero,1
+      0024E240  0C098096  JAL 0x00260258
+      0024E244  24080001  ADDIU $t0,$zero,1
+      0024E248  10000042  BEQ $zero,$zero,0x0024E354
+
+CALLER 0x0024E3E4
+      0024E3C4  0003183C  DSLL32 $v1,$v1,0
+      0024E3C8  00031C3A  DSRL $v1,$v1,16
+      0024E3CC  00431024  AND $v0,$v0,$v1
+      0024E3D0  5440000D  BNEL $v0,$zero,0x0024E408
+      0024E3D4  DFB20020  OP=55 rs=$sp rt=$s2 rd=$zero imm=32
+      0024E3D8  8C860010  LW $a2,16($a0)
+      0024E3DC  8D050014  LW $a1,20($t0)
+      0024E3E0  8C870014  LW $a3,20($a0)
+ >>>  0024E3E4  0C0ABBB1  JAL 0x002AEEC4
+      0024E3E8  8D040010  LW $a0,16($t0)
+      0024E3EC  0260202D  DADDU $a0,$s3,$zero
+      0024E3F0  0040282D  DADDU $a1,$v0,$zero
+      0024E3F4  0C08E07A  JAL 0x002381E8
+      0024E3F8  24060001  ADDIU $a2,$zero,1
+      0024E3FC  DFB00010  OP=55 rs=$sp rt=$s0 rd=$zero imm=16
+      0024E400  DFB10018  OP=55 rs=$sp rt=$s1 rd=$zero imm=24
+      0024E404  DFB20020  OP=55 rs=$sp rt=$s2 rd=$zero imm=32
+
+CALLER 0x0027D454
+      0027D434  0200202D  DADDU $a0,$s0,$zero
+      0027D438  10400017  BEQ $v0,$zero,0x0027D498
+      0027D43C  8F82999C  LW $v0,-26212($gp)
+      0027D440  8E030008  LW $v1,8($s0)
+      0027D444  8C420008  LW $v0,8($v0)
+      0027D448  8C670014  LW $a3,20($v1)
+      0027D44C  8C440010  LW $a0,16($v0)
+      0027D450  8C660010  LW $a2,16($v1)
+ >>>  0027D454  0C0ABBB1  JAL 0x002AEEC4
+      0027D458  8C450014  LW $a1,20($v0)
+      0027D45C  92A30002  LBU $v1,2($s5)
+      0027D460  00621823  SUBU $v1,$v1,$v0
+      0027D464  30620004  ANDI $v0,$v1,0x0004
+      0027D468  10400003  BEQ $v0,$zero,0x0027D478
+      0027D46C  2404FFF8  ADDIU $a0,$zero,-8
+      0027D470  10000002  BEQ $zero,$zero,0x0027D47C
+      0027D474  00641825  OR $v1,$v1,$a0
+
+CALLER 0x0027D514
+      0027D4F4  9042003A  LBU $v0,58($v0)
+      0027D4F8  54430018  BNEL $v0,$v1,0x0027D55C
+      0027D4FC  26520001  ADDIU $s2,$s2,1
+      0027D500  8F82999C  LW $v0,-26212($gp)
+      0027D504  0200302D  DADDU $a2,$s0,$zero
+      0027D508  0220382D  DADDU $a3,$s1,$zero
+      0027D50C  8C420008  LW $v0,8($v0)
+      0027D510  8C440010  LW $a0,16($v0)
+ >>>  0027D514  0C0ABBB1  JAL 0x002AEEC4
+      0027D518  8C450014  LW $a1,20($v0)
+      0027D51C  92A30002  LBU $v1,2($s5)
+      0027D520  00621823  SUBU $v1,$v1,$v0
+      0027D524  30620004  ANDI $v0,$v1,0x0004
+      0027D528  10400003  BEQ $v0,$zero,0x0027D538
+      0027D52C  2404FFF8  ADDIU $a0,$zero,-8
+      0027D530  10000002  BEQ $zero,$zero,0x0027D53C
+      0027D534  00641825  OR $v1,$v1,$a0
+
+CALLER 0x0027D5D4
+      0027D5B4  8E030008  LW $v1,8($s0)
+      0027D5B8  24426180  ADDIU $v0,$v0,24960
+      0027D5BC  00821021  ADDU $v0,$a0,$v0
+      0027D5C0  8C640010  LW $a0,16($v1)
+      0027D5C4  8C420000  LW $v0,0($v0)
+      0027D5C8  8C650014  LW $a1,20($v1)
+      0027D5CC  8C420008  LW $v0,8($v0)
+      0027D5D0  8C470014  LW $a3,20($v0)
+ >>>  0027D5D4  0C0ABBB1  JAL 0x002AEEC4
+      0027D5D8  8C460010  LW $a2,16($v0)
+      0027D5DC  0200202D  DADDU $a0,$s0,$zero
+      0027D5E0  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      0027D5E4  0040282D  DADDU $a1,$v0,$zero
+      0027D5E8  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      0027D5EC  0000302D  DADDU $a2,$zero,$zero
+      0027D5F0  DFB20010  OP=55 rs=$sp rt=$s2 rd=$zero imm=16
+      0027D5F4  DFB30018  OP=55 rs=$sp rt=$s3 rd=$zero imm=24
+
+CALLER 0x0027D6E8
+      0027D6C8  0200202D  DADDU $a0,$s0,$zero
+      0027D6CC  1040000A  BEQ $v0,$zero,0x0027D6F8
+      0027D6D0  8F82999C  LW $v0,-26212($gp)
+      0027D6D4  8E030008  LW $v1,8($s0)
+      0027D6D8  8C420008  LW $v0,8($v0)
+      0027D6DC  8C670014  LW $a3,20($v1)
+      0027D6E0  8C450014  LW $a1,20($v0)
+      0027D6E4  8C440010  LW $a0,16($v0)
+ >>>  0027D6E8  0C0ABBB1  JAL 0x002AEEC4
+      0027D6EC  8C660010  LW $a2,16($v1)
+      0027D6F0  10510006  BEQ $v0,$s1,0x0027D70C
+      0027D6F4  24020028  ADDIU $v0,$zero,40
+      0027D6F8  26520001  ADDIU $s2,$s2,1
+      0027D6FC  2A420028  SLTI $v0,$s2,40
+      0027D700  1440FFE0  BNE $v0,$zero,0x0027D684
+      0027D704  00121080  SLL $v0,$s2,2
+      0027D708  24020028  ADDIU $v0,$zero,40
+
+CALLER 0x002AD170
+      002AD150  AFB00000  SW $s0,0($sp)
+      002AD154  AFA20018  SW $v0,24($sp)
+      002AD158  0C0865EF  JAL 0x002197BC
+      002AD15C  AFA00008  SW $zero,8($sp)
+      002AD160  8E620008  LW $v0,8($s3)
+      002AD164  8E25000C  LW $a1,12($s1)
+      002AD168  8C470014  LW $a3,20($v0)
+      002AD16C  8E240008  LW $a0,8($s1)
+ >>>  002AD170  0C0ABBB1  JAL 0x002AEEC4
+      002AD174  8C460010  LW $a2,16($v0)
+      002AD178  24040147  ADDIU $a0,$zero,327
+      002AD17C  8FA50030  LW $a1,48($sp)
+      002AD180  8FA60034  LW $a2,52($sp)
+      002AD184  0C0A541A  JAL 0x00295068
+      002AD188  A78290A8  SH $v0,-28504($gp)
+      002AD18C  0000202D  DADDU $a0,$zero,$zero
+      002AD190  878790A8  LH $a3,-28504($gp)
+
+CALLER 0x002C8C94
+      002C8C74  8D440010  LW $a0,16($t2)
+      002C8C78  54C40006  BNEL $a2,$a0,0x002C8C94
+      002C8C7C  8D450014  LW $a1,20($t2)
+      002C8C80  8D4301C8  LW $v1,456($t2)
+      002C8C84  8D420014  LW $v0,20($t2)
+      002C8C88  50620025  BEQL $v1,$v0,0x002C8D20
+      002C8C8C  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      002C8C90  8D450014  LW $a1,20($t2)
+ >>>  002C8C94  0C0ABBB1  JAL 0x002AEEC4
+      002C8C98  8D4701C8  LW $a3,456($t2)
+      002C8C9C  0200202D  DADDU $a0,$s0,$zero
+      002C8CA0  0040282D  DADDU $a1,$v0,$zero
+      002C8CA4  0C08E0A1  JAL 0x00238284
+      002C8CA8  0240302D  DADDU $a2,$s2,$zero
+      002C8CAC  1000001C  BEQ $zero,$zero,0x002C8D20
+      002C8CB0  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      002C8CB4  54E00006  BNEL $a3,$zero,0x002C8CD0
+
+CALLER 0x002C8D04
+      002C8CE4  8E040008  LW $a0,8($s0)
+      002C8CE8  DCC30010  OP=55 rs=$a2 rt=$v1 rd=$zero imm=16
+      002C8CEC  DC820010  OP=55 rs=$a0 rt=$v0 rd=$zero imm=16
+      002C8CF0  5043000B  BEQL $v0,$v1,0x002C8D20
+      002C8CF4  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      002C8CF8  8C850014  LW $a1,20($a0)
+      002C8CFC  8CC70014  LW $a3,20($a2)
+      002C8D00  8C840010  LW $a0,16($a0)
+ >>>  002C8D04  0C0ABBB1  JAL 0x002AEEC4
+      002C8D08  8CC60010  LW $a2,16($a2)
+      002C8D0C  0200202D  DADDU $a0,$s0,$zero
+      002C8D10  0040282D  DADDU $a1,$v0,$zero
+      002C8D14  0C08E0A1  JAL 0x00238284
+      002C8D18  0240302D  DADDU $a2,$s2,$zero
+      002C8D1C  DFB00000  OP=55 rs=$sp rt=$s0 rd=$zero imm=0
+      002C8D20  DFB10008  OP=55 rs=$sp rt=$s1 rd=$zero imm=8
+      002C8D24  DFB20010  OP=55 rs=$sp rt=$s2 rd=$zero imm=16
+
+CALLER 0x002D0CA4
+      002D0C84  8F82999C  LW $v0,-26212($gp)
+      002D0C88  1220000A  BEQ $s1,$zero,0x002D0CB4
+      002D0C8C  00000000  SLL $zero,$zero,0
+      002D0C90  8E220008  LW $v0,8($s1)
+      002D0C94  8E430008  LW $v1,8($s2)
+      002D0C98  8C450014  LW $a1,20($v0)
+      002D0C9C  8C670014  LW $a3,20($v1)
+      002D0CA0  8C440010  LW $a0,16($v0)
+ >>>  002D0CA4  0C0ABBB1  JAL 0x002AEEC4
+      002D0CA8  8C660010  LW $a2,16($v1)
+      002D0CAC  0040982D  DADDU $s3,$v0,$zero
+      002D0CB0  8F82999C  LW $v0,-26212($gp)
+      002D0CB4  12220025  BEQ $s1,$v0,0x002D0D4C
+      002D0CB8  27B000A0  ADDIU $s0,$sp,160
+      002D0CBC  0C0B3851  JAL 0x002CE144
+      002D0CC0  00000000  SLL $zero,$zero,0
+      002D0CC4  0C0B3883  JAL 0x002CE20C
+
+CALLER 0x002E6950
+      002E6930  26730001  ADDIU $s3,$s3,1
+      002E6934  8CA50014  LW $a1,20($a1)
+      002E6938  8CE70014  LW $a3,20($a3)
+      002E693C  00A71023  SUBU $v0,$a1,$a3
+      002E6940  24420001  ADDIU $v0,$v0,1
+      002E6944  2C420003  SLTIU $v0,$v0,3
+      002E6948  5040000D  BEQL $v0,$zero,0x002E6980
+      002E694C  26730001  ADDIU $s3,$s3,1
+ >>>  002E6950  0C0ABBB1  JAL 0x002AEEC4
+      002E6954  00000000  SLL $zero,$zero,0
+      002E6958  0240202D  DADDU $a0,$s2,$zero
+      002E695C  0040882D  DADDU $s1,$v0,$zero
+      002E6960  0C08F1D4  JAL 0x0023C750
+      002E6964  0220282D  DADDU $a1,$s1,$zero
+      002E6968  10400005  BEQ $v0,$zero,0x002E6980
+      002E696C  26730001  ADDIU $s3,$s3,1
+      002E6970  AED10000  SW $s1,0($s6)
+
+----- CALLERS OF 0x002AEF64 -----
+CALL COUNT: 12
+
+CALLER 0x0023492C
+      0023490C  E7A10324  SWC1 ft=$at,804($sp)
+      00234910  C4400008  LWC1 ft=$zero,8($v0)
+      00234914  A3A00315  SB $zero,789($sp)
+      00234918  46001081  COP1 rs=$s0 ft=$zero fs=$v0 fd=2 fn=1
+      0023491C  AF80ACA0  SW $zero,-21344($gp)
+      00234920  8C670014  LW $a3,20($v1)
+      00234924  8C660010  LW $a2,16($v1)
+      00234928  AF80ACA4  SW $zero,-21340($gp)
+ >>>  0023492C  0C0ABBD9  JAL 0x002AEF64
+      00234930  E7A20328  SWC1 ft=$v0,808($sp)
+      00234934  1000003C  BEQ $zero,$zero,0x00234A28
+      00234938  0040A02D  DADDU $s4,$v0,$zero
+      0023493C  0260202D  DADDU $a0,$s3,$zero
+      00234940  0000282D  DADDU $a1,$zero,$zero
+      00234944  0C09CA3E  JAL 0x002728F8
+      00234948  A3A00330  SB $zero,816($sp)
+      0023494C  00021080  SLL $v0,$v0,2
+
+CALLER 0x0023AB50
+      0023AB30  C4600004  LWC1 ft=$zero,4($v1)
+      0023AB34  46000841  COP1 rs=$s0 ft=$zero fs=$at fd=1 fn=1
+      0023AB38  E7A10264  SWC1 ft=$at,612($sp)
+      0023AB3C  C4600008  LWC1 ft=$zero,8($v1)
+      0023AB40  AF80ACA0  SW $zero,-21344($gp)
+      0023AB44  46001081  COP1 rs=$s0 ft=$zero fs=$v0 fd=2 fn=1
+      0023AB48  AF80ACA4  SW $zero,-21340($gp)
+      0023AB4C  E7A20268  SWC1 ft=$v0,616($sp)
+ >>>  0023AB50  0C0ABBD9  JAL 0x002AEF64
+      0023AB54  9048003A  LBU $t0,58($v0)
+      0023AB58  0240202D  DADDU $a0,$s2,$zero
+      0023AB5C  97899020  LHU $t1,-28640($gp)
+      0023AB60  03A0282D  DADDU $a1,$sp,$zero
+      0023AB64  978A9030  LHU $t2,-28624($gp)
+      0023AB68  0040382D  DADDU $a3,$v0,$zero
+      0023AB6C  0000402D  DADDU $t0,$zero,$zero
+      0023AB70  0C0ACF53  JAL 0x002B3D4C
+
+CALLER 0x0024F408
+      0024F3E8  E7A10284  SWC1 ft=$at,644($sp)
+      0024F3EC  C4400008  LWC1 ft=$zero,8($v0)
+      0024F3F0  A3A00275  SB $zero,629($sp)
+      0024F3F4  46001081  COP1 rs=$s0 ft=$zero fs=$v0 fd=2 fn=1
+      0024F3F8  AF80ACA0  SW $zero,-21344($gp)
+      0024F3FC  8C670014  LW $a3,20($v1)
+      0024F400  8C660010  LW $a2,16($v1)
+      0024F404  AF80ACA4  SW $zero,-21340($gp)
+ >>>  0024F408  0C0ABBD9  JAL 0x002AEF64
+      0024F40C  E7A20288  SWC1 ft=$v0,648($sp)
+      0024F410  10000020  BEQ $zero,$zero,0x0024F494
+      0024F414  0040902D  DADDU $s2,$v0,$zero
+      0024F418  24020001  ADDIU $v0,$zero,1
+      0024F41C  24040842  ADDIU $a0,$zero,2114
+      0024F420  A3A2026B  SB $v0,619($sp)
+      0024F424  A3A2026D  SB $v0,621($sp)
+      0024F428  A3A20269  SB $v0,617($sp)
+
+CALLER 0x0026E5E4
+      0026E5C4  A3A00250  SB $zero,592($sp)
+      0026E5C8  A3A00251  SB $zero,593($sp)
+      0026E5CC  A3A00252  SB $zero,594($sp)
+      0026E5D0  A3A00255  SB $zero,597($sp)
+      0026E5D4  A7A20246  SH $v0,582($sp)
+      0026E5D8  8CC70014  LW $a3,20($a2)
+      0026E5DC  8CC60010  LW $a2,16($a2)
+      0026E5E0  AF80ACA0  SW $zero,-21344($gp)
+ >>>  0026E5E4  0C0ABBD9  JAL 0x002AEF64
+      0026E5E8  AF80ACA4  SW $zero,-21340($gp)
+      0026E5EC  97899020  LHU $t1,-28640($gp)
+      0026E5F0  0040382D  DADDU $a3,$v0,$zero
+      0026E5F4  978A9030  LHU $t2,-28624($gp)
+      0026E5F8  03A0282D  DADDU $a1,$sp,$zero
+      0026E5FC  0000402D  DADDU $t0,$zero,$zero
+      0026E600  0220202D  DADDU $a0,$s1,$zero
+      0026E604  0C0ACF53  JAL 0x002B3D4C
+
+CALLER 0x0026E928
+      0026E908  A3A0005C  SB $zero,92($sp)
+      0026E90C  A3A0005D  SB $zero,93($sp)
+      0026E910  A3A0005F  SB $zero,95($sp)
+      0026E914  A3A00065  SB $zero,101($sp)
+      0026E918  AF80ACA0  SW $zero,-21344($gp)
+      0026E91C  8CC70014  LW $a3,20($a2)
+      0026E920  9108003A  LBU $t0,58($t0)
+      0026E924  8CC60010  LW $a2,16($a2)
+ >>>  0026E928  0C0ABBD9  JAL 0x002AEF64
+      0026E92C  AF80ACA4  SW $zero,-21340($gp)
+      0026E930  8E420008  LW $v0,8($s2)
+      0026E934  97899020  LHU $t1,-28640($gp)
+      0026E938  0000402D  DADDU $t0,$zero,$zero
+      0026E93C  9047003A  LBU $a3,58($v0)
+      0026E940  0240202D  DADDU $a0,$s2,$zero
+      0026E944  978A9030  LHU $t2,-28624($gp)
+      0026E948  0260282D  DADDU $a1,$s3,$zero
+
+CALLER 0x002A35F0
+      002A35D0  A3A00262  SB $zero,610($sp)
+      002A35D4  A3A00265  SB $zero,613($sp)
+      002A35D8  E7A30248  SWC1 ft=$v1,584($sp)
+      002A35DC  8C620008  LW $v0,8($v1)
+      002A35E0  AF80ACA0  SW $zero,-21344($gp)
+      002A35E4  9048003A  LBU $t0,58($v0)
+      002A35E8  8C460010  LW $a2,16($v0)
+      002A35EC  8C470014  LW $a3,20($v0)
+ >>>  002A35F0  0C0ABBD9  JAL 0x002AEF64
+      002A35F4  AF80ACA4  SW $zero,-21340($gp)
+      002A35F8  8F84999C  LW $a0,-26212($gp)
+      002A35FC  97899020  LHU $t1,-28640($gp)
+      002A3600  0040382D  DADDU $a3,$v0,$zero
+      002A3604  978A9030  LHU $t2,-28624($gp)
+      002A3608  03A0282D  DADDU $a1,$sp,$zero
+      002A360C  0200302D  DADDU $a2,$s0,$zero
+      002A3610  0C0ACF53  JAL 0x002B3D4C
+
+CALLER 0x002C8234
+      002C8214  27A50050  ADDIU $a1,$sp,80
+      002C8218  0260482D  DADDU $t1,$s3,$zero
+      002C821C  8C820008  LW $v0,8($a0)
+      002C8220  0200502D  DADDU $t2,$s0,$zero
+      002C8224  AF80ACA0  SW $zero,-21344($gp)
+      002C8228  9048003A  LBU $t0,58($v0)
+      002C822C  8C460010  LW $a2,16($v0)
+      002C8230  8C470014  LW $a3,20($v0)
+ >>>  002C8234  0C0ABBD9  JAL 0x002AEF64
+      002C8238  AF80ACA4  SW $zero,-21340($gp)
+      002C823C  8F84999C  LW $a0,-26212($gp)
+      002C8240  97899020  LHU $t1,-28640($gp)
+      002C8244  0040382D  DADDU $a3,$v0,$zero
+      002C8248  978A9030  LHU $t2,-28624($gp)
+      002C824C  27A50050  ADDIU $a1,$sp,80
+      002C8250  0200302D  DADDU $a2,$s0,$zero
+      002C8254  0C0ACF53  JAL 0x002B3D4C
+
+CALLER 0x002CC704
+      002CC6E4  24A50998  ADDIU $a1,$a1,2456
+      002CC6E8  02E0502D  DADDU $t2,$s7,$zero
+      002CC6EC  27A90020  ADDIU $t1,$sp,32
+      002CC6F0  8C820008  LW $v0,8($a0)
+      002CC6F4  AF80ACA0  SW $zero,-21344($gp)
+      002CC6F8  9048003A  LBU $t0,58($v0)
+      002CC6FC  8C460010  LW $a2,16($v0)
+      002CC700  8C470014  LW $a3,20($v0)
+ >>>  002CC704  0C0ABBD9  JAL 0x002AEF64
+      002CC708  AF80ACA4  SW $zero,-21340($gp)
+      002CC70C  0040902D  DADDU $s2,$v0,$zero
+      002CC710  3C050065  LUI $a1,0x0065
+      002CC714  2402FFFF  ADDIU $v0,$zero,-1
+      002CC718  24A3B220  ADDIU $v1,$a1,-19936
+      002CC71C  3C130093  LUI $s3,0x0093
+      002CC720  27B10030  ADDIU $s1,$sp,48
+      002CC724  8F84999C  LW $a0,-26212($gp)
+
+CALLER 0x002CCC30
+      002CCC10  26C50998  ADDIU $a1,$s6,2456
+      002CCC14  9048003A  LBU $t0,58($v0)
+      002CCC18  0280482D  DADDU $t1,$s4,$zero
+      002CCC1C  8FA70034  LW $a3,52($sp)
+      002CCC20  03A0502D  DADDU $t2,$sp,$zero
+      002CCC24  25080004  ADDIU $t0,$t0,4
+      002CCC28  AF80ACA0  SW $zero,-21344($gp)
+      002CCC2C  31080007  ANDI $t0,$t0,0x0007
+ >>>  002CCC30  0C0ABBD9  JAL 0x002AEF64
+      002CCC34  AF80ACA4  SW $zero,-21340($gp)
+      002CCC38  1000000B  BEQ $zero,$zero,0x002CCC68
+      002CCC3C  0040A82D  DADDU $s5,$v0,$zero
+      002CCC40  0C0AC996  JAL 0x002B2658
+      002CCC44  8F84999C  LW $a0,-26212($gp)
+      002CCC48  10000008  BEQ $zero,$zero,0x002CCC6C
+      002CCC4C  0220202D  DADDU $a0,$s1,$zero
+      002CCC50  8F84999C  LW $a0,-26212($gp)
+
+CALLER 0x002CD40C
+      002CD3EC  0220282D  DADDU $a1,$s1,$zero
+      002CD3F0  0200202D  DADDU $a0,$s0,$zero
+      002CD3F4  27A90020  ADDIU $t1,$sp,32
+      002CD3F8  9048003A  LBU $t0,58($v0)
+      002CD3FC  27AA0030  ADDIU $t2,$sp,48
+      002CD400  8C460010  LW $a2,16($v0)
+      002CD404  8C470014  LW $a3,20($v0)
+      002CD408  AF80ACA0  SW $zero,-21344($gp)
+ >>>  002CD40C  0C0ABBD9  JAL 0x002AEF64
+      002CD410  AF80ACA4  SW $zero,-21340($gp)
+      002CD414  0040B02D  DADDU $s6,$v0,$zero
+      002CD418  26910998  ADDIU $s1,$s4,2456
+      002CD41C  27B20030  ADDIU $s2,$sp,48
+      002CD420  97899020  LHU $t1,-28640($gp)
+      002CD424  02C0382D  DADDU $a3,$s6,$zero
+      002CD428  978A9030  LHU $t2,-28624($gp)
+      002CD42C  0200202D  DADDU $a0,$s0,$zero
+
+CALLER 0x002DBCA0
+      002DBC80  46001081  COP1 rs=$s0 ft=$zero fs=$v0 fd=2 fn=1
+      002DBC84  A380927D  SB $zero,-28035($gp)
+      002DBC88  AF80ACA0  SW $zero,-21344($gp)
+      002DBC8C  8C620008  LW $v0,8($v1)
+      002DBC90  AF80ACA4  SW $zero,-21340($gp)
+      002DBC94  E7A20318  SWC1 ft=$v0,792($sp)
+      002DBC98  8C460010  LW $a2,16($v0)
+      002DBC9C  9048003A  LBU $t0,58($v0)
+ >>>  002DBCA0  0C0ABBD9  JAL 0x002AEF64
+      002DBCA4  8C470014  LW $a3,20($v0)
+      002DBCA8  8F84999C  LW $a0,-26212($gp)
+      002DBCAC  97899020  LHU $t1,-28640($gp)
+      002DBCB0  0220302D  DADDU $a2,$s1,$zero
+      002DBCB4  978A9030  LHU $t2,-28624($gp)
+      002DBCB8  0040382D  DADDU $a3,$v0,$zero
+      002DBCBC  03A0282D  DADDU $a1,$sp,$zero
+      002DBCC0  0C0ACF53  JAL 0x002B3D4C
+
+CALLER 0x002EFEA8
+      002EFE88  03A0282D  DADDU $a1,$sp,$zero
+      002EFE8C  31080007  ANDI $t0,$t0,0x0007
+      002EFE90  0040482D  DADDU $t1,$v0,$zero
+      002EFE94  0000202D  DADDU $a0,$zero,$zero
+      002EFE98  0200502D  DADDU $t2,$s0,$zero
+      002EFE9C  A3A00285  SB $zero,645($sp)
+      002EFEA0  0000882D  DADDU $s1,$zero,$zero
+      002EFEA4  AF80ACA0  SW $zero,-21344($gp)
+ >>>  002EFEA8  0C0ABBD9  JAL 0x002AEF64
+      002EFEAC  AF80ACA4  SW $zero,-21340($gp)
+      002EFEB0  97A903B0  LHU $t1,944($sp)
+      002EFEB4  0040382D  DADDU $a3,$v0,$zero
+      002EFEB8  978A9030  LHU $t2,-28624($gp)
+      002EFEBC  03A0282D  DADDU $a1,$sp,$zero
+      002EFEC0  0000202D  DADDU $a0,$zero,$zero
+      002EFEC4  0200302D  DADDU $a2,$s0,$zero
+      002EFEC8  0C0ACF53  JAL 0x002B3D4C
+
+============================================================
+SECTION 3: JAL TARGET SUMMARY
+RANGE: 0x002AE000 - 0x002AF000
+============================================================
+
+0x002AE180 : 1 CALLS
+    FROM 0x00208C24
+
+0x002AE574 : 2 CALLS
+    FROM 0x0020CE7C
+    FROM 0x002B41A8
+
+0x002AE618 : 1 CALLS
+    FROM 0x0020CED4
+
+0x002AE808 : 4 CALLS
+    FROM 0x0020BADC
+    FROM 0x002C84D4
+    FROM 0x002C8528
+    FROM 0x002DDE88
+
+0x002AE948 : 1 CALLS
+    FROM 0x002C3A38
+
+0x002AED00 : 12 CALLS
+    FROM 0x00210684
+    FROM 0x0022E6E4
+    FROM 0x00233D70
+    FROM 0x00233E5C
+    FROM 0x00238014
+    FROM 0x0023A430
+    FROM 0x0023B434
+    FROM 0x0023D0E8
+    FROM 0x00241AF4
+    FROM 0x00244080
+    FROM 0x0025913C
+    FROM 0x0027F08C
+
+0x002AED38 : 21 CALLS
+    FROM 0x0020BE18
+    FROM 0x0020CE14
+    FROM 0x0020CEB4
+    FROM 0x0020E3E8
+    FROM 0x0020F574
+    FROM 0x0021037C
+    FROM 0x00210EB4
+    FROM 0x00211930
+    FROM 0x00211F4C
+    FROM 0x00211F5C
+    FROM 0x0022ED80
+    FROM 0x00239798
+    FROM 0x00241D2C
+    FROM 0x0024FF08
+    FROM 0x00258080
+    FROM 0x002580A0
+    FROM 0x002592CC
+    FROM 0x002592EC
+    FROM 0x002BEBAC
+    FROM 0x002BEBC8
+    FROM 0x002DAF6C
+
+0x002AEEC4 : 27 CALLS
+    FROM 0x0020A188
+    FROM 0x0020A418
+    FROM 0x0020A9C0
+    FROM 0x0020A9EC
+    FROM 0x0020BE70
+    FROM 0x0020D59C
+    FROM 0x0020F060
+    FROM 0x00210C94
+    FROM 0x0021E290
+    FROM 0x0023497C
+    FROM 0x002363F4
+    FROM 0x0023AD28
+    FROM 0x0024A47C
+    FROM 0x0024A4C0
+    FROM 0x0024BCC8
+    FROM 0x0024E1F0
+    FROM 0x0024E228
+    FROM 0x0024E3E4
+    FROM 0x0027D454
+    FROM 0x0027D514
+    FROM 0x0027D5D4
+    FROM 0x0027D6E8
+    FROM 0x002AD170
+    FROM 0x002C8C94
+    FROM 0x002C8D04
+    FROM 0x002D0CA4
+    FROM 0x002E6950
+
+0x002AEF64 : 12 CALLS
+    FROM 0x0023492C
+    FROM 0x0023AB50
+    FROM 0x0024F408
+    FROM 0x0026E5E4
+    FROM 0x0026E928
+    FROM 0x002A35F0
+    FROM 0x002C8234
+    FROM 0x002CC704
+    FROM 0x002CCC30
+    FROM 0x002CD40C
+    FROM 0x002DBCA0
+    FROM 0x002EFEA8
+
+============================================================
+END OF REPORT
+============================================================
