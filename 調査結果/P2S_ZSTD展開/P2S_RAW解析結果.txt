@@ -1,0 +1,200 @@
+﻿PCSX2 P2S ZIP RAW解析
+ファイルサイズ: 15114583
+エントリー数: 16
+中央ディレクトリ位置: 0x00E69D88
+中央ディレクトリサイズ: 953
+
+【Entry 1】
+名前: PCSX2 Savestate Version.id
+方式番号: 0 (STORE)
+フラグ: 0x0800
+CRC32: 0x11C59681
+圧縮サイズ: 36
+展開サイズ: 36
+ローカルヘッダー: 0x00000000
+データ位置: 0x00000038
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\001_raw.bin
+RAW先頭: 00 00 59 9A 76 32 2E 38 2E 32 00 62 B4 01 00 00 00 00 5D 19 B3 01 00 00 08 00 00 00 10 00 00 00 00 00 00 00
+STORE展開先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\001_expanded.bin
+
+【Entry 2】
+名前: PCSX2 Internal Structures.dat
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x0675E786
+圧縮サイズ: 192066
+展開サイズ: 1327178
+ローカルヘッダー: 0x0000005C
+データ位置: 0x00000097
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\002_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 54 45 03 0A EE AF DC 35 10 10 74 A5 31 81 EB 47 2B BE 45 40 E4 8E 7D C5 BA 56 22 55 90 C6 43 7D 93 92 D2 42 81 51 9F B2 4A ED 80 7F 8F 48 4B 2F 4D E4 F6 A3 EA BB 65 F5 48 93
+
+【Entry 3】
+名前: eeMemory.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x350357A0
+圧縮サイズ: 11565295
+展開サイズ: 33554432
+ローカルヘッダー: 0x0002EED9
+データ位置: 0x0002EF03
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\003_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 84 EF 04 BE 49 C8 BD 1A 59 10 40 E8 8C D2 01 41 10 1F C7 B8 8A 18 EC F4 0B 21 3F 08 F5 BD 41 45 A2 D0 51 92 BD D0 97 6C 37 4D DC 73 18 52 F7 92 5E 6C 80 7C CA ED 29 31 16 C6
+
+【Entry 4】
+名前: iopMemory.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x9E152AF3
+圧縮サイズ: 950685
+展開サイズ: 2097152
+ローカルヘッダー: 0x00B367F2
+データ位置: 0x00B3681D
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\004_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 CC F2 05 BE A7 88 92 1B 57 10 48 09 6B 5A 03 B3 8A 02 12 03 23 A3 65 23 C8 80 C0 84 80 2C 4F C8 E0 11 5C 1D 42 52 2E 12 8C D6 2D DA 04 3C 0D D6 59 1C FB 83 D1 FA 27 90 C8 EB
+
+【Entry 5】
+名前: eeHwRegs.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0xE41A9A5C
+圧縮サイズ: 241
+展開サイズ: 65536
+ローカルヘッダー: 0x00C1E9BA
+データ位置: 0x00C1E9E4
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\005_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 45 07 00 32 C6 17 24 90 29 E9 BF 9E 13 6F 32 33 33 2E 5B 91 C1 57 E5 40 1F C0 73 88 E6 9D 93 C5 E6 8E 06 7E A8 6B 25 9F 34 22 53 81 B6 01 41 8B D6 48 37 CC 17 1C 56 4C 46 D6
+
+【Entry 6】
+名前: iopHwRegs.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x9EF0FC0D
+圧縮サイズ: 221
+展開サイズ: 65536
+ローカルヘッダー: 0x00C1EAD5
+データ位置: 0x00C1EB00
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\006_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 A5 06 00 D2 4A 23 2B 90 2B CD 01 78 87 12 C0 ED F4 B4 B7 DB 4D 68 84 E8 58 8F 33 D1 8B 27 5F F5 EB C0 D4 11 0A B9 A1 6C DB CC 6E C1 2F C9 26 7B CB 14 1F 4C 82 20 19 46 85 B9
+
+【Entry 7】
+名前: Scratchpad.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x45129F6B
+圧縮サイズ: 4013
+展開サイズ: 16384
+ローカルヘッダー: 0x00C1EBDD
+データ位置: 0x00C1EC09
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\007_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 25 7D 00 7A B0 0C 27 43 10 28 4F A7 31 7B 48 28 C4 C7 68 08 34 DA C8 46 C2 9A 86 7F 59 92 C0 52 0A 08 88 A4 89 E6 4B BC 5C 73 FB E8 C3 AB 96 10 F2 2A B9 81 58 C4 2A 37 91 C8
+
+【Entry 8】
+名前: vu0Memory.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0xC71C0011
+圧縮サイズ: 18
+展開サイズ: 4096
+ローカルヘッダー: 0x00C1FBB6
+データ位置: 0x00C1FBE1
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\008_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 4D 00 00 10 00 00 01 00 FB F7 01 16
+
+【Entry 9】
+名前: vu1Memory.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x2C454055
+圧縮サイズ: 3306
+展開サイズ: 16384
+ローカルヘッダー: 0x00C1FBF3
+データ位置: 0x00C1FC1E
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\009_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 0D 67 00 2A 7B DC 19 35 30 EA 49 6B A0 C7 B5 B9 E5 8A 02 FC 3E F4 BB 47 9C 4A 3F 7F F6 F1 67 67 6F EB 2B 37 21 A1 D6 E4 48 D5 34 48 CC 4D DF 3F 6E A3 0C 43 27 5B A6 89 D2 BB
+
+【Entry 10】
+名前: vu0MicroMem.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0xC71C0011
+圧縮サイズ: 18
+展開サイズ: 4096
+ローカルヘッダー: 0x00C20908
+データ位置: 0x00C20935
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\010_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 4D 00 00 10 00 00 01 00 FB F7 01 16
+
+【Entry 11】
+名前: vu1MicroMem.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x2F9C3A35
+圧縮サイズ: 1299
+展開サイズ: 16384
+ローカルヘッダー: 0x00C20947
+データ位置: 0x00C20974
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\011_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 55 28 00 BA 40 DC 0D 4B C0 54 71 3A 33 1F 90 63 EF EC 8A 9E 50 DF E1 4D 49 04 77 51 D8 80 58 DC 40 B7 51 71 55 1D 7B 68 9A 7E 16 05 64 60 14 7F CC 48 E8 EF 99 4A 47 7D 31 E8
+
+【Entry 12】
+名前: SPU2.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0xC2319CDF
+圧縮サイズ: 1406845
+展開サイズ: 2178992
+ローカルヘッダー: 0x00C20E87
+データ位置: 0x00C20EAD
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\012_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 7C 9E 04 6E 40 0B EA 24 4F 10 80 44 C4 3A A4 05 9F F0 57 80 5B AE 2D 91 19 4F 74 3F 74 79 60 6F 28 AA 40 70 1A C3 BE E4 B3 4C 55 41 04 A8 AA AA 62 66 00 02 45 0E 3C 81 DA 22
+
+【Entry 13】
+名前: USB.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0x3BA0A8C3
+圧縮サイズ: 85
+展開サイズ: 8491
+ローカルヘッダー: 0x00D7862A
+データ位置: 0x00D7864F
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\013_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 65 02 00 D4 02 03 00 00 00 55 53 42 07 4F 48 43 49 00 80 00 07 00 00 00 78 27 00 DF 2E 00 28 06 00 00 02 02 00 FF FF FF FF 00 09 50 61 63 6B 65 74 FF 0B 00 00 03 70 CE CE 41
+
+【Entry 14】
+名前: PAD.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0xC1FEBF78
+圧縮サイズ: 97
+展開サイズ: 228
+ローカルヘッダー: 0x00D786A4
+データ位置: 0x00D786C9
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\014_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 C5 02 00 94 03 03 00 00 00 50 41 44 01 07 00 00 00 50 61 64 42 61 73 65 00 00 79 42 15 00 0D 44 75 61 6C 73 68 6F 63 6B 32 01 00 00 01 FF FF 03 00 00 00 00 01 00 01 02 00 03
+
+【Entry 15】
+名前: GS.bin
+方式番号: 93 (ZSTANDARD)
+フラグ: 0x0800
+CRC32: 0xBE7C381A
+圧縮サイズ: 579542
+展開サイズ: 4194813
+ローカルヘッダー: 0x00D7872A
+データ位置: 0x00D7874E
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\015_raw.bin
+RAW先頭: 28 B5 2F FD 00 58 6C 05 00 A2 47 18 21 A0 39 73 AB 96 3C FB 76 E2 35 73 B5 15 E3 3C DB 3B 01 D4 D8 F1 C2 00 17 E7 4C 7F B5 5D 24 4B 64 0A AD F9 7B EF 11 B2 B5 28 B1 0C 5B 6E 77 AB CE 34 8D D0
+
+【Entry 16】
+名前: Screenshot.png
+方式番号: 0 (STORE)
+フラグ: 0x0000
+CRC32: 0x848385B9
+圧縮サイズ: 409144
+展開サイズ: 409144
+ローカルヘッダー: 0x00E05F24
+データ位置: 0x00E05F50
+RAW保存先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\016_raw.bin
+RAW先頭: 89 50 4E 47 0D 0A 1A 0A 00 00 00 0D 49 48 44 52 00 00 02 80 00 00 01 E0 08 06 00 00 00 35 D1 DC E4 00 00 20 00 49 44 41 54 78 5E AC BD 6B B3 65 C9 71 1D B6 32 AB F6 3E F7 D5 DD F3 C2 0C 66 06
+STORE展開先: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_RAW_DATA\016_expanded.bin
+
