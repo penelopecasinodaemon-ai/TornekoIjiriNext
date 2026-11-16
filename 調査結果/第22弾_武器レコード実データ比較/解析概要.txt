@@ -1,0 +1,12 @@
+﻿第22弾解析概要
+ELF SHA256: 05df41b593f86dc42d4e91a0239fd6818575b52696f2812abbc3a19e2d941fca
+LOAD segments: 2
+P2S files: 4
+P2S candidate records: 80
+stride: 588
+
+注意:
+・588バイトは命令中に存在する定数だが、添字計算への適用は未確定。
+・候補基点とアイテムIDの対応は仮説として比較している。
+・P2SのeeMemoryアドレスがゲームの仮想アドレスと一致するかは別途検証が必要。
+・元ELF/P2Sは変更していない。
