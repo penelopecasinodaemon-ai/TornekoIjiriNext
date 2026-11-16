@@ -1,0 +1,166 @@
+﻿TORNEKO IJIRI NEXT - V26 INITIALIZATION ANALYSIS
+================================================
+
+Date: 2026-11-17 00:42:35
+ELF: C:\Users\penelope\Desktop\トルネコいじり作業環境\Torneko3_MainCandidate.elf
+File size: 7526424
+SHA256: 05DF41B593F86DC42D4E91A0239FD6818575B52696F2812ABBC3A19E2D941FCA
+
+【解析対象】
+00329B40-00329F00 : 初期化候補A
+0032A000-0032A220 : 初期化候補B
+00213968 / 00213A28 : 呼び出し元の再評価対象
+
+【件数】
+初期化領域命令数: 376
+対象関数JAL呼び出し数: 81
+呼び出し前後命令数: 1617
+メモリアクセス命令数: 168
+LUIアドレス構築候補数: 13
+
+【初期化領域のJAL呼び出し】
+0x00329B94 -> 0x00213968
+0x00329BB8 -> 0x00213968
+0x00329BE0 -> 0x00213968
+0x00329C08 -> 0x00213968
+0x00329C30 -> 0x00213968
+0x00329C60 -> 0x00213968
+0x00329C84 -> 0x00213968
+0x00329CB0 -> 0x00213968
+0x00329CD4 -> 0x00213968
+0x00329D00 -> 0x00213968
+0x00329D24 -> 0x00213968
+0x00329D4C -> 0x00213968
+0x00329D70 -> 0x00213968
+0x00329D94 -> 0x00213968
+0x00329DB8 -> 0x00213968
+0x00329DDC -> 0x00213968
+0x00329E00 -> 0x00213968
+0x00329E24 -> 0x00213968
+0x00329E48 -> 0x00213968
+0x00329E6C -> 0x00213968
+0x00329E90 -> 0x00213968
+0x00329EB8 -> 0x00213968
+0x00329ED4 -> 0x00213524
+0x00329EF0 -> 0x00213524
+0x0032A034 -> 0x04099F10
+0x0032A058 -> 0x00213524
+0x0032A074 -> 0x00213524
+0x0032A0A0 -> 0x00213968
+0x0032A0CC -> 0x00213968
+0x0032A124 -> 0x00213968
+0x0032A14C -> 0x00213968
+0x0032A174 -> 0x00213968
+0x0032A19C -> 0x00213968
+0x0032A1C8 -> 0x00213968
+0x0032A1D0 -> 0x00304794
+0x0032A200 -> 0x00300DC4
+0x0032A21C -> 0x00300DC4
+
+【メモリ書き込み命令】
+0x00329B84 sb $zero, 105($t4) / base=$t4
+0x00329B8C sb $zero, 104($t4) / base=$t4
+0x00329B98 sb $v0, -28340($gp) / base=$gp
+0x0032A000 scd $s4, -32030($at) / base=$at
+0x0032A008 sdr $s3, 4021($t5) / base=$t5
+0x0032A014 sdr $t3, 7730($a1) / base=$a1
+0x0032A030 swl $t7, -5608($v1) / base=$v1
+0x0032A038 sd $ra, -256($ra) / base=$ra
+0x0032A03C sd $ra, -1($ra) / base=$ra
+0x0032A0DC sb $zero, 5904($at) / base=$at
+0x0032A1CC sw $zero, 192($sp) / base=$sp
+0x0032A1E0 sb $zero, 5904($at) / base=$at
+0x0032A518 sb $zero, 0($v1) / base=$v1
+0x0032A534 sb $v0, -1($v1) / base=$v1
+0x0032A584 sdl $v1, -28329($gp) / base=$gp
+0x0032A608 sb $v0, 0($s0) / base=$s0
+0x0032AAC4 sdl $a2, -28329($gp) / base=$gp
+0x0032ABE4 sw $v0, 200($sp) / base=$sp
+0x0032AC48 sdl $a2, -28329($gp) / base=$gp
+0x0032AE14 sw $v1, 184($sp) / base=$sp
+0x0032AE1C sb $v0, 64($sp) / base=$sp
+0x0032AEB8 sw $v0, -28336($gp) / base=$gp
+0x0032AEE8 sw $s5, 160($v1) / base=$v1
+0x0032AEF8 sw $s3, 164($v1) / base=$v1
+0x0032B294 sh $a3, 20278($a0) / base=$a0
+0x0032B298 sd $ra, -256($ra) / base=$ra
+0x0032B29C sd $ra, -1($ra) / base=$ra
+0x0032B2C0 sd $s2, 80($sp) / base=$sp
+0x0032B2C4 sd $s0, 64($sp) / base=$sp
+0x0032B2C8 sd $ra, 88($sp) / base=$sp
+0x0032B3A0 sd $ra, 64($sp) / base=$sp
+0x0032B3F4 sd $ra, 0($sp) / base=$sp
+0x0032B6A4 sw $t7, 8($v0) / base=$v0
+0x0032B6AC sb $v1, -28340($gp) / base=$gp
+0x0032B6B4 sw $t4, -17344($gp) / base=$gp
+0x0032B6BC sw $s1, -17360($gp) / base=$gp
+0x0032B6C4 sw $t5, 0($v0) / base=$v0
+0x0032B6CC sb $zero, 2($t6) / base=$t6
+0x0032B6D4 sw $s1, -28336($gp) / base=$gp
+0x0032B6DC sw $t7, 4($v0) / base=$v0
+0x0032B6E4 sb $zero, 0($t6) / base=$t6
+0x0032B6E8 sb $zero, 1($t6) / base=$t6
+0x0032B6F0 sb $zero, -17340($gp) / base=$gp
+0x0032B778 sw $zero, 4($sp) / base=$sp
+0x0032B780 sw $zero, 8($sp) / base=$sp
+0x0032B784 sb $zero, -17340($gp) / base=$gp
+0x0032B788 sb $zero, -17336($gp) / base=$gp
+0x0032B78C sb $zero, -17335($gp) / base=$gp
+0x0032B790 sb $zero, -17334($gp) / base=$gp
+0x0032B800 sb $zero, -28340($gp) / base=$gp
+0x0032B894 sw $zero, 8($sp) / base=$sp
+0x0032B89C sw $v1, 4($sp) / base=$sp
+0x0032BC84 sw $v0, 16($sp) / base=$sp
+0x0032BDBC sb $zero, 0($v0) / base=$v0
+0x0032CBDC sb $zero, 0($v1) / base=$v1
+0x0032CD14 swc1 $fp, -24019($s6) / base=$s6
+0x0032CD18 sb $t3, 4794($at) / base=$at
+0x0032CD1C sw $s5, -5734($s0) / base=$s0
+0x0032CD24 scd $s0, -7490($ra) / base=$ra
+0x0032CE1C sdc1 $s6, 19298($t8) / base=$t8
+0x0032CE28 sd $ra, -256($ra) / base=$ra
+0x0032CE2C sd $ra, -1($ra) / base=$ra
+0x0032CE80 sw $v0, -17360($gp) / base=$gp
+0x0032CEF8 sw $s6, -17356($gp) / base=$gp
+0x0032CF40 sb $zero, 0($v0) / base=$v0
+0x0032D57C sb $v0, 848($sp) / base=$sp
+0x0032D584 sb $zero, 849($sp) / base=$sp
+0x0032D860 sw $v0, -17344($gp) / base=$gp
+0x0032D87C sw $v0, 4($a0) / base=$a0
+0x0032D898 sw $v0, 8($a0) / base=$a0
+0x0032DA90 sd $s0, 64($sp) / base=$sp
+0x0032DA94 sd $ra, 72($sp) / base=$sp
+0x0032DB60 sd $s0, 64($sp) / base=$sp
+0x0032DB68 sd $ra, 72($sp) / base=$sp
+0x0032DC60 sd $s0, 64($sp) / base=$sp
+0x0032DC68 sd $s1, 72($sp) / base=$sp
+0x0032DC6C sd $ra, 80($sp) / base=$sp
+0x0032DCE0 sd $s0, 832($sp) / base=$sp
+0x0032DCE4 sd $s1, 840($sp) / base=$sp
+0x0032DE24 sd $s2, 80($sp) / base=$sp
+0x0032DE2C sd $ra, 88($sp) / base=$sp
+0x0032DE34 sd $s0, 64($sp) / base=$sp
+0x0032DE3C sd $s1, 72($sp) / base=$sp
+
+【アドレス構築候補】
+初期化候補A_329B40 0x00329B44 lui / addiu -> 0x00928D78
+初期化候補A_329B40 0x00329B48 lui / addiu -> 0x0091FE38
+初期化候補A_329B40 0x00329B54 lui / addiu -> 0x00928D80
+初期化候補A_329B40 0x00329B88 lui / addiu -> 0x00928D98
+初期化候補A_329B40 0x00329C3C lui / addiu -> 0x00928DA8
+初期化候補A_329B40 0x00329C90 lui / addiu -> 0x00928DB8
+初期化候補B_32A000 0x0032A084 lui / ori -> 0x00FFFFFF
+初期化候補B_32A000 0x0032A0A8 lui / addiu -> 0x00928DD8
+初期化候補B_32A000 0x0032A0F4 lui / addiu -> 0x00920048
+初期化候補B_32A000 0x0032A0F8 lui / addiu -> 0x00928DE0
+初期化候補B_32A000 0x0032A130 lui / ori -> 0x00FFFFFF
+初期化候補B_32A000 0x0032A158 lui / ori -> 0x00FFFFFF
+初期化候補B_32A000 0x0032A180 lui / ori -> 0x00FFFFFF
+
+【解釈上の注意】
+・対象JALの前24命令は機械的な近傍抽出であり、全てが引数設定とは限らない。
+・MIPSの分岐遅延スロット、レジスタ生存期間、関数境界は別途検証が必要。
+・LUIと後続命令の組み合わせは候補抽出であり、実際のポインタ確定ではない。
+・メモリ書き込み命令のベースレジスタが実行時に指すアドレスは未確定。
+・この解析では攻撃力フィールドや書き込み先を確定していない。
+・ELFおよびゲームメモリへの書き込みは行っていない。
