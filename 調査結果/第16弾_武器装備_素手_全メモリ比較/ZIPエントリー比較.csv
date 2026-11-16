@@ -1,0 +1,17 @@
+﻿エントリー名,比較結果,装備サイズ,素手サイズ,一致時SHA256
+GS.bin,差分あり,4194813,4194813,
+PAD.bin,一致,228,228,2cdf5ddc37a67687051761a262b3bbe1251402ecf9ada6fba032333a42c947bd
+PCSX2 Internal Structures.dat,差分あり,1327178,2316010,
+PCSX2 Savestate Version.id,差分あり,36,36,
+SPU2.bin,差分あり,2178992,2178992,
+Scratchpad.bin,差分あり,16384,16384,
+Screenshot.png,差分あり,409144,423732,
+USB.bin,一致,8491,8491,dde2ed3eb9bf8b5df84846d3adb993b84f3723084f1a13c2f5ad516ab9d9dca3
+eeHwRegs.bin,差分あり,65536,65536,
+eeMemory.bin,差分あり,33554432,33554432,
+iopHwRegs.bin,差分あり,65536,65536,
+iopMemory.bin,差分あり,2097152,2097152,
+vu0Memory.bin,一致,4096,4096,ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7
+vu0MicroMem.bin,一致,4096,4096,ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7
+vu1Memory.bin,差分あり,16384,16384,
+vu1MicroMem.bin,一致,16384,16384,b4e521817e0145a838e225cd66c55dcab80012010ef973643785c2ad6eb290a5
