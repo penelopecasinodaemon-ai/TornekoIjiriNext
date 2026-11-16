@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -3513,6 +3513,13 @@ internal sealed class MainForm : Form
             FlowDirection = FlowDirection.LeftToRight,
             WrapContents = true
         };
+
+        buttons.Controls.Add(UiFactory.Button(
+            "任意バイナリ編集", (_, _) =>
+            {
+                using var editor = new ArbitraryBinaryEditorForm();
+                editor.ShowDialog(this);
+            }));
 
         buttons.Controls.Add(UiFactory.Button(
             "改造ダンジョンのデータ読み込み", (_, _) => OpenBin()));
