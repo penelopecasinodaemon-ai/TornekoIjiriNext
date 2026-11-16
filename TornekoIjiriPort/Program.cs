@@ -3891,21 +3891,47 @@ internal sealed class MainForm : Form
             MessageBoxIcon.Warning) != DialogResult.Yes)
             return;
 
+        string? tempPath = null;
+
         try
         {
+            string fullPath = Path.GetFullPath(_binPath);
+            string directory = Path.GetDirectoryName(fullPath)!;
+
             string backupPath =
-                _binPath + ".backup_" +
+                fullPath + ".backup_" +
                 DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
-            File.Copy(_binPath, backupPath, false);
+            tempPath = Path.Combine(
+                directory,
+                Path.GetFileName(fullPath) + "." +
+                Guid.NewGuid().ToString("N") + ".tmp");
 
+            // 元BINを先にバックアップする。
+            File.Copy(fullPath, backupPath, false);
+
+            // 元BINとは別の一時ファイルに編集結果を保存する。
             TornekoBinEditPreserver.SaveEditedBaseCopy(
                 _binSnapshot,
                 _bin,
-                _binPath);
+                tempPath);
 
-            // 保存した全体ファイルを新しい基準にする。
-            _binSnapshot = TornekoBinPreservation.Load(_binPath);
+            // 一時ファイルの存在とサイズを確認する。
+            TornekoBinPreservationSnapshot tempSnapshot =
+                TornekoBinPreservation.Load(tempPath);
+
+            if (tempSnapshot.OriginalLength != _binSnapshot.OriginalLength)
+                throw new InvalidDataException(
+                    "一時保存ファイルのサイズが元BINと一致しません。");
+
+            // 同一フォルダ内で置換する。
+            // 失敗した場合、元BINは置き換えられない。
+            File.Replace(tempPath, fullPath, null);
+            tempPath = null;
+
+            // 保存後のファイルを新しい基準にする。
+            _binSnapshot = TornekoBinPreservation.Load(fullPath);
+            _binPath = fullPath;
 
             UpdateStatus();
 
@@ -3922,9 +3948,21 @@ internal sealed class MainForm : Form
         {
             UiFactory.Error(this, ex);
         }
-    }
-
-        private void SaveBinAs()
+        finally
+        {
+            if (tempPath != null && File.Exists(tempPath))
+            {
+                try
+                {
+                    File.Delete(tempPath);
+                }
+                catch
+                {
+                    // 一時ファイル削除失敗は元BINの保全を優先する。
+                }
+            }
+        }
+    }    private void SaveBinAs()
     {
         if (_bin == null || _binSnapshot == null)
         {
