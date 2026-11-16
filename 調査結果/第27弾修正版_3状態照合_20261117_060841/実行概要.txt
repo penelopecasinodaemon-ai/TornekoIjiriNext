@@ -1,0 +1,11 @@
+﻿
+
+MemoryFiles     : 3
+CandidateCSV    : 5
+CandidateRows   : 4484
+Comparisons     : 45
+OutputDirectory : C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\第27弾修正版_3状態照合_20261117_060841
+
+
+
+
