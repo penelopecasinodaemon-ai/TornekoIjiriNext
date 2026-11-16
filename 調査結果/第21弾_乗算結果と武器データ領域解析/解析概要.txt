@@ -1,0 +1,15 @@
+﻿第21弾 乗算結果と武器データ領域解析
+ELF: C:\Users\penelope\Desktop\トルネコいじり作業環境\Torneko3_MainCandidate.elf
+Size: 7526424
+SHA256: 05df41b593f86dc42d4e91a0239fd6818575b52696f2812abbc3a19e2d941fca
+Program headers: 3
+Executable segments: 1
+EXEC VA=0x00200000 FILESIZE=0x15D368 MEMSIZE=0x15D368 OFFSET=0x0
+Decoded instructions: 357594
+MULT/DIV count: 356
+MFHI/MFLO/MTHI/MTLO count: 197
+GP important accesses: 2366
+Constant construction candidates: 225
+
+注意: ELF上の値は実行時RAMの値と一致するとは限りません。
+ポインタの実体・データ構造はゲーム内実測と照合して確定してください。
