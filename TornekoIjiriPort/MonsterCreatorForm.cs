@@ -228,6 +228,13 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _defense = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _experience = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _maxLevel = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _systemFlags = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _skillFlags = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _moveSpeed = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _dropItem = CreateNumber(ushort.MaxValue);
+    private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _growthType = CreateNumber(byte.MaxValue);
     private readonly Button _applyButton = new Button();
     private readonly List<int> _visibleIds = new List<int>();
 
@@ -247,7 +254,7 @@ internal sealed class MonsterCreatorForm : Form
         Text = "モンスタークリエイター";
         StartPosition = FormStartPosition.CenterParent;
         Width = 1050;
-        Height = 720;
+        Height = 650;
         MinimumSize = new Size(850, 560);
         Font = new Font("Yu Gothic UI", 10);
 
@@ -302,7 +309,7 @@ internal sealed class MonsterCreatorForm : Form
         right.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
         right.RowStyles.Add(new RowStyle(SizeType.Absolute, 82));
         right.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        right.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
+        right.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
 
         _count.Dock = DockStyle.Fill;
         _count.TextAlign = ContentAlignment.MiddleLeft;
@@ -320,12 +327,15 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 3,
+            RowCount = 6,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
         fieldGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         fieldGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
@@ -335,6 +345,13 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
         fieldGrid.Controls.Add(CreateField("経験値", _experience), 1, 1);
         fieldGrid.Controls.Add(CreateField("最大レベル", _maxLevel), 0, 2);
+        fieldGrid.Controls.Add(CreateField("成長タイプ（生値）", _growthType), 1, 2);
+        fieldGrid.Controls.Add(CreateField("系統フラグ（生値）", _systemFlags), 0, 3);
+        fieldGrid.Controls.Add(CreateField("特技系統フラグ（生値）", _skillFlags), 1, 3);
+        fieldGrid.Controls.Add(CreateField("移動速度（生値）", _moveSpeed), 0, 4);
+        fieldGrid.Controls.Add(CreateField("ドロップ率（生値）", _dropRate), 1, 4);
+        fieldGrid.Controls.Add(CreateField("ドロップアイテムID", _dropItem), 0, 5);
+        fieldGrid.Controls.Add(CreateField("スポーン時睡眠率（生値）", _sleepRate), 1, 5);
 
         var explanation = new Label
         {
@@ -342,9 +359,11 @@ internal sealed class MonsterCreatorForm : Form
             AutoSize = true,
             ForeColor = Color.DimGray,
             Text =
-                "第1段階：旧版24バイト基本レコードのうち、対応を確認できた5項目を編集します。\r\n" +
-                "HP(+0)、攻撃力(+2)、防御力(+4)、最大レベル(+11)、経験値(+12)。\r\n" +
-                "変更は読み込んだBINの作業データに反映されます。ゲームメモリには直接書き込みません。"
+                "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
+                "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
+                "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
+                "生値を保持して編集します。勧誘修正値・回復定数・特技データは別途対応します。\r\n" +
+                "変更はBINの作業データに反映され、ゲームメモリには直接書き込みません。"
         };
 
         var content = new Panel
@@ -398,7 +417,7 @@ internal sealed class MonsterCreatorForm : Form
             RowCount = 2
         };
         bottom.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        bottom.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+        bottom.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
         bottom.Controls.Add(_status, 0, 0);
         bottom.Controls.Add(buttons, 0, 1);
 
@@ -503,6 +522,10 @@ internal sealed class MonsterCreatorForm : Form
         }
 
         long offset = (long)physicalAddress - EeMemoryBaseAddress;
+
+        // モンスターIDとBINレコードの対応を1レコード分補正
+
+        offset += MonsterRecordSize;
         long requiredEnd = offset + (long)MonsterRecordCount * MonsterRecordSize;
 
         if (offset < 0 || requiredEnd > bin.Length)
@@ -526,6 +549,13 @@ internal sealed class MonsterCreatorForm : Form
         _defense.Enabled = enabled;
         _experience.Enabled = enabled;
         _maxLevel.Enabled = enabled;
+        _systemFlags.Enabled = enabled;
+        _skillFlags.Enabled = enabled;
+        _moveSpeed.Enabled = enabled;
+        _dropRate.Enabled = enabled;
+        _dropItem.Enabled = enabled;
+        _sleepRate.Enabled = enabled;
+        _growthType.Enabled = enabled;
         _applyButton.Enabled = enabled;
     }
 
@@ -559,7 +589,7 @@ internal sealed class MonsterCreatorForm : Form
 
         _count.Text =
             "登録モンスター：" + MonsterNames.Length +
-            "種類　／　表示中：" + _visibleIds.Count + "種類";
+            "種類　／　検索結果：" + _visibleIds.Count + "種類";
 
         if (_list.Items.Count > 0)
             _list.SelectedIndex = 0;
@@ -602,6 +632,13 @@ internal sealed class MonsterCreatorForm : Form
         _defense.Value = BinFileService.ReadUInt16(_bin, offset + 4);
         _maxLevel.Value = _bin[offset + 11];
         _experience.Value = BinFileService.ReadUInt16(_bin, offset + 12);
+        _systemFlags.Value = _bin[offset + 6];
+        _skillFlags.Value = _bin[offset + 7];
+        _moveSpeed.Value = _bin[offset + 9];
+        _dropRate.Value = _bin[offset + 10];
+        _dropItem.Value = BinFileService.ReadUInt16(_bin, offset + 16);
+        _sleepRate.Value = _bin[offset + 18];
+        _growthType.Value = _bin[offset + 20];
 
         _selectedInfo.Text =
             "モンスター番号：" + id.ToString("D3") +
@@ -626,6 +663,13 @@ internal sealed class MonsterCreatorForm : Form
         BinFileService.WriteUInt16(_bin, offset + 4, (ushort)_defense.Value);
         _bin[offset + 11] = (byte)_maxLevel.Value;
         BinFileService.WriteUInt16(_bin, offset + 12, (ushort)_experience.Value);
+        _bin[offset + 6] = (byte)_systemFlags.Value;
+        _bin[offset + 7] = (byte)_skillFlags.Value;
+        _bin[offset + 9] = (byte)_moveSpeed.Value;
+        _bin[offset + 10] = (byte)_dropRate.Value;
+        BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.Value);
+        _bin[offset + 18] = (byte)_sleepRate.Value;
+        _bin[offset + 20] = (byte)_growthType.Value;
 
         _onChanged?.Invoke();
 
