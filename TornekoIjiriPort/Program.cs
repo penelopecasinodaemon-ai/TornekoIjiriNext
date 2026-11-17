@@ -3520,6 +3520,12 @@ internal sealed class MainForm : Form
                 using var editor = new ArbitraryBinaryEditorForm();
                 editor.ShowDialog(this);
             }));
+        buttons.Controls.Add(UiFactory.Button(
+            "ダンジョン共通設定", (_, _) =>
+            {
+                using var form = new DungeonCommonSettingsForm();
+                form.ShowDialog(this);
+            }));
 
         buttons.Controls.Add(UiFactory.Button(
             "改造ダンジョンのデータ読み込み", (_, _) => OpenBin()));
