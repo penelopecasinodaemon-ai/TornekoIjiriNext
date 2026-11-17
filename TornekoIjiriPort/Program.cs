@@ -2565,11 +2565,9 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
+        HayabusaDoubleAttackMonitor.Start();
         var mainForm = new MainForm();
-
-
-
-Application.Run(mainForm);
+        Application.Run(mainForm);
     }
 }
 

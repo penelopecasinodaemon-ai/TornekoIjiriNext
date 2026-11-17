@@ -11,6 +11,10 @@
     <StartupObject>TornekoIjiriPort.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="backup/**/*.cs" />
+    <Compile Remove="backup/**/*.cs" />
+    <Compile Remove="backup/**/*.cs" />
+    <Compile Remove="backup/**/*.cs" />
     <Compile Remove="backup_*/**/*.cs" />
   </ItemGroup>
 </Project>

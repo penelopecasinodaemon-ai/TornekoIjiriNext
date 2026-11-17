@@ -1,145 +1,280 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
+using System.Text;
 using System.Windows.Forms;
 
 namespace TornekoIjiriPort;
 
-internal sealed class EquippedWeaponIdScannerForm : Form
+internal static class HayabusaDoubleAttackMonitor
 {
     private const string PineHost = "127.0.0.1";
     private const int PinePort = 28011;
 
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
     private const uint AttackPatchAddress = 0x0020B264;
     private const uint AttackPatchValue = 0x24020001;
 
-    private readonly uint[] _candidateAddresses =
+    private static System.Windows.Forms.Timer? _timer;
+    private static Label? _statusLabel;
+
+    private static int _processId;
+    private static uint? _originalInstruction;
+    private static bool _patchApplied;
+    private static bool _exitHooked;
+
+    private static string StatePath
     {
-        0x006015D4,
-        0x009276A4
-    };
+        get
+        {
+            string directory = Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                "TornekoIjiriNext");
 
-    private ListView _list = null!;
-    private Label _status = null!;
-
-    private bool _patchApplied;
-    private uint _originalInstruction;
-
-    public EquippedWeaponIdScannerForm()
-    {
-        Text = "装備中の武器ID・二回攻撃設定";
-        StartPosition = FormStartPosition.CenterParent;
-        Width = 900;
-        Height = 560;
-        MinimumSize = new Size(760, 440);
-        Font = new Font("Yu Gothic UI", 10);
-
-        BuildInterface();
-        RefreshValues();
+            return Path.Combine(
+                directory,
+                "HayabusaDoubleAttack.state");
+        }
     }
 
-    private void BuildInterface()
+    public static void Start(Label statusLabel)
     {
-        var root = new TableLayoutPanel
+        _statusLabel = statusLabel;
+
+        try
         {
-            Dock = DockStyle.Fill,
-            Padding = new Padding(12),
-            ColumnCount = 1,
-            RowCount = 4
-        };
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0)
+            {
+                throw new InvalidOperationException(
+                    "先にPCSX2へ接続してください。");
+            }
 
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 76));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 110));
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+            int pid = Pcsx2LiveSession.ProcessId;
 
-        var explanation = new Label
+            if (_timer != null &&
+                _timer.Enabled &&
+                _processId == pid)
+            {
+                SetStatus(
+                    "はやぶさの爪の自動監視は既に動作中です。");
+                return;
+            }
+
+            if (_patchApplied &&
+                _originalInstruction.HasValue)
+            {
+                TryRestorePatch();
+            }
+
+            _processId = pid;
+
+            uint currentInstruction =
+                ReadPine32(AttackPatchAddress);
+
+            uint savedOriginal;
+
+            if (currentInstruction == AttackPatchValue)
+            {
+                if (!TryLoadState(pid, out savedOriginal))
+                {
+                    throw new InvalidOperationException(
+                        "二回攻撃コードが既に存在しますが、" +
+                        "元の命令を保存した記録がありません。\r\n" +
+                        "安全のため自動監視を開始しません。");
+                }
+
+                _originalInstruction = savedOriginal;
+                _patchApplied = true;
+            }
+
+            if (currentInstruction != AttackPatchValue)
+            {
+                _originalInstruction = currentInstruction;
+                _patchApplied = false;
+
+                SaveState(pid, currentInstruction);
+            }
+
+            if (!_exitHooked)
+            {
+                Application.ApplicationExit += OnApplicationExit;
+                _exitHooked = true;
+            }
+
+            if (_timer != null)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+            }
+
+            _timer = new System.Windows.Forms.Timer();
+            _timer.Interval = 500;
+            _timer.Tick += (_, _) => Poll();
+            _timer.Start();
+
+            SetStatus(
+                "自動監視開始。はやぶさの爪を確認しています。");
+
+            Poll();
+        }
+        catch (Exception ex)
         {
-            Dock = DockStyle.Fill,
-            Text =
-                "PCSX2のPINE通信を利用して装備候補を読み取ります。\r\n" +
-                "候補A・Bのどちらかに値があれば二回攻撃コードを適用します。",
-            TextAlign = ContentAlignment.MiddleLeft
-        };
+            SetStatus(
+                "二回攻撃の自動監視を開始できません: " +
+                ex.Message);
 
-        var buttons = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            WrapContents = true,
-            FlowDirection = FlowDirection.LeftToRight
-        };
-
-        buttons.Controls.Add(MakeButton(
-            "現在値を更新",
-            150,
-            (_, _) => RefreshValues()));
-
-        buttons.Controls.Add(MakeButton(
-            "2回攻撃を有効化",
-            190,
-            (_, _) => EnableDoubleAttack()));
-
-        buttons.Controls.Add(MakeButton(
-            "2回攻撃を解除",
-            170,
-            (_, _) => RestoreDoubleAttack()));
-
-        _list = new ListView
-        {
-            Dock = DockStyle.Fill,
-            View = View.Details,
-            FullRowSelect = true,
-            GridLines = true
-        };
-
-        _list.Columns.Add("候補", 100);
-        _list.Columns.Add("EE RAMアドレス", 180);
-        _list.Columns.Add("16bit値", 140);
-        _list.Columns.Add("32bit値", 160);
-        _list.Columns.Add("判定", 180);
-
-        _status = new Label
-        {
-            Dock = DockStyle.Fill,
-            Text = "PCSX2の接続状態を確認してください。",
-            TextAlign = ContentAlignment.MiddleLeft,
-            AutoEllipsis = true
-        };
-
-        root.Controls.Add(explanation, 0, 0);
-        root.Controls.Add(buttons, 0, 1);
-        root.Controls.Add(_list, 0, 2);
-        root.Controls.Add(_status, 0, 3);
-
-        Controls.Add(root);
+            MessageBox.Show(
+                ex.ToString(),
+                "自動監視の開始エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
     }
 
-    private static Button MakeButton(
-        string text,
-        int width,
-        EventHandler click)
+    public static void ShowStatus(Label statusLabel)
     {
-        var button = new Button
-        {
-            Text = text,
-            Width = width,
-            Height = 40,
-            Margin = new Padding(4)
-        };
+        _statusLabel = statusLabel;
 
-        button.Click += click;
-        return button;
+        if (_timer != null && _timer.Enabled)
+        {
+            SetStatus(
+                "二回攻撃の自動監視は動作中です。");
+            return;
+        }
+
+        SetStatus(
+            "はやぶさの爪への変更ボタンを押すと自動監視を開始します。");
     }
 
-    private static void EnsureConnected()
+    private static void Poll()
     {
-        if (!Pcsx2LiveSession.IsConnected ||
-            Pcsx2LiveSession.ProcessId <= 0)
+        if (_timer == null || !_timer.Enabled)
+            return;
+
+        try
         {
-            throw new InvalidOperationException(
-                "先にメイン画面からPCSX2へ接続してください。");
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId != _processId)
+            {
+                SetStatus(
+                    "PCSX2の接続状態が変化しました。復元を試みています。");
+
+                TryRestorePatch();
+
+                _timer.Stop();
+                return;
+            }
+
+            uint weaponValue =
+                ReadPine32(EquippedWeaponAddress) & 0xFFFF;
+
+            uint currentInstruction =
+                ReadPine32(AttackPatchAddress);
+
+            bool isHayabusa =
+                weaponValue == HayabusaWeaponValue;
+
+            if (isHayabusa)
+            {
+                if (currentInstruction == AttackPatchValue)
+                {
+                    _patchApplied = true;
+
+                    SetStatus(
+                        "はやぶさの爪を検出。二回攻撃は有効です。");
+
+                    return;
+                }
+
+                if (!_originalInstruction.HasValue ||
+                    _originalInstruction.Value == AttackPatchValue)
+                {
+                    _originalInstruction = currentInstruction;
+                    SaveState(_processId, currentInstruction);
+                }
+
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verification != AttackPatchValue)
+                {
+                    throw new IOException(
+                        "二回攻撃コードの読み戻し検証に失敗しました。\r\n" +
+                        "実際値: 0x" +
+                        verification.ToString("X8"));
+                }
+
+                _patchApplied = true;
+
+                SetStatus(
+                    "はやぶさの爪を検出。二回攻撃を自動適用しました。");
+
+                return;
+            }
+
+            if (_patchApplied)
+            {
+                if (currentInstruction == AttackPatchValue)
+                {
+                    if (!_originalInstruction.HasValue)
+                    {
+                        throw new InvalidOperationException(
+                            "復元する元の命令がありません。");
+                    }
+
+                    WritePine32(
+                        AttackPatchAddress,
+                        _originalInstruction.Value);
+
+                    uint verification =
+                        ReadPine32(AttackPatchAddress);
+
+                    if (verification != _originalInstruction.Value)
+                    {
+                        throw new IOException(
+                            "元の命令への復元に失敗しました。\r\n" +
+                            "期待値: 0x" +
+                            _originalInstruction.Value.ToString("X8") +
+                            "\r\n実際値: 0x" +
+                            verification.ToString("X8"));
+                    }
+
+                    _patchApplied = false;
+
+                    SetStatus(
+                        "はやぶさの爪以外を検出。元の命令へ復元しました。");
+
+                    return;
+                }
+
+                _patchApplied = false;
+                _originalInstruction = currentInstruction;
+                SaveState(_processId, currentInstruction);
+
+                SetStatus(
+                    "適用先の命令が外部から変更されました。状態を再取得しました。");
+
+                return;
+            }
+
+            SetStatus(
+                "監視中。装備値: 0x" +
+                weaponValue.ToString("X4") +
+                " / はやぶさの爪ではありません。");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(
+                "自動監視エラー: " + ex.Message);
         }
     }
 
@@ -196,9 +331,16 @@ internal sealed class EquippedWeaponIdScannerForm : Form
         byte[] request = new byte[4 + command.Length];
 
         WriteUInt32(request, 0, (uint)request.Length);
-        Buffer.BlockCopy(command, 0, request, 4, command.Length);
+
+        Buffer.BlockCopy(
+            command,
+            0,
+            request,
+            4,
+            command.Length);
 
         using var client = new TcpClient();
+
         client.ReceiveTimeout = 4000;
         client.SendTimeout = 4000;
         client.Connect(PineHost, PinePort);
@@ -211,13 +353,17 @@ internal sealed class EquippedWeaponIdScannerForm : Form
         byte[] header = ReadExact(stream, 4);
         uint responseLength = ReadUInt32(header, 0);
 
-        if (responseLength < 5 || responseLength > 1024)
+        if (responseLength < 5 ||
+            responseLength > 1024)
         {
             throw new IOException(
-                "PINE応答サイズが不正です: " + responseLength);
+                "PINE応答サイズが不正です: " +
+                responseLength);
         }
 
-        return ReadExact(stream, (int)responseLength - 4);
+        return ReadExact(
+            stream,
+            (int)responseLength - 4);
     }
 
     private static uint ReadPine32(uint address)
@@ -232,14 +378,13 @@ internal sealed class EquippedWeaponIdScannerForm : Form
         if (response.Length != 5)
         {
             throw new IOException(
-                "PINE Read32応答サイズが一致しません。実際: " +
-                response.Length);
+                "PINE Read32応答サイズが一致しません。");
         }
 
         if (response[0] != 0)
         {
             throw new IOException(
-                "PINE Read32が失敗しました。ステータス: " +
+                "PINE Read32失敗。ステータス: " +
                 response[0].ToString("X2"));
         }
 
@@ -261,266 +406,176 @@ internal sealed class EquippedWeaponIdScannerForm : Form
         if (response.Length != 1)
         {
             throw new IOException(
-                "PINE Write32応答サイズが一致しません。実際: " +
-                response.Length);
+                "PINE Write32応答サイズが一致しません。");
         }
 
         if (response[0] != 0)
         {
             throw new IOException(
-                "PINE Write32が失敗しました。ステータス: " +
+                "PINE Write32失敗。ステータス: " +
                 response[0].ToString("X2"));
         }
     }
 
-    private void RefreshValues()
+    private static void SaveState(
+        int pid,
+        uint original)
     {
-        try
-        {
-            EnsureConnected();
+        string directory = Path.GetDirectoryName(StatePath)!;
 
-            _list.Items.Clear();
+        Directory.CreateDirectory(directory);
 
-            bool anyValid = false;
+        string content =
+            pid.ToString(CultureInfo.InvariantCulture) +
+            Environment.NewLine +
+            original.ToString("X8", CultureInfo.InvariantCulture);
 
-            for (int i = 0; i < _candidateAddresses.Length; i++)
-            {
-                uint address = _candidateAddresses[i];
-
-                uint value = ReadPine32(address);
-                ushort value16 = (ushort)(value & 0xFFFF);
-
-                bool valid = value16 != 0;
-
-                if (valid)
-                    anyValid = true;
-
-                var item = new ListViewItem(
-                    i == 0 ? "候補A" : "候補B");
-
-                item.SubItems.Add(
-                    "0x" + address.ToString("X8"));
-
-                item.SubItems.Add(
-                    "0x" + value16.ToString("X4"));
-
-                item.SubItems.Add(
-                    "0x" + value.ToString("X8"));
-
-                item.SubItems.Add(
-                    valid ? "値あり・適用判定対象" : "値が0");
-
-                _list.Items.Add(item);
-            }
-
-            _status.Text = anyValid
-                ? "候補A・Bの少なくとも一方に値があります。二回攻撃を試せます。"
-                : "候補A・Bの下位16bitが両方とも0です。";
-        }
-        catch (Exception ex)
-        {
-            ShowError("現在値の取得に失敗しました", ex);
-        }
+        File.WriteAllText(
+            StatePath,
+            content,
+            new UTF8Encoding(false));
     }
 
-    private void EnableDoubleAttack()
+    private static bool TryLoadState(
+        int pid,
+        out uint original)
     {
-        if (_patchApplied)
-        {
-            MessageBox.Show(
-                this,
-                "この画面から二回攻撃コードは既に適用されています。",
-                "適用済み",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+        original = 0;
 
-            return;
+        if (!File.Exists(StatePath))
+            return false;
+
+        string[] lines = File.ReadAllLines(StatePath);
+
+        if (lines.Length < 2)
+            return false;
+
+        if (!int.TryParse(
+            lines[0],
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out int savedPid))
+        {
+            return false;
         }
 
+        if (savedPid != pid)
+            return false;
+
+        if (!uint.TryParse(
+            lines[1],
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture,
+            out original))
+        {
+            return false;
+        }
+
+        if (original == AttackPatchValue)
+            return false;
+
+        return true;
+    }
+
+    private static bool TryRestorePatch()
+    {
         try
         {
-            EnsureConnected();
+            if (!_originalInstruction.HasValue)
+                return false;
 
-            uint[] values = new uint[_candidateAddresses.Length];
+            uint current =
+                ReadPine32(AttackPatchAddress);
 
-            for (int i = 0; i < _candidateAddresses.Length; i++)
+            if (current == AttackPatchValue)
             {
-                values[i] = ReadPine32(_candidateAddresses[i]);
-            }
+                WritePine32(
+                    AttackPatchAddress,
+                    _originalInstruction.Value);
 
-            bool candidateAValid =
-                (values[0] & 0xFFFF) != 0;
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
 
-            bool candidateBValid =
-                (values[1] & 0xFFFF) != 0;
-
-            if (!candidateAValid && !candidateBValid)
-            {
-                RefreshValues();
-
-                MessageBox.Show(
-                    this,
-                    "候補A・Bのどちらも下位16bitが0でした。\r\n" +
-                    "二回攻撃コードは適用していません。",
-                    "適用条件を満たしていません",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
-            uint original = ReadPine32(AttackPatchAddress);
-
-            if (original == AttackPatchValue)
-            {
-                MessageBox.Show(
-                    this,
-                    "対象アドレスには既に二回攻撃コードが存在します。\r\n" +
-                    "元の命令を安全に保存できないため、今回は書き込みません。",
-                    "既に適用されています",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
-            if (MessageBox.Show(
-                this,
-                "二回攻撃コードを適用します。\r\n\r\n" +
-                "適用先: EE RAM + 0x0020B264\r\n" +
-                "適用値: 0x24020001\r\n" +
-                "元の命令: 0x" + original.ToString("X8") +
-                "\r\n\r\nPCSX2のPINE通信で書き込みますか？",
-                "二回攻撃の有効化",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question) != DialogResult.Yes)
-            {
-                return;
-            }
-
-            WritePine32(AttackPatchAddress, AttackPatchValue);
-
-            uint verification = ReadPine32(AttackPatchAddress);
-
-            if (verification != AttackPatchValue)
-            {
-                uint current = ReadPine32(AttackPatchAddress);
-
-                if (current == AttackPatchValue)
+                if (verification != _originalInstruction.Value)
                 {
-                    WritePine32(AttackPatchAddress, original);
+                    throw new IOException(
+                        "復元後の読み戻し値が一致しません。");
                 }
-
-                throw new IOException(
-                    "書き込み後の読み戻し値が一致しません。\r\n" +
-                    "期待値: 0x" + AttackPatchValue.ToString("X8") +
-                    "\r\n実際値: 0x" + verification.ToString("X8"));
-            }
-
-            _originalInstruction = original;
-            _patchApplied = true;
-
-            string selected =
-                candidateAValid && candidateBValid
-                    ? "候補A・Bの両方"
-                    : candidateAValid
-                        ? "候補A"
-                        : "候補B";
-
-            _status.Text =
-                selected + "を検出。PINE経由の書き込み検証に成功しました。";
-
-            MessageBox.Show(
-                this,
-                "二回攻撃コードの書き込みと読み戻し検証に成功しました。\r\n\r\n" +
-                "判定対象: " + selected + "\r\n" +
-                "適用先: 0x0020B264\r\n" +
-                "適用値: 0x24020001\r\n" +
-                "保存した元の命令: 0x" +
-                original.ToString("X8") +
-                "\r\n\r\nゲーム内で動作を確認してください。",
-                "二回攻撃コード適用成功",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-        }
-        catch (Exception ex)
-        {
-            ShowError("二回攻撃の有効化に失敗しました", ex);
-        }
-    }
-
-    private void RestoreDoubleAttack()
-    {
-        if (!_patchApplied)
-        {
-            MessageBox.Show(
-                this,
-                "この画面から適用した二回攻撃コードはありません。",
-                "未適用",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-
-            return;
-        }
-
-        try
-        {
-            EnsureConnected();
-
-            uint current = ReadPine32(AttackPatchAddress);
-
-            if (current != AttackPatchValue)
-            {
-                throw new InvalidOperationException(
-                    "適用先の命令が変更されています。\r\n" +
-                    "安全のため復元を中止しました。\r\n" +
-                    "現在値: 0x" + current.ToString("X8"));
-            }
-
-            WritePine32(
-                AttackPatchAddress,
-                _originalInstruction);
-
-            uint verification = ReadPine32(AttackPatchAddress);
-
-            if (verification != _originalInstruction)
-            {
-                throw new IOException(
-                    "復元後の読み戻し値が一致しません。\r\n" +
-                    "期待値: 0x" + _originalInstruction.ToString("X8") +
-                    "\r\n実際値: 0x" + verification.ToString("X8"));
             }
 
             _patchApplied = false;
 
-            _status.Text =
-                "元の命令へ復元しました: 0x" +
-                _originalInstruction.ToString("X8");
+            if (File.Exists(StatePath))
+                File.Delete(StatePath);
 
-            MessageBox.Show(
-                this,
-                "元の命令へ復元しました。\r\n" +
-                "復元値: 0x" +
-                _originalInstruction.ToString("X8"),
-                "二回攻撃を解除しました",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            SetStatus(
+                "二回攻撃コードを元の命令へ復元しました。");
+
+            return true;
         }
         catch (Exception ex)
         {
-            ShowError("二回攻撃の解除に失敗しました", ex);
+            SetStatus(
+                "二回攻撃コードの復元に失敗しました: " +
+                ex.Message);
+
+            return false;
         }
     }
 
-    private void ShowError(string title, Exception ex)
+    private static void OnApplicationExit(
+        object? sender,
+        EventArgs e)
     {
-        _status.Text = title + ": " + ex.Message;
+        try
+        {
+            if (_patchApplied &&
+                _originalInstruction.HasValue)
+            {
+                TryRestorePatch();
+            }
+        }
+        catch
+        {
+        }
 
-        MessageBox.Show(
-            this,
-            ex.ToString(),
-            title,
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error);
+        if (_timer != null)
+        {
+            _timer.Stop();
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
+
+    private static void SetStatus(string message)
+    {
+        Label? label = _statusLabel;
+
+        if (label == null ||
+            label.IsDisposed ||
+            label.Disposing)
+        {
+            return;
+        }
+
+        try
+        {
+            if (label.InvokeRequired)
+            {
+                label.BeginInvoke(
+                    new Action(() =>
+                    {
+                        if (!label.IsDisposed)
+                            label.Text = message;
+                    }));
+
+                return;
+            }
+
+            label.Text = message;
+        }
+        catch
+        {
+        }
     }
 }

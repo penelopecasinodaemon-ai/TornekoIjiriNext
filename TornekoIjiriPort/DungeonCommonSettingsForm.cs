@@ -258,7 +258,7 @@ internal sealed class DungeonCommonSettingsForm : Form
 
         var weaponIdButton = new Button
         {
-            Text = "装備中の武器IDを調べる",
+            Text = "二回攻撃の監視状態を確認",
             Dock = DockStyle.Fill,
             Height = 40,
             Font = new Font("Yu Gothic UI", 11, FontStyle.Bold)
@@ -266,8 +266,7 @@ internal sealed class DungeonCommonSettingsForm : Form
 
         weaponIdButton.Click += (_, _) =>
         {
-            using var scanner = new EquippedWeaponIdScannerForm();
-            scanner.ShowDialog(this);
+            HayabusaDoubleAttackMonitor.ShowStatus(_itemStatus);
         };
 
         _itemStatus = new Label
@@ -813,6 +812,7 @@ internal sealed class DungeonCommonSettingsForm : Form
 
             _itemStatus.Text =
                 "変更完了。3か所すべての読み戻し検証に成功しました。";
+            HayabusaDoubleAttackMonitor.Start(_itemStatus);
 
             MessageBox.Show(
                 this,
