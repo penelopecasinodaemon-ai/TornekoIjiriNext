@@ -3526,6 +3526,21 @@ internal sealed class MainForm : Form
                 using var form = new DungeonCommonSettingsForm();
                 form.ShowDialog(this);
             }));
+        buttons.Controls.Add(UiFactory.Button(
+            "説明文を改造", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var descriptionForm = new ItemDescriptionEditorForm(
+                    Pcsx2LiveSession.ProcessId);
+
+                descriptionForm.ShowDialog(this);
+            }));
 
         buttons.Controls.Add(UiFactory.Button(
             "改造ダンジョンのデータ読み込み", (_, _) => OpenBin()));
