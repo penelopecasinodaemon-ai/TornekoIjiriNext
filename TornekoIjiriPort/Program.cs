@@ -4213,7 +4213,7 @@ internal sealed class MainForm : Form
         buttons.Controls.Add(UiFactory.Button(
             "モンスターを編集", (_, _) =>
             {
-                using var monsterForm = new MonsterCreatorForm();
+                using var monsterForm = new MonsterCreatorForm(_bin, UpdateStatus);
                 monsterForm.ShowDialog(this);
             }));
 buttons.Controls.Add(UiFactory.Button(
