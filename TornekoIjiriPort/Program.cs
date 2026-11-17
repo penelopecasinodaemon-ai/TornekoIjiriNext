@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -3396,6 +3396,474 @@ internal sealed class MonsterNameEditorForm : Form
     }
 }
 
+internal sealed class Torneko4MemoryPatch
+{
+    public string Name { get; }
+    public long Address { get; }
+    public byte[] Data { get; }
+
+    public Torneko4MemoryPatch(string name, long address, byte[] data)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("変更名が空です。");
+
+        if (data == null || data.Length == 0)
+            throw new ArgumentException("変更データが空です。");
+
+        Name = name;
+        Address = address;
+        Data = (byte[])data.Clone();
+    }
+
+    public Torneko4MemoryPatch Clone()
+    {
+        return new Torneko4MemoryPatch(Name, Address, Data);
+    }
+}
+
+internal static class Torneko4PatchStore
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+        var patch = new Torneko4MemoryPatch(name, address, data);
+
+        lock (Sync)
+        {
+            int index = Patches.FindIndex(
+                x => x.Address == address && x.Name == name);
+
+            if (index >= 0)
+                Patches[index] = patch;
+            else
+                Patches.Add(patch);
+        }
+    }
+
+    public static System.Collections.Generic.List<Torneko4MemoryPatch> GetCopy()
+    {
+        lock (Sync)
+        {
+            return Patches.ConvertAll(x => x.Clone());
+        }
+    }
+
+    public static void ReplaceAll(
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        lock (Sync)
+        {
+            Patches.Clear();
+
+            if (patches == null)
+                return;
+
+            foreach (var patch in patches)
+            {
+                if (patch != null)
+                    Patches.Add(patch.Clone());
+            }
+        }
+    }
+
+    public static void Clear()
+    {
+        lock (Sync)
+        {
+            Patches.Clear();
+        }
+    }
+}
+
+internal sealed class Torneko4Package
+{
+    public TornekoBinPreservationSnapshot Snapshot { get; }
+    public byte[] EditedBase { get; }
+    public string OriginalSourcePath { get; }
+    public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+
+    public Torneko4Package(
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        string originalSourcePath,
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null)
+    {
+        Snapshot = snapshot;
+        EditedBase = (byte[])editedBase.Clone();
+        OriginalSourcePath = originalSourcePath ?? "";
+
+        Patches = patches == null
+            ? new System.Collections.Generic.List<Torneko4MemoryPatch>()
+            : patches.ConvertAll(x => x.Clone());
+    }
+}
+
+internal static class Torneko4FileService
+{
+    private static readonly byte[] Magic =
+        System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
+
+    private const int FormatVersion = 2;
+    private const int BaseSize = 524288;
+    private const int MaximumOriginalSize = 64 * 1024 * 1024;
+
+    // ファイル全体の実用上の安全上限。基本領域の容量制限ではない。
+    private const long MaximumPackageSize = 1024L * 1024L * 1024L;
+
+    private const int MaximumPatchCount = 100000;
+    private const int MaximumPatchSize = 64 * 1024 * 1024;
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase)
+    {
+        Save(path, snapshot, editedBase,
+            new System.Collections.Generic.List<Torneko4MemoryPatch>());
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (snapshot == null)
+            throw new ArgumentNullException(nameof(snapshot));
+
+        if (editedBase == null || editedBase.Length != BaseSize)
+            throw new InvalidDataException(
+                "編集済み基本領域のサイズが不正です。");
+
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("保存先が指定されていません。");
+
+        byte[] original = snapshot.GetCopy();
+
+        if (original.Length < BaseSize ||
+            original.Length > MaximumOriginalSize)
+        {
+            throw new InvalidDataException(
+                "元データのサイズが保存可能範囲外です。");
+        }
+
+        string originalHash =
+            TornekoBinPreservation.ComputeSha256(original);
+
+        if (!string.Equals(
+            originalHash,
+            snapshot.OriginalSha256,
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidDataException(
+                "元データの整合性が確認できません。");
+        }
+
+        string editedHash =
+            TornekoBinPreservation.ComputeSha256(editedBase);
+
+        var patchList =
+            new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+        if (patches != null)
+        {
+            foreach (var patch in patches)
+            {
+                if (patch == null)
+                    continue;
+
+                if (patch.Data == null ||
+                    patch.Data.Length == 0 ||
+                    patch.Data.Length > MaximumPatchSize)
+                {
+                    throw new InvalidDataException(
+                        "追加変更データのサイズが不正です。");
+                }
+
+                patchList.Add(patch.Clone());
+
+                if (patchList.Count > MaximumPatchCount)
+                    throw new InvalidDataException(
+                        "追加変更の登録数が上限を超えています。");
+            }
+        }
+
+        string fullPath = Path.GetFullPath(path);
+        string directory = Path.GetDirectoryName(fullPath);
+
+        if (string.IsNullOrWhiteSpace(directory))
+            throw new InvalidOperationException("保存先フォルダが不正です。");
+
+        Directory.CreateDirectory(directory);
+
+        string tempPath =
+            fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
+        try
+        {
+            using (var stream = new FileStream(
+                tempPath,
+                FileMode.CreateNew,
+                FileAccess.Write,
+                FileShare.None))
+            using (var writer = new BinaryWriter(
+                stream,
+                System.Text.Encoding.UTF8,
+                true))
+            {
+                writer.Write(Magic);
+                writer.Write(FormatVersion);
+                writer.Write(original.Length);
+                writer.Write(editedBase.Length);
+                writer.Write(snapshot.SourcePath ?? "");
+                writer.Write(originalHash);
+                writer.Write(editedHash);
+
+                writer.Write(original);
+                writer.Write(editedBase);
+
+                // バージョン2追加領域
+                writer.Write(patchList.Count);
+
+                foreach (var patch in patchList)
+                {
+                    writer.Write(patch.Name);
+                    writer.Write(patch.Address);
+                    writer.Write(patch.Data.Length);
+                    writer.Write(
+                        TornekoBinPreservation.ComputeSha256(patch.Data));
+                    writer.Write(patch.Data);
+                }
+
+                writer.Flush();
+                stream.Flush(true);
+            }
+
+            var writtenInfo = new FileInfo(tempPath);
+
+            if (writtenInfo.Length > MaximumPackageSize)
+                throw new InvalidDataException(
+                    "保存ファイルが安全上限を超えています。");
+
+            if (File.Exists(fullPath))
+                File.Move(tempPath, fullPath, true);
+            else
+                File.Move(tempPath, fullPath);
+
+            Torneko4Package check = Load(fullPath);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                check.EditedBase, editedBase))
+            {
+                throw new IOException(
+                    "保存後の基本領域検証に失敗しました。");
+            }
+
+            if (check.Patches.Count != patchList.Count)
+                throw new IOException(
+                    "保存後の追加変更数検証に失敗しました。");
+
+            for (int i = 0; i < patchList.Count; i++)
+            {
+                var a = patchList[i];
+                var b = check.Patches[i];
+
+                if (a.Address != b.Address ||
+                    a.Name != b.Name ||
+                    !System.Linq.Enumerable.SequenceEqual(a.Data, b.Data))
+                {
+                    throw new IOException(
+                        "保存後の追加変更データ検証に失敗しました。");
+                }
+            }
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+                File.Delete(tempPath);
+        }
+    }
+
+    public static Torneko4Package Load(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            throw new FileNotFoundException(
+                "Torneko4ファイルが見つかりません。",
+                path);
+
+        FileInfo info = new FileInfo(path);
+
+        if (info.Length < 100 ||
+            info.Length > MaximumPackageSize)
+        {
+            throw new InvalidDataException(
+                "Torneko4ファイルのサイズが不正です。");
+        }
+
+        using var stream = new FileStream(
+            path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read);
+
+        using var reader = new BinaryReader(
+            stream,
+            System.Text.Encoding.UTF8,
+            true);
+
+        byte[] magic = reader.ReadBytes(8);
+
+        if (!System.Linq.Enumerable.SequenceEqual(magic, Magic))
+            throw new InvalidDataException(
+                "Torneko4識別ヘッダーが一致しません。");
+
+        int version = reader.ReadInt32();
+
+        if (version != 1 && version != FormatVersion)
+            throw new InvalidDataException(
+                "未対応のTorneko4バージョンです: " + version);
+
+        int originalLength = reader.ReadInt32();
+        int editedLength = reader.ReadInt32();
+
+        if (originalLength < BaseSize ||
+            originalLength > MaximumOriginalSize ||
+            editedLength != BaseSize)
+        {
+            throw new InvalidDataException(
+                "Torneko4内の基本データサイズが不正です。");
+        }
+
+        string originalSourcePath = reader.ReadString();
+        string expectedOriginalHash = reader.ReadString();
+        string expectedEditedHash = reader.ReadString();
+
+        if (expectedOriginalHash.Length != 64 ||
+            expectedEditedHash.Length != 64)
+        {
+            throw new InvalidDataException(
+                "Torneko4のハッシュ情報が不正です。");
+        }
+
+        byte[] original = reader.ReadBytes(originalLength);
+        byte[] editedBase = reader.ReadBytes(editedLength);
+
+        if (original.Length != originalLength ||
+            editedBase.Length != editedLength)
+        {
+            throw new InvalidDataException(
+                "Torneko4のデータが途中で切れています。");
+        }
+
+        string actualOriginalHash =
+            TornekoBinPreservation.ComputeSha256(original);
+
+        string actualEditedHash =
+            TornekoBinPreservation.ComputeSha256(editedBase);
+
+        if (!string.Equals(
+            expectedOriginalHash,
+            actualOriginalHash,
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidDataException(
+                "元データのSHA256が一致しません。");
+        }
+
+        if (!string.Equals(
+            expectedEditedHash,
+            actualEditedHash,
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidDataException(
+                "編集データのSHA256が一致しません。");
+        }
+
+        var patchList =
+            new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+        // バージョン1は従来どおり追加領域なし。
+        if (version >= 2)
+        {
+            int patchCount = reader.ReadInt32();
+
+            if (patchCount < 0 || patchCount > MaximumPatchCount)
+                throw new InvalidDataException(
+                    "追加変更の件数が不正です。");
+
+            long totalPatchBytes = 0;
+
+            for (int i = 0; i < patchCount; i++)
+            {
+                string name = reader.ReadString();
+                long address = reader.ReadInt64();
+                int dataLength = reader.ReadInt32();
+                string expectedPatchHash = reader.ReadString();
+
+                if (string.IsNullOrWhiteSpace(name) ||
+                    dataLength <= 0 ||
+                    dataLength > MaximumPatchSize ||
+                    expectedPatchHash.Length != 64)
+                {
+                    throw new InvalidDataException(
+                        "追加変更の情報が不正です。");
+                }
+
+                totalPatchBytes += dataLength;
+
+                if (totalPatchBytes > MaximumPackageSize)
+                    throw new InvalidDataException(
+                        "追加変更データが上限を超えています。");
+
+                byte[] data = reader.ReadBytes(dataLength);
+
+                if (data.Length != dataLength)
+                    throw new InvalidDataException(
+                        "追加変更データが途中で切れています。");
+
+                string actualPatchHash =
+                    TornekoBinPreservation.ComputeSha256(data);
+
+                if (!string.Equals(
+                    expectedPatchHash,
+                    actualPatchHash,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidDataException(
+                        "追加変更データのSHA256が一致しません: " + name);
+                }
+
+                patchList.Add(
+                    new Torneko4MemoryPatch(name, address, data));
+            }
+        }
+
+        if (stream.Position != stream.Length)
+            throw new InvalidDataException(
+                "Torneko4の末尾に不明なデータがあります。");
+
+        string embeddedPath = Path.Combine(
+            Path.GetTempPath(),
+            "Torneko4Embedded_" +
+            Guid.NewGuid().ToString("N") +
+            ".bin");
+
+        var snapshot = new TornekoBinPreservationSnapshot(
+            original,
+            embeddedPath);
+
+        return new Torneko4Package(
+            snapshot,
+            editedBase,
+            originalSourcePath,
+            patchList);
+    }
+}
+
 internal sealed class MainForm : Form
 {
     private byte[]? _bin;
@@ -3414,7 +3882,7 @@ internal sealed class MainForm : Form
 
     public MainForm()
     {
-        Text = "トルネコいじり Port";
+        Text = "トルネコいじりネクストv1.0";
         StartPosition = FormStartPosition.CenterScreen;
         Width = 1050;
         Height = 760;
@@ -3462,6 +3930,18 @@ internal sealed class MainForm : Form
         };
 
         pcsx2Button.Click += (_, _) => OpenPcsx2Connection();
+        var loadDungeonButton = new Button
+        {
+            Text = "改造データ読み込み・即時適用",
+            Width = 270,
+            Height = 42,
+            Location = new Point(700, 32),
+            Font = new Font("Yu Gothic UI", 10, FontStyle.Bold)
+        };
+
+        loadDungeonButton.Click += (_, _) =>
+            OpenDungeonDataAndApply();
+
 
         _pcsx2ConnectionStatus = new Label
         {
@@ -3484,12 +3964,13 @@ internal sealed class MainForm : Form
         pcsx2Panel.Controls.Add(pcsx2Button);
         pcsx2Panel.Controls.Add(_pcsx2ConnectionStatus);
         pcsx2Panel.Controls.Add(_pcsx2DataStatus);
+        pcsx2Panel.Controls.Add(loadDungeonButton);
 
         var header = new Panel { Dock = DockStyle.Fill };
 
         var title = new Label
         {
-            Text = "トルネコいじり Port",
+            Text = "トルネコいじりネクストv1.0",
             Font = new Font("Yu Gothic UI", 22, FontStyle.Bold),
             AutoSize = true,
             Location = new Point(8, 4)
@@ -3543,12 +4024,8 @@ internal sealed class MainForm : Form
             }));
 
         buttons.Controls.Add(UiFactory.Button(
-            "改造ダンジョンのデータ読み込み", (_, _) => OpenBin()));
-
-        buttons.Controls.Add(UiFactory.Button(
-            "改造ダンジョンを適用", (_, _) => ApplyBinToPcsx2()));
-
-        buttons.Controls.Add(UiFactory.Button(
+            "改造データを.Torneko4保存", (_, _) => SaveTorneko4()));
+buttons.Controls.Add(UiFactory.Button(
             "モンスター名変更", (_, _) =>
             {
                 if (!Pcsx2LiveSession.IsConnected ||
@@ -3798,6 +4275,159 @@ internal sealed class MainForm : Form
         UpdateStatus();
     }
 
+    private void SaveTorneko4()
+    {
+        if (_bin == null ||
+            _bin.Length != 524288 ||
+            _binSnapshot == null)
+        {
+            MessageBox.Show(
+                this,
+                "保存する改造データがありません。先にBINまたはPCSX2のデータを読み込んでください。",
+                "保存データなし",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        using var dialog = new SaveFileDialog
+        {
+            Title = "トルネコいじりネクスト改造データを保存",
+            Filter = "トルネコいじりネクスト (*.Torneko4)|*.Torneko4",
+            DefaultExt = "Torneko4",
+            AddExtension = true,
+            FileName = "改造ダンジョン.Torneko4",
+            OverwritePrompt = true
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            Torneko4FileService.Save(
+                dialog.FileName,
+                _binSnapshot,
+                _bin,
+                Torneko4PatchStore.GetCopy());
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            MessageBox.Show(
+                this,
+                "改造データを.Torneko4形式で保存しました。\r\n\r\n" +
+                "基本領域: " + _bin.Length.ToString("N0") + " bytes\r\n" +
+                "追加メモリ変更: " + Torneko4PatchStore.GetCopy().Count.ToString("N0") + " 件\r\n" +
+                "元データ・編集データ・追加変更のSHA256検証: 成功\r\n" +
+                "保存先:\r\n" + dialog.FileName,
+                "Torneko4保存完了",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            UiFactory.Error(this, ex);
+        }
+    }
+
+    private void OpenDungeonDataAndApply()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (Pcsx2LiveSession.MemoryLayout == null)
+        {
+            MessageBox.Show(
+                this,
+                "メモリアドレスが未確定です。PCSX2への接続とメモリ検索を完了してください。",
+                "メモリ未確定",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        using var dialog = new OpenFileDialog
+        {
+            Title = "読み込んでPCSX2へ適用する改造データを選択",
+            Filter =
+                "ネクスト改造データ (*.Torneko4)|*.Torneko4|" +
+                "旧BINファイル (*.bin)|*.bin",
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            string extension =
+                Path.GetExtension(dialog.FileName);
+
+            bool loaded = false;
+
+            if (string.Equals(
+                extension,
+                ".Torneko4",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Torneko4Package package =
+                    Torneko4FileService.Load(dialog.FileName);
+
+                _binSnapshot = package.Snapshot;
+                _bin = (byte[])package.EditedBase.Clone();
+                Torneko4PatchStore.ReplaceAll(package.Patches);
+                loaded = true;
+            }
+
+            if (string.Equals(
+                extension,
+                ".bin",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                TornekoBinPreservationSnapshot snapshot =
+                    TornekoBinPreservation.Load(dialog.FileName);
+
+                byte[] loadedBase =
+                    TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+
+                if (loadedBase.Length != 524288)
+                    throw new InvalidDataException(
+                        "BINの基本領域が524288 bytesではありません。");
+
+                _binSnapshot = snapshot;
+                _bin = loadedBase;
+                Torneko4PatchStore.Clear();
+                loaded = true;
+            }
+
+            if (!loaded)
+                throw new InvalidDataException(
+                    "対応していないファイル形式です。");
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            _status.Text =
+                "改造データ読み込み完了。PCSX2への適用確認中...";
+
+            // 読み込み直後に既存の安全検証付き適用処理へ進む。
+            ApplyBinToPcsx2();
+        }
+        catch (Exception ex)
+        {
+            UiFactory.Error(this, ex);
+        }
+    }
     private void OpenBin()
     {
         using var dialog = new OpenFileDialog
