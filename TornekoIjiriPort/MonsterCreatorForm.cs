@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace TornekoIjiriPort;
@@ -214,10 +215,13 @@ internal sealed class MonsterCreatorForm : Form
     private const int MonsterRecordCount = 199;
     private const int SkillVersionOffset = 355056;
     private const int SkillRangeDataOffset = 382206;
-    private const int SkillAllyItemDataOffset = 386212;
-    private const int SkillExtensionRequiredEnd = 394356;
+    private const int SkillMessageTableOffset = 386212;
+    private const int SkillAllyItemDataOffset = 396212;
+    private const int SkillMessageCount = 41;
+    private const int SkillExtensionRequiredEnd = 404356;
     private const uint EeAddressMask = 0x1FFFFFFF;
     private const uint EeMemoryBaseAddress = 0x00180000;
+    private const uint SkillMessagePointerBase = EeMemoryBaseAddress + 0x009126D0;
 
     private readonly byte[]? _bin;
     private readonly Action? _onChanged;
@@ -259,7 +263,7 @@ internal sealed class MonsterCreatorForm : Form
     private readonly CheckBox[] _systemChecks = CreateChecks(SystemFamilyNames);
     private readonly CheckBox[] _skillChecks = CreateChecks(SkillFamilyNames);
     private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
-    private readonly NumericUpDown _dropItem = CreateNumber(ushort.MaxValue);
+    private readonly ComboBox _dropItem = CreateChoice(MonsterSkillData.DropItemChoices);
     private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
 
     private static readonly string[] SkillRangeNames =
@@ -275,9 +279,10 @@ internal sealed class MonsterCreatorForm : Form
     };
 
     private readonly ComboBox _skillRange = CreateChoice(SkillRangeNames);
-    private readonly ComboBox _enemyThrowItem = CreateChoice(MonsterSkillData.ItemChoices);
-    private readonly ComboBox _allyThrowItem1 = CreateChoice(MonsterSkillData.ItemChoices);
-    private readonly ComboBox _allyThrowItem2 = CreateChoice(MonsterSkillData.ItemChoices);
+    private readonly ComboBox _enemyThrowItem = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem1 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem2 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _skillMessage = CreateChoice(new[] { "特技メッセージ無し" });
     private bool _skillDataReady;
     private readonly Button _applyButton = new Button();
     private readonly List<int> _visibleIds = new List<int>();
@@ -371,7 +376,7 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 10,
+            RowCount = 11,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
@@ -388,6 +393,7 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
 
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
         fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
         fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
@@ -400,13 +406,15 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
         fieldGrid.Controls.Add(CreateField("移動速度", _moveSpeed), 0, 5);
         fieldGrid.Controls.Add(CreateField("ドロップ率（生値）", _dropRate), 1, 5);
-        fieldGrid.Controls.Add(CreateField("ドロップアイテムID", _dropItem), 0, 6);
+        fieldGrid.Controls.Add(CreateField("ドロップアイテム", _dropItem), 0, 6);
         fieldGrid.Controls.Add(CreateField("スポーン時睡眠率（生値）", _sleepRate), 1, 6);
         fieldGrid.Controls.Add(CreateField("特技使用範囲", _skillRange), 0, 7);
         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
         fieldGrid.Controls.Add(CreateField("敵に投げるアイテム", _enemyThrowItem), 0, 8);
         fieldGrid.Controls.Add(CreateField("味方に投げるアイテム 1", _allyThrowItem1), 1, 8);
         fieldGrid.Controls.Add(CreateField("味方に投げるアイテム 2", _allyThrowItem2), 0, 9);
+        fieldGrid.Controls.Add(CreateField("特技メッセージ", _skillMessage), 0, 10);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
 
         var explanation = new Label
         {
@@ -418,7 +426,7 @@ internal sealed class MonsterCreatorForm : Form
                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
                 "生値を保持して編集します。勧誘修正値・回復定数は別途対応します。\r\n" +
-                "特技範囲・敵向けアイテム・味方向けアイテム2種はバージョン5拡張領域を編集します。\r\n" +
+                "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
                 "変更はBINの作業データに反映され、ゲームメモリには直接書き込みません。"
         };
 
@@ -489,6 +497,12 @@ internal sealed class MonsterCreatorForm : Form
 
         _dataReady = TryResolveRecordTable(_bin, out _recordTableOffset, out string reason);
         _skillDataReady = TryResolveSkillExtension(_bin);
+
+        if (_skillDataReady && _bin != null)
+        {
+            _skillMessage.Items.Clear();
+            _skillMessage.Items.AddRange(ReadSkillMessageChoices(_bin));
+        }
         _applyButton.Enabled = _dataReady;
 
         if (_dataReady)
@@ -663,6 +677,65 @@ internal sealed class MonsterCreatorForm : Form
         return true;
     }
 
+    private static string[] ReadSkillMessageChoices(byte[] bin)
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Encoding encoding = Encoding.GetEncoding(932);
+        var choices = new List<string>(SkillMessageCount + 1);
+        choices.Add("特技メッセージ無し");
+
+        for (int i = 0; i < SkillMessageCount; i++)
+        {
+            int offset = SkillMessageTableOffset + i * 16;
+            BinFileService.CheckRange(bin, offset, 16);
+
+            int length = 0;
+            while (length < 16 && bin[offset + length] != 0)
+                length++;
+
+            string label = encoding.GetString(bin, offset, length).TrimEnd((char)0, (char)32);
+            if (string.IsNullOrWhiteSpace(label))
+                label = "メッセージ " + (i + 1).ToString("D2");
+
+            choices.Add(label);
+        }
+
+        return choices.ToArray();
+    }
+
+    private static int ResolveSkillMessageIndex(uint pointer)
+    {
+        if (pointer == 0)
+            return 0;
+
+        for (int i = 0; i < SkillMessageCount; i++)
+        {
+            uint expected = SkillMessagePointerBase + (uint)i * 16;
+            if (pointer == expected)
+                return i + 1;
+        }
+
+        return -1;
+    }
+
+    private static uint ReadUInt32LE(byte[] data, int offset)
+    {
+        BinFileService.CheckRange(data, offset, 4);
+        return (uint)data[offset]
+            | ((uint)data[offset + 1] << 8)
+            | ((uint)data[offset + 2] << 16)
+            | ((uint)data[offset + 3] << 24);
+    }
+
+    private static void WriteUInt32LE(byte[] data, int offset, uint value)
+    {
+        BinFileService.CheckRange(data, offset, 4);
+        data[offset] = (byte)value;
+        data[offset + 1] = (byte)(value >> 8);
+        data[offset + 2] = (byte)(value >> 16);
+        data[offset + 3] = (byte)(value >> 24);
+    }
+
     private static bool TryResolveSkillExtension(byte[]? bin)
     {
         if (bin == null)
@@ -693,6 +766,7 @@ internal sealed class MonsterCreatorForm : Form
         _enemyThrowItem.Enabled = enabled && _skillDataReady;
         _allyThrowItem1.Enabled = enabled && _skillDataReady;
         _allyThrowItem2.Enabled = enabled && _skillDataReady;
+        _skillMessage.Enabled = enabled && _skillDataReady;
         _applyButton.Enabled = enabled;
     }
 
@@ -781,7 +855,8 @@ internal sealed class MonsterCreatorForm : Form
         int speedValue = _bin[offset + 9];
         _moveSpeed.SelectedIndex = speedValue < _moveSpeed.Items.Count ? speedValue : -1;
         _dropRate.Value = _bin[offset + 10];
-        _dropItem.Value = BinFileService.ReadUInt16(_bin, offset + 16);
+        ushort dropItemValue = BinFileService.ReadUInt16(_bin, offset + 16);
+        _dropItem.SelectedIndex = dropItemValue < _dropItem.Items.Count ? dropItemValue : -1;
         _sleepRate.Value = _bin[offset + 18];
 
         if (_skillDataReady)
@@ -790,11 +865,13 @@ internal sealed class MonsterCreatorForm : Form
             int allyOffset = SkillAllyItemDataOffset + id * 8;
 
             ushort rangeValue = BinFileService.ReadUInt16(_bin, rangeOffset + 6);
+            uint messagePointer = ReadUInt32LE(_bin, rangeOffset + 10);
             ushort enemyItemValue = BinFileService.ReadUInt16(_bin, rangeOffset + 18);
             ushort allyItemValue1 = BinFileService.ReadUInt16(_bin, allyOffset);
             ushort allyItemValue2 = BinFileService.ReadUInt16(_bin, allyOffset + 2);
 
             _skillRange.SelectedIndex = rangeValue < _skillRange.Items.Count ? rangeValue : -1;
+            _skillMessage.SelectedIndex = ResolveSkillMessageIndex(messagePointer);
             _enemyThrowItem.SelectedIndex = enemyItemValue < _enemyThrowItem.Items.Count ? enemyItemValue : -1;
             _allyThrowItem1.SelectedIndex = allyItemValue1 < _allyThrowItem1.Items.Count ? allyItemValue1 : -1;
             _allyThrowItem2.SelectedIndex = allyItemValue2 < _allyThrowItem2.Items.Count ? allyItemValue2 : -1;
@@ -834,13 +911,21 @@ internal sealed class MonsterCreatorForm : Form
         if (_moveSpeed.SelectedIndex >= 0)
             _bin[offset + 9] = (byte)_moveSpeed.SelectedIndex;
         _bin[offset + 10] = (byte)_dropRate.Value;
-        BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.Value);
+        if (_dropItem.SelectedIndex >= 0)
+            BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.SelectedIndex);
         _bin[offset + 18] = (byte)_sleepRate.Value;
 
         if (_skillDataReady)
         {
             int rangeOffset = SkillRangeDataOffset + _selectedMonsterId * 20;
             int allyOffset = SkillAllyItemDataOffset + _selectedMonsterId * 8;
+
+            uint messagePointer = 0;
+            if (_skillMessage.SelectedIndex > 0)
+                messagePointer = SkillMessagePointerBase + (uint)(_skillMessage.SelectedIndex - 1) * 16;
+
+            WriteUInt32LE(_bin, rangeOffset + 10, messagePointer);
+            WriteUInt32LE(_bin, rangeOffset + 14, messagePointer);
 
             if (_skillRange.SelectedIndex >= 0)
                 BinFileService.WriteUInt16(_bin, rangeOffset + 6, (ushort)_skillRange.SelectedIndex);

@@ -1,8 +1,10 @@
+using System.Linq;
+
 namespace TornekoIjiriPort;
 
 internal static class MonsterSkillData
 {
-    internal static readonly string[] ItemChoices =
+    internal static readonly string[] ItemNames =
     {
         "こんぼう",
         "金の剣",
@@ -358,7 +360,13 @@ internal static class MonsterSkillData
         "何か352",
         "モンスターの跡",
         "凍える息",
-        "",
-        "落アイテム ランダム",
     };
+
+    // 旧HSP var_387: ランダムが先頭、その後に354種類
+    internal static readonly string[] DropItemChoices =
+        new[] { "落アイテム ランダム" }.Concat(ItemNames).ToArray();
+
+    // 旧HSP var_412: 空欄を先頭に挿入した投擲用リスト
+    internal static readonly string[] ThrowItemChoices =
+        new[] { "", "落アイテム ランダム" }.Concat(ItemNames).ToArray();
 }
