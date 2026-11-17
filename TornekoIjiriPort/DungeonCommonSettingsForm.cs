@@ -206,13 +206,14 @@ internal sealed class DungeonCommonSettingsForm : Form
             Dock = DockStyle.Fill,
             Padding = new Padding(20),
             ColumnCount = 1,
-            RowCount = 5
+            RowCount = 6
         };
 
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 55));
 
         var heading = new Label
@@ -255,6 +256,20 @@ internal sealed class DungeonCommonSettingsForm : Form
 
         applyButton.Click += (_, _) => ApplyHayabusa();
 
+        var weaponIdButton = new Button
+        {
+            Text = "装備中の武器IDを調べる",
+            Dock = DockStyle.Fill,
+            Height = 40,
+            Font = new Font("Yu Gothic UI", 11, FontStyle.Bold)
+        };
+
+        weaponIdButton.Click += (_, _) =>
+        {
+            using var scanner = new EquippedWeaponIdScannerForm();
+            scanner.ShowDialog(this);
+        };
+
         _itemStatus = new Label
         {
             Text = "PCSX2に接続して、ゲームを起動した状態で実行してください。",
@@ -267,7 +282,8 @@ internal sealed class DungeonCommonSettingsForm : Form
         root.Controls.Add(nameLabel, 0, 1);
         root.Controls.Add(description, 0, 2);
         root.Controls.Add(applyButton, 0, 3);
-        root.Controls.Add(_itemStatus, 0, 4);
+        root.Controls.Add(weaponIdButton, 0, 4);
+        root.Controls.Add(_itemStatus, 0, 5);
 
         page.Controls.Add(root);
     }
@@ -673,6 +689,17 @@ internal sealed class DungeonCommonSettingsForm : Form
                     "PCSX2のEE RAM基準アドレスを取得できません。");
 
             long nameAddress = HayabusaNameAddress;
+
+            // 実際のEE RAM基準アドレスから相対アドレスを計算する。
+            long nameOffset = checked(nameAddress - eeBase);
+
+            // EE RAMの範囲内であることを確認する。
+            if (nameOffset < 0 || nameOffset >= 0x02000000L)
+                throw new InvalidOperationException(
+                    "武器名のアドレスがEE RAMの範囲外です。" +
+                    "\r\n絶対アドレス: 0x" + nameAddress.ToString("X") +
+                    "\r\nEE RAM基準: 0x" + eeBase.ToString("X") +
+                    "\r\n相対アドレス: 0x" + nameOffset.ToString("X"));
             long staticDescriptionAddress =
                 checked(eeBase + ItemTableDescriptionOffset);
             long runtimeDescriptionAddress =
@@ -765,6 +792,24 @@ internal sealed class DungeonCommonSettingsForm : Form
                         change.Address.ToString("X"));
                 }
             }
+
+            // 説明文2か所はEE RAMオフセットとして保存する。
+            // アイテム名アドレスは絶対アドレス形式のため登録しない。
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・アイテム説明文",
+                ItemTableDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+                descriptionData);
+
+            // 武器名もEE RAM相対アドレスとして保存する。
+            Torneko4PatchStore.Register(
+                "はやぶさ設定・アイテム名",
+                nameOffset,
+                nameData);
 
             _itemStatus.Text =
                 "変更完了。3か所すべての読み戻し検証に成功しました。";

@@ -2366,6 +2366,197 @@ internal static class Pcsx2BinApplier
             CloseHandle(handle);
         }
     }
+    // ========================================================
+    // Torneko4追加メモリパッチ適用
+    // EE RAMオフセットを使用し、事前検証・読み戻し・ロールバックを行う
+    // ========================================================
+    public static string ApplyPatches(
+        int processId,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+            if (patch == null || patch.Data == null || patch.Data.Length == 0)
+                throw new System.InvalidOperationException("追加メモリ変更データが不正です。");
+
+            source.Add(patch.Clone());
+        }
+
+        if (source.Count == 0)
+            return "追加メモリ変更: 0件";
+
+        const long EeRamSize = 0x02000000L;
+
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+        if (eeBase <= 0)
+            throw new System.InvalidOperationException(
+                "追加メモリ変更の適用に必要なEE RAM基準アドレスを取得できません。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+
+        foreach (var patch in source)
+        {
+            if (patch.Address < 0 ||
+                patch.Data.Length <= 0 ||
+                patch.Address > EeRamSize - patch.Data.Length)
+            {
+                throw new System.InvalidOperationException(
+                    "EE RAM範囲外の追加変更を検出しました: " + patch.Name +
+                    " / Offset=0x" + patch.Address.ToString("X") +
+                    " / Size=" + patch.Data.Length);
+            }
+
+            long address = checked(eeBase + patch.Address);
+            blocks.Add(new WriteBlock(
+                patch.Name,
+                address,
+                (byte[])patch.Data.Clone()));
+        }
+
+        // 重複する書き込み範囲を禁止
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            ulong aStart = unchecked((ulong)blocks[i].Address);
+            ulong aEnd = checked(aStart + (ulong)blocks[i].Data.Length);
+
+            for (int j = i + 1; j < blocks.Count; j++)
+            {
+                ulong bStart = unchecked((ulong)blocks[j].Address);
+                ulong bEnd = checked(bStart + (ulong)blocks[j].Data.Length);
+
+                if (aStart < bEnd && bStart < aEnd)
+                    throw new System.InvalidOperationException(
+                        "追加メモリ変更の範囲が重複しています: " +
+                        blocks[i].Name + " / " + blocks[j].Name);
+            }
+        }
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ |
+            PROCESS_VM_WRITE |
+            PROCESS_VM_OPERATION |
+            PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "追加メモリ変更用のPCSX2ハンドルを取得できません。");
+
+        try
+        {
+            // 全領域を事前検証。1つでも失敗した場合は書き込まない。
+            foreach (WriteBlock block in blocks)
+                ValidateAccessibleRange(handle, block);
+
+            // 全領域の元データを先に保存
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(
+                    handle,
+                    block.Address,
+                    block.Data.Length,
+                    block.Name + "の事前保存");
+
+            int attempted = -1;
+
+            try
+            {
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    WriteBlock block = blocks[i];
+                    attempted = i;
+
+                    WriteExact(
+                        handle,
+                        block.Address,
+                        block.Data,
+                        block.Name);
+
+                    byte[] verify = ReadExact(
+                        handle,
+                        block.Address,
+                        block.Data.Length,
+                        block.Name + "の読み戻し");
+
+                    if (!System.Linq.Enumerable.SequenceEqual(
+                        verify, block.Data))
+                    {
+                        throw new System.InvalidOperationException(
+                            "追加メモリ変更の読み戻しが一致しません: " +
+                            block.Name);
+                    }
+                }
+            }
+            catch (System.Exception applyError)
+            {
+                var rollbackErrors =
+                    new System.Collections.Generic.List<string>();
+
+                for (int i = attempted; i >= 0; i--)
+                {
+                    WriteBlock block = blocks[i];
+
+                    try
+                    {
+                        WriteExact(
+                            handle,
+                            block.Address,
+                            block.Original,
+                            block.Name + "の復元");
+
+                        byte[] restored = ReadExact(
+                            handle,
+                            block.Address,
+                            block.Original.Length,
+                            block.Name + "の復元確認");
+
+                        if (!System.Linq.Enumerable.SequenceEqual(
+                            restored, block.Original))
+                        {
+                            throw new System.InvalidOperationException(
+                                "復元後の読み戻しが一致しません。");
+                        }
+                    }
+                    catch (System.Exception rollbackError)
+                    {
+                        rollbackErrors.Add(
+                            block.Name + ": " + rollbackError.Message);
+                    }
+                }
+
+                if (rollbackErrors.Count > 0)
+                    throw new System.InvalidOperationException(
+                        "追加メモリ変更に失敗し、一部の復元も確認できませんでした。\r\n" +
+                        string.Join("\r\n", rollbackErrors),
+                        applyError);
+
+                throw new System.InvalidOperationException(
+                    "追加メモリ変更に失敗しました。書き込み済み領域は復元しました。",
+                    applyError);
+            }
+
+            int total = 0;
+            foreach (WriteBlock block in blocks)
+                total = checked(total + block.Data.Length);
+
+            return "追加メモリ変更: " + blocks.Count +
+                "件\r\n追加書き込み総量: " + total.ToString("N0") +
+                " bytes\r\nEE RAM基準アドレス: 0x" +
+                eeBase.ToString("X");
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
 }
 
 internal static class Program
@@ -4510,6 +4701,14 @@ buttons.Controls.Add(UiFactory.Button(
         {
             string result = Pcsx2BinApplier.Apply(
                 Pcsx2LiveSession.ProcessId, layout, _bin);
+
+            // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+            var memoryPatches = Torneko4PatchStore.GetCopy();
+            string patchResult = Pcsx2BinApplier.ApplyPatches(
+                Pcsx2LiveSession.ProcessId,
+                memoryPatches);
+
+            result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
 
             _status.Text = "改造ダンジョン適用済み";
             _pcsx2DataStatus.Text = "改造ダンジョン適用済み";

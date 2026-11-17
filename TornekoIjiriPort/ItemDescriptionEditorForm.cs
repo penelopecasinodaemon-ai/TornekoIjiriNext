@@ -715,6 +715,15 @@ private string WriteCandidateText(Candidate candidate, string newText)
                     readAfter2000
                 );
 
+            // 2秒後も維持されている場合だけTorneko4保存対象に登録する。
+            if (match2000)
+            {
+                Torneko4PatchStore.Register(
+                    "アイテム説明文編集",
+                    targetOffset,
+                    buffer);
+            }
+
             finalReport =
                 "連続書き込み実験が終了しました。\r\n\r\n" +
                 "書き込み成功回数: " + successCount + "\r\n" +
