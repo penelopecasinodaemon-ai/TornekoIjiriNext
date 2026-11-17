@@ -99,6 +99,17 @@ internal sealed class ItemDescriptionEditorForm : Form
         };
 
         top.Controls.Add(_scanButton);
+        var rawSearchButton = new Button
+        {
+            Text = "説明文の生データを検索",
+            Width = 210,
+            Height = 32
+        };
+
+        rawSearchButton.Click += async (_, _) =>
+            await SearchRawDescriptionAsync();
+
+        top.Controls.Add(rawSearchButton);
         top.Controls.Add(hint);
 
         var filterPanel = new FlowLayoutPanel
@@ -530,14 +541,14 @@ private void EditSelectedCandidate()
     {
         try
         {
-            WriteCandidateText(candidate, editor.Text);
+            string verification = WriteCandidateText(candidate, editor.Text);
 
             _detail.Text = editor.Text;
 
             MessageBox.Show(
                 dialog,
-                "説明文をEE RAMへ書き込みました。",
-                "書き込み成功",
+                verification,
+                "EE RAM書き込み検証結果",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
@@ -574,110 +585,180 @@ private void EditSelectedCandidate()
     dialog.ShowDialog(this);
 }
 
-private void WriteCandidateText(Candidate candidate, string newText)
+private string WriteCandidateText(Candidate candidate, string newText)
 {
-    if (candidate == null)
-        throw new ArgumentNullException(nameof(candidate));
-
-    if (string.IsNullOrEmpty(newText))
-        throw new InvalidOperationException("説明文が空です。");
-
-    System.Text.Encoding.RegisterProvider(
-        System.Text.CodePagesEncodingProvider.Instance
-    );
-
-    System.Text.Encoding encoding =
-        System.Text.Encoding.GetEncoding(932);
-
+    var encoding = System.Text.Encoding.GetEncoding(932);
     byte[] encoded = encoding.GetBytes(newText);
 
     int originalLength = candidate.Bytes.Length;
 
-    if (originalLength <= 0)
-        throw new InvalidOperationException("元データのサイズが不正です。");
-
     if (encoded.Length + 1 > originalLength)
     {
         throw new InvalidOperationException(
-            "変更後の文章が元データの領域を超えています。`r`n" +
-            "元データ: " + originalLength + " バイト`r`n" +
-            "変更後: " + (encoded.Length + 1) + " バイト`r`n" +
-            "文字数を減らしてください。"
+            "変更後の文章が元のデータ領域より長いため書き込めません。"
         );
     }
 
-    long offset = candidate.Address - EeRamStart;
+    long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_pid);
 
-    if (offset < 0 || offset + originalLength > EeRamSize)
-        throw new InvalidOperationException("EE RAMの範囲外です。");
+    // エレファントクロウの一時コピーではなく、
+    // アイテムデータ一覧内の説明文を編集する
+    long targetOffset = candidate.Address;
 
-    long eeBase =
-        Pcsx2MemoryLayoutBuilder.GetEEmemBase(_pid);
+    if (candidate.Address == 0x01FFF1F0L)
+    {
+        targetOffset = 0x00107BC7L;
+    }
 
-    if (eeBase <= 0)
-        throw new InvalidOperationException("EE RAMのベースアドレスを取得できません。");
+    long targetAddress = eeBase + targetOffset;
 
     byte[] buffer = new byte[originalLength];
-
-    Buffer.BlockCopy(
-        encoded,
-        0,
-        buffer,
-        0,
-        encoded.Length
-    );
-
+    Array.Copy(encoded, buffer, encoded.Length);
     buffer[encoded.Length] = 0;
 
-    const uint PROCESS_VM_OPERATION = 0x0008;
-    const uint PROCESS_VM_WRITE = 0x0020;
-    const uint PROCESS_QUERY_INFORMATION = 0x0400;
+    const uint access =
+        0x0008 |  // PROCESS_VM_OPERATION
+        0x0020 |  // PROCESS_VM_WRITE
+        0x0010 |  // PROCESS_VM_READ
+        0x0400;   // PROCESS_QUERY_INFORMATION
 
-    IntPtr handle = OpenProcess(
-        PROCESS_VM_OPERATION |
-        PROCESS_VM_WRITE |
-        PROCESS_QUERY_INFORMATION,
-        false,
-        _pid
-    );
+    IntPtr process = OpenProcess(access, false, _pid);
 
-    if (handle == IntPtr.Zero)
+    if (process == IntPtr.Zero)
     {
-        throw new System.ComponentModel.Win32Exception(
-            System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
-            "PCSX2のプロセスを開けませんでした。"
+        throw new InvalidOperationException(
+            "PCSX2のプロセスを開けません。"
         );
     }
 
-    try
+    string startReport =
+        "連続書き込みを開始しました。\r\n\r\n" +
+        "対象アドレス: 0x" + candidate.Address.ToString("X8") + "\r\n" +
+        "間隔: 50ミリ秒\r\n" +
+        "時間: 30秒\r\n\r\n" +
+        "このメッセージを閉じてゲーム画面を確認してください。";
+
+    System.Threading.Tasks.Task.Run(() =>
     {
-        IntPtr targetAddress = new IntPtr(eeBase + offset);
+        int successCount = 0;
+        int failureCount = 0;
+        string finalReport = "";
 
-        bool success = WriteProcessMemory(
-            handle,
-            targetAddress,
-            buffer,
-            new UIntPtr((uint)buffer.Length),
-            out UIntPtr written
-        );
-
-        ulong actual = written.ToUInt64();
-
-        if (!success || actual != (ulong)buffer.Length)
+        try
         {
-            throw new System.ComponentModel.Win32Exception(
-                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
-                "EE RAMへの書き込みに失敗しました。書き込みバイト数: " +
-                actual
-            );
-        }
-    }
-    finally
-    {
-        CloseHandle(handle);
-    }
-}
+            long endTime =
+                Environment.TickCount64 + 30000;
 
+            while (Environment.TickCount64 < endTime)
+            {
+                UIntPtr written;
+
+                bool success = WriteProcessMemory(
+                    process,
+                    new IntPtr(targetAddress),
+                    buffer,
+                    new UIntPtr((uint)buffer.Length),
+                    out written
+                );
+
+                if (success && written.ToUInt64() == (ulong)buffer.Length)
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failureCount++;
+                }
+
+                System.Threading.Thread.Sleep(50);
+            }
+
+            System.Threading.Thread.Sleep(500);
+
+            byte[] readAfter500 = new byte[originalLength];
+            UIntPtr read500;
+
+            bool read500Success = ReadProcessMemory(
+                process,
+                new IntPtr(targetAddress),
+                readAfter500,
+                new UIntPtr((uint)readAfter500.Length),
+                out read500
+            );
+
+            bool match500 =
+                read500Success &&
+                read500.ToUInt64() == (ulong)originalLength &&
+                System.Linq.Enumerable.SequenceEqual(
+                    buffer,
+                    readAfter500
+                );
+
+            System.Threading.Thread.Sleep(1500);
+
+            byte[] readAfter2000 = new byte[originalLength];
+            UIntPtr read2000;
+
+            bool read2000Success = ReadProcessMemory(
+                process,
+                new IntPtr(targetAddress),
+                readAfter2000,
+                new UIntPtr((uint)readAfter2000.Length),
+                out read2000
+            );
+
+            bool match2000 =
+                read2000Success &&
+                read2000.ToUInt64() == (ulong)originalLength &&
+                System.Linq.Enumerable.SequenceEqual(
+                    buffer,
+                    readAfter2000
+                );
+
+            finalReport =
+                "連続書き込み実験が終了しました。\r\n\r\n" +
+                "書き込み成功回数: " + successCount + "\r\n" +
+                "書き込み失敗回数: " + failureCount + "\r\n\r\n" +
+                "書き込み停止0.5秒後: " +
+                (match500 ? "変更後のデータを維持" : "変更後のデータではありません") +
+                "\r\n" +
+                "書き込み停止2秒後: " +
+                (match2000 ? "変更後のデータを維持" : "変更後のデータではありません");
+        }
+        catch (Exception ex)
+        {
+            finalReport =
+                "連続書き込み中にエラーが発生しました。\r\n\r\n" +
+                ex.Message;
+        }
+        finally
+        {
+            CloseHandle(process);
+        }
+
+        try
+        {
+            if (!IsDisposed && IsHandleCreated)
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show(
+                        this,
+                        finalReport,
+                        "連続書き込み実験結果",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+                }));
+            }
+        }
+        catch
+        {
+        }
+    });
+
+    return startReport;
+}
 private static byte[] ReadEeRam(Action<string> progress, int processId)
     {
         byte[] ram = new byte[EeRamSize];
@@ -770,6 +851,157 @@ private static byte[] ReadEeRam(Action<string> progress, int processId)
         return ram;
     }
 
+    private async Task SearchRawDescriptionAsync()
+    {
+        if (_scanning)
+            return;
+
+        _scanning = true;
+        _scanButton.Enabled = false;
+
+        try
+        {
+            _status.Text =
+                "EE RAM全体から説明文の生データを検索しています...";
+
+            byte[] ram = await Task.Run(() =>
+                ReadEeRam(message => { }, _pid));
+
+            if (IsDisposed)
+                return;
+
+            string[] terms =
+            {
+                "ｴﾚﾌｧﾝﾄｸﾛｳ",
+                "攻撃力",
+                "ポポロ専用",
+                "武器だぞ",
+                "モンスター",
+                "仲間"
+            };
+
+            var report = new StringBuilder();
+
+            report.AppendLine("説明文の生データ検索結果");
+            report.AppendLine("EE RAM取得サイズ: 32MB");
+            report.AppendLine("検索方式: CP932 / Shift-JIS 完全バイト一致");
+            report.AppendLine();
+
+            int totalHits = 0;
+
+            foreach (string term in terms)
+            {
+                byte[] pattern = Cp932.GetBytes(term);
+                var hits = new List<int>();
+
+                for (int i = 0; i <= ram.Length - pattern.Length; i++)
+                {
+                    bool match = true;
+
+                    for (int j = 0; j < pattern.Length; j++)
+                    {
+                        if (ram[i + j] != pattern[j])
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+
+                    if (match)
+                        hits.Add(i);
+                }
+
+                report.AppendLine("----------------------------------------");
+                report.AppendLine("検索文字列: " + term);
+                report.AppendLine("検出件数: " + hits.Count);
+
+                totalHits += hits.Count;
+
+                int displayCount = Math.Min(hits.Count, 20);
+
+                for (int h = 0; h < displayCount; h++)
+                {
+                    int address = hits[h];
+
+                    int contextStart = Math.Max(0, address - 32);
+                    int contextLength = Math.Min(
+                        128,
+                        ram.Length - contextStart);
+
+                    string context = System.Text.Encoding.GetEncoding(
+                        932,
+                        System.Text.EncoderFallback.ReplacementFallback,
+                        System.Text.DecoderFallback.ReplacementFallback
+                    ).GetString(
+                        ram,
+                        contextStart,
+                        contextLength);
+
+                    context = context
+                        .Replace("\0", "·")
+                        .Replace("\r", "↵")
+                        .Replace("\n", "↵")
+                        .Replace("\t", " ");
+
+                    report.AppendLine();
+                    report.AppendLine(
+                        "候補アドレス: 0x" +
+                        address.ToString("X8"));
+
+                    report.AppendLine(
+                        "周辺アドレス: 0x" +
+                        contextStart.ToString("X8"));
+
+                    report.AppendLine("周辺文字列:");
+                    report.AppendLine(context);
+
+                    report.AppendLine("周辺HEX:");
+                    report.AppendLine(
+                        BitConverter.ToString(
+                            ram,
+                            contextStart,
+                            contextLength));
+                }
+
+                if (hits.Count > displayCount)
+                {
+                    report.AppendLine(
+                        "残り " +
+                        (hits.Count - displayCount) +
+                        " 件は省略しました。");
+                }
+
+                report.AppendLine();
+            }
+
+            report.AppendLine("----------------------------------------");
+            report.AppendLine("全検索文字列の検出合計: " + totalHits);
+
+            _detail.Text = report.ToString();
+
+            _status.Text =
+                "生データ検索完了 / 検出合計: " +
+                totalHits + "件";
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "生データ検索エラー: " + ex.Message;
+
+            MessageBox.Show(
+                this,
+                ex.ToString(),
+                "生データ検索エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+        finally
+        {
+            _scanning = false;
+
+            if (!IsDisposed)
+                _scanButton.Enabled = true;
+        }
+    }
     private async Task ScanAsync()
     {
         if (_scanning)
