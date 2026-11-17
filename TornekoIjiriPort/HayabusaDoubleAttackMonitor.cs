@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -14,18 +14,29 @@ internal static class HayabusaDoubleAttackMonitor
     private const string PineHost = "127.0.0.1";
     private const int PinePort = 28011;
 
+    // はやぶさの爪のアイテム名が格納されているアドレス
     private const long ItemNameAddress = 0x1B322C27C42L;
     private const string ExpectedItemName = "ﾊﾔぶｻﾉ爪";
 
+    // 装備中武器ID
     private const uint EquippedWeaponAddress = 0x006A54A4;
     private const uint HayabusaWeaponValue = 0x0000DFD8;
 
+    // 二回攻撃命令
     private const uint AttackPatchAddress = 0x0020B264;
     private const uint AttackPatchValue = 0x24020001;
 
+    private const uint ProcessVmRead = 0x0010;
+    private const uint ProcessQueryInformation = 0x0400;
+
     private static System.Windows.Forms.Timer? _timer;
+    private static Label? _statusLabel;
+
     private static bool _polling;
-    private static string _status = "自動監視の起動待ちです。";
+    private static bool _exitHooked;
+
+    private static string _status =
+        "自動監視の起動待ちです。";
 
     private static readonly Encoding Cp932 = CreateCp932();
 
@@ -40,7 +51,9 @@ internal static class HayabusaDoubleAttackMonitor
 
     private static Encoding CreateCp932()
     {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Encoding.RegisterProvider(
+            CodePagesEncodingProvider.Instance);
+
         return Encoding.GetEncoding(932);
     }
 
@@ -51,7 +64,8 @@ internal static class HayabusaDoubleAttackMonitor
         int processId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern bool CloseHandle(IntPtr handle);
+    private static extern bool CloseHandle(
+        IntPtr handle);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool ReadProcessMemory(
@@ -61,6 +75,7 @@ internal static class HayabusaDoubleAttackMonitor
         UIntPtr size,
         out UIntPtr read);
 
+    // アプリ起動時に呼び出す。
     public static void Start()
     {
         if (_timer != null)
@@ -74,10 +89,44 @@ internal static class HayabusaDoubleAttackMonitor
         _timer.Tick += Poll;
         _timer.Start();
 
-        SetStatus("自動監視を開始しました。PCSX2接続待ちです。");
+        if (!_exitHooked)
+        {
+            Application.ApplicationExit += OnApplicationExit;
+            _exitHooked = true;
+        }
+
+        SetStatus(
+            "自動監視を開始しました。PCSX2接続待ちです。");
     }
 
-    private static void Poll(object? sender, EventArgs e)
+    // 設定画面から呼び出す。
+    public static void Start(Label statusLabel)
+    {
+        _statusLabel = statusLabel;
+        Start();
+
+        SetStatus(
+            "はやぶさの爪の自動監視が動作中です。");
+    }
+
+    // 状態確認ボタンから呼び出す。
+    public static void ShowStatus(Label statusLabel)
+    {
+        _statusLabel = statusLabel;
+
+        if (_timer != null && _timer.Enabled)
+        {
+            SetStatus(_status);
+            return;
+        }
+
+        SetStatus(
+            "自動監視は停止しています。");
+    }
+
+    private static void Poll(
+        object? sender,
+        EventArgs e)
     {
         if (_polling)
             return;
@@ -85,7 +134,8 @@ internal static class HayabusaDoubleAttackMonitor
         if (!Pcsx2LiveSession.IsConnected ||
             Pcsx2LiveSession.ProcessId <= 0)
         {
-            SetStatus("自動監視中。PCSX2接続待ちです。");
+            SetStatus(
+                "自動監視中。PCSX2接続待ちです。");
             return;
         }
 
@@ -97,7 +147,8 @@ internal static class HayabusaDoubleAttackMonitor
         }
         catch (Exception ex)
         {
-            SetStatus("自動監視エラー: " + ex.Message);
+            SetStatus(
+                "自動監視エラー: " + ex.Message);
         }
         finally
         {
@@ -109,60 +160,82 @@ internal static class HayabusaDoubleAttackMonitor
     {
         string itemName = ReadItemName(processId);
 
-        uint equippedWeapon = ReadPine32(
-            EquippedWeaponAddress);
+        uint equippedWeapon =
+            ReadPine32(EquippedWeaponAddress) & 0xFFFFu;
 
-        uint currentInstruction = ReadPine32(
-            AttackPatchAddress);
+        uint currentInstruction =
+            ReadPine32(AttackPatchAddress);
 
-        bool shouldEnable =
+        bool nameMatches =
             string.Equals(
                 itemName,
                 ExpectedItemName,
-                StringComparison.Ordinal) &&
+                StringComparison.Ordinal);
+
+        bool weaponMatches =
             equippedWeapon == HayabusaWeaponValue;
+
+        bool shouldEnable =
+            nameMatches && weaponMatches;
 
         bool hasState = TryLoadState(
             out int savedProcessId,
             out uint originalInstruction);
 
+        // はやぶさの爪を装備している場合
         if (shouldEnable)
         {
             if (currentInstruction == AttackPatchValue)
             {
-                if (hasState && savedProcessId == processId)
-                    SetStatus("はやぶさの爪を確認。二回攻撃は有効です。");
-
-                if (hasState && savedProcessId != processId)
-                    SetStatus("二回攻撃コードは適用済みですが、保存された元命令のPIDが一致しません。");
-
                 if (!hasState)
-                    SetStatus("二回攻撃コードは既に適用されていますが、元命令の保存データがありません。");
-
-                return;
-            }
-
-            if (hasState && savedProcessId == processId)
-            {
-                if (currentInstruction != originalInstruction)
                 {
-                    SetStatus("二回攻撃の適用を保留中。対象命令が保存済みの元命令と一致しません。");
+                    SetStatus(
+                        "二回攻撃コードは既に適用されていますが、" +
+                        "元命令の保存記録がありません。" +
+                        "安全のため変更しません。");
                     return;
                 }
 
-                DeleteState();
-                hasState = false;
+                if (savedProcessId != processId)
+                {
+                    SetStatus(
+                        "保存された元命令のPCSX2プロセスIDが一致しません。" +
+                        "安全のため変更しません。");
+                    return;
+                }
+
+                SetStatus(
+                    "はやぶさの爪を確認。二回攻撃は有効です。");
+                return;
             }
 
-            if (hasState && savedProcessId != processId)
+            if (hasState)
             {
-                DeleteState();
-                hasState = false;
+                if (savedProcessId != processId)
+                {
+                    SetStatus(
+                        "別のPCSX2プロセスの元命令保存データがあります。" +
+                        "安全のため適用を保留しています。");
+                    return;
+                }
+
+                if (currentInstruction != originalInstruction)
+                {
+                    SetStatus(
+                        "対象命令が保存済みの元命令と一致しません。" +
+                        "外部変更の可能性があるため適用を保留しています。");
+                    return;
+                }
             }
 
-            uint original = currentInstruction;
+            if (!hasState)
+            {
+                originalInstruction = currentInstruction;
 
-            SaveState(processId, original);
+                SaveState(
+                    processId,
+                    originalInstruction);
+            }
 
             try
             {
@@ -170,42 +243,25 @@ internal static class HayabusaDoubleAttackMonitor
                     AttackPatchAddress,
                     AttackPatchValue);
 
-                uint verify = ReadPine32(
-                    AttackPatchAddress);
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
 
                 if (verify != AttackPatchValue)
+                {
                     throw new IOException(
                         "二回攻撃コードの読み戻し検証に失敗しました。");
+                }
 
                 SetStatus(
-                    "はやぶさの爪を検出。二回攻撃を有効化しました。元命令: 0x" +
-                    original.ToString("X8"));
+                    "はやぶさの爪を検出。二回攻撃を有効化しました。" +
+                    " 元命令: 0x" +
+                    originalInstruction.ToString("X8"));
             }
             catch (Exception writeError)
             {
-                bool restored = false;
-
-                try
-                {
-                    uint current = ReadPine32(
-                        AttackPatchAddress);
-
-                    if (current == AttackPatchValue)
-                    {
-                        WritePine32(
-                            AttackPatchAddress,
-                            original);
-
-                        restored =
-                            ReadPine32(AttackPatchAddress) == original;
-                    }
-                }
-                catch
-                {
-                }
-
-                if (restored)
-                    DeleteState();
+                TryRestoreAfterWriteFailure(
+                    processId,
+                    originalInstruction);
 
                 throw new IOException(
                     "二回攻撃の適用に失敗しました: " +
@@ -216,74 +272,125 @@ internal static class HayabusaDoubleAttackMonitor
             return;
         }
 
+        // はやぶさの爪以外を装備している場合
         if (currentInstruction == AttackPatchValue)
         {
-            if (hasState && savedProcessId == processId)
+            if (!hasState)
             {
-                WritePine32(
-                    AttackPatchAddress,
-                    originalInstruction);
-
-                uint verify = ReadPine32(
-                    AttackPatchAddress);
-
-                if (verify != originalInstruction)
-                    throw new IOException(
-                        "元の命令への復元に失敗しました。");
-
-                DeleteState();
-
                 SetStatus(
-                    "はやぶさの爪以外を検出。二回攻撃を解除しました。元命令: 0x" +
-                    originalInstruction.ToString("X8"));
-
+                    "二回攻撃コードが残っていますが、" +
+                    "元命令の保存記録がありません。" +
+                    "安全のため復元を保留しています。");
                 return;
             }
 
+            if (savedProcessId != processId)
+            {
+                SetStatus(
+                    "元命令を保存したPCSX2プロセスと現在のプロセスが異なります。" +
+                    "安全のため復元を保留しています。");
+                return;
+            }
+
+            WritePine32(
+                AttackPatchAddress,
+                originalInstruction);
+
+            uint restored =
+                ReadPine32(AttackPatchAddress);
+
+            if (restored != originalInstruction)
+            {
+                throw new IOException(
+                    "元の命令への復元に失敗しました。");
+            }
+
+            DeleteState();
+
             SetStatus(
-                "二回攻撃コードが残っていますが、同じPCSX2プロセスの元命令保存データがありません。安全のため復元を保留しています。");
+                "はやぶさの爪以外を検出。二回攻撃を解除しました。" +
+                " 元命令: 0x" +
+                originalInstruction.ToString("X8"));
 
             return;
         }
 
-        if (hasState && savedProcessId != processId)
+        // パッチが存在しない状態で保存記録が残っている場合
+        if (hasState)
         {
-            DeleteState();
-            hasState = false;
-        }
+            if (savedProcessId != processId)
+            {
+                SetStatus(
+                    "保存記録のPCSX2プロセスIDが一致しません。" +
+                    "保存記録を保持しています。");
+                return;
+            }
 
-        if (hasState && savedProcessId == processId)
-        {
             if (currentInstruction == originalInstruction)
             {
                 DeleteState();
-                hasState = false;
             }
 
             if (currentInstruction != originalInstruction)
             {
-                SetStatus("対象命令が外部から変更されています。安全のため監視による書き換えを保留しています。");
+                SetStatus(
+                    "対象命令が元命令から変更されています。" +
+                    "安全のため監視による書き換えを保留しています。");
                 return;
             }
         }
 
         SetStatus(
-            "自動監視中。アイテム名: " + itemName +
-            " / 装備ID: 0x" + equippedWeapon.ToString("X8") +
+            "自動監視中。" +
+            " アイテム名: " + itemName +
+            " / 装備ID: 0x" +
+            equippedWeapon.ToString("X4") +
             " / 二回攻撃: 無効");
+    }
+
+    private static void TryRestoreAfterWriteFailure(
+        int processId,
+        uint originalInstruction)
+    {
+        try
+        {
+            if (Pcsx2LiveSession.ProcessId != processId)
+                return;
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+            }
+        }
+        catch
+        {
+            // 復元できなかった場合は状態ファイルを残す。
+        }
     }
 
     private static string ReadItemName(int processId)
     {
         IntPtr process = OpenProcess(
-            0x0010 | 0x0400,
+            ProcessVmRead | ProcessQueryInformation,
             false,
             processId);
 
         if (process == IntPtr.Zero)
         {
             throw new IOException(
-                "アイテム名の読み取り用にPCSX2を開けません。Win32エラー: " +
+                "アイテム名の読み取り用にPCSX2を開けません。" +
+                " Win32エラー: " +
                 Marshal.GetLastWin32Error());
         }
 
@@ -299,20 +406,28 @@ internal static class HayabusaDoubleAttackMonitor
                 new UIntPtr((uint)buffer.Length),
                 out read);
 
-            if (!success || read.ToUInt64() < 2)
+            if (!success ||
+                read.ToUInt64() != (ulong)buffer.Length)
             {
                 throw new IOException(
-                    "アイテム名の読み取りに失敗しました。Win32エラー: " +
+                    "アイテム名の読み取りに失敗しました。" +
+                    " Win32エラー: " +
                     Marshal.GetLastWin32Error());
             }
 
-            int length = Array.IndexOf(buffer, (byte)0);
+            int length =
+                Array.IndexOf(buffer, (byte)0);
 
             if (length < 0)
+            {
                 throw new IOException(
                     "アイテム名の終端を確認できません。");
+            }
 
-            return Cp932.GetString(buffer, 0, length);
+            return Cp932.GetString(
+                buffer,
+                0,
+                length);
         }
         finally
         {
@@ -335,8 +450,10 @@ internal static class HayabusaDoubleAttackMonitor
                 count - offset);
 
             if (received <= 0)
+            {
                 throw new IOException(
                     "PINE接続が途中で切断されました。");
+            }
 
             offset += received;
         }
@@ -366,11 +483,17 @@ internal static class HayabusaDoubleAttackMonitor
         data[offset + 3] = (byte)(value >> 24);
     }
 
-    private static byte[] SendPineCommand(byte[] command)
+    private static byte[] SendPineCommand(
+        byte[] command)
     {
-        byte[] request = new byte[4 + command.Length];
+        byte[] request =
+            new byte[4 + command.Length];
 
-        WriteUInt32(request, 0, (uint)request.Length);
+        WriteUInt32(
+            request,
+            0,
+            (uint)request.Length);
+
         Buffer.BlockCopy(
             command,
             0,
@@ -382,19 +505,34 @@ internal static class HayabusaDoubleAttackMonitor
 
         client.ReceiveTimeout = 3000;
         client.SendTimeout = 3000;
-        client.Connect(PineHost, PinePort);
 
-        using NetworkStream stream = client.GetStream();
+        client.Connect(
+            PineHost,
+            PinePort);
 
-        stream.Write(request, 0, request.Length);
+        using NetworkStream stream =
+            client.GetStream();
+
+        stream.Write(
+            request,
+            0,
+            request.Length);
+
         stream.Flush();
 
-        byte[] header = ReadExact(stream, 4);
-        uint responseLength = ReadUInt32(header, 0);
+        byte[] header =
+            ReadExact(stream, 4);
 
-        if (responseLength < 5 || responseLength > 1024)
+        uint responseLength =
+            ReadUInt32(header, 0);
+
+        if (responseLength < 5 ||
+            responseLength > 1024)
+        {
             throw new IOException(
-                "PINE応答サイズが不正です: " + responseLength);
+                "PINE応答サイズが不正です: " +
+                responseLength);
+        }
 
         return ReadExact(
             stream,
@@ -406,18 +544,27 @@ internal static class HayabusaDoubleAttackMonitor
         byte[] command = new byte[5];
 
         command[0] = 2;
-        WriteUInt32(command, 1, address);
 
-        byte[] response = SendPineCommand(command);
+        WriteUInt32(
+            command,
+            1,
+            address);
+
+        byte[] response =
+            SendPineCommand(command);
 
         if (response.Length != 5)
+        {
             throw new IOException(
                 "PINE Read32応答サイズが一致しません。");
+        }
 
         if (response[0] != 0)
+        {
             throw new IOException(
                 "PINE Read32に失敗しました。ステータス: " +
                 response[0].ToString("X2"));
+        }
 
         return ReadUInt32(response, 1);
     }
@@ -429,19 +576,32 @@ internal static class HayabusaDoubleAttackMonitor
         byte[] command = new byte[9];
 
         command[0] = 6;
-        WriteUInt32(command, 1, address);
-        WriteUInt32(command, 5, value);
 
-        byte[] response = SendPineCommand(command);
+        WriteUInt32(
+            command,
+            1,
+            address);
+
+        WriteUInt32(
+            command,
+            5,
+            value);
+
+        byte[] response =
+            SendPineCommand(command);
 
         if (response.Length != 1)
+        {
             throw new IOException(
                 "PINE Write32応答サイズが一致しません。");
+        }
 
         if (response[0] != 0)
+        {
             throw new IOException(
                 "PINE Write32に失敗しました。ステータス: " +
                 response[0].ToString("X2"));
+        }
     }
 
     private static bool TryLoadState(
@@ -454,9 +614,13 @@ internal static class HayabusaDoubleAttackMonitor
         if (!File.Exists(StatePath))
             return false;
 
-        string[] parts = File.ReadAllText(StatePath)
-            .Trim()
-            .Split('|');
+        string content =
+            File.ReadAllText(StatePath).Trim();
+
+        string[] parts =
+            content.Split(
+                new[] { '|', '\r', '\n' },
+                StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length != 2)
             return false;
@@ -466,33 +630,44 @@ internal static class HayabusaDoubleAttackMonitor
             NumberStyles.Integer,
             CultureInfo.InvariantCulture,
             out processId))
+        {
             return false;
+        }
 
         if (!uint.TryParse(
             parts[1],
             NumberStyles.HexNumber,
             CultureInfo.InvariantCulture,
             out originalInstruction))
+        {
             return false;
+        }
 
-        return true;
+        return processId > 0;
     }
 
     private static void SaveState(
         int processId,
         uint originalInstruction)
     {
-        string directory = Path.GetDirectoryName(StatePath)!;
+        string directory =
+            Path.GetDirectoryName(StatePath)!;
 
         Directory.CreateDirectory(directory);
 
-        string temporaryPath = StatePath + ".tmp";
+        string temporaryPath =
+            StatePath + ".tmp";
+
+        string content =
+            processId.ToString(
+                CultureInfo.InvariantCulture) +
+            "|" +
+            originalInstruction.ToString("X8");
 
         File.WriteAllText(
             temporaryPath,
-            processId.ToString(CultureInfo.InvariantCulture) +
-            "|" +
-            originalInstruction.ToString("X8"));
+            content,
+            Encoding.UTF8);
 
         File.Move(
             temporaryPath,
@@ -506,12 +681,69 @@ internal static class HayabusaDoubleAttackMonitor
             File.Delete(StatePath);
     }
 
+    private static void OnApplicationExit(
+        object? sender,
+        EventArgs e)
+    {
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0)
+            {
+                return;
+            }
+
+            int processId =
+                Pcsx2LiveSession.ProcessId;
+
+            bool hasState = TryLoadState(
+                out int savedProcessId,
+                out uint originalInstruction);
+
+            if (!hasState ||
+                savedProcessId != processId)
+            {
+                return;
+            }
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(
+                "[はやぶさの爪] 終了時の復元に失敗: " +
+                ex.Message);
+        }
+    }
+
     private static void SetStatus(string value)
     {
         if (_status == value)
             return;
 
         _status = value;
-        Debug.WriteLine("[はやぶさの爪] " + value);
+
+        Debug.WriteLine(
+            "[はやぶさの爪] " + value);
+
+        if (_statusLabel != null &&
+            !_statusLabel.IsDisposed)
+        {
+            _statusLabel.Text = value;
+        }
     }
 }

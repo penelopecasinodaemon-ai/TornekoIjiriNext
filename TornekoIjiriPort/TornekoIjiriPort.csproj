@@ -16,5 +16,6 @@
     <Compile Remove="backup/**/*.cs" />
     <Compile Remove="backup/**/*.cs" />
     <Compile Remove="backup_*/**/*.cs" />
+      <Compile Remove="EquippedWeaponIdScannerForm.cs" />
   </ItemGroup>
 </Project>

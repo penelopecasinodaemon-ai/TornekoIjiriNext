@@ -2566,6 +2566,7 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
         HayabusaDoubleAttackMonitor.Start();
+        HayabusaRecruitCorrectionMonitor.Start();
         var mainForm = new MainForm();
         Application.Run(mainForm);
     }
@@ -4184,12 +4185,7 @@ internal sealed class MainForm : Form
             WrapContents = true
         };
 
-        buttons.Controls.Add(UiFactory.Button(
-            "任意バイナリ編集", (_, _) =>
-            {
-                using var editor = new ArbitraryBinaryEditorForm();
-                editor.ShowDialog(this);
-            }));
+
         buttons.Controls.Add(UiFactory.Button(
             "ダンジョン共通設定", (_, _) =>
             {
@@ -4214,6 +4210,12 @@ internal sealed class MainForm : Form
 
         buttons.Controls.Add(UiFactory.Button(
             "改造データを.Torneko4保存", (_, _) => SaveTorneko4()));
+        buttons.Controls.Add(UiFactory.Button(
+            "モンスターを編集", (_, _) =>
+            {
+                using var monsterForm = new MonsterCreatorForm();
+                monsterForm.ShowDialog(this);
+            }));
 buttons.Controls.Add(UiFactory.Button(
             "モンスター名変更", (_, _) =>
             {
