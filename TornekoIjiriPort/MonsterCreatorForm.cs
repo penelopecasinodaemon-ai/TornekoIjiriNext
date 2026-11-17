@@ -228,13 +228,35 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _defense = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _experience = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _maxLevel = CreateNumber(byte.MaxValue);
-    private readonly NumericUpDown _systemFlags = CreateNumber(byte.MaxValue);
-    private readonly NumericUpDown _skillFlags = CreateNumber(byte.MaxValue);
-    private readonly NumericUpDown _moveSpeed = CreateNumber(byte.MaxValue);
+    private static readonly string[] GrowthTypeNames =
+    {
+        "トルネコ", "ポポロ", "イネス", "ロサ", "万能晩成", "攻撃特殊",
+        "防御晩成", "防御早熟", "攻撃晩成", "攻撃早熟", "守備特殊", "普通早熟"
+    };
+
+    private static readonly string[] MoveSpeedNames =
+    {
+        "鈍足", "等速", "倍速一回攻撃", "倍速二回攻撃",
+        "未使用4", "未使用5", "未使用6", "未使用7", "未使用8"
+    };
+
+    private static readonly string[] SystemFamilyNames =
+    {
+        "悪魔", "人形", "爆弾", "炎", "飛行", "スライム", "水", "ゾンビ"
+    };
+
+    private static readonly string[] SkillFamilyNames =
+    {
+        "魔法", "技", "剣", "影", "杖"
+    };
+
+    private readonly ComboBox _growthType = CreateChoice(GrowthTypeNames);
+    private readonly ComboBox _moveSpeed = CreateChoice(MoveSpeedNames);
+    private readonly CheckBox[] _systemChecks = CreateChecks(SystemFamilyNames);
+    private readonly CheckBox[] _skillChecks = CreateChecks(SkillFamilyNames);
     private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
     private readonly NumericUpDown _dropItem = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
-    private readonly NumericUpDown _growthType = CreateNumber(byte.MaxValue);
     private readonly Button _applyButton = new Button();
     private readonly List<int> _visibleIds = new List<int>();
 
@@ -327,7 +349,7 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 6,
+            RowCount = 7,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
@@ -336,7 +358,8 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
-        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
 
@@ -345,13 +368,15 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
         fieldGrid.Controls.Add(CreateField("経験値", _experience), 1, 1);
         fieldGrid.Controls.Add(CreateField("最大レベル", _maxLevel), 0, 2);
-        fieldGrid.Controls.Add(CreateField("成長タイプ（生値）", _growthType), 1, 2);
-        fieldGrid.Controls.Add(CreateField("系統フラグ（生値）", _systemFlags), 0, 3);
-        fieldGrid.Controls.Add(CreateField("特技系統フラグ（生値）", _skillFlags), 1, 3);
-        fieldGrid.Controls.Add(CreateField("移動速度（生値）", _moveSpeed), 0, 4);
-        fieldGrid.Controls.Add(CreateField("ドロップ率（生値）", _dropRate), 1, 4);
-        fieldGrid.Controls.Add(CreateField("ドロップアイテムID", _dropItem), 0, 5);
-        fieldGrid.Controls.Add(CreateField("スポーン時睡眠率（生値）", _sleepRate), 1, 5);
+        fieldGrid.Controls.Add(CreateField("成長タイプ", _growthType), 1, 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("系統", _systemChecks), 0, 3);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("特技系統", _skillChecks), 0, 4);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateField("移動速度", _moveSpeed), 0, 5);
+        fieldGrid.Controls.Add(CreateField("ドロップ率（生値）", _dropRate), 1, 5);
+        fieldGrid.Controls.Add(CreateField("ドロップアイテムID", _dropItem), 0, 6);
+        fieldGrid.Controls.Add(CreateField("スポーン時睡眠率（生値）", _sleepRate), 1, 6);
 
         var explanation = new Label
         {
@@ -463,7 +488,67 @@ internal sealed class MonsterCreatorForm : Form
         };
     }
 
-    private static Control CreateField(string title, NumericUpDown input)
+    private static ComboBox CreateChoice(string[] items)
+    {
+        var combo = new ComboBox
+        {
+            Dock = DockStyle.Fill,
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            IntegralHeight = true
+        };
+        combo.Items.AddRange(items);
+        return combo;
+    }
+
+    private static CheckBox[] CreateChecks(string[] names)
+    {
+        var checks = new CheckBox[names.Length];
+        for (int i = 0; i < names.Length; i++)
+        {
+            checks[i] = new CheckBox
+            {
+                Text = names[i],
+                AutoSize = true,
+                Margin = new Padding(3, 4, 8, 2)
+            };
+        }
+        return checks;
+    }
+
+    private static Control CreateCheckGroup(string title, CheckBox[] checks)
+    {
+        var panel = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2,
+            Padding = new Padding(4, 2, 4, 2)
+        };
+        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+        panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+        var label = new Label
+        {
+            Text = title,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+        var flow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true,
+            WrapContents = true,
+            FlowDirection = FlowDirection.LeftToRight
+        };
+        foreach (var check in checks)
+            flow.Controls.Add(check);
+
+        panel.Controls.Add(label, 0, 0);
+        panel.Controls.Add(flow, 0, 1);
+        return panel;
+    }
+
+    private static Control CreateField(string title, Control input)
     {
         var panel = new TableLayoutPanel
         {
@@ -549,13 +634,13 @@ internal sealed class MonsterCreatorForm : Form
         _defense.Enabled = enabled;
         _experience.Enabled = enabled;
         _maxLevel.Enabled = enabled;
-        _systemFlags.Enabled = enabled;
-        _skillFlags.Enabled = enabled;
+        _growthType.Enabled = enabled;
         _moveSpeed.Enabled = enabled;
+        foreach (var check in _systemChecks) check.Enabled = enabled;
+        foreach (var check in _skillChecks) check.Enabled = enabled;
         _dropRate.Enabled = enabled;
         _dropItem.Enabled = enabled;
         _sleepRate.Enabled = enabled;
-        _growthType.Enabled = enabled;
         _applyButton.Enabled = enabled;
     }
 
@@ -632,13 +717,20 @@ internal sealed class MonsterCreatorForm : Form
         _defense.Value = BinFileService.ReadUInt16(_bin, offset + 4);
         _maxLevel.Value = _bin[offset + 11];
         _experience.Value = BinFileService.ReadUInt16(_bin, offset + 12);
-        _systemFlags.Value = _bin[offset + 6];
-        _skillFlags.Value = _bin[offset + 7];
-        _moveSpeed.Value = _bin[offset + 9];
+        byte systemFlags = _bin[offset + 6];
+        byte skillFlags = _bin[offset + 7];
+        for (int i = 0; i < _systemChecks.Length; i++)
+            _systemChecks[i].Checked = (systemFlags & (1 << i)) != 0;
+        for (int i = 0; i < _skillChecks.Length; i++)
+            _skillChecks[i].Checked = (skillFlags & (1 << i)) != 0;
+
+        int growthValue = _bin[offset + 20];
+        _growthType.SelectedIndex = growthValue < _growthType.Items.Count ? growthValue : -1;
+        int speedValue = _bin[offset + 9];
+        _moveSpeed.SelectedIndex = speedValue < _moveSpeed.Items.Count ? speedValue : -1;
         _dropRate.Value = _bin[offset + 10];
         _dropItem.Value = BinFileService.ReadUInt16(_bin, offset + 16);
         _sleepRate.Value = _bin[offset + 18];
-        _growthType.Value = _bin[offset + 20];
 
         _selectedInfo.Text =
             "モンスター番号：" + id.ToString("D3") +
@@ -663,13 +755,21 @@ internal sealed class MonsterCreatorForm : Form
         BinFileService.WriteUInt16(_bin, offset + 4, (ushort)_defense.Value);
         _bin[offset + 11] = (byte)_maxLevel.Value;
         BinFileService.WriteUInt16(_bin, offset + 12, (ushort)_experience.Value);
-        _bin[offset + 6] = (byte)_systemFlags.Value;
-        _bin[offset + 7] = (byte)_skillFlags.Value;
-        _bin[offset + 9] = (byte)_moveSpeed.Value;
+        byte systemFlags = 0;
+        for (int i = 0; i < _systemChecks.Length; i++)
+            if (_systemChecks[i].Checked) systemFlags |= (byte)(1 << i);
+        byte skillFlags = 0;
+        for (int i = 0; i < _skillChecks.Length; i++)
+            if (_skillChecks[i].Checked) skillFlags |= (byte)(1 << i);
+        _bin[offset + 6] = systemFlags;
+        _bin[offset + 7] = skillFlags;
+        if (_moveSpeed.SelectedIndex >= 0)
+            _bin[offset + 9] = (byte)_moveSpeed.SelectedIndex;
         _bin[offset + 10] = (byte)_dropRate.Value;
         BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.Value);
         _bin[offset + 18] = (byte)_sleepRate.Value;
-        _bin[offset + 20] = (byte)_growthType.Value;
+        if (_growthType.SelectedIndex >= 0)
+            _bin[offset + 20] = (byte)_growthType.SelectedIndex;
 
         _onChanged?.Invoke();
 
