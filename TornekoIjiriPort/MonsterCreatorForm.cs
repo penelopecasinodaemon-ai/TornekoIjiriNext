@@ -219,7 +219,50 @@ internal sealed class MonsterCreatorForm : Form
     private const int SkillVersionOffset = 355056;
     private const int SkillRangeDataOffset = 382206;
     private const int SkillAllyItemDataOffset = 386212;
-    private const int SkillMessageCount = 41;
+    private static readonly string[] SkillMessageNames =
+    {
+        "ギガデイン",
+        "邪悪な霧",
+        "なぎはらい",
+        "ムーンサルト",
+        "バブリン",
+        "プラズママウス",
+        "ちゅうまじゅう",
+        "激しく攻撃",
+        "思いっきり剣を振った",
+        "ようじゅつし",
+        "きとうし",
+        "吹き飛ばすほどの攻撃",
+        "マホトーン",
+        "くち？",
+        "口をふさぐ",
+        "斧を振りおろした",
+        "メガザル",
+        "ドルイド",
+        "げんじゅつし",
+        "バシルーラ",
+        "腹減り攻撃",
+        "テンツク",
+        "おどり",
+        "催眠",
+        "ラリホー",
+        "キノコの胞子",
+        "アイテム弾き",
+        "装備弾き2",
+        "装備弾き",
+        "炎ブレス",
+        "くさった液",
+        "アストロン",
+        "おおめだま",
+        "氷河",
+        "エビルポット",
+        "マダンテ",
+        "しびれ攻撃",
+        "ベホマ",
+        "ホイミ",
+        "変な呪文"
+    };
+    private const int SkillMessageCount = 40;
     private const int SkillExtensionRequiredEnd = 404356;
     private const uint EeAddressMask = 0x1FFFFFFF;
     private const uint EeMemoryBaseAddress = 0x00180000;
@@ -771,13 +814,9 @@ internal sealed class MonsterCreatorForm : Form
 
     private static string[] ReadSkillMessageChoices(byte[] bin)
     {
-        var choices = new List<string>(SkillMessageCount + 1);
-        choices.Add("特技メッセージ無し");
-
-        for (int i = 0; i < SkillMessageCount; i++)
-            choices.Add("メッセージ " + (i + 1).ToString("D2"));
-
-        return choices.ToArray();
+        return new[] { "特技メッセージ無し" }
+            .Concat(SkillMessageNames)
+            .ToArray();
     }
 
     private static int ResolveSkillMessageIndex(uint pointer)
