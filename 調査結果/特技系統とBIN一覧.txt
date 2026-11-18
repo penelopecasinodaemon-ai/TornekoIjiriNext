@@ -1,0 +1,547 @@
+=== スライム基本レコード ===
+レコード位置: 0x001D59E4
+特技系統フラグ +7: 0x00
+魔法: False
+技: False
+剣: False
+影: False
+杖: False
+
+=== BINファイル検索 ===
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\C_1_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\A_1_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\A_1_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\A_2_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\A_2_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\A_3_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\B_1_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\B_1_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\B_2_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\B_2_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\B_3_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\B_3_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\A_3_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\C_2_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\C_2_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\C_3_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\C_3_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\D_1_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\D_1_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\D_2_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\D_2_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\D_3_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\D_3_BEFORE.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V22_武器攻撃調査_20261116_191453\C_1_AFTER.bin
+サイズ: 38969344 bytes (0x252A000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\eeMemory.bin
+サイズ: 33554432 bytes (0x2000000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\TrollSavestate_Analysis\eeMemory.bin
+サイズ: 33554432 bytes (0x2000000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_武器差分比較_20261117_023908\B_エレファントクロウ_eeMemory.bin
+サイズ: 33554432 bytes (0x2000000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\P2S_武器差分比較_20261117_023908\A_うみどりの爪_eeMemory.bin
+サイズ: 33554432 bytes (0x2000000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\eeMemory.bin
+サイズ: 33554432 bytes (0x2000000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\003_raw.bin
+サイズ: 11565295 bytes (0xB078EF)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\GS.bin
+サイズ: 4194813 bytes (0x4001FD)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\SPU2.bin
+サイズ: 2178992 bytes (0x213FB0)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\iopMemory.bin
+サイズ: 2097152 bytes (0x200000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\Torneko3_CodeSegment.bin
+サイズ: 1430376 bytes (0x15D368)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\012_raw.bin
+サイズ: 1406845 bytes (0x15777D)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\PCSX2_Internal_Structures.bin
+サイズ: 1327178 bytes (0x14404A)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\004_raw.bin
+サイズ: 950685 bytes (0xE819D)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\015_raw.bin
+サイズ: 579542 bytes (0x8D7D6)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\デバッグエリア.bin
+サイズ: 524288 bytes (0x80000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\不発の獄Ver3.0.bin
+サイズ: 524288 bytes (0x80000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\016_raw.bin
+サイズ: 409144 bytes (0x63E38)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\016_expanded.bin
+サイズ: 409144 bytes (0x63E38)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_002.bin
+サイズ: 210904 bytes (0x337D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\002_raw.bin
+サイズ: 192066 bytes (0x2EE42)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_008.bin
+サイズ: 190424 bytes (0x2E7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_006.bin
+サイズ: 182232 bytes (0x2C7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_004.bin
+サイズ: 165848 bytes (0x287D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_000.bin
+サイズ: 120792 bytes (0x1D7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_001.bin
+サイズ: 98264 bytes (0x17FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_014.bin
+サイズ: 71640 bytes (0x117D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\iopHwRegs.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V20_エレファントクロウ_A_20261116_234809\ElephantClaw_A3.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V21_うみどりの爪_B_20261116_234944\SeaBirdClaw_B1.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V21_うみどりの爪_B_20261116_234944\SeaBirdClaw_B2.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V21_うみどりの爪_B_20261116_234944\SeaBirdClaw_B3.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V20_エレファントクロウ_A_20261116_234809\ElephantClaw_A1.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V20_エレファントクロウ_A_20261116_234809\ElephantClaw_A2.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\eeHwRegs.bin
+サイズ: 65536 bytes (0x10000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_016.bin
+サイズ: 63448 bytes (0xF7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_010.bin
+サイズ: 59352 bytes (0xE7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_018.bin
+サイズ: 49112 bytes (0xBFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_023.bin
+サイズ: 32728 bytes (0x7FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\装備管理.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\Scratchpad.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\装備管理.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\A_装備管理.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\vu1MicroMem.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\装備管理.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\vu1Memory.bin
+サイズ: 16384 bytes (0x4000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_011.bin
+サイズ: 16344 bytes (0x3FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_017.bin
+サイズ: 12248 bytes (0x2FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_024.bin
+サイズ: 12248 bytes (0x2FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\USB.bin
+サイズ: 8491 bytes (0x212B)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\C_銀の爪_2回目\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\B_素手\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\C_銀の爪_2回目\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\C_銀の爪_2回目\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\C_銀の爪_2回目\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\B_素手\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\A_銀の爪_1回目\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\A_銀の爪_1回目\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\B_素手\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\B_素手\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\A_銀の爪_1回目\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\A_銀の爪_1回目\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\A_銀の爪_1回目\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\B_素手\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\B_素手\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\B_素手\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\B_素手\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\C_銀の爪_2回目\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\B_候補領域2F26.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\C_銀の爪_2回目\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\候補領域4B8.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\候補領域2F26.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\候補領域2A52.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\候補領域1C9E.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\プログラム参照領域.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\候補領域4B8.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\候補領域2F26.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\候補領域2A52.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\候補領域1C9E.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\プログラム参照領域.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\候補領域4B8.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\候補領域2F26.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\候補領域2A52.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\候補領域1C9E.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\プログラム参照領域.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\F_候補領域2A52.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\E_候補領域5D73.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\D_候補領域4B8.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\C_候補領域1C9E.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\B_素手\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\C_銀の爪_2回目\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\C_銀の爪_2回目\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\C_銀の爪_2回目\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_同一セッション比較_20261116_201139\C_銀の爪_2回目\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\B_素手\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_銀の爪装備_20261116_195900\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\A_銀の爪_1回目\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\A_銀の爪_1回目\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_素手状態_20261116_200004\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_素手状態_20261116_200004\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_素手状態_20261116_200004\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_素手状態_20261116_200004\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\PCSX2_RAM周辺_20261116_195708.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_素手状態_20261116_200004\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_銀の爪装備_20261116_195900\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_銀の爪装備_20261116_195900\4B8系_0x20812000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_銀の爪装備_20261116_195900\5D73系_0x20930000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\A_銀の爪_1回目\1C9E系_0x21FF8000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\A_銀の爪_1回目\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V24_GitHub解析展開\A_銀の爪_1回目\2F26系_0x2064C000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_銀の爪装備_20261116_195900\2A52系_0x205FE000.bin
+サイズ: 8192 bytes (0x2000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_012.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_028.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_003.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_005.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_007.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_015.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_009.bin
+サイズ: 8152 bytes (0x1FD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_013.bin
+サイズ: 6104 bytes (0x17D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\vu0Memory.bin
+サイズ: 4096 bytes (0x1000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\vu0MicroMem.bin
+サイズ: 4096 bytes (0x1000)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_019.bin
+サイズ: 4056 bytes (0xFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_020.bin
+サイズ: 4056 bytes (0xFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_021.bin
+サイズ: 4056 bytes (0xFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_022.bin
+サイズ: 4056 bytes (0xFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_027.bin
+サイズ: 4056 bytes (0xFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_025.bin
+サイズ: 4056 bytes (0xFD8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\007_raw.bin
+サイズ: 4013 bytes (0xFAD)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\009_raw.bin
+サイズ: 3306 bytes (0xCEA)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_029.bin
+サイズ: 2008 bytes (0x7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\DATA_MM解析出力\BLOCK_026.bin
+サイズ: 2008 bytes (0x7D8)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\011_raw.bin
+サイズ: 1299 bytes (0x513)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\武器オブジェクト.bin
+サイズ: 768 bytes (0x300)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\武器オブジェクト.bin
+サイズ: 768 bytes (0x300)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\武器オブジェクト.bin
+サイズ: 768 bytes (0x300)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_候補周辺解析_20261116_235445\Candidate_926AD4_926ADC.bin
+サイズ: 768 bytes (0x300)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\G_武器オブジェクト.bin
+サイズ: 768 bytes (0x300)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_候補周辺解析_20261116_235445\Candidate_927D80_927D8C_927D90.bin
+サイズ: 768 bytes (0x300)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V23_候補周辺解析_20261116_235445\Candidate_929718.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\共通管理領域.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\H_中間ポインタ.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V36_銀の爪攻撃力調査\I_共通管理領域.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\中間ポインタ.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\B_銀の爪\共通管理領域.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\C_金の爪\中間ポインタ.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\共通管理領域.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\V38_武器3種類RAM比較\A_素手\中間ポインタ.bin
+サイズ: 256 bytes (0x100)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\005_raw.bin
+サイズ: 241 bytes (0xF1)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_ZSTD展開\PAD.bin
+サイズ: 228 bytes (0xE4)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\006_raw.bin
+サイズ: 221 bytes (0xDD)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\014_raw.bin
+サイズ: 97 bytes (0x61)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\013_raw.bin
+サイズ: 85 bytes (0x55)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\001_raw.bin
+サイズ: 36 bytes (0x24)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\001_expanded.bin
+サイズ: 36 bytes (0x24)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\010_raw.bin
+サイズ: 18 bytes (0x12)
+
+ファイル: C:\Users\penelope\Desktop\トルネコいじり作業環境\調査結果\P2S_RAW_DATA\008_raw.bin
+サイズ: 18 bytes (0x12)
+
