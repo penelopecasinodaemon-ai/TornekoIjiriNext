@@ -215,6 +215,7 @@ internal sealed class MonsterCreatorForm : Form
     private const int MonsterRecordCount = 199;
     private const int RecruitModifierDataOffset = 365123;
     private const int RecoveryConstantDataOffset = 364595;
+    private const int LegacyModifierArraySize = 512;
     private const int SkillVersionOffset = 355056;
     private const int SkillRangeDataOffset = 382206;
     private const int SkillAllyItemDataOffset = 386212;
@@ -293,6 +294,8 @@ internal sealed class MonsterCreatorForm : Form
 
     private int _recordTableOffset = -1;
     private int _selectedMonsterId = -1;
+    private int _loadedRecruitModifier;
+    private int _loadedRecoveryConstant;
     private bool _dataReady;
     private bool _loadingSelection;
     private bool _automaticLiveApply;
@@ -305,6 +308,8 @@ internal sealed class MonsterCreatorForm : Form
     {
         _bin = bin;
         _onChanged = onChanged;
+        _recruitModifier.Minimum = short.MinValue;
+        _recruitModifier.Maximum = short.MaxValue;
 
         Text = "モンスタークリエイター";
         StartPosition = FormStartPosition.CenterParent;
@@ -441,7 +446,7 @@ internal sealed class MonsterCreatorForm : Form
                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
                 "特技使用率(+22、+23)は両方に同じ値を書き込みます。\r\n" +
-                "勧誘修正値・回復定数は実アドレス未検証のため現在無効化しています。\r\n" +
+                "勧誘修正値・回復定数は旧HSPの独立配列（各256件）を編集します。\r\n" +
                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
                 "PCSX2接続中は、モンスター選択時にゲーム内の現在値を読み込みます。数値や選択肢を変更すると、その場でゲームメモリへ即時反映します。\r\n" +
                 "未接続時はBIN作業データを編集し、「再適用」で反映できます。"
@@ -835,9 +840,9 @@ internal sealed class MonsterCreatorForm : Form
         _dropItem.Enabled = enabled;
         _sleepRate.Enabled = enabled;
         _skillRate.Enabled = enabled;
-        // 実アドレス未検証のため誤書き込み防止。対応確認まで編集不可。
-        _recruitModifier.Enabled = false;
-        _recoveryConstant.Enabled = false;
+        _recruitModifier.Enabled = enabled;
+        _recoveryConstant.Enabled = enabled && _bin != null &&
+            _bin.Length >= RecoveryConstantDataOffset + LegacyModifierArraySize;
         _skillRange.Enabled = enabled && _skillDataReady;
         // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
         _enemyThrowItem.Enabled = enabled &&
@@ -919,8 +924,10 @@ internal sealed class MonsterCreatorForm : Form
         int offset = checked(_recordTableOffset + id * MonsterRecordSize);
         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
 
-        // 勧誘補正値・回復定数の実メモリアドレスは未検証。ここでは触らない。
-        int hspMonsterIndex = id + 1; // HSPリスト先頭の空行ぶんを補正
+        // HSPは選択番号var_542をそのまま各配列の添字に使う。
+        int hspMonsterIndex = id;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
 
         if (Pcsx2LiveSession.IsConnected &&
             Pcsx2LiveSession.ProcessId > 0 &&
@@ -930,10 +937,11 @@ internal sealed class MonsterCreatorForm : Form
             {
                 var requested = new List<Tuple<int, int, string>>
                 {
-                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード")
+                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+                    Tuple.Create(recruitOffset, 2, "勧誘修正値"),
+                    Tuple.Create(recoveryOffset, 2, "回復定数")
                 };
 
-                // HSPのモンスター一覧は先頭に空行があるため、実IDは id + 1。
                 int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
                 int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
                 if (_skillDataReady)
@@ -985,9 +993,21 @@ internal sealed class MonsterCreatorForm : Form
         _sleepRate.Value = _bin[offset + 18];
         _skillRate.Value = _bin[offset + 22];
 
-        // 勧誘補正値・回復定数は実アドレスを確認できるまで表示値を無効化。
-        _recruitModifier.Value = 0;
-        _recoveryConstant.Value = 0;
+        // HSPのvar_166（回復）とvar_168（勧誘）は512 bytesずつの独立配列。
+        // var_166先頭が0x5555なら未初期化扱いなので、表示値は0にする。
+        bool modifierArraysMissing =
+            _bin[RecoveryConstantDataOffset] == 0x55 &&
+            _bin[RecoveryConstantDataOffset + 1] == 0x55;
+        int recruitValue = modifierArraysMissing
+            ? 0
+            : unchecked((short)BinFileService.ReadUInt16(_bin, recruitOffset));
+        int recoveryValue = modifierArraysMissing
+            ? 0
+            : BinFileService.ReadUInt16(_bin, recoveryOffset);
+        _recruitModifier.Value = recruitValue;
+        _recoveryConstant.Value = recoveryValue;
+        _loadedRecruitModifier = recruitValue;
+        _loadedRecoveryConstant = recoveryValue;
 
         string skillDebug = "";
 
@@ -1071,8 +1091,9 @@ internal sealed class MonsterCreatorForm : Form
         _bin[offset + 22] = (byte)_skillRate.Value;
         _bin[offset + 23] = (byte)_skillRate.Value;
 
-        // 勧誘補正値・回復定数はアドレス未検証のためBINにも書き込まない。
-        int hspMonsterIndex = _selectedMonsterId + 1;
+        int hspMonsterIndex = _selectedMonsterId;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
         int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
         int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
         int enemyItemOffset = rangeOffset + 18;
@@ -1109,6 +1130,33 @@ internal sealed class MonsterCreatorForm : Form
         if (_growthType.SelectedIndex >= 0)
             _bin[offset + 20] = (byte)_growthType.SelectedIndex;
 
+        bool modifierArraysMissing =
+            _bin[RecoveryConstantDataOffset] == 0x55 &&
+            _bin[RecoveryConstantDataOffset + 1] == 0x55;
+        int recruitValueToWrite = decimal.ToInt32(_recruitModifier.Value);
+        int recoveryValueToWrite = decimal.ToInt32(_recoveryConstant.Value);
+        bool recruitChanged = recruitValueToWrite != _loadedRecruitModifier;
+        bool recoveryChanged = recoveryValueToWrite != _loadedRecoveryConstant;
+        bool modifierChanged = recruitChanged || recoveryChanged;
+
+        if (modifierChanged)
+        {
+            // 0x5555の未初期化配列だけをゼロ初期化し、既存配列は保持する。
+            if (modifierArraysMissing)
+            {
+                Array.Clear(_bin, RecoveryConstantDataOffset, LegacyModifierArraySize);
+                Array.Clear(_bin, RecruitModifierDataOffset, LegacyModifierArraySize);
+            }
+
+            BinFileService.WriteUInt16(
+                _bin, recruitOffset, unchecked((ushort)(short)recruitValueToWrite));
+            BinFileService.WriteUInt16(
+                _bin, recoveryOffset, (ushort)recoveryValueToWrite);
+
+            _loadedRecruitModifier = recruitValueToWrite;
+            _loadedRecoveryConstant = recoveryValueToWrite;
+        }
+
         _onChanged?.Invoke();
 
         if (Pcsx2LiveSession.IsConnected &&
@@ -1131,6 +1179,32 @@ internal sealed class MonsterCreatorForm : Form
                     offset,
                     CopyRange(offset, MonsterRecordSize),
                     "モンスターレコード"));
+
+                if (modifierChanged)
+                {
+                    if (modifierArraysMissing)
+                    {
+                        writes.Add(Tuple.Create(
+                            RecoveryConstantDataOffset,
+                            CopyRange(RecoveryConstantDataOffset, LegacyModifierArraySize),
+                            "回復定数配列（初期化）"));
+                        writes.Add(Tuple.Create(
+                            RecruitModifierDataOffset,
+                            CopyRange(RecruitModifierDataOffset, LegacyModifierArraySize),
+                            "勧誘修正値配列（初期化）"));
+                    }
+                    else
+                    {
+                        writes.Add(Tuple.Create(
+                            recruitOffset,
+                            CopyRange(recruitOffset, 2),
+                            "勧誘修正値"));
+                        writes.Add(Tuple.Create(
+                            recoveryOffset,
+                            CopyRange(recoveryOffset, 2),
+                            "回復定数"));
+                    }
+                }
 
                 if (_skillDataReady)
                 {
