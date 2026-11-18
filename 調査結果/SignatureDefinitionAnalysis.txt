@@ -1,0 +1,6060 @@
+﻿========================================
+SignatureA
+========================================
+Contains(c))
+            {
+                score += 2;
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(c))
+            {
+                score++;
+                continue;
+            }
+
+            if (c == ' ' || c == '\u3000')
+            {
+                score++;
+                continue;
+            }
+
+            if (c >= '\u0080' && c <= '\u00FF')
+                bad++;
+        }
+
+        score += japanese * 2;
+        score += hiragana;
+        score += kanji;
+
+        score -= bad * 3;
+        score -= controls * 10;
+
+        if (printable > 0)
+        {
+            double ratio = (double)japanese / printable;
+
+            if (ratio >= 0.15) score += 20;
+            if (ratio >= 0.35) score += 20;
+            if (ratio >= 0.60) score += 10;
+        }
+
+        if (japanese == 0)
+            score -= 30;
+
+        return score;
+    }
+}
+
+
+// =========================================================
+// 旧HSP互換 PCSX2接続・メモリ検索基盤
+// 現段階は読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+
+;
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(c))
+            {
+                score++;
+                continue;
+            }
+
+            if (c == ' ' || c == '\u3000')
+            {
+                score++;
+                continue;
+            }
+
+            if (c >= '\u0080' && c <= '\u00FF')
+                bad++;
+        }
+
+        score += japanese * 2;
+        score += hiragana;
+        score += kanji;
+
+        score -= bad * 3;
+        score -= controls * 10;
+
+        if (printable > 0)
+        {
+            double ratio = (double)japanese / printable;
+
+            if (ratio >= 0.15) score += 20;
+            if (ratio >= 0.35) score += 20;
+            if (ratio >= 0.60) score += 10;
+        }
+
+        if (japanese == 0)
+            score -= 30;
+
+        return score;
+    }
+}
+
+
+// =========================================================
+// 旧HSP互換 PCSX2接続・メモリ検索基盤
+// 現段階は読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        UIntPtr nSize,
+    
+
+ kanji;
+
+        score -= bad * 3;
+        score -= controls * 10;
+
+        if (printable > 0)
+        {
+            double ratio = (double)japanese / printable;
+
+            if (ratio >= 0.15) score += 20;
+            if (ratio >= 0.35) score += 20;
+            if (ratio >= 0.60) score += 10;
+        }
+
+        if (japanese == 0)
+            score -= 30;
+
+        return score;
+    }
+}
+
+
+// =========================================================
+// 旧HSP互換 PCSX2接続・メモリ検索基盤
+// 現段階は読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        UIntPtr nSize,
+        out UIntPtr lpNumberOfBytesRead);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern UIntPtr VirtualQueryEx(
+        IntPtr hProcess,
+        IntPtr lpAddress,
+        out MEMORY_BASIC_INFORMATION lpBuffer,
+        UIntPtr dwLength);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool IsWow64Proc
+
+ectureKnown = IsWow64Process(handle, out isWow64);
+
+            ulong maximumAddress;
+            if (architectureKnown && isWow64)
+                maximumAddress = 0x7FFEFFFF;
+            else if (!System.Environment.Is64BitOperatingSystem)
+                maximumAddress = 0x7FFEFFFF;
+            else
+                maximumAddress = 0x00007FFFFFFEFFFF;
+
+            ulong address = 0x10000;
+            ulong mbiSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(
+                typeof(MEMORY_BASIC_INFORMATION));
+
+            const int CHUNK_SIZE = 1024 * 1024;
+            const int FALLBACK_SIZE = 4096;
+
+            ulong firstAddress = 0;
+            ulong secondAddress = 0;
+
+            bool ScanRun(ulong runStart, ulong runEnd)
+            {
+                if (runEnd <= runStart)
+                    return false;
+
+                report?.Invoke(
+                    "旧HSP互換の連続領域を検索中: 0x" +
+                    runStart.ToString("X") + " - 0x" + runEnd.ToString("X"));
+
+                ulong runA = 0;
+                ulong runB = 0;
+                ulong offset = 0;
+                int carry = 0;
+                int maxPatternLength = System.Math.Max(
+                    SignatureA.Length, SignatureB.Length);
+                byte[] buffer = new byte[CHUNK_SIZE + 32];
+
+                while (offset < runEnd - runStart)
+                {
+                    int request = (int)System.Math.Min(
+                        (ulong)CHUNK_SIZE,
+                        (runEnd - runStart) - offset);
+
+                    byte[] chunkBuffer = new byte[request];
+                    UIntPtr bytesRead;
+
+                    ReadProcessMemory(
+                        handle,
+                        ToIntPtr(runStart + offset),
+                        chunkBuffer,
+                        new UIntPtr((uint)request),
+                        out bytesRead);
+
+                    int actual = (int)System.Math.Min(
+                        bytesRead.ToUInt64(),
+                        (ulong)request);
+
+                    if (actual <= 0)
+                    {
+                        ulong skip = System.Math.Min(
+                            (ulong)FALLBACK_SIZE,
+                            (runEnd - runStart) - offset);
+                        offset += skip;
+                        carry = 0;
+                        continue;
+                    }
+
+                    System.Array.Copy(
+                        chunkBuffer, 0, buffer, carry, actual);
+
+                    int total = carry + actual;
+
+                    if (firstAddress == 0)
+                    {
+                        int foundA = FindPattern(buffer, total, SignatureA);
+                        if (foundA >= 0)
+                            firstAddress = runStart + offset - (ulong)carry + (ulong)foundA;
+                    }
+
+                    if (secondAddress == 0)
+                    {
+                        int foundB = FindPattern(buffer, total, SignatureB);
+                        if (fou
+
+HUNK_SIZE,
+                        (runEnd - runStart) - offset);
+
+                    byte[] chunkBuffer = new byte[request];
+                    UIntPtr bytesRead;
+
+                    ReadProcessMemory(
+                        handle,
+                        ToIntPtr(runStart + offset),
+                        chunkBuffer,
+                        new UIntPtr((uint)request),
+                        out bytesRead);
+
+                    int actual = (int)System.Math.Min(
+                        bytesRead.ToUInt64(),
+                        (ulong)request);
+
+                    if (actual <= 0)
+                    {
+                        ulong skip = System.Math.Min(
+                            (ulong)FALLBACK_SIZE,
+                            (runEnd - runStart) - offset);
+                        offset += skip;
+                        carry = 0;
+                        continue;
+                    }
+
+                    System.Array.Copy(
+                        chunkBuffer, 0, buffer, carry, actual);
+
+                    int total = carry + actual;
+
+                    if (firstAddress == 0)
+                    {
+                        int foundA = FindPattern(buffer, total, SignatureA);
+                        if (foundA >= 0)
+                            firstAddress = runStart + offset - (ulong)carry + (ulong)foundA;
+                    }
+
+                    if (secondAddress == 0)
+                    {
+                        int foundB = FindPattern(buffer, total, SignatureB);
+                        if (foundB >= 0)
+                            secondAddress = runStart + offset - (ulong)carry + (ulong)foundB;
+                    }
+
+                    result.ScannedBytes += actual;
+
+                    if (firstAddress != 0 && secondAddress != 0)
+                    {
+                        report?.Invoke("シグネチャA検出: 0x" + firstAddress.ToString("X"));
+                        report?.Invoke("シグネチャB検出: 0x" + secondAddress.ToString("X"));
+                        return true;
+                    }
+
+                    carry = System.Math.Min(maxPatternLength - 1, total);
+                    if (carry > 0)
+                    {
+                        System.Array.Copy(
+                            buffer, total - carry, buffer, 0, carry);
+                    }
+
+                    offset += (ulong)actual;
+                }
+
+                return false;
+            }
+
+            ulong runStartAddress = 0;
+            ulong runEndAddress = 0;
+            bool runActive = false;
+            bool foundPair = false;
+
+            while (address < maximumAddress)
+            {
+                MEMORY_BASIC_INFORMATION mbi;
+                UIntPtr queryResult = VirtualQueryEx(
+                    handle,
+                    ToIntPtr(address),
+                    out mbi,
+                    new UIntPtr(mbiSize));
+
+                if (queryResult == UIntPtr.Zero)
+                    break;
+
+                ulong baseAddress = ToUInt64(mbi.BaseAddre
+
+)
+                    {
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                    else if (baseAddress == runEndAddress)
+                    {
+                        runEndAddress = nextAddress;
+                    }
+                    else
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        if (foundPair) break;
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            Syst
+
+ss;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                    else if (baseAddress == runEndAddress)
+                    {
+                        runEndAddress = nextAddress;
+                    }
+                    else
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        if (foundPair) break;
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static class 
+
+  }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static class Pcsx2MemoryLayoutBuilder
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static ex
+
+sult.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static class Pcsx2MemoryLayoutBuilder
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+    private static byte[] Read(
+        System.IntPtr handle,
+        long address,
+        int size)
+    {
+        if (address <= 0)
+            throw new System.ArgumentOutOfRangeException(
+                nameof(address));
+
+        byte[] buffer = new byte[size];
+        System.UIntPtr read;
+
+       
+
+              if (eeBase <= 0)
+                    throw new System.InvalidOperationException(
+                        "PCSX2のEEmemポインタが無効です。");
+
+                return eeBase;
+            }
+
+            throw new System.InvalidOperationException(
+                "PCSX2 v2.8.2のEEmemエクスポートが見つかりません。");
+        }
+    }
+
+    public static long GetEEmemBase(int processId)
+    {
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2のメモリを開けません。");
+
+        try
+        {
+            return ResolveEEmemBase(processId, handle);
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+    private static long AddOffset(long address, long offset)
+    {
+        return checked(address + offset);
+    }
+
+    public static Pcsx2MemoryLayout Build(
+        int processId,
+        long signatureA,
+        long signatureB)
+    {
+        var layout = new Pcsx2MemoryLayout();
+
+        layout.SignatureA = signatureA;
+        layout.SignatureB = signatureB;
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "ポインタ計算用にPCSX2を開けません。");
+        }
+
+        try
+        {
+            // 旧HSP:
+            // var_142 = peek(var_134, 3)
+            // var_143 = var_142 * 16777216
+            byte highByte = Read(handle, signatureA + 3, 1)[0];
+            uint correction = (uint)highByte << 24;
+
+            layout.Correction = correction;
+
+            // 旧HSP:
+            // var_144 ～ var_149
+            // 4バイト値を5個読み、同じ補正値を加算する。
+            for (int i = 0; i < 5; i++)
+            {
+                uint raw = ReadUInt32(
+                    handle,
+                    signatureA + (i * 4));
+
+                layout.PointerValues[i] =
+                    unchecked(raw + correction);
+            }
+
+            // 旧HSP label_073 のアドレス式を忠実に反映。
+// var_134 = 第1識別パターンのアドレス
+// var_136 = 第2識別パターンのアドレス
+long a = signatureA;
+long b = signatureB;
+
+var map = layout.Addresses;
+
+// TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
+// 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
+// EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
+long eeMemBaseForFixedAddresses =
+    ResolveEEmemBase(processId, handle);
+
+// PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
+// 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
+
+// 第2識別アドレスを基準にする領域
+map["var_150"] = AddOffset(b, 87592);
+map["var_152"] = AddOffset(b, 89224);
+map["var_154"] = AddOffset(b, 16);
+map["var_156"] = AddOffset(b, 23797200);
+map["var_170"] = AddOffset(b, 232804);
+
+// サイズ・定数。アドレスでは
+
+tion = checked(destination + length + 16);
+    }
+
+    private static void AppendFlag(
+        byte[] bin,
+        ref int destination,
+        byte value)
+    {
+        if (destination < 0 || destination >= bin.Length)
+            throw new System.InvalidOperationException(
+                "BINフラグ位置が範囲外です。");
+
+        bin[destination] = value;
+        destination = checked(destination + 17);
+    }
+
+    public static byte[] Capture(
+        int processId,
+        Pcsx2MemoryLayout layout)
+    {
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "BIN取得用にPCSX2を開けません。");
+        }
+
+        try
+        {
+            // 旧HSP:
+            // ReadProcessMemory var_130, var_134,
+            // varptr(var_226), 524288, var_145
+            byte[] bin = Read(
+                handle,
+                layout.SignatureA,
+                BaseSize);
+
+            // 旧HSP版のBIN出力はバージョン5として構築する。
+            bin[VersionOffset] = 5;
+
+            int destination = ExtensionOffset;
+
+            // 旧HSP label_155 の読み込み順序を維持。
+            Append(handle, bin, ref destination,
+                Address(layout, "var_150"),
+                Size(layout, "var_151_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_152"),
+                Size(layout, "var_153_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_154"),
+                Size(layout, "var_155_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_156"),
+                Size(layout, "var_157_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_158"),
+                Size(layout, "var_159_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_160"),
+                Size(layout, "var_161_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_162"),
+                Size(layout, "var_163_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_164"),
+                Size(layout, "var_165_size"));
+
+            long diagnosticVar166 = Address(layout, "var_166");
+long diagnosticVar168 = Address(layout, "var_168");
+if (diagnosticVar166 < 0x100000000L)
+{
+    throw new System.InvalidOperationException(
+        "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+        "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+        "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+        "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+      
+
+ Address(layout, "var_152"),
+                Size(layout, "var_153_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_154"),
+                Size(layout, "var_155_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_156"),
+                Size(layout, "var_157_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_158"),
+                Size(layout, "var_159_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_160"),
+                Size(layout, "var_161_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_162"),
+                Size(layout, "var_163_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_164"),
+                Size(layout, "var_165_size"));
+
+            long diagnosticVar166 = Address(layout, "var_166");
+long diagnosticVar168 = Address(layout, "var_168");
+if (diagnosticVar166 < 0x100000000L)
+{
+    throw new System.InvalidOperationException(
+        "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+        "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+        "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+        "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+        "\r\nvar_166=0x" + diagnosticVar166.ToString("X") +
+        "\r\nvar_168=0x" + diagnosticVar168.ToString("X"));
+}
+
+Append(handle, bin, ref destination,
+                diagnosticVar166,
+                Size(layout, "var_167_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_168"),
+                Size(layout, "var_169_size"));
+
+            // 旧HSPのチェックボックス値。
+            // 新しいC#画面では初期値を0として扱う。
+            AppendFlag(bin, ref destination, 0);
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_170"),
+                Size(layout, "var_171_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_220"),
+                Size(layout, "var_221_constant"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_222"),
+                Size(layout, "var_223_size"));
+
+            AppendFlag(bin, ref destination, 0);
+
+            // バージョン5の追加領域。
+            Append(handle, bin, ref destination,
+                checked(Address(layout, "var_644") - 6),
+                Size(layout, "var_761_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_648"),
+                Size(layout, "var_762_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_254"),
+                Size(layout, "var_255_difference"));
+
+            if (destination > BaseSize)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換BINの構築位置が524288 bytesを超えました。");
+
+
+2"),
+                Size(layout, "var_153_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_154"),
+                Size(layout, "var_155_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_156"),
+                Size(layout, "var_157_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_158"),
+                Size(layout, "var_159_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_160"),
+                Size(layout, "var_161_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_162"),
+                Size(layout, "var_163_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_164"),
+                Size(layout, "var_165_size"));
+
+            long diagnosticVar166 = Address(layout, "var_166");
+long diagnosticVar168 = Address(layout, "var_168");
+if (diagnosticVar166 < 0x100000000L)
+{
+    throw new System.InvalidOperationException(
+        "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+        "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+        "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+        "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+        "\r\nvar_166=0x" + diagnosticVar166.ToString("X") +
+        "\r\nvar_168=0x" + diagnosticVar168.ToString("X"));
+}
+
+Append(handle, bin, ref destination,
+                diagnosticVar166,
+                Size(layout, "var_167_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_168"),
+                Size(layout, "var_169_size"));
+
+            // 旧HSPのチェックボックス値。
+            // 新しいC#画面では初期値を0として扱う。
+            AppendFlag(bin, ref destination, 0);
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_170"),
+                Size(layout, "var_171_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_220"),
+                Size(layout, "var_221_constant"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_222"),
+                Size(layout, "var_223_size"));
+
+            AppendFlag(bin, ref destination, 0);
+
+            // バージョン5の追加領域。
+            Append(handle, bin, ref destination,
+                checked(Address(layout, "var_644") - 6),
+                Size(layout, "var_761_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_648"),
+                Size(layout, "var_762_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_254"),
+                Size(layout, "var_255_difference"));
+
+            if (destination > BaseSize)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換BINの構築位置が524288 bytesを超えました。");
+            }
+
+         
+
+ Pcsx2MemoryScanner.CloseConnection(_processHandle);
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+        }
+
+        Pcsx2LiveSession.SetDisconnected();
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+
+           _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+        }
+
+        Pcsx2LiveSession.SetDisconnected();
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            re
+
+ (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続
+
+("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.Select
+
+       statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+        if (processList.SelectedIndex < 0 ||
+            processList.SelectedItem == null)
+        {
+            statusLabel.Text = "PCSX2が見つかりません。";
+            Log("PCSX2が見つかりません。起動してから再検索
+
+("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+        if (processList.SelectedIndex < 0 ||
+            processList.SelectedItem == null)
+        {
+            statusLabel.Text = "PCSX2が見つかりません。";
+            Log("PCSX2が見つかりません。起動してから再検索してください。");
+            return;
+        }
+
+        s
+
+ocessId;
+        }
+        catch (System.Exception ex)
+        {
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+
+            Log("接続エラー: " + ex.Message);
+            statusLabel.Text = "接続に失敗しました。";
+        }
+        finally
+        {
+            refreshButton.Enabled = true;
+            scanButton.Enabled = true;
+        }
+    }
+}
+
+
+internal static class Pcsx2BinApplier
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_VM_WRITE = 0x0020;
+    private const uint PROCESS_VM_OPERATION = 0x0008;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private sealed class WriteBlock
+    {
+        public string Name { get; }
+        public long Address { get; }
+        public byte[] Data { get; }
+        public byte[] Original { get; set; } = System.Array.Empty<byte>();
+
+        public WriteBlock(string name, long address, byte[] data)
+        {
+            Name = name;
+            Address = address;
+            Data = data;
+        }
+    }
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr read);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool WriteProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr written);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct APPLY_MEMORY_BASIC_INFORMATION
+    {
+        public System.IntPtr BaseAddress;
+        public System.IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public System.UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.UIntPtr VirtualQueryEx(
+        System.IntPtr process,
+        System.IntPtr address
+
+bin, cursor, data, 0, length);
+        blocks.Add(new WriteBlock(name, address, data));
+        cursor = checked(cursor + length + 16);
+    }
+
+    private static void AddKeyBlock(
+        System.Collections.Generic.List<WriteBlock> blocks,
+        byte[] bin, ref int cursor, Pcsx2MemoryLayout layout,
+        string addressKey, string sizeKey)
+    {
+        AddBlock(blocks, bin, ref cursor,
+            GetAddress(layout, addressKey), GetSize(layout, sizeKey), addressKey);
+    }
+
+    private static void SkipFlag(byte[] bin, ref int cursor)
+    {
+        CheckBinRange(bin, cursor, 1);
+        cursor = checked(cursor + 17);
+    }
+
+    public static string Apply(
+        int processId, Pcsx2MemoryLayout layout, byte[] bin)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (bin == null || bin.Length != BaseSize)
+            throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+
+        int version = bin[VersionOffset];
+        int cursor = ExtensionOffset;
+        int var166MarkerOffset = -1;
+        byte var166Marker0 = 0;
+        byte var166Marker1 = 0;
+        bool var166Var168Included = false;
+        // 旧HSP label_153: バージョン85以外は追加領域を順番に適用。
+        if (version != 85)
+        {
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_150", "var_151_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_152", "var_153_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_154", "var_155_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_156", "var_157_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_158", "var_159_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_160", "var_161_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_162", "var_163_size");
+            AddKeyBlock(blocks, bin, ref cursor, layout, "var_164", "var_165_size");
+
+            var166MarkerOffset = cursor;
+            CheckBinRange(bin, cursor, 2);
+            var166Marker0 = bin[cursor];
+            var166Marker1 = bin[cursor + 1];
+            var166Var168Included = var166Marker0 != 85 && var166Marker1 != 85;
+            if (true)
+            {
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_166", "var_167_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_168", "var_169_size");
+            }
+
+            if (version >= 2)
+            {
+                SkipFlag(bin, ref cursor);
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_170", "var_171_size");
+            }
+
+            if (version >= 3)
+            {
+                AddKeyBlock(blocks, bin, ref cursor, layout,
+
+"var_223_size");
+            }
+
+            if (version >= 4)
+            {
+                SkipFlag(bin, ref cursor);
+            }
+
+            if (version >= 5)
+            {
+                AddBlock(blocks, bin, ref cursor,
+                    GetAddress(layout, "var_644") - 6,
+                    GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            foreach (WriteBlock block in blocks)
+            {
+                ValidateAccessibleRange(handle, block);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original
+
+e");
+            }
+
+            if (version >= 4)
+            {
+                SkipFlag(bin, ref cursor);
+            }
+
+            if (version >= 5)
+            {
+                AddBlock(blocks, bin, ref cursor,
+                    GetAddress(layout, "var_644") - 6,
+                    GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            foreach (WriteBlock block in blocks)
+            {
+                ValidateAccessibleRange(handle, block);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact
+
+cks, bin, ref cursor,
+                    GetAddress(layout, "var_644") - 6,
+                    GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            foreach (WriteBlock block in blocks)
+            {
+                ValidateAccessibleRange(handle, block);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
+
+            int attempted = -1;
+            try
+            {
+                for (int i = 0; i < blocks.Count; i++)
+          
+
+      "PCSX2 v2.8.2 が見つかりません。v2.8.2以外のPCSX2（v1.5など）は接続対象から除外しています。v2.8.2を起動してから再接続してください。");
+            }
+
+            // 最初に検出されたPCSX2を使用
+            int processId = processes[0].Id;
+
+            foreach (var process in processes)
+                process.Dispose();
+
+            processes.Clear();
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+          
+
+除外しています。v2.8.2を起動してから再接続してください。");
+            }
+
+            // 最初に検出されたPCSX2を使用
+            int processId = processes[0].Id;
+
+            foreach (var process in processes)
+                process.Dispose();
+
+            processes.Clear();
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        cat
+
+          _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Er
+
+を開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process in pr
+
+);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    process.Dispose();
+                }
+                catch
+                {
+                }
+            }
+
+            _pcsx2Connecting = false;
+        }
+    }
+    private void UpdatePcsx2Status()
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(new System.A
+
+(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    process.Dispose();
+                }
+                catch
+                {
+                }
+            }
+
+            _pcsx2Connecting = false;
+        }
+    }
+    private void UpdatePcsx2Status()
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(new System.Action(UpdatePcsx2Status));
+            return;
+        }
+
+ 
+
+検出数: 30
+========================================
+SignatureB
+========================================
+if (ratio >= 0.15) score += 20;
+            if (ratio >= 0.35) score += 20;
+            if (ratio >= 0.60) score += 10;
+        }
+
+        if (japanese == 0)
+            score -= 30;
+
+        return score;
+    }
+}
+
+
+// =========================================================
+// 旧HSP互換 PCSX2接続・メモリ検索基盤
+// 現段階は読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        UIntPtr nSize,
+        out UIntPtr lpNumberOfBytesRead);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern UIntPtr VirtualQueryEx(
+        IntPtr hProcess,
+        IntPtr lpAddress,
+        out MEMORY_BASIC_INFORMATION lpBuffer,
+        UIntPtr dwLength);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool IsWow64Process(
+        IntPtr hProcess,
+        out bool wow64Process);
+
+    private static ulong ToUInt64(IntPtr value)
+    {
+        return unchecked((ulong)value.ToInt64());
+    }
+
+ 
+
+64Process(handle, out isWow64);
+
+            ulong maximumAddress;
+            if (architectureKnown && isWow64)
+                maximumAddress = 0x7FFEFFFF;
+            else if (!System.Environment.Is64BitOperatingSystem)
+                maximumAddress = 0x7FFEFFFF;
+            else
+                maximumAddress = 0x00007FFFFFFEFFFF;
+
+            ulong address = 0x10000;
+            ulong mbiSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(
+                typeof(MEMORY_BASIC_INFORMATION));
+
+            const int CHUNK_SIZE = 1024 * 1024;
+            const int FALLBACK_SIZE = 4096;
+
+            ulong firstAddress = 0;
+            ulong secondAddress = 0;
+
+            bool ScanRun(ulong runStart, ulong runEnd)
+            {
+                if (runEnd <= runStart)
+                    return false;
+
+                report?.Invoke(
+                    "旧HSP互換の連続領域を検索中: 0x" +
+                    runStart.ToString("X") + " - 0x" + runEnd.ToString("X"));
+
+                ulong runA = 0;
+                ulong runB = 0;
+                ulong offset = 0;
+                int carry = 0;
+                int maxPatternLength = System.Math.Max(
+                    SignatureA.Length, SignatureB.Length);
+                byte[] buffer = new byte[CHUNK_SIZE + 32];
+
+                while (offset < runEnd - runStart)
+                {
+                    int request = (int)System.Math.Min(
+                        (ulong)CHUNK_SIZE,
+                        (runEnd - runStart) - offset);
+
+                    byte[] chunkBuffer = new byte[request];
+                    UIntPtr bytesRead;
+
+                    ReadProcessMemory(
+                        handle,
+                        ToIntPtr(runStart + offset),
+                        chunkBuffer,
+                        new UIntPtr((uint)request),
+                        out bytesRead);
+
+                    int actual = (int)System.Math.Min(
+                        bytesRead.ToUInt64(),
+                        (ulong)request);
+
+                    if (actual <= 0)
+                    {
+                        ulong skip = System.Math.Min(
+                            (ulong)FALLBACK_SIZE,
+                            (runEnd - runStart) - offset);
+                        offset += skip;
+                        carry = 0;
+                        continue;
+                    }
+
+                    System.Array.Copy(
+                        chunkBuffer, 0, buffer, carry, actual);
+
+                    int total = carry + actual;
+
+                    if (firstAddress == 0)
+                    {
+                        int foundA = FindPattern(buffer, total, SignatureA);
+                        if (foundA >= 0)
+                            firstAddress = runStart + offset - (ulong)carry + (ulong)foundA;
+                    }
+
+                    if (secondAddress == 0)
+                    {
+                        int foundB = FindPattern(buffer, total, SignatureB);
+                        if (foundB >= 0)
+         
+
+               chunkBuffer,
+                        new UIntPtr((uint)request),
+                        out bytesRead);
+
+                    int actual = (int)System.Math.Min(
+                        bytesRead.ToUInt64(),
+                        (ulong)request);
+
+                    if (actual <= 0)
+                    {
+                        ulong skip = System.Math.Min(
+                            (ulong)FALLBACK_SIZE,
+                            (runEnd - runStart) - offset);
+                        offset += skip;
+                        carry = 0;
+                        continue;
+                    }
+
+                    System.Array.Copy(
+                        chunkBuffer, 0, buffer, carry, actual);
+
+                    int total = carry + actual;
+
+                    if (firstAddress == 0)
+                    {
+                        int foundA = FindPattern(buffer, total, SignatureA);
+                        if (foundA >= 0)
+                            firstAddress = runStart + offset - (ulong)carry + (ulong)foundA;
+                    }
+
+                    if (secondAddress == 0)
+                    {
+                        int foundB = FindPattern(buffer, total, SignatureB);
+                        if (foundB >= 0)
+                            secondAddress = runStart + offset - (ulong)carry + (ulong)foundB;
+                    }
+
+                    result.ScannedBytes += actual;
+
+                    if (firstAddress != 0 && secondAddress != 0)
+                    {
+                        report?.Invoke("シグネチャA検出: 0x" + firstAddress.ToString("X"));
+                        report?.Invoke("シグネチャB検出: 0x" + secondAddress.ToString("X"));
+                        return true;
+                    }
+
+                    carry = System.Math.Min(maxPatternLength - 1, total);
+                    if (carry > 0)
+                    {
+                        System.Array.Copy(
+                            buffer, total - carry, buffer, 0, carry);
+                    }
+
+                    offset += (ulong)actual;
+                }
+
+                return false;
+            }
+
+            ulong runStartAddress = 0;
+            ulong runEndAddress = 0;
+            bool runActive = false;
+            bool foundPair = false;
+
+            while (address < maximumAddress)
+            {
+                MEMORY_BASIC_INFORMATION mbi;
+                UIntPtr queryResult = VirtualQueryEx(
+                    handle,
+                    ToIntPtr(address),
+                    out mbi,
+                    new UIntPtr(mbiSize));
+
+                if (queryResult == UIntPtr.Zero)
+                    break;
+
+                ulong baseAddress = ToUInt64(mbi.BaseAddress);
+                ulong regionSize = mbi.RegionSize.ToUInt64();
+
+                if (regionSize == 0)
+                {
+                    if (runActive)
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        runActive = false;
+
+
+               {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static class Pcsx2MemoryLayoutBuilder
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        Syst
+
+          result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static class Pcsx2MemoryLayoutBuilder
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+    private static byte[] Read(
+        System.IntPtr handle,
+        long address,
+        int size)
+    {
+        if (address <= 0)
+            throw new System.ArgumentOutOfRangeException(
+                nameof(address));
+
+        byte[] buffer = new byte[size];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+            handle,
+            
+
+           throw new System.InvalidOperationException(
+                        "PCSX2のEEmemポインタが無効です。");
+
+                return eeBase;
+            }
+
+            throw new System.InvalidOperationException(
+                "PCSX2 v2.8.2のEEmemエクスポートが見つかりません。");
+        }
+    }
+
+    public static long GetEEmemBase(int processId)
+    {
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2のメモリを開けません。");
+
+        try
+        {
+            return ResolveEEmemBase(processId, handle);
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+    private static long AddOffset(long address, long offset)
+    {
+        return checked(address + offset);
+    }
+
+    public static Pcsx2MemoryLayout Build(
+        int processId,
+        long signatureA,
+        long signatureB)
+    {
+        var layout = new Pcsx2MemoryLayout();
+
+        layout.SignatureA = signatureA;
+        layout.SignatureB = signatureB;
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "ポインタ計算用にPCSX2を開けません。");
+        }
+
+        try
+        {
+            // 旧HSP:
+            // var_142 = peek(var_134, 3)
+            // var_143 = var_142 * 16777216
+            byte highByte = Read(handle, signatureA + 3, 1)[0];
+            uint correction = (uint)highByte << 24;
+
+            layout.Correction = correction;
+
+            // 旧HSP:
+            // var_144 ～ var_149
+            // 4バイト値を5個読み、同じ補正値を加算する。
+            for (int i = 0; i < 5; i++)
+            {
+                uint raw = ReadUInt32(
+                    handle,
+                    signatureA + (i * 4));
+
+                layout.PointerValues[i] =
+                    unchecked(raw + correction);
+            }
+
+            // 旧HSP label_073 のアドレス式を忠実に反映。
+// var_134 = 第1識別パターンのアドレス
+// var_136 = 第2識別パターンのアドレス
+long a = signatureA;
+long b = signatureB;
+
+var map = layout.Addresses;
+
+// TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
+// 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
+// EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
+long eeMemBaseForFixedAddresses =
+    ResolveEEmemBase(processId, handle);
+
+// PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
+// 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
+
+// 第2識別アドレスを基準にする領域
+map["var_150"] = AddOffset(b, 87592);
+map["var_152"] = AddOffset(b, 89224);
+map["var_154"] = AddOffset(b, 16);
+map["var_156"] = AddOffset(b, 23797200);
+map["var_170"] = AddOffset(b, 232804);
+
+// サイズ・定数。アドレスではない。
+map["var_151_size"] = 32 * 30;
+map["
+
+53_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_154"),
+                Size(layout, "var_155_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_156"),
+                Size(layout, "var_157_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_158"),
+                Size(layout, "var_159_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_160"),
+                Size(layout, "var_161_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_162"),
+                Size(layout, "var_163_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_164"),
+                Size(layout, "var_165_size"));
+
+            long diagnosticVar166 = Address(layout, "var_166");
+long diagnosticVar168 = Address(layout, "var_168");
+if (diagnosticVar166 < 0x100000000L)
+{
+    throw new System.InvalidOperationException(
+        "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+        "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+        "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+        "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+        "\r\nvar_166=0x" + diagnosticVar166.ToString("X") +
+        "\r\nvar_168=0x" + diagnosticVar168.ToString("X"));
+}
+
+Append(handle, bin, ref destination,
+                diagnosticVar166,
+                Size(layout, "var_167_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_168"),
+                Size(layout, "var_169_size"));
+
+            // 旧HSPのチェックボックス値。
+            // 新しいC#画面では初期値を0として扱う。
+            AppendFlag(bin, ref destination, 0);
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_170"),
+                Size(layout, "var_171_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_220"),
+                Size(layout, "var_221_constant"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_222"),
+                Size(layout, "var_223_size"));
+
+            AppendFlag(bin, ref destination, 0);
+
+            // バージョン5の追加領域。
+            Append(handle, bin, ref destination,
+                checked(Address(layout, "var_644") - 6),
+                Size(layout, "var_761_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_648"),
+                Size(layout, "var_762_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_254"),
+                Size(layout, "var_255_difference"));
+
+            if (destination > BaseSize)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換BINの構築位置が524288 bytesを超えました。");
+            }
+
+            if (bin.Length != BaseSize)
+         
+
+ Append(handle, bin, ref destination,
+                Address(layout, "var_154"),
+                Size(layout, "var_155_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_156"),
+                Size(layout, "var_157_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_158"),
+                Size(layout, "var_159_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_160"),
+                Size(layout, "var_161_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_162"),
+                Size(layout, "var_163_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_164"),
+                Size(layout, "var_165_size"));
+
+            long diagnosticVar166 = Address(layout, "var_166");
+long diagnosticVar168 = Address(layout, "var_168");
+if (diagnosticVar166 < 0x100000000L)
+{
+    throw new System.InvalidOperationException(
+        "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+        "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+        "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+        "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+        "\r\nvar_166=0x" + diagnosticVar166.ToString("X") +
+        "\r\nvar_168=0x" + diagnosticVar168.ToString("X"));
+}
+
+Append(handle, bin, ref destination,
+                diagnosticVar166,
+                Size(layout, "var_167_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_168"),
+                Size(layout, "var_169_size"));
+
+            // 旧HSPのチェックボックス値。
+            // 新しいC#画面では初期値を0として扱う。
+            AppendFlag(bin, ref destination, 0);
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_170"),
+                Size(layout, "var_171_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_220"),
+                Size(layout, "var_221_constant"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_222"),
+                Size(layout, "var_223_size"));
+
+            AppendFlag(bin, ref destination, 0);
+
+            // バージョン5の追加領域。
+            Append(handle, bin, ref destination,
+                checked(Address(layout, "var_644") - 6),
+                Size(layout, "var_761_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_648"),
+                Size(layout, "var_762_size"));
+
+            Append(handle, bin, ref destination,
+                Address(layout, "var_254"),
+                Size(layout, "var_255_difference"));
+
+            if (destination > BaseSize)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換BINの構築位置が524288 bytesを超えました。");
+            }
+
+            if (bin.Length != BaseSize)
+                throw new System.
+
+ " + ex.Message);
+            statusLabel.Text = "接続に失敗しました。";
+        }
+        finally
+        {
+            refreshButton.Enabled = true;
+            scanButton.Enabled = true;
+        }
+    }
+}
+
+
+internal static class Pcsx2BinApplier
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_VM_WRITE = 0x0020;
+    private const uint PROCESS_VM_OPERATION = 0x0008;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private sealed class WriteBlock
+    {
+        public string Name { get; }
+        public long Address { get; }
+        public byte[] Data { get; }
+        public byte[] Original { get; set; } = System.Array.Empty<byte>();
+
+        public WriteBlock(string name, long address, byte[] data)
+        {
+            Name = name;
+            Address = address;
+            Data = data;
+        }
+    }
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr read);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool WriteProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr written);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct APPLY_MEMORY_BASIC_INFORMATION
+    {
+        public System.IntPtr BaseAddress;
+        public System.IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public System.UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.UIntPtr VirtualQueryEx(
+        System.IntPtr process,
+        System.IntPtr address,
+        out APPLY_MEMORY_BASIC_INFORMATION information,
+        System.UIntPtr length);
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 
+
+ag(bin, ref cursor);
+            }
+
+            if (version >= 5)
+            {
+                AddBlock(blocks, bin, ref cursor,
+                    GetAddress(layout, "var_644") - 6,
+                    GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            foreach (WriteBlock block in blocks)
+            {
+                ValidateAccessibleRange(handle, block);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
+
+            int att
+
+cursor);
+            }
+
+            if (version >= 5)
+            {
+                AddBlock(blocks, bin, ref cursor,
+                    GetAddress(layout, "var_644") - 6,
+                    GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            foreach (WriteBlock block in blocks)
+            {
+                ValidateAccessibleRange(handle, block);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
+
+            int attempted = -1;
+
+                  GetSize(layout, "var_761_size"), "var_644-6");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+                AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+            }
+        }
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+                throw new System.InvalidOperationException(
+                    "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+
+            // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+            var skippedBlocks = new System.Collections.Generic.List<string>();
+
+            foreach (WriteBlock block in blocks)
+            {
+                ValidateAccessibleRange(handle, block);
+            }
+
+            // ブロック同士の重複を禁止する。
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong firstStart = unchecked((ulong)blocks[i].Address);
+                ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong secondStart = unchecked((ulong)blocks[j].Address);
+                    ulong secondEnd = checked(secondStart + (ulong)blocks[j].Data.Length);
+
+                    if (firstStart < secondEnd && secondStart < firstEnd)
+                    {
+                        throw new System.InvalidOperationException(
+                            "書き込み予定ブロックが重複しています: " +
+                            blocks[i].Name + " / " + blocks[j].Name +
+                            " / A=0x" + firstStart.ToString("X") +
+                            " / B=0x" + secondStart.ToString("X"));
+                    }
+                }
+            }
+
+            // 全書き込み領域を先に完全読み取り。1か所でも失敗したら一切書かない。
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の事前保存");
+
+            int attempted = -1;
+            try
+            {
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    WriteBlock block = blocks[i];
+                    a
+
+検出数: 12
+========================================
+Pcsx2MemoryLayoutBuilder
+========================================
+x2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static class Pcsx2MemoryLayoutBuilder
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+    private static byte[] Read(
+        System.IntPtr handle,
+        long address,
+        int size)
+    {
+        if (address <= 0)
+            throw new System.ArgumentOutOfRangeException(
+                nameof(address));
+
+        byte[] buffer = new byte[size];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+            handle,
+            new System.IntPtr(address),
+            buffer,
+            new System.UIntPtr((uint)size),
+            out read);
+
+        if (!ok || read.ToUInt64() != (ulong)size)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "ゲームメモリの読み取りに失敗しました。");
+        }
+
+        return buffer;
+    }
+
+    private static uint ReadUInt32(
+        System.IntPtr handle,
+        long address)
+    {
+        return System.BitConverter.ToUInt32(
+            Read(handle, address, 4), 0);
+    }
+
+    // PCSX2 v2.8.2 専用:
+    // メインモジュールのP
+
+n.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+        if (processList.SelectedIndex < 0 ||
+            processList.SelectedItem == null)
+    
+
+" + (var166Var168Included ? "適用" : "除外") +
+                "\r\n" + var166Diagnostic +
+                "\r\n" + var168Diagnostic;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+    // ========================================================
+    // Torneko4追加メモリパッチ適用
+    // EE RAMオフセットを使用し、事前検証・読み戻し・ロールバックを行う
+    // ========================================================
+    public static string ApplyPatches(
+        int processId,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+            if (patch == null || patch.Data == null || patch.Data.Length == 0)
+                throw new System.InvalidOperationException("追加メモリ変更データが不正です。");
+
+            source.Add(patch.Clone());
+        }
+
+        if (source.Count == 0)
+            return "追加メモリ変更: 0件";
+
+        const long EeRamSize = 0x02000000L;
+
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+        if (eeBase <= 0)
+            throw new System.InvalidOperationException(
+                "追加メモリ変更の適用に必要なEE RAM基準アドレスを取得できません。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+
+        foreach (var patch in source)
+        {
+            if (patch.Address < 0 ||
+                patch.Data.Length <= 0 ||
+                patch.Address > EeRamSize - patch.Data.Length)
+            {
+                throw new System.InvalidOperationException(
+                    "EE RAM範囲外の追加変更を検出しました: " + patch.Name +
+                    " / Offset=0x" + patch.Address.ToString("X") +
+                    " / Size=" + patch.Data.Length);
+            }
+
+            long address = checked(eeBase + patch.Address);
+            blocks.Add(new WriteBlock(
+                patch.Name,
+                address,
+                (byte[])patch.Data.Clone()));
+        }
+
+        // 重複する書き込み範囲を禁止
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            ulong aStart = unchecked((ulong)blocks[i].Address);
+            ulong aEnd = checked(aStart + (ulong)blocks[i].Data.Length);
+
+            for (int j = i + 1; j < blocks.Count; j++)
+            {
+                ulong bStart = unchecked((ulong)blocks[j].Address);
+                ulong bEnd = checked(bStart + (ulong)blocks[j].Data.Length);
+
+                if (aStart < bEnd && bStart < aEnd)
+                    throw new System.InvalidOperationException(
+                        "追加メモリ変更の範囲が重複しています: " +
+                        blocks[i].Name + " / " + blocks[j].Name);
+            }
+        }
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ |
+            PROCESS_VM_WRITE |
+            PROCESS_VM_OPERATION |
+            PROCESS_QUERY_INFORMATION,
+
+
+ivate const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+    private static readonly System.Text.Encoding JapaneseEncoding =
+        CreateJapaneseEncoding();
+
+    private static System.Text.Encoding CreateJapaneseEncoding()
+    {
+        System.Text.Encoding.RegisterProvider(
+            System.Text.CodePagesEncodingProvider.Instance);
+        return System.Text.Encoding.GetEncoding(932);
+    }
+
+    public MonsterNameEditorForm(int processId)
+    {
+        _processId = processId;
+        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        Text = "モンスター名変更・名前データ確認";
+        StartPosition = FormStartPosition.CenterParent;
+        Width = 900;
+        Height = 700;
+        MinimumSize = new Size(650, 450);
+        Font = new Font("Yu Gothic UI", 10);
+
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            Padding = new Padding(8)
+        };
+
+        root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 54));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+
+        _list.Dock = DockStyle.Fill;
+        _list.IntegralHeight = false;
+        _list.HorizontalScrollbar = true;
+        _list.SelectedIndexChanged += (_, _) => ShowSelected();
+
+        _detail.Dock = DockStyle.Fill;
+        _detail.Multiline = true;
+        _detail.ReadOnly = true;
+        _detail.ScrollBars = ScrollBars.Vertical;
+        _detail.Height = 80;
+
+        var center = new SplitContainer
+        {
+            Dock = DockStyle.Fill,
+            Orientation = Orientation.Vertical,
+            SplitterDistance = 490,
+            Panel1MinSize = 180,
+            Panel2MinSize = 180
+        };
+
+        center.Panel1.Controls.Add(_list);
+        center.Panel2.Controls.Add(_detail);
+
+        var buttons = new Panel
+        {
+            Dock = DockStyle.Fill,
+            MinimumSize = new Size(0, 48)
+        };
+
+        _scanButton.Text = "名前データを再検索";
+        _scanButton.SetBounds(5, 7, 180, 36);
+        _scanButton.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+        _scanButton.Click += (_, _) => ScanNames();
+
+        _saveButton.Text = "一覧を
+
+    if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    process.Dispose();
+                }
+                catch
+                {
+                }
+            }
+
+            _pcsx2Connecting = false;
+        }
+    }
+    privat
+
+検出数: 5
+========================================
+FirstSignatureAddress
+========================================
+〜：；".Contains(c))
+            {
+                score += 2;
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(c))
+            {
+                score++;
+                continue;
+            }
+
+            if (c == ' ' || c == '\u3000')
+            {
+                score++;
+                continue;
+            }
+
+            if (c >= '\u0080' && c <= '\u00FF')
+                bad++;
+        }
+
+        score += japanese * 2;
+        score += hiragana;
+        score += kanji;
+
+        score -= bad * 3;
+        score -= controls * 10;
+
+        if (printable > 0)
+        {
+            double ratio = (double)japanese / printable;
+
+            if (ratio >= 0.15) score += 20;
+            if (ratio >= 0.35) score += 20;
+            if (ratio >= 0.60) score += 10;
+        }
+
+        if (japanese == 0)
+            score -= 30;
+
+        return score;
+    }
+}
+
+
+// =========================================================
+// 旧HSP互換 PCSX2接続・メモリ検索基盤
+// 現段階は読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAdd
+
+ctive)
+                    {
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                    else if (baseAddress == runEndAddress)
+                    {
+                        runEndAddress = nextAddress;
+                    }
+                    else
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        if (foundPair) break;
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+           
+
+      Pcsx2MemoryScanner.CloseConnection(_processHandle);
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+        }
+
+        Pcsx2LiveSession.SetDisconnected();
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.
+
+   if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+              
+
+se;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+        if (processList.SelectedIndex < 0 ||
+            processList.SelectedItem == null)
+        {
+            statusLabel.Text = "PCSX2が見つかりません。";
+            Log("PCSX2が見つかりません。起動して
+
+           "PCSX2 v2.8.2 が見つかりません。v2.8.2以外のPCSX2（v1.5など）は接続対象から除外しています。v2.8.2を起動してから再接続してください。");
+            }
+
+            // 最初に検出されたPCSX2を使用
+            int processId = processes[0].Id;
+
+            foreach (var process in processes)
+                process.Dispose();
+
+            processes.Clear();
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+     
+
+;
+
+            _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFacto
+
+andle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    process.Dispose();
+                }
+                catch
+                {
+                }
+            }
+
+            _pcsx2Connecting = false;
+        }
+    }
+    private void UpdatePcsx2Status()
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(new Sys
+
+検出数: 8
+========================================
+SecondSignatureAddress
+========================================
+e += 2;
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(c))
+            {
+                score++;
+                continue;
+            }
+
+            if (c == ' ' || c == '\u3000')
+            {
+                score++;
+                continue;
+            }
+
+            if (c >= '\u0080' && c <= '\u00FF')
+                bad++;
+        }
+
+        score += japanese * 2;
+        score += hiragana;
+        score += kanji;
+
+        score -= bad * 3;
+        score -= controls * 10;
+
+        if (printable > 0)
+        {
+            double ratio = (double)japanese / printable;
+
+            if (ratio >= 0.15) score += 20;
+            if (ratio >= 0.35) score += 20;
+            if (ratio >= 0.60) score += 10;
+        }
+
+        if (japanese == 0)
+            score -= 30;
+
+        return score;
+    }
+}
+
+
+// =========================================================
+// 旧HSP互換 PCSX2接続・メモリ検索基盤
+// 現段階は読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        UIntPtr nSize
+
+eAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                    else if (baseAddress == runEndAddress)
+                    {
+                        runEndAddress = nextAddress;
+                    }
+                    else
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        if (foundPair) break;
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
+internal static 
+
+le);
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+        }
+
+        Pcsx2LiveSession.SetDisconnected();
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+        
+
+   Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.
+
+   Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
+            }
+
+            Log("シグネチャA: 0x" +
+                result.FirstSignatureAddress.ToString("X"));
+            Log("シグネチャB: 0x" +
+                result.SecondSignatureAddress.ToString("X"));
+
+            Log("旧HSP互換ポインタ計算を開始します。");
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+            statusLabel.Text =
+                "接続中！ / バニラデータ読み込み済み";
+
+            Log("メインメニューのBIN編集バッファへ反映しました。");
+        }
+        catch (System.Exception ex)
+        {
+            statusLabel.Text = "検索失敗";
+            Log("検索エラー: " + ex.Message);
+            Log(ex.ToString());
+
+            // 詳細エラー画面を表示し、全文コピーを可能にする。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            memoryScanButton.Enabled =
+                _processHandle != System.IntPtr.Zero;
+            scanButton.Enabled = true;
+            refreshButton.Enabled = true;
+        }
+    }
+    private async void ConnectSelected()
+    {
+        if (_processHandle != System.IntPtr.Zero)
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+        if (processList.SelectedIndex < 0 ||
+            processList.SelectedItem == null)
+        {
+            statusLabel.Text = "PCSX2が見つかりません。";
+            Log("PCSX2が見つかりません。起動してから再検索してください。");
+            return;
+        }
+
+   
+
+接続対象から除外しています。v2.8.2を起動してから再接続してください。");
+            }
+
+            // 最初に検出されたPCSX2を使用
+            int processId = processes[0].Id;
+
+            foreach (var process in processes)
+                process.Dispose();
+
+            processes.Clear();
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+     
+
+/ プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process
+
+nected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
+            }
+
+            // 旧HSP互換アドレス計算
+            _pcsx2DataStatus.Text =
+                "旧HSP互換アドレス計算中...";
+
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+            // メモリ取得失敗でもPCSX2接続自体は維持する。
+
+            _pcsx2ConnectionStatus.Text = "接続・取得失敗";
+            _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+
+            _pcsx2DataStatus.Text =
+                "取得失敗: " + ex.Message;
+            // エラー全文を選択・コピーできる画面を表示する。
+            UiFactory.Error(this, ex);
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    process.Dispose();
+                }
+                catch
+                {
+                }
+            }
+
+            _pcsx2Connecting = false;
+        }
+    }
+    private void UpdatePcsx2Status()
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(new System.Action(UpdatePcsx2Status));
+            return;
+      
+
+検出数: 8
