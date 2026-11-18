@@ -1092,8 +1092,11 @@ internal sealed class MonsterCreatorForm : Form
 
         // var_411 の編集値をBIN作業データへ常時保持する。
         BinFileService.CheckRange(_bin, enemyItemOffset, 2);
-        BinFileService.WriteUInt16(
-            _bin, enemyItemOffset, (ushort)Math.Max(0, _enemyThrowItem.SelectedIndex));
+        if (_enemyThrowItem.SelectedIndex >= 0)
+        {
+            BinFileService.WriteUInt16(
+                _bin, enemyItemOffset, (ushort)_enemyThrowItem.SelectedIndex);
+        }
 
         if (_skillDataReady)
         {
