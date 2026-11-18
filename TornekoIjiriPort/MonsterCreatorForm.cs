@@ -441,7 +441,7 @@ internal sealed class MonsterCreatorForm : Form
                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
                 "特技使用率(+22、+23)は両方に同じ値を書き込みます。\r\n" +
-                "勧誘修正値(365123)、回復定数(364595)も編集できます。\r\n" +
+                "勧誘修正値・回復定数は実アドレス未検証のため現在無効化しています。\r\n" +
                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
                 "PCSX2接続中は、モンスター選択時にゲーム内の現在値を読み込みます。数値や選択肢を変更すると、その場でゲームメモリへ即時反映します。\r\n" +
                 "未接続時はBIN作業データを編集し、「再適用」で反映できます。"
@@ -835,8 +835,9 @@ internal sealed class MonsterCreatorForm : Form
         _dropItem.Enabled = enabled;
         _sleepRate.Enabled = enabled;
         _skillRate.Enabled = enabled;
-        _recruitModifier.Enabled = enabled;
-        _recoveryConstant.Enabled = enabled;
+        // 実アドレス未検証のため誤書き込み防止。対応確認まで編集不可。
+        _recruitModifier.Enabled = false;
+        _recoveryConstant.Enabled = false;
         _skillRange.Enabled = enabled && _skillDataReady;
         // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
         _enemyThrowItem.Enabled = enabled &&
@@ -918,9 +919,8 @@ internal sealed class MonsterCreatorForm : Form
         int offset = checked(_recordTableOffset + id * MonsterRecordSize);
         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
 
-        int parameterIndex = id + 1;
-        int recruitOffset = RecruitModifierDataOffset + parameterIndex * 2;
-        int recoveryOffset = RecoveryConstantDataOffset + parameterIndex * 2;
+        // 勧誘補正値・回復定数の実メモリアドレスは未検証。ここでは触らない。
+        int hspMonsterIndex = id + 1; // HSPリスト先頭の空行ぶんを補正
 
         if (Pcsx2LiveSession.IsConnected &&
             Pcsx2LiveSession.ProcessId > 0 &&
@@ -930,13 +930,12 @@ internal sealed class MonsterCreatorForm : Form
             {
                 var requested = new List<Tuple<int, int, string>>
                 {
-                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
-                    Tuple.Create(recruitOffset, 2, "勧誘補正値"),
-                    Tuple.Create(recoveryOffset, 2, "回復定数")
+                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード")
                 };
 
-                int liveRangeOffset = SkillRangeDataOffset + id * 20;
-                int liveAllyOffset = SkillAllyItemDataOffset + id * 8;
+                // HSPのモンスター一覧は先頭に空行があるため、実IDは id + 1。
+                int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+                int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
                 if (_skillDataReady)
                 {
                     requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
@@ -986,17 +985,14 @@ internal sealed class MonsterCreatorForm : Form
         _sleepRate.Value = _bin[offset + 18];
         _skillRate.Value = _bin[offset + 22];
 
-        // HSP側のモンスター選択リストは先頭に空欄があるため +1 する。
-        BinFileService.CheckRange(_bin, recruitOffset, 2);
-        BinFileService.CheckRange(_bin, recoveryOffset, 2);
-
-        _recruitModifier.Value = BinFileService.ReadUInt16(_bin, recruitOffset);
-        _recoveryConstant.Value = BinFileService.ReadUInt16(_bin, recoveryOffset);
+        // 勧誘補正値・回復定数は実アドレスを確認できるまで表示値を無効化。
+        _recruitModifier.Value = 0;
+        _recoveryConstant.Value = 0;
 
         string skillDebug = "";
 
         // var_411 は常にレコード+18。特技拡張BINがなくてもライブ読込値を表示する。
-        int enemyItemOffset = SkillRangeDataOffset + id * 20 + 18;
+        int enemyItemOffset = SkillRangeDataOffset + hspMonsterIndex * 20 + 18;
         ushort enemyItemValue = BinFileService.ReadUInt16(_bin, enemyItemOffset);
         bool canShowLiveEnemyItem =
             Pcsx2LiveSession.IsConnected && Pcsx2LiveSession.MemoryLayout != null;
@@ -1008,8 +1004,8 @@ internal sealed class MonsterCreatorForm : Form
 
         if (_skillDataReady)
         {
-            int rangeOffset = SkillRangeDataOffset + id * 20;
-            int allyOffset = SkillAllyItemDataOffset + id * 8;
+            int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+            int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
 
             ushort rangeValue = BinFileService.ReadUInt16(_bin, rangeOffset + 6);
             uint messagePointer = ReadUInt32LE(_bin, rangeOffset + 10);
@@ -1075,19 +1071,10 @@ internal sealed class MonsterCreatorForm : Form
         _bin[offset + 22] = (byte)_skillRate.Value;
         _bin[offset + 23] = (byte)_skillRate.Value;
 
-        // HSP側の先頭空欄分を補正して書き込む。
-        int parameterIndex = _selectedMonsterId + 1;
-        int recruitOffset = RecruitModifierDataOffset + parameterIndex * 2;
-        int recoveryOffset = RecoveryConstantDataOffset + parameterIndex * 2;
-
-        BinFileService.CheckRange(_bin, recruitOffset, 2);
-        BinFileService.CheckRange(_bin, recoveryOffset, 2);
-
-        BinFileService.WriteUInt16(_bin, recruitOffset, (ushort)_recruitModifier.Value);
-        BinFileService.WriteUInt16(_bin, recoveryOffset, (ushort)_recoveryConstant.Value);
-
-        int rangeOffset = SkillRangeDataOffset + _selectedMonsterId * 20;
-        int allyOffset = SkillAllyItemDataOffset + _selectedMonsterId * 8;
+        // 勧誘補正値・回復定数はアドレス未検証のためBINにも書き込まない。
+        int hspMonsterIndex = _selectedMonsterId + 1;
+        int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+        int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
         int enemyItemOffset = rangeOffset + 18;
 
         // var_411 の編集値をBIN作業データへ常時保持する。
@@ -1144,16 +1131,6 @@ internal sealed class MonsterCreatorForm : Form
                     offset,
                     CopyRange(offset, MonsterRecordSize),
                     "モンスターレコード"));
-
-                writes.Add(Tuple.Create(
-                    recruitOffset,
-                    CopyRange(recruitOffset, 2),
-                    "勧誘補正値"));
-
-                writes.Add(Tuple.Create(
-                    recoveryOffset,
-                    CopyRange(recoveryOffset, 2),
-                    "回復定数"));
 
                 if (_skillDataReady)
                 {
