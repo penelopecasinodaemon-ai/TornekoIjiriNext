@@ -840,9 +840,10 @@ internal sealed class MonsterCreatorForm : Form
         _dropItem.Enabled = enabled;
         _sleepRate.Enabled = enabled;
         _skillRate.Enabled = enabled;
-        _recruitModifier.Enabled = enabled;
-        _recoveryConstant.Enabled = enabled && _bin != null &&
-            _bin.Length >= RecoveryConstantDataOffset + LegacyModifierArraySize;
+        bool modifierDataAvailable = _bin != null &&
+            _bin.Length >= RecruitModifierDataOffset + LegacyModifierArraySize;
+        _recruitModifier.Enabled = enabled && modifierDataAvailable;
+        _recoveryConstant.Enabled = enabled && modifierDataAvailable;
         _skillRange.Enabled = enabled && _skillDataReady;
         // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
         _enemyThrowItem.Enabled = enabled &&
@@ -941,6 +942,9 @@ internal sealed class MonsterCreatorForm : Form
                     Tuple.Create(recruitOffset, 2, "勧誘修正値"),
                     Tuple.Create(recoveryOffset, 2, "回復定数")
                 };
+                // HSPは回復配列の先頭2 bytesで配列全体の有効/未初期化を判定する。
+                if (hspMonsterIndex != 0)
+                    requested.Add(Tuple.Create(RecoveryConstantDataOffset, 2, "回復定数配列識別"));
 
                 int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
                 int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
