@@ -2529,6 +2529,19 @@ internal static class Pcsx2BinApplier
                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
             }
 
+            // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
+            // BIN拡張内の位置と実メモリアドレスを対応させる。
+            if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
+            }
+            else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
+            }
+
             requested.Add(new WriteBlock(item.Item3, targetAddress, new byte[item.Item2]));
             requestedOffsets.Add(item.Item1);
         }
@@ -2631,6 +2644,19 @@ internal static class Pcsx2BinApplier
 
                 targetAddress = checked(
                     allyAddress + (item.Item1 - 386212));
+            }
+
+            // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
+            // BIN拡張内の位置と実メモリアドレスを対応させる。
+            if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
+            }
+            else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
             }
 
             blocks.Add(new WriteBlock(
