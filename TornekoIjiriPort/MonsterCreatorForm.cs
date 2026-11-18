@@ -925,8 +925,8 @@ internal sealed class MonsterCreatorForm : Form
         int offset = checked(_recordTableOffset + id * MonsterRecordSize);
         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
 
-        // HSPは選択番号var_542をそのまま各配列の添字に使う。
-        int hspMonsterIndex = id;
+        // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+        int hspMonsterIndex = id + 1;
         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
 
@@ -1095,7 +1095,8 @@ internal sealed class MonsterCreatorForm : Form
         _bin[offset + 22] = (byte)_skillRate.Value;
         _bin[offset + 23] = (byte)_skillRate.Value;
 
-        int hspMonsterIndex = _selectedMonsterId;
+        // HSP var_407 の先頭空行を含むIDに合わせる。
+        int hspMonsterIndex = _selectedMonsterId + 1;
         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
         int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
