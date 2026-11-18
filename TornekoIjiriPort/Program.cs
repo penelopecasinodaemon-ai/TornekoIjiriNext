@@ -2482,6 +2482,96 @@ internal static class Pcsx2BinApplier
             CloseHandle(handle);
         }
     }
+    public static System.Collections.Generic.List<System.Tuple<int, byte[], string>> ReadRanges(
+        int processId,
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (ranges == null)
+            throw new System.ArgumentNullException(nameof(ranges));
+
+        var requested = new System.Collections.Generic.List<WriteBlock>();
+        foreach (var item in ranges)
+        {
+            if (item == null || item.Item2 <= 0 ||
+                item.Item1 < 0 || item.Item1 > BaseSize - item.Item2)
+                throw new System.InvalidOperationException("PCSX2読み込み範囲が不正です。");
+
+            long targetAddress = checked(layout.SignatureA + item.Item1);
+            bool isSkillRange =
+                item.Item1 >= 382206 &&
+                item.Item1 + item.Item2 <= 382206 + 199 * 20;
+
+            if (isSkillRange)
+            {
+                if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
+                    skillAddress <= 6)
+                    throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
+
+                targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
+            }
+
+            bool isSkillAllyItem =
+                item.Item1 >= 386212 &&
+                item.Item1 + item.Item2 <= 386212 + 1600;
+
+            if (isSkillAllyItem)
+            {
+                if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
+                    allyAddress <= 0)
+                    throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
+
+                targetAddress = checked(allyAddress + (item.Item1 - 386212));
+            }
+
+            requested.Add(new WriteBlock(item.Item3, targetAddress, new byte[item.Item2]));
+        }
+
+        var result = new System.Collections.Generic.List<System.Tuple<int, byte[], string>>();
+        if (requested.Count == 0)
+            return result;
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の読み取り用ハンドルを取得できません。");
+
+        try
+        {
+            byte[] signature = ReadExact(
+                handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+
+            if (!System.Linq.Enumerable.SequenceEqual(signature, SignatureA))
+                throw new System.InvalidOperationException(
+                    "識別パターンAが一致しません。誤読み込み防止のため中止しました。");
+
+            foreach (WriteBlock block in requested)
+            {
+                byte[] data = ReadExact(
+                    handle, block.Address, block.Data.Length, block.Name);
+                int binOffset = System.Array.FindIndex(
+                    System.Linq.Enumerable.ToArray(ranges),
+                    x => x.Item3 == block.Name);
+                result.Add(System.Tuple.Create(binOffset, data, block.Name));
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
     public static string ApplyRanges(
         int processId,
         Pcsx2MemoryLayout layout,
