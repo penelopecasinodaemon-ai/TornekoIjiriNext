@@ -230,7 +230,7 @@ internal sealed class MonsterCreatorForm : Form
     private readonly ListBox _list = new ListBox();
     private readonly Label _count = new Label();
     private readonly Label _selectedTitle = new Label();
-    private readonly Label _selectedInfo = new Label();
+    private readonly TextBox _selectedInfo = new TextBox();
     private readonly Label _status = new Label();
     private readonly NumericUpDown _hp = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _attack = CreateNumber(ushort.MaxValue);
@@ -373,7 +373,10 @@ internal sealed class MonsterCreatorForm : Form
         _selectedTitle.Font = new Font("Yu Gothic UI", 18, FontStyle.Bold);
 
         _selectedInfo.Dock = DockStyle.Fill;
-        _selectedInfo.TextAlign = ContentAlignment.TopLeft;
+        _selectedInfo.Multiline = true;
+        _selectedInfo.ReadOnly = true;
+        _selectedInfo.ScrollBars = ScrollBars.Vertical;
+        _selectedInfo.WordWrap = true;
         _selectedInfo.Font = new Font("Yu Gothic UI", 9);
 
         var fieldGrid = new TableLayoutPanel
@@ -498,7 +501,32 @@ internal sealed class MonsterCreatorForm : Form
 
         right.Controls.Add(_count, 0, 0);
         right.Controls.Add(_selectedTitle, 0, 1);
-        right.Controls.Add(_selectedInfo, 0, 2);
+        var infoPanel = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 1
+        };
+        infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+
+        var copyInfoButton = new Button
+        {
+            Text = "診断コピー",
+            Dock = DockStyle.Fill
+        };
+        copyInfoButton.Click += (_, _) =>
+        {
+            if (!string.IsNullOrEmpty(_selectedInfo.Text))
+            {
+                Clipboard.SetText(_selectedInfo.Text);
+                MessageBox.Show(this, "診断情報を全文コピーしました。", "コピー完了");
+            }
+        };
+
+        infoPanel.Controls.Add(_selectedInfo, 0, 0);
+        infoPanel.Controls.Add(copyInfoButton, 1, 0);
+        right.Controls.Add(infoPanel, 0, 2);
         right.Controls.Add(content, 0, 3);
         right.Controls.Add(bottom, 0, 4);
 

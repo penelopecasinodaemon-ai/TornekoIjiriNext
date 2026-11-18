@@ -463,6 +463,17 @@ internal static class Pcsx2MemoryScanner
                 0xA0, 0x00, 0x18, 0x00
             };
 
+            byte[][] signatureAFragments =
+            {
+                new byte[] { 0x20, 0x00, 0x18, 0x00 },
+                new byte[] { 0xA0, 0x00, 0x18, 0x00 },
+                new byte[] { 0x20, 0x01, 0x18, 0x00 },
+                new byte[] { 0xC0, 0x10, 0x18 }
+            };
+
+            ulong[] fragmentAddresses = new ulong[4];
+            long[] fragmentCounts = new long[4];
+
             bool ScanRun(ulong runStart, ulong runEnd)
             {
                 if (runEnd <= runStart)
@@ -538,6 +549,36 @@ internal static class Pcsx2MemoryScanner
                             firstPrefixAddress =
                                 runStart + offset - (ulong)carry +
                                 (ulong)foundPrefix;
+                        }
+                    }
+
+                    for (int fragmentIndex = 0;
+                         fragmentIndex < signatureAFragments.Length;
+                         fragmentIndex++)
+                    {
+                        int searchPosition = 0;
+
+                        while (searchPosition < total)
+                        {
+                            int foundFragment = FindPattern(
+                                buffer,
+                                total - searchPosition,
+                                signatureAFragments[fragmentIndex]);
+
+                            if (foundFragment < 0)
+                                break;
+
+                            fragmentCounts[fragmentIndex]++;
+
+                            if (fragmentAddresses[fragmentIndex] == 0)
+                            {
+                                fragmentAddresses[fragmentIndex] =
+                                    runStart + offset - (ulong)carry +
+                                    (ulong)searchPosition +
+                                    (ulong)foundFragment;
+                            }
+
+                            searchPosition += foundFragment + 1;
                         }
                     }
 
@@ -694,6 +735,17 @@ internal static class Pcsx2MemoryScanner
                 {
                     result.Message +=
                         "\r\nA先頭8バイトも検出できませんでした。";
+                }
+
+                for (int fragmentIndex = 0;
+                     fragmentIndex < signatureAFragments.Length;
+                     fragmentIndex++)
+                {
+                    result.Message +=
+                        "\r\nA断片" + (fragmentIndex + 1).ToString() +
+                        ": 0x" + fragmentAddresses[fragmentIndex].ToString("X") +
+                        " / 検出数=" +
+                        fragmentCounts[fragmentIndex].ToString();
                 }
             }
 
@@ -2262,7 +2314,7 @@ internal static class Pcsx2BinApplier
             var166Marker0 = bin[cursor];
             var166Marker1 = bin[cursor + 1];
             var166Var168Included = var166Marker0 != 85 && var166Marker1 != 85;
-            if (true)
+            if (var166Var168Included)
             {
                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_166", "var_167_size");
                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_168", "var_169_size");
@@ -2424,6 +2476,195 @@ internal static class Pcsx2BinApplier
                 " / 2領域適用判定=" + (var166Var168Included ? "適用" : "除外") +
                 "\r\n" + var166Diagnostic +
                 "\r\n" + var168Diagnostic;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+    public static string ApplyRanges(
+        int processId,
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, byte[], string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        if (ranges == null)
+            throw new System.ArgumentNullException(nameof(ranges));
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        var mappingDetails = new System.Collections.Generic.List<string>();
+
+        foreach (var item in ranges)
+        {
+            if (item == null || item.Item2 == null || item.Item2.Length == 0)
+                throw new System.InvalidOperationException("モンスター書き込みデータが不正です。");
+
+            if (item.Item1 < 0 || item.Item1 > BaseSize - item.Item2.Length)
+                throw new System.InvalidOperationException("BIN内の書き込み位置が範囲外です。");
+
+            long targetAddress = checked(layout.SignatureA + item.Item1);
+
+            bool isSkillRange =
+                item.Item1 >= 382206 &&
+                item.Item1 + item.Item2.Length <= 382206 + 199 * 20;
+
+            if (isSkillRange)
+            {
+                if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
+                    skillAddress <= 6)
+                {
+                    throw new System.InvalidOperationException(
+                        "特技拡張領域 var_644 のアドレスを取得できません。");
+                }
+
+                targetAddress = checked(
+                    skillAddress - 6 + (item.Item1 - 382206));
+            }
+
+            bool isSkillAllyItem =
+                item.Item1 >= 386212 &&
+                item.Item1 + item.Item2.Length <= 386212 + 1600;
+
+            if (isSkillAllyItem)
+            {
+                if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
+                    allyAddress <= 0)
+                {
+                    throw new System.InvalidOperationException(
+                        "特技拡張領域 var_648 のアドレスを取得できません。");
+                }
+
+                targetAddress = checked(
+                    allyAddress + (item.Item1 - 386212));
+            }
+
+            blocks.Add(new WriteBlock(
+                item.Item3,
+                targetAddress,
+                (byte[])item.Item2.Clone()));
+
+            mappingDetails.Add(
+                item.Item3 +
+                ": BIN 0x" + item.Item1.ToString("X") +
+                " -> PCSX2 0x" + targetAddress.ToString("X"));
+        }
+
+        if (blocks.Count == 0)
+            return "書き込み対象なし";
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE |
+            PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み用ハンドルを取得できません。");
+
+        try
+        {
+            byte[] signature = ReadExact(
+                handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+
+            if (!System.Linq.Enumerable.SequenceEqual(signature, SignatureA))
+                throw new System.InvalidOperationException(
+                    "識別パターンAが一致しません。誤書き込み防止のため中止しました。");
+
+            foreach (WriteBlock block in blocks)
+                ValidateAccessibleRange(handle, block);
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                ulong a1 = unchecked((ulong)blocks[i].Address);
+                ulong a2 = checked(a1 + (ulong)blocks[i].Data.Length);
+
+                for (int j = i + 1; j < blocks.Count; j++)
+                {
+                    ulong b1 = unchecked((ulong)blocks[j].Address);
+                    ulong b2 = checked(b1 + (ulong)blocks[j].Data.Length);
+
+                    if (a1 < b2 && b1 < a2)
+                        throw new System.InvalidOperationException(
+                            "書き込み範囲が重複しています。");
+                }
+            }
+
+            foreach (WriteBlock block in blocks)
+                block.Original = ReadExact(
+                    handle, block.Address, block.Data.Length, block.Name + "事前読み取り");
+
+            int attempted = -1;
+
+            try
+            {
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    WriteBlock block = blocks[i];
+                    attempted = i;
+
+                    WriteExact(handle, block.Address, block.Data, block.Name);
+
+                    byte[] verify = ReadExact(
+                        handle, block.Address, block.Data.Length, block.Name + "読み戻し");
+
+                    if (!System.Linq.Enumerable.SequenceEqual(verify, block.Data))
+                        throw new System.InvalidOperationException(
+                            block.Name + " の読み戻し結果が一致しません。");
+                }
+            }
+            catch (System.Exception applyError)
+            {
+                var rollbackErrors = new System.Collections.Generic.List<string>();
+
+                for (int i = attempted; i >= 0; i--)
+                {
+                    WriteBlock block = blocks[i];
+
+                    try
+                    {
+                        WriteExact(
+                            handle, block.Address, block.Original, block.Name + "復元");
+
+                        byte[] restored = ReadExact(
+                            handle, block.Address, block.Original.Length, block.Name + "復元確認");
+
+                        if (!System.Linq.Enumerable.SequenceEqual(restored, block.Original))
+                            throw new System.InvalidOperationException("復元確認に失敗しました。");
+                    }
+                    catch (System.Exception rollbackError)
+                    {
+                        rollbackErrors.Add(block.Name + ": " + rollbackError.Message);
+                    }
+                }
+
+                if (rollbackErrors.Count > 0)
+                    throw new System.InvalidOperationException(
+                        "適用に失敗し、一部の復元も確認できませんでした。\r\n" +
+                        string.Join("\r\n", rollbackErrors),
+                        applyError);
+
+                throw new System.InvalidOperationException(
+                    "適用に失敗しました。書き込み済み領域は元の内容へ戻しました。",
+                    applyError);
+            }
+
+            int total = 0;
+            foreach (WriteBlock block in blocks)
+                total = checked(total + block.Data.Length);
+
+            return "PCSX2書き込み成功"
+                + "\r\n書き込み範囲数: " + blocks.Count
+                + "\r\n書き込み総量: " + total.ToString("N0") + " bytes"
+                + "\r\n全範囲の読み戻し検証に成功しました。"
+                + "\r\n--- 書き込み先アドレス ---"
+                + "\r\n" + string.Join("\r\n", mappingDetails);
         }
         finally
         {
