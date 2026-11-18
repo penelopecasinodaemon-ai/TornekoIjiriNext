@@ -267,6 +267,7 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
     private readonly ComboBox _dropItem = CreateChoice(MonsterSkillData.DropItemChoices);
     private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _skillRate = CreateNumber(byte.MaxValue);
     private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
 
@@ -380,7 +381,7 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 12,
+            RowCount = 13,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
@@ -397,6 +398,7 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
 
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
@@ -422,6 +424,8 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
         fieldGrid.Controls.Add(CreateField("勧誘修正値", _recruitModifier), 0, 11);
         fieldGrid.Controls.Add(CreateField("回復定数", _recoveryConstant), 1, 11);
+        fieldGrid.Controls.Add(CreateField("特技使用率（A/B共通）", _skillRate), 0, 12);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
 
         var explanation = new Label
         {
@@ -432,6 +436,7 @@ internal sealed class MonsterCreatorForm : Form
                 "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
+                "特技使用率(+22、+23)は両方に同じ値を書き込みます。\r\n" +
                 "勧誘修正値(365123)、回復定数(364595)も編集できます。\r\n" +
                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
                 "変更はBINの作業データに反映され、ゲームメモリには直接書き込みません。"
@@ -769,6 +774,7 @@ internal sealed class MonsterCreatorForm : Form
         _dropRate.Enabled = enabled;
         _dropItem.Enabled = enabled;
         _sleepRate.Enabled = enabled;
+        _skillRate.Enabled = enabled;
         _recruitModifier.Enabled = enabled;
         _recoveryConstant.Enabled = enabled;
         _skillRange.Enabled = enabled && _skillDataReady;
@@ -867,6 +873,7 @@ internal sealed class MonsterCreatorForm : Form
         ushort dropItemValue = BinFileService.ReadUInt16(_bin, offset + 16);
         _dropItem.SelectedIndex = dropItemValue < _dropItem.Items.Count ? dropItemValue : -1;
         _sleepRate.Value = _bin[offset + 18];
+        _skillRate.Value = _bin[offset + 22];
 
         // HSP側のモンスター選択リストは先頭に空欄があるため +1 する。
         int parameterIndex = id + 1;
@@ -934,6 +941,8 @@ internal sealed class MonsterCreatorForm : Form
         if (_dropItem.SelectedIndex >= 0)
             BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.SelectedIndex);
         _bin[offset + 18] = (byte)_sleepRate.Value;
+        _bin[offset + 22] = (byte)_skillRate.Value;
+        _bin[offset + 23] = (byte)_skillRate.Value;
 
         // HSP側の先頭空欄分を補正して書き込む。
         int parameterIndex = _selectedMonsterId + 1;

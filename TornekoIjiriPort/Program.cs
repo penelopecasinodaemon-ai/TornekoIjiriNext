@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -465,8 +465,7 @@ internal static class Pcsx2MemoryScanner
                     "旧HSP互換の連続領域を検索中: 0x" +
                     runStart.ToString("X") + " - 0x" + runEnd.ToString("X"));
 
-                ulong runA = 0;
-                ulong runB = 0;
+
                 ulong offset = 0;
                 int carry = 0;
                 int maxPatternLength = System.Math.Max(
@@ -508,28 +507,26 @@ internal static class Pcsx2MemoryScanner
 
                     int total = carry + actual;
 
-                    if (runA == 0)
+                    if (firstAddress == 0)
                     {
                         int foundA = FindPattern(buffer, total, SignatureA);
                         if (foundA >= 0)
-                            runA = runStart + offset - (ulong)carry + (ulong)foundA;
+                            firstAddress = runStart + offset - (ulong)carry + (ulong)foundA;
                     }
 
-                    if (runB == 0)
+                    if (secondAddress == 0)
                     {
                         int foundB = FindPattern(buffer, total, SignatureB);
                         if (foundB >= 0)
-                            runB = runStart + offset - (ulong)carry + (ulong)foundB;
+                            secondAddress = runStart + offset - (ulong)carry + (ulong)foundB;
                     }
 
                     result.ScannedBytes += actual;
 
-                    if (runA != 0 && runB != 0)
+                    if (firstAddress != 0 && secondAddress != 0)
                     {
-                        firstAddress = runA;
-                        secondAddress = runB;
-                        report?.Invoke("シグネチャA検出: 0x" + runA.ToString("X"));
-                        report?.Invoke("シグネチャB検出: 0x" + runB.ToString("X"));
+                        report?.Invoke("シグネチャA検出: 0x" + firstAddress.ToString("X"));
+                        report?.Invoke("シグネチャB検出: 0x" + secondAddress.ToString("X"));
                         return true;
                     }
 
@@ -626,11 +623,11 @@ internal static class Pcsx2MemoryScanner
 
             if (foundPair)
             {
-                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+                result.Message = "PCSX2プロセス内でシグネチャAとBを検出しました。";
             }
             else
             {
-                result.Message = "同一の連続読み取り可能領域内でシグネチャAとBの両方を検出できませんでした。";
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
             }
 
             return result;
@@ -4332,7 +4329,11 @@ buttons.Controls.Add(UiFactory.Button(
                 scanResult.SecondSignatureAddress == 0)
             {
                 throw new System.InvalidOperationException(
-                    "旧HSP互換シグネチャを検出できませんでした。ゲームが起動しているか確認してください。");
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+                    "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
+                    "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
             }
 
             // 旧HSP互換アドレス計算
