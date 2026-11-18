@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -455,6 +455,13 @@ internal static class Pcsx2MemoryScanner
 
             ulong firstAddress = 0;
             ulong secondAddress = 0;
+            ulong firstPrefixAddress = 0;
+
+            byte[] signatureAPrefix =
+            {
+                0x20, 0x00, 0x18, 0x00,
+                0xA0, 0x00, 0x18, 0x00
+            };
 
             bool ScanRun(ulong runStart, ulong runEnd)
             {
@@ -519,6 +526,19 @@ internal static class Pcsx2MemoryScanner
                         int foundB = FindPattern(buffer, total, SignatureB);
                         if (foundB >= 0)
                             secondAddress = runStart + offset - (ulong)carry + (ulong)foundB;
+                    }
+
+                    if (firstPrefixAddress == 0)
+                    {
+                        int foundPrefix = FindPattern(
+                            buffer, total, signatureAPrefix);
+
+                        if (foundPrefix >= 0)
+                        {
+                            firstPrefixAddress =
+                                runStart + offset - (ulong)carry +
+                                (ulong)foundPrefix;
+                        }
                     }
 
                     result.ScannedBytes += actual;
@@ -628,6 +648,53 @@ internal static class Pcsx2MemoryScanner
             else
             {
                 result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+
+                if (firstPrefixAddress != 0)
+                {
+                    byte[] diagnosticBytes = new byte[SignatureA.Length];
+                    UIntPtr diagnosticRead;
+
+                    bool diagnosticSuccess = ReadProcessMemory(
+                        handle,
+                        ToIntPtr(firstPrefixAddress),
+                        diagnosticBytes,
+                        new UIntPtr((uint)diagnosticBytes.Length),
+                        out diagnosticRead);
+
+                    result.Message +=
+                        "\r\nA先頭8バイト検出: 0x" +
+                        firstPrefixAddress.ToString("X");
+
+                    if (diagnosticSuccess &&
+                        diagnosticRead.ToUInt64() == (ulong)diagnosticBytes.Length)
+                    {
+                        result.Message +=
+                            "\r\n検出地点の15バイト: " +
+                            BitConverter.ToString(diagnosticBytes);
+
+                        int mismatchCount = 0;
+
+                        for (int i = 0; i < SignatureA.Length; i++)
+                        {
+                            if (diagnosticBytes[i] != SignatureA[i])
+                                mismatchCount++;
+                        }
+
+                        result.Message +=
+                            "\r\n正規Aとの不一致バイト数: " +
+                            mismatchCount.ToString();
+                    }
+                    else
+                    {
+                        result.Message +=
+                            "\r\n検出地点の15バイト読み取りに失敗しました。";
+                    }
+                }
+                else
+                {
+                    result.Message +=
+                        "\r\nA先頭8バイトも検出できませんでした。";
+                }
             }
 
             return result;
