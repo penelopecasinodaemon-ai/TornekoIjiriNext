@@ -366,7 +366,8 @@ internal static class MonsterSkillData
     internal static readonly string[] DropItemChoices =
         new[] { "落アイテム ランダム" }.Concat(ItemNames).ToArray();
 
-    // 旧HSP var_412: 空欄を先頭に挿入した投擲用リスト
+    // 投擲アイテムはゲーム内部の0始まりIDに合わせる。先頭の空欄は追加しない。
     internal static readonly string[] ThrowItemChoices =
-        new[] { "", "落アイテム ランダム" }.Concat(ItemNames).ToArray();
+        new[] { "なし" }.Concat(ItemNames).ToArray();
 }
+

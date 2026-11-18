@@ -220,53 +220,54 @@ internal sealed class MonsterCreatorForm : Form
     private const int SkillRangeDataOffset = 382206;
     private const int SkillAllyItemDataOffset = 386212;
     private static readonly string[] SkillMessageNames =
-    {
-        "ギガデイン",
-        "邪悪な霧",
-        "なぎはらい",
-        "ムーンサルト",
-        "バブリン",
-        "プラズママウス",
-        "ちゅうまじゅう",
-        "激しく攻撃",
-        "思いっきり剣を振った",
-        "ようじゅつし",
-        "きとうし",
-        "吹き飛ばすほどの攻撃",
-        "マホトーン",
-        "くち？",
-        "口をふさぐ",
-        "斧を振りおろした",
-        "メガザル",
-        "ドルイド",
-        "げんじゅつし",
-        "バシルーラ",
-        "腹減り攻撃",
-        "テンツク",
-        "おどり",
-        "催眠",
-        "ラリホー",
-        "キノコの胞子",
-        "アイテム弾き",
-        "装備弾き2",
-        "装備弾き",
-        "炎ブレス",
-        "くさった液",
-        "アストロン",
-        "おおめだま",
-        "氷河",
-        "エビルポット",
-        "マダンテ",
-        "しびれ攻撃",
-        "ベホマ",
-        "ホイミ",
-        "変な呪文"
-    };
-    private const int SkillMessageCount = 40;
+{
+    "アルテマソード",
+    "ギガデイン",
+    "持っている武器を思いきり投げつけた",
+    "なぎはらい",
+    "ムーンサルト",
+    "仲間を吐こうとした",
+    "強い光を出した",
+    "なめまわした",
+    "はげしく攻撃",
+    "剣にちからをこめた",
+    "○○を振った！",
+    "○○を振った！2",
+    "吹き飛ばすほどの攻撃",
+    "マホトーン",
+    "口をふさいだ",
+    "口をふさいできた",
+    "思いっきり斧を振った",
+    "メガザル",
+    "○○を振った！3",
+    "○○を振った！4",
+    "バシルーラ",
+    "ハラヘリ攻撃",
+    "さそう踊り",
+    "不思議な踊り",
+    "催眠",
+    "ラリホー",
+    "毒胞子攻撃",
+    "アイテム弾き",
+    "アイテム弾き2",
+    "装備弾き",
+    "炎ブレス",
+    "くさった液",
+    "アストロン",
+    "にらみつけた",
+    "凍える息",
+    "仲間を呼んだ！",
+    "マダンテ",
+    "しびれ攻撃",
+    "ベホマ",
+    "ホイミ",
+    "変な呪文",
+};
+    private const int SkillMessageCount = 41;
     private const int SkillExtensionRequiredEnd = 404356;
     private const uint EeAddressMask = 0x1FFFFFFF;
     private const uint EeMemoryBaseAddress = 0x00180000;
-    private const uint SkillMessagePointerBase = EeMemoryBaseAddress + 0x009126D0;
+    private const uint SkillMessagePointerBase = 0x209126D0;
 
     private readonly byte[]? _bin;
     private readonly Action? _onChanged;
@@ -814,9 +815,20 @@ internal sealed class MonsterCreatorForm : Form
 
     private static string[] ReadSkillMessageChoices(byte[] bin)
     {
-        return new[] { "特技メッセージ無し" }
-            .Concat(SkillMessageNames)
-            .ToArray();
+        var choices = new List<string>(SkillMessageCount + 1);
+        choices.Add("特技メッセージ無し");
+
+        for (int i = 0; i < SkillMessageCount; i++)
+        {
+            string label = "メッセージ " + (i + 1).ToString("D3");
+            if (i < SkillMessageNames.Length)
+            {
+                label = SkillMessageNames[i];
+            }
+            choices.Add(label);
+        }
+
+        return choices.ToArray();
     }
 
     private static int ResolveSkillMessageIndex(uint pointer)
