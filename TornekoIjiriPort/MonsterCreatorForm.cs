@@ -443,7 +443,8 @@ internal sealed class MonsterCreatorForm : Form
                 "特技使用率(+22、+23)は両方に同じ値を書き込みます。\r\n" +
                 "勧誘修正値(365123)、回復定数(364595)も編集できます。\r\n" +
                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
-                "変更を適用すると、BIN作業データとPCSX2のゲームメモリへ反映できます。"
+                "PCSX2接続中は、モンスター選択時にゲーム内の現在値を読み込みます。数値や選択肢を変更すると、その場でゲームメモリへ即時反映します。\r\n" +
+                "未接続時はBIN作業データを編集し、「再適用」で反映できます。"
         };
 
         var content = new Panel
@@ -465,7 +466,7 @@ internal sealed class MonsterCreatorForm : Form
             WrapContents = false
         };
 
-        _applyButton.Text = "変更を適用";
+        _applyButton.Text = "再適用";
         _applyButton.Width = 130;
         _applyButton.Height = 36;
         _applyButton.Click += (_, _) => ApplySelected();
