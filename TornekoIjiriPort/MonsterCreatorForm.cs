@@ -294,6 +294,8 @@ internal sealed class MonsterCreatorForm : Form
     private int _recordTableOffset = -1;
     private int _selectedMonsterId = -1;
     private bool _dataReady;
+    private bool _loadingSelection;
+    private bool _automaticLiveApply;
 
     public MonsterCreatorForm() : this(null, null)
     {
@@ -561,7 +563,52 @@ internal sealed class MonsterCreatorForm : Form
             SetEditorEnabled(false);
         }
 
+        BindLiveEditEvents();
         RefreshList();
+    }
+
+    private void BindLiveEditEvents()
+    {
+        _hp.ValueChanged += (_, _) => ApplyLiveEdit();
+        _attack.ValueChanged += (_, _) => ApplyLiveEdit();
+        _defense.ValueChanged += (_, _) => ApplyLiveEdit();
+        _experience.ValueChanged += (_, _) => ApplyLiveEdit();
+        _maxLevel.ValueChanged += (_, _) => ApplyLiveEdit();
+        _growthType.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _moveSpeed.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        foreach (var check in _systemChecks)
+            check.CheckedChanged += (_, _) => ApplyLiveEdit();
+        foreach (var check in _skillChecks)
+            check.CheckedChanged += (_, _) => ApplyLiveEdit();
+        _dropRate.ValueChanged += (_, _) => ApplyLiveEdit();
+        _dropItem.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _sleepRate.ValueChanged += (_, _) => ApplyLiveEdit();
+        _skillRate.ValueChanged += (_, _) => ApplyLiveEdit();
+        _recruitModifier.ValueChanged += (_, _) => ApplyLiveEdit();
+        _recoveryConstant.ValueChanged += (_, _) => ApplyLiveEdit();
+        _skillRange.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _enemyThrowItem.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _allyThrowItem1.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _allyThrowItem2.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _skillMessage.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+    }
+
+    private void ApplyLiveEdit()
+    {
+        if (_loadingSelection || _automaticLiveApply ||
+            !Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.MemoryLayout == null)
+            return;
+
+        _automaticLiveApply = true;
+        try
+        {
+            ApplySelected();
+        }
+        finally
+        {
+            _automaticLiveApply = false;
+        }
     }
 
     private static NumericUpDown CreateNumber(decimal maximum)
@@ -842,6 +889,7 @@ internal sealed class MonsterCreatorForm : Form
         if (index < 0 || index >= _visibleIds.Count)
         {
             _selectedMonsterId = -1;
+            _loadingSelection = false;
             _selectedTitle.Text = "モンスター未選択";
             _selectedInfo.Text = "検索条件に一致するモンスターを選択してください。";
             SetEditorEnabled(false);
@@ -850,6 +898,7 @@ internal sealed class MonsterCreatorForm : Form
 
         int id = _visibleIds[index];
         _selectedMonsterId = id;
+        _loadingSelection = true;
         _selectedTitle.Text = MonsterNames[id];
 
         if (!_dataReady || _bin == null)
@@ -859,11 +908,53 @@ internal sealed class MonsterCreatorForm : Form
                 "\r\n一覧登録名：" + MonsterNames[id] +
                 "\r\n\r\n" + _status.Text;
             SetEditorEnabled(false);
+            _loadingSelection = false;
             return;
         }
 
         int offset = checked(_recordTableOffset + id * MonsterRecordSize);
         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+
+        int parameterIndex = id + 1;
+        int recruitOffset = RecruitModifierDataOffset + parameterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + parameterIndex * 2;
+
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+            Pcsx2LiveSession.MemoryLayout != null)
+        {
+            try
+            {
+                var requested = new List<Tuple<int, int, string>>
+                {
+                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+                    Tuple.Create(recruitOffset, 2, "勧誘補正値"),
+                    Tuple.Create(recoveryOffset, 2, "回復定数")
+                };
+
+                if (_skillDataReady)
+                {
+                    int liveRangeOffset = SkillRangeDataOffset + id * 20;
+                    int liveAllyOffset = SkillAllyItemDataOffset + id * 8;
+                    requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
+                    requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
+                }
+
+                var liveData = Pcsx2BinApplier.ReadRanges(
+                    Pcsx2LiveSession.ProcessId,
+                    Pcsx2LiveSession.MemoryLayout,
+                    requested);
+
+                foreach (var item in liveData)
+                    Array.Copy(item.Item2, 0, _bin, item.Item1, item.Item2.Length);
+
+                _status.Text = MonsterNames[id] + " の現在値をPCSX2から読み込みました。";
+            }
+            catch (Exception ex)
+            {
+                _status.Text = "PCSX2ライブ読み込み失敗。直前の作業データを表示します。 " + ex.Message;
+            }
+        }
 
         _hp.Value = BinFileService.ReadUInt16(_bin, offset);
         _attack.Value = BinFileService.ReadUInt16(_bin, offset + 2);
@@ -888,10 +979,6 @@ internal sealed class MonsterCreatorForm : Form
         _skillRate.Value = _bin[offset + 22];
 
         // HSP側のモンスター選択リストは先頭に空欄があるため +1 する。
-        int parameterIndex = id + 1;
-        int recruitOffset = RecruitModifierDataOffset + parameterIndex * 2;
-        int recoveryOffset = RecoveryConstantDataOffset + parameterIndex * 2;
-
         BinFileService.CheckRange(_bin, recruitOffset, 2);
         BinFileService.CheckRange(_bin, recoveryOffset, 2);
 
@@ -935,6 +1022,7 @@ internal sealed class MonsterCreatorForm : Form
             "\r\nレコード長：24 bytes　／　未解析領域は変更しません。" +
             skillDebug;
 
+        _loadingSelection = false;
         SetEditorEnabled(true);
     }
 
@@ -1073,12 +1161,15 @@ internal sealed class MonsterCreatorForm : Form
                     "BIN作業データは更新済みですが、PCSX2への反映に失敗しました。\r\n" +
                     ex.Message;
 
-                MessageBox.Show(
-                    this,
-                    ex.ToString(),
-                    "PCSX2反映エラー",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                if (!_automaticLiveApply)
+                {
+                    MessageBox.Show(
+                        this,
+                        ex.ToString(),
+                        "PCSX2反映エラー",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
             }
         }
         if (!Pcsx2LiveSession.IsConnected ||
