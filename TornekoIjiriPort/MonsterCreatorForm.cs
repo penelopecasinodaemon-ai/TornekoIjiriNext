@@ -838,7 +838,9 @@ internal sealed class MonsterCreatorForm : Form
         _recruitModifier.Enabled = enabled;
         _recoveryConstant.Enabled = enabled;
         _skillRange.Enabled = enabled && _skillDataReady;
-        _enemyThrowItem.Enabled = enabled && _skillDataReady;
+        // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
+        _enemyThrowItem.Enabled = enabled &&
+            (_skillDataReady || Pcsx2LiveSession.IsConnected);
         _allyThrowItem1.Enabled = enabled && _skillDataReady;
         _allyThrowItem2.Enabled = enabled && _skillDataReady;
         _skillMessage.Enabled = enabled && _skillDataReady;
@@ -933,12 +935,17 @@ internal sealed class MonsterCreatorForm : Form
                     Tuple.Create(recoveryOffset, 2, "回復定数")
                 };
 
+                int liveRangeOffset = SkillRangeDataOffset + id * 20;
+                int liveAllyOffset = SkillAllyItemDataOffset + id * 8;
                 if (_skillDataReady)
                 {
-                    int liveRangeOffset = SkillRangeDataOffset + id * 20;
-                    int liveAllyOffset = SkillAllyItemDataOffset + id * 8;
                     requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
                     requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
+                }
+                else
+                {
+                    // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
+                    requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
                 }
 
                 var liveData = Pcsx2BinApplier.ReadRanges(
@@ -988,6 +995,17 @@ internal sealed class MonsterCreatorForm : Form
 
         string skillDebug = "";
 
+        // var_411 は常にレコード+18。特技拡張BINがなくてもライブ読込値を表示する。
+        int enemyItemOffset = SkillRangeDataOffset + id * 20 + 18;
+        ushort enemyItemValue = BinFileService.ReadUInt16(_bin, enemyItemOffset);
+        bool canShowLiveEnemyItem =
+            Pcsx2LiveSession.IsConnected && Pcsx2LiveSession.MemoryLayout != null;
+        if (_skillDataReady || canShowLiveEnemyItem)
+        {
+            _enemyThrowItem.SelectedIndex =
+                enemyItemValue < _enemyThrowItem.Items.Count ? enemyItemValue : -1;
+        }
+
         if (_skillDataReady)
         {
             int rangeOffset = SkillRangeDataOffset + id * 20;
@@ -995,7 +1013,6 @@ internal sealed class MonsterCreatorForm : Form
 
             ushort rangeValue = BinFileService.ReadUInt16(_bin, rangeOffset + 6);
             uint messagePointer = ReadUInt32LE(_bin, rangeOffset + 10);
-            ushort enemyItemValue = BinFileService.ReadUInt16(_bin, rangeOffset + 18);
             ushort allyItemValue1 = BinFileService.ReadUInt16(_bin, allyOffset);
             ushort allyItemValue2 = BinFileService.ReadUInt16(_bin, allyOffset + 2);
             skillDebug =
@@ -1003,7 +1020,7 @@ internal sealed class MonsterCreatorForm : Form
                 "\r\nモンスターID：" + id +
                 "\r\n範囲位置：" + rangeOffset +
                 " / 生値：" + rangeValue +
-                "\r\n敵投擲位置：" + (rangeOffset + 18) +
+                "\r\nvar_411 敵投擲位置：" + enemyItemOffset +
                 " / 生値：" + enemyItemValue +
                 "\r\n味方投擲位置：" + allyOffset +
                 " / 生値：" + allyItemValue1 +
@@ -1012,7 +1029,6 @@ internal sealed class MonsterCreatorForm : Form
 
             _skillRange.SelectedIndex = rangeValue < _skillRange.Items.Count ? rangeValue : -1;
             _skillMessage.SelectedIndex = ResolveSkillMessageIndex(messagePointer);
-            _enemyThrowItem.SelectedIndex = enemyItemValue < _enemyThrowItem.Items.Count ? enemyItemValue : -1;
             _allyThrowItem1.SelectedIndex = allyItemValue1 < _allyThrowItem1.Items.Count ? allyItemValue1 : -1;
             _allyThrowItem2.SelectedIndex = allyItemValue2 < _allyThrowItem2.Items.Count ? allyItemValue2 : -1;
         }
@@ -1070,11 +1086,17 @@ internal sealed class MonsterCreatorForm : Form
         BinFileService.WriteUInt16(_bin, recruitOffset, (ushort)_recruitModifier.Value);
         BinFileService.WriteUInt16(_bin, recoveryOffset, (ushort)_recoveryConstant.Value);
 
+        int rangeOffset = SkillRangeDataOffset + _selectedMonsterId * 20;
+        int allyOffset = SkillAllyItemDataOffset + _selectedMonsterId * 8;
+        int enemyItemOffset = rangeOffset + 18;
+
+        // var_411 の編集値をBIN作業データへ常時保持する。
+        BinFileService.CheckRange(_bin, enemyItemOffset, 2);
+        BinFileService.WriteUInt16(
+            _bin, enemyItemOffset, (ushort)Math.Max(0, _enemyThrowItem.SelectedIndex));
+
         if (_skillDataReady)
         {
-            int rangeOffset = SkillRangeDataOffset + _selectedMonsterId * 20;
-            int allyOffset = SkillAllyItemDataOffset + _selectedMonsterId * 8;
-
             uint messagePointer = 0;
             if (_skillMessage.SelectedIndex > 0)
                 messagePointer = SkillMessagePointerBase + (uint)(_skillMessage.SelectedIndex - 1) * 16;
@@ -1132,9 +1154,6 @@ internal sealed class MonsterCreatorForm : Form
 
                 if (_skillDataReady)
                 {
-                    int rangeOffset = SkillRangeDataOffset + _selectedMonsterId * 20;
-                    int allyOffset = SkillAllyItemDataOffset + _selectedMonsterId * 8;
-
                     writes.Add(Tuple.Create(
                         rangeOffset,
                         CopyRange(rangeOffset, 20),
@@ -1144,6 +1163,14 @@ internal sealed class MonsterCreatorForm : Form
                         allyOffset,
                         CopyRange(allyOffset, 8),
                         "仲間投げアイテムデータ"));
+                }
+                else
+                {
+                    // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
+                    writes.Add(Tuple.Create(
+                        enemyItemOffset,
+                        CopyRange(enemyItemOffset, 2),
+                        "var_411 敵投擲アイテム"));
                 }
 
                 string resultText = Pcsx2BinApplier.ApplyRanges(
