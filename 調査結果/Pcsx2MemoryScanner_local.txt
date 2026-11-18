@@ -1,0 +1,457 @@
+﻿internal static class Pcsx2MemoryScanner
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint PAGE_NOACCESS = 0x01;
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+        0x18, 0x00, 0xC0, 0x10, 0x18
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+        0x69, 0x70, 0x6F, 0x66,
+        0x66, 0x00, 0x00, 0x00
+    };
+
+    [System.Runtime.InteropServices.StructLayout(
+        System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MEMORY_BASIC_INFORMATION
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public uint AllocationProtect;
+        public UIntPtr RegionSize;
+        public uint State;
+        public uint Protect;
+        public uint Type;
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        UIntPtr nSize,
+        out UIntPtr lpNumberOfBytesRead);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern UIntPtr VirtualQueryEx(
+        IntPtr hProcess,
+        IntPtr lpAddress,
+        out MEMORY_BASIC_INFORMATION lpBuffer,
+        UIntPtr dwLength);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool IsWow64Process(
+        IntPtr hProcess,
+        out bool wow64Process);
+
+    private static ulong ToUInt64(IntPtr value)
+    {
+        return unchecked((ulong)value.ToInt64());
+    }
+
+    private static IntPtr ToIntPtr(ulong value)
+    {
+        return new IntPtr(unchecked((long)value));
+    }
+
+    private static int FindPattern(
+        byte[] buffer,
+        int length,
+        byte[] pattern)
+    {
+        if (length < pattern.Length)
+            return -1;
+
+        int last = length - pattern.Length;
+
+        for (int i = 0; i <= last; i++)
+        {
+            bool match = true;
+
+            for (int j = 0; j < pattern.Length; j++)
+            {
+                if (buffer[i + j] != pattern[j])
+                {
+                    match = false;
+                    break;
+                }
+            }
+
+            if (match)
+                return i;
+        }
+
+        return -1;
+    }
+
+    public static System.Collections.Generic.List<System.Diagnostics.Process> FindProcesses()
+{
+    var result = new System.Collections.Generic.List<System.Diagnostics.Process>();
+    foreach (var process in System.Diagnostics.Process.GetProcesses())
+    {
+        try
+        {
+            if (process.ProcessName.IndexOf("pcsx2", System.StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                process.Dispose();
+                continue;
+            }
+            var module = process.MainModule;
+            if (module == null)
+            {
+                process.Dispose();
+                continue;
+            }
+            var versionInfo = module.FileVersionInfo;
+            string productVersion = versionInfo.ProductVersion ?? string.Empty;
+            string fileVersion = versionInfo.FileVersion ?? string.Empty;
+            string versionText = productVersion + " " + fileVersion;
+            bool isExact282 = System.Text.RegularExpressions.Regex.IsMatch(versionText, @"(?<![0-9])2\.8\.2(?![0-9])");
+            if (!isExact282)
+            {
+                process.Dispose();
+                continue;
+            }
+            result.Add(process);
+        }
+        catch
+        {
+            try { process.Dispose(); } catch { }
+        }
+    }
+    return result;
+}
+
+    // メモリ全域を検索せず、PCSX2プロセスを開くだけの接続処理。
+    public static IntPtr OpenConnection(int processId)
+    {
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2プロセスへの接続に失敗しました。");
+        }
+
+        return handle;
+    }
+
+    public static void CloseConnection(IntPtr handle)
+    {
+        if (handle != IntPtr.Zero)
+        {
+            CloseHandle(handle);
+        }
+    }
+
+        public static Pcsx2ScanResult Scan(
+        int processId,
+        System.Action<string> report)
+    {
+        var result = new Pcsx2ScanResult();
+        result.ProcessId = processId;
+
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2プロセスを開けませんでした。");
+        }
+
+        try
+        {
+            using (var process = System.Diagnostics.Process.GetProcessById(processId))
+            {
+                result.ProcessName = process.ProcessName;
+            }
+
+            bool isWow64 = false;
+            bool architectureKnown = IsWow64Process(handle, out isWow64);
+
+            ulong maximumAddress;
+            if (architectureKnown && isWow64)
+                maximumAddress = 0x7FFEFFFF;
+            else if (!System.Environment.Is64BitOperatingSystem)
+                maximumAddress = 0x7FFEFFFF;
+            else
+                maximumAddress = 0x00007FFFFFFEFFFF;
+
+            ulong address = 0x10000;
+            ulong mbiSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(
+                typeof(MEMORY_BASIC_INFORMATION));
+
+            const int CHUNK_SIZE = 1024 * 1024;
+            const int FALLBACK_SIZE = 4096;
+
+            ulong firstAddress = 0;
+            ulong secondAddress = 0;
+
+            bool ScanRun(ulong runStart, ulong runEnd)
+            {
+                if (runEnd <= runStart)
+                    return false;
+
+                report?.Invoke(
+                    "旧HSP互換の連続領域を検索中: 0x" +
+                    runStart.ToString("X") + " - 0x" + runEnd.ToString("X"));
+
+                ulong runA = 0;
+                ulong runB = 0;
+                ulong offset = 0;
+                int carry = 0;
+                int maxPatternLength = System.Math.Max(
+                    SignatureA.Length, SignatureB.Length);
+                byte[] buffer = new byte[CHUNK_SIZE + 32];
+
+                while (offset < runEnd - runStart)
+                {
+                    int request = (int)System.Math.Min(
+                        (ulong)CHUNK_SIZE,
+                        (runEnd - runStart) - offset);
+
+                    byte[] chunkBuffer = new byte[request];
+                    UIntPtr bytesRead;
+
+                    ReadProcessMemory(
+                        handle,
+                        ToIntPtr(runStart + offset),
+                        chunkBuffer,
+                        new UIntPtr((uint)request),
+                        out bytesRead);
+
+                    int actual = (int)System.Math.Min(
+                        bytesRead.ToUInt64(),
+                        (ulong)request);
+
+                    if (actual <= 0)
+                    {
+                        ulong skip = System.Math.Min(
+                            (ulong)FALLBACK_SIZE,
+                            (runEnd - runStart) - offset);
+                        offset += skip;
+                        carry = 0;
+                        continue;
+                    }
+
+                    System.Array.Copy(
+                        chunkBuffer, 0, buffer, carry, actual);
+
+                    int total = carry + actual;
+
+                    if (firstAddress == 0)
+                    {
+                        int foundA = FindPattern(buffer, total, SignatureA);
+                        if (foundA >= 0)
+                            firstAddress = runStart + offset - (ulong)carry + (ulong)foundA;
+                    }
+
+                    if (secondAddress == 0)
+                    {
+                        int foundB = FindPattern(buffer, total, SignatureB);
+                        if (foundB >= 0)
+                            secondAddress = runStart + offset - (ulong)carry + (ulong)foundB;
+                    }
+
+                    result.ScannedBytes += actual;
+
+                    if (firstAddress != 0 && secondAddress != 0)
+                    {
+                        report?.Invoke("シグネチャA検出: 0x" + firstAddress.ToString("X"));
+                        report?.Invoke("シグネチャB検出: 0x" + secondAddress.ToString("X"));
+                        return true;
+                    }
+
+                    carry = System.Math.Min(maxPatternLength - 1, total);
+                    if (carry > 0)
+                    {
+                        System.Array.Copy(
+                            buffer, total - carry, buffer, 0, carry);
+                    }
+
+                    offset += (ulong)actual;
+                }
+
+                return false;
+            }
+
+            ulong runStartAddress = 0;
+            ulong runEndAddress = 0;
+            bool runActive = false;
+            bool foundPair = false;
+
+            while (address < maximumAddress)
+            {
+                MEMORY_BASIC_INFORMATION mbi;
+                UIntPtr queryResult = VirtualQueryEx(
+                    handle,
+                    ToIntPtr(address),
+                    out mbi,
+                    new UIntPtr(mbiSize));
+
+                if (queryResult == UIntPtr.Zero)
+                    break;
+
+                ulong baseAddress = ToUInt64(mbi.BaseAddress);
+                ulong regionSize = mbi.RegionSize.ToUInt64();
+
+                if (regionSize == 0)
+                {
+                    if (runActive)
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        runActive = false;
+                        if (foundPair) break;
+                    }
+                    address += 0x1000;
+                    continue;
+                }
+
+                ulong nextAddress = baseAddress + regionSize;
+                bool readable =
+                    mbi.State == MEM_COMMIT &&
+                    (mbi.Protect & PAGE_NOACCESS) == 0 &&
+                    (mbi.Protect & PAGE_GUARD) == 0;
+
+                if (readable)
+                {
+                    if (!runActive)
+                    {
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                    else if (baseAddress == runEndAddress)
+                    {
+                        runEndAddress = nextAddress;
+                    }
+                    else
+                    {
+                        foundPair = ScanRun(runStartAddress, runEndAddress);
+                        if (foundPair) break;
+                        runStartAddress = baseAddress;
+                        runEndAddress = nextAddress;
+                        runActive = true;
+                    }
+                }
+                else if (runActive)
+                {
+                    foundPair = ScanRun(runStartAddress, runEndAddress);
+                    runActive = false;
+                    if (foundPair) break;
+                }
+
+                if (nextAddress <= address)
+                    break;
+
+                address = nextAddress;
+            }
+
+            if (!foundPair && runActive)
+                foundPair = ScanRun(runStartAddress, runEndAddress);
+
+            result.FirstSignatureAddress = unchecked((long)firstAddress);
+            result.SecondSignatureAddress = unchecked((long)secondAddress);
+
+            if (foundPair)
+            {
+                result.Message = "旧HSPと同じ連続読み取り可能領域内で両方の識別パターンを検出しました。";
+            }
+            else
+            {
+                result.Message = "PCSX2プロセス内でシグネチャAとBの両方を検出できませんでした。";
+            }
+
+            return result;
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+
+// =========================================================
+}
+
+// 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
+// 読み取り専用
+// =========================================================
+
+internal sealed class Pcsx2MemoryLayout
+{
+    public long SignatureA { get; set; }
+    public long SignatureB { get; set; }
+
+    public uint Correction { get; set; }
+
+    public uint[] PointerValues { get; set; } =
+        new uint[5];
+
+    public System.Collections.Generic.Dictionary<string, long>
+        Addresses { get; set; } =
+        new System.Collections.Generic.Dictionary<string, long>();
+
+    public string Describe()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        lines.Add("第1識別アドレス: 0x" + SignatureA.ToString("X"));
+        lines.Add("第2識別アドレス: 0x" + SignatureB.ToString("X"));
+        lines.Add("32bit補正値: 0x" + Correction.ToString("X8"));
+
+        for (int i = 0; i < PointerValues.Length; i++)
+        {
+            lines.Add(
+                "ポインタ[" + i + "]: 0x" +
+                PointerValues[i].ToString("X8"));
+        }
+
+        lines.Add("");
+        lines.Add("旧HSP由来の主要アドレス:");
+
+        foreach (var pair in Addresses)
+        {
+            lines.Add(
+                pair.Key + ": 0x" +
+                pair.Value.ToString("X"));
+        }
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+}
+
