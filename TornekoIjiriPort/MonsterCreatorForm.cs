@@ -217,8 +217,7 @@ internal sealed class MonsterCreatorForm : Form
     private const int RecoveryConstantDataOffset = 364595;
     private const int SkillVersionOffset = 355056;
     private const int SkillRangeDataOffset = 382206;
-    private const int SkillMessageTableOffset = 386212;
-    private const int SkillAllyItemDataOffset = 396212;
+    private const int SkillAllyItemDataOffset = 386212;
     private const int SkillMessageCount = 41;
     private const int SkillExtensionRequiredEnd = 404356;
     private const uint EeAddressMask = 0x1FFFFFFF;
@@ -691,26 +690,11 @@ internal sealed class MonsterCreatorForm : Form
 
     private static string[] ReadSkillMessageChoices(byte[] bin)
     {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        Encoding encoding = Encoding.GetEncoding(932);
         var choices = new List<string>(SkillMessageCount + 1);
         choices.Add("特技メッセージ無し");
 
         for (int i = 0; i < SkillMessageCount; i++)
-        {
-            int offset = SkillMessageTableOffset + i * 16;
-            BinFileService.CheckRange(bin, offset, 16);
-
-            int length = 0;
-            while (length < 16 && bin[offset + length] != 0)
-                length++;
-
-            string label = encoding.GetString(bin, offset, length).TrimEnd((char)0, (char)32);
-            if (string.IsNullOrWhiteSpace(label))
-                label = "メッセージ " + (i + 1).ToString("D2");
-
-            choices.Add(label);
-        }
+            choices.Add("メッセージ " + (i + 1).ToString("D2"));
 
         return choices.ToArray();
     }
@@ -886,6 +870,8 @@ internal sealed class MonsterCreatorForm : Form
         _recruitModifier.Value = BinFileService.ReadUInt16(_bin, recruitOffset);
         _recoveryConstant.Value = BinFileService.ReadUInt16(_bin, recoveryOffset);
 
+        string skillDebug = "";
+
         if (_skillDataReady)
         {
             int rangeOffset = SkillRangeDataOffset + id * 20;
@@ -896,6 +882,17 @@ internal sealed class MonsterCreatorForm : Form
             ushort enemyItemValue = BinFileService.ReadUInt16(_bin, rangeOffset + 18);
             ushort allyItemValue1 = BinFileService.ReadUInt16(_bin, allyOffset);
             ushort allyItemValue2 = BinFileService.ReadUInt16(_bin, allyOffset + 2);
+            skillDebug =
+                "\r\n--- 特技データ診断 ---" +
+                "\r\nモンスターID：" + id +
+                "\r\n範囲位置：" + rangeOffset +
+                " / 生値：" + rangeValue +
+                "\r\n敵投擲位置：" + (rangeOffset + 18) +
+                " / 生値：" + enemyItemValue +
+                "\r\n味方投擲位置：" + allyOffset +
+                " / 生値：" + allyItemValue1 +
+                "\r\n味方投擲2位置：" + (allyOffset + 2) +
+                " / 生値：" + allyItemValue2;
 
             _skillRange.SelectedIndex = rangeValue < _skillRange.Items.Count ? rangeValue : -1;
             _skillMessage.SelectedIndex = ResolveSkillMessageIndex(messagePointer);
@@ -907,7 +904,8 @@ internal sealed class MonsterCreatorForm : Form
         _selectedInfo.Text =
             "モンスター番号：" + id.ToString("D3") +
             "　／　BINレコード位置：0x" + offset.ToString("X") +
-            "\r\nレコード長：24 bytes　／　未解析領域は変更しません。";
+            "\r\nレコード長：24 bytes　／　未解析領域は変更しません。" +
+            skillDebug;
 
         SetEditorEnabled(true);
     }
@@ -984,13 +982,88 @@ internal sealed class MonsterCreatorForm : Form
 
         _onChanged?.Invoke();
 
-        _status.Text =
-            MonsterNames[_selectedMonsterId] +
-            " の変更をBIN作業データへ反映しました。メイン画面から保存してください。";
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+            Pcsx2LiveSession.MemoryLayout != null)
+        {
+            try
+            {
+                var writes = new List<Tuple<int, byte[], string>>();
+
+                byte[] CopyRange(int start, int length)
+                {
+                    BinFileService.CheckRange(_bin, start, length);
+                    byte[] result = new byte[length];
+                    Array.Copy(_bin, start, result, 0, length);
+                    return result;
+                }
+
+                writes.Add(Tuple.Create(
+                    offset,
+                    CopyRange(offset, MonsterRecordSize),
+                    "モンスターレコード"));
+
+                writes.Add(Tuple.Create(
+                    recruitOffset,
+                    CopyRange(recruitOffset, 2),
+                    "勧誘補正値"));
+
+                writes.Add(Tuple.Create(
+                    recoveryOffset,
+                    CopyRange(recoveryOffset, 2),
+                    "回復定数"));
+
+                if (_skillDataReady)
+                {
+                    int rangeOffset = SkillRangeDataOffset + _selectedMonsterId * 20;
+                    int allyOffset = SkillAllyItemDataOffset + _selectedMonsterId * 8;
+
+                    writes.Add(Tuple.Create(
+                        rangeOffset,
+                        CopyRange(rangeOffset, 20),
+                        "特技範囲データ"));
+
+                    writes.Add(Tuple.Create(
+                        allyOffset,
+                        CopyRange(allyOffset, 8),
+                        "仲間投げアイテムデータ"));
+                }
+
+                string resultText = Pcsx2BinApplier.ApplyRanges(
+                    Pcsx2LiveSession.ProcessId,
+                    Pcsx2LiveSession.MemoryLayout,
+                    writes);
+
+                _status.Text =
+                    MonsterNames[_selectedMonsterId] +
+                    " の変更をPCSX2へ反映しました。\r\n" +
+                    resultText;
+            }
+            catch (Exception ex)
+            {
+                _status.Text =
+                    "BIN作業データは更新済みですが、PCSX2への反映に失敗しました。\r\n" +
+                    ex.Message;
+
+                MessageBox.Show(
+                    this,
+                    ex.ToString(),
+                    "PCSX2反映エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.MemoryLayout == null)
+        {
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " の変更をBIN作業データへ反映しました。\r\n" +
+                "PCSX2未接続のためゲームメモリには未適用です。";
+        }
 
         _selectedInfo.Text =
             "モンスター番号：" + _selectedMonsterId.ToString("D3") +
             "　／　BINレコード位置：0x" + offset.ToString("X") +
-            "\r\nHP・攻撃力・防御力・最大レベル・経験値を更新しました。";
-    }
+            "\r\nHP・攻撃力・防御力・最大レベル・経験値を更新しました。";    }
 }
