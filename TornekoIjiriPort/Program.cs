@@ -7097,6 +7097,11 @@ internal sealed class MonsterNameEditor20261114 : Form
 
     private static bool _decodeDiagnosticShown = false;
 
+    // フォームを閉じて再生成しても、同一プロセス・同一ID・同一アドレスの
+    // 名前領域容量を保持する。アプリ終了時には初期化される。
+    private static readonly Dictionary<string, int> _stableNameCapacities =
+        new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
 private static string DecodeMonsterName(byte[] data, int offset, int count)
     {
         string utf8 = "";
@@ -8133,15 +8138,50 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
                 {
                     seen.Add(uniqueKey);
 
+                    long entryAddress =
+                        _eeBase + scanStart + nameStart;
+
+                    string capacityKey =
+                        _pid.ToString() + "|" +
+                        id + "|" +
+                        entryAddress.ToString("X");
+
+                    int stableCapacity;
+
+                    if (!_stableNameCapacities.TryGetValue(
+                        capacityKey,
+                        out stableCapacity))
+                    {
+                        stableCapacity = nameLength;
+                        _stableNameCapacities.Add(
+                            capacityKey,
+                            stableCapacity);
+                    }
+
+                    // 外部操作などで現在名が以前より長くなっていた場合は、
+                    // 実際に確認できた長さまで容量を更新する。短縮時は縮めない。
+                    if (stableCapacity < nameLength)
+                    {
+                        stableCapacity = nameLength;
+                        _stableNameCapacities[capacityKey] =
+                            stableCapacity;
+                    }
+
+                    if (nameStart + stableCapacity >= region.Length)
+                    {
+                        throw new InvalidOperationException(
+                            "名前領域の容量がEE RAMの読み取り範囲を超えています。");
+                    }
+
                     found.Add(new MonsterEntry
                     {
                         Id = id,
                         Name = name,
-                        Address = _eeBase + scanStart + nameStart,
-                        Capacity = nameLength,
+                        Address = entryAddress,
+                        Capacity = stableCapacity,
                         OriginalBytes = region
                             .Skip(nameStart)
-                            .Take(nameLength + 1)
+                            .Take(stableCapacity + 1)
                             .ToArray()
                     });
                 }

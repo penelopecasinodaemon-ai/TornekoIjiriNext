@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -158,25 +158,15 @@ internal static class HayabusaDoubleAttackMonitor
 
     private static void Evaluate(int processId)
     {
-        string itemName = ReadItemName(processId);
-
         uint equippedWeapon =
             ReadPine32(EquippedWeaponAddress) & 0xFFFFu;
 
         uint currentInstruction =
             ReadPine32(AttackPatchAddress);
 
-        bool nameMatches =
-            string.Equals(
-                itemName,
-                ExpectedItemName,
-                StringComparison.Ordinal);
-
-        bool weaponMatches =
-            equippedWeapon == HayabusaWeaponValue;
-
-        bool shouldEnable =
-            nameMatches && weaponMatches;
+        // 診断段階では二回攻撃を適用しない。
+        // 装備IDの実測値を確認してから有効化する。
+        bool shouldEnable = false;
 
         bool hasState = TryLoadState(
             out int savedProcessId,
@@ -342,10 +332,9 @@ internal static class HayabusaDoubleAttackMonitor
 
         SetStatus(
             "自動監視中。" +
-            " アイテム名: " + itemName +
-            " / 装備ID: 0x" +
+            " 装備ID: 0x" +
             equippedWeapon.ToString("X4") +
-            " / 二回攻撃: 無効");
+            " / 二回攻撃: 未判定（装備ID確認中）");
     }
 
     private static void TryRestoreAfterWriteFailure(

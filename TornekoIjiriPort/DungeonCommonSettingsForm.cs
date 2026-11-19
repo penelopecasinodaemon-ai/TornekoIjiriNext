@@ -15,7 +15,7 @@ internal sealed class DungeonCommonSettingsForm : Form
 
     private const uint SpawnInstructionAddress = 0x0022FE04;
 
-    private const long HayabusaNameAddress = 0x1B322C27C42L;
+
     private const long RuntimeDescriptionOffset = 0x01FFF1F0L;
     private const long ItemTableDescriptionOffset = 0x00107BC7L;
 
@@ -605,6 +605,119 @@ internal sealed class DungeonCommonSettingsForm : Form
         return result;
     }
 
+    private static (
+        long Address,
+        byte[] OriginalData,
+        string MatchedName) FindHayabusaNameAddress(
+            IntPtr process,
+            long eeBase)
+    {
+        const int EeRamSize = 0x02000000;
+
+        if (process == IntPtr.Zero)
+            throw new InvalidOperationException(
+                "PCSX2プロセスハンドルが無効です。");
+
+        if (eeBase <= 0)
+            throw new InvalidOperationException(
+                "EE RAM基準アドレスが不正です。");
+
+        // 既知の表示名候補をCP932・NUL終端で検索する。
+        // 候補を推測で選ばず、EE RAM全体で一致が1件だけの場合に限り採用する。
+        string[] candidates =
+        {
+            "エレファントクロウ",
+            "ｴﾚﾌｧﾝﾄｸﾛｳ",
+            "エレファントクロー",
+            "ｴﾚﾌｧﾝﾄｸﾛｰ",
+            "象牙の爪"
+        };
+
+        byte[] memory =
+            ReadMemory(process, eeBase, EeRamSize);
+
+        var matches =
+            new System.Collections.Generic.List<(
+                int Offset,
+                string Name,
+                byte[] Data)>();
+
+        foreach (string candidate in candidates)
+        {
+            byte[] pattern = MakeNullTerminated(candidate);
+
+            int searchFrom = 0;
+
+            while (searchFrom <= memory.Length - pattern.Length)
+            {
+                int hit = Array.IndexOf(
+                    memory,
+                    pattern[0],
+                    searchFrom);
+
+                if (hit < 0)
+                    break;
+
+                bool same = true;
+
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (memory[hit + i] != pattern[i])
+                    {
+                        same = false;
+                        break;
+                    }
+                }
+
+                if (same)
+                {
+                    matches.Add((
+                        hit,
+                        candidate,
+                        (byte[])pattern.Clone()));
+
+                    searchFrom = hit + pattern.Length;
+                }
+
+                if (!same)
+                    searchFrom = hit + 1;
+            }
+        }
+
+        if (matches.Count != 1)
+        {
+            var detail = new StringBuilder();
+
+            foreach (var match in matches)
+            {
+                detail.Append("候補: ")
+                    .Append(match.Name)
+                    .Append(" / EE+0x")
+                    .Append(match.Offset.ToString("X8"))
+                    .Append("\r\n");
+            }
+
+            if (matches.Count == 0)
+                detail.Append("候補文字列の完全一致は見つかりませんでした。");
+
+            if (matches.Count > 1)
+                detail.Append("複数の一致があるため、誤書き込み防止のため停止しました。");
+
+            throw new InvalidOperationException(
+                "はやぶさの爪の元アイテム名を一意に特定できません。\r\n" +
+                "EE RAM検索結果: " + matches.Count + " 件\r\n" +
+                detail.ToString() +
+                "\r\nゲーム内のアイテム名データを確認する必要があります。");
+        }
+
+        var found = matches[0];
+
+        return (
+            checked(eeBase + found.Offset),
+            found.Data,
+            found.Name);
+    }
+
     private static byte[] MakeFixedDescription()
     {
         string value =
@@ -687,29 +800,6 @@ internal sealed class DungeonCommonSettingsForm : Form
                 throw new InvalidOperationException(
                     "PCSX2のEE RAM基準アドレスを取得できません。");
 
-            long nameAddress = HayabusaNameAddress;
-
-            // 実際のEE RAM基準アドレスから相対アドレスを計算する。
-            long nameOffset = checked(nameAddress - eeBase);
-
-            // EE RAMの範囲内であることを確認する。
-            if (nameOffset < 0 || nameOffset >= 0x02000000L)
-                throw new InvalidOperationException(
-                    "武器名のアドレスがEE RAMの範囲外です。" +
-                    "\r\n絶対アドレス: 0x" + nameAddress.ToString("X") +
-                    "\r\nEE RAM基準: 0x" + eeBase.ToString("X") +
-                    "\r\n相対アドレス: 0x" + nameOffset.ToString("X"));
-            long staticDescriptionAddress =
-                checked(eeBase + ItemTableDescriptionOffset);
-            long runtimeDescriptionAddress =
-                checked(eeBase + RuntimeDescriptionOffset);
-
-            byte[] nameData =
-                MakeNullTerminated("ﾊﾔぶｻﾉ爪");
-
-            byte[] descriptionData =
-                MakeFixedDescription();
-
             const uint access =
                 0x0008 |
                 0x0010 |
@@ -728,11 +818,61 @@ internal sealed class DungeonCommonSettingsForm : Form
                     Marshal.GetLastWin32Error());
             }
 
+            var nameMatch =
+                FindHayabusaNameAddress(process, eeBase);
+
+            long nameAddress = nameMatch.Address;
+            long nameOffset = checked(nameAddress - eeBase);
+
+            if (nameOffset < 0 || nameOffset >= 0x02000000L)
+                throw new InvalidOperationException(
+                    "検索で特定した武器名アドレスがEE RAMの範囲外です。");
+
+            byte[] oldName = nameMatch.OriginalData;
+            byte[] requestedNameData =
+                MakeNullTerminated("ﾊﾔぶｻﾉ爪");
+
+            if (requestedNameData.Length > oldName.Length)
+            {
+                throw new InvalidOperationException(
+                    "変更後の武器名が元の名前領域より長くなっています。\r\n" +
+                    "元の領域: " + oldName.Length + " bytes\r\n" +
+                    "変更後: " + requestedNameData.Length + " bytes");
+            }
+
+            // 元の名前領域と同じ長さで書き込み、残りはNULで埋める。
+            byte[] nameData = new byte[oldName.Length];
+
+            Buffer.BlockCopy(
+                requestedNameData,
+                0,
+                nameData,
+                0,
+                requestedNameData.Length);
+
+            long staticDescriptionAddress =
+                checked(eeBase + ItemTableDescriptionOffset);
+            long runtimeDescriptionAddress =
+                checked(eeBase + RuntimeDescriptionOffset);
+
+
+            byte[] descriptionData =
+                MakeFixedDescription();
+
             _itemStatus.Text =
                 "書き込み先を事前確認しています...";
 
-            byte[] oldName =
-                ReadMemory(process, nameAddress, nameData.Length);
+            byte[] currentName =
+                ReadMemory(process, nameAddress, oldName.Length);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                oldName,
+                currentName))
+            {
+                throw new InvalidOperationException(
+                    "検索後に武器名のメモリ内容が変化しました。\r\n" +
+                    "安全のため書き込みを中止しました。");
+            }
 
             byte[] oldStaticDescription =
                 ReadMemory(
@@ -792,8 +932,7 @@ internal sealed class DungeonCommonSettingsForm : Form
                 }
             }
 
-            // 説明文2か所はEE RAMオフセットとして保存する。
-            // アイテム名アドレスは絶対アドレス形式のため登録しない。
+            // 説明文2か所とアイテム名をEE RAM相対アドレスで登録する。
             Torneko4PatchStore.Register(
                 "はやぶさの爪・アイテム説明文",
                 ItemTableDescriptionOffset,
