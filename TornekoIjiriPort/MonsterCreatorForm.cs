@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -314,6 +316,9 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _skillRate = CreateNumber(byte.MaxValue);
     private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
+    private readonly ComboBox _actionChange = CreateActionChoice();
+    private readonly Label _actionMonitorStatus = new Label();
+    private readonly ActionAutoRestoreService _actionRestore = new ActionAutoRestoreService();
 
     private static readonly string[] SkillRangeNames =
     {
@@ -434,7 +439,7 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 13,
+            RowCount = 14,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
@@ -454,6 +459,7 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
         fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
         fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
         fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
@@ -478,6 +484,16 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.Controls.Add(CreateField("勧誘修正値", _recruitModifier), 0, 11);
         fieldGrid.Controls.Add(CreateField("回復定数", _recoveryConstant), 1, 11);
         fieldGrid.Controls.Add(CreateField("特技使用率（A/B共通）", _skillRate), 0, 12);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        var actionChangePanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(0)
+        };
+        _actionChange.Dock = DockStyle.Fill;
+        actionChangePanel.Controls.Add(_actionChange);
+
+        fieldGrid.Controls.Add(CreateField("特技変更", actionChangePanel), 0, 13);
         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
 
         var explanation = new Label
@@ -536,7 +552,7 @@ internal sealed class MonsterCreatorForm : Form
         };
         closeButton.Click += (_, _) => Close();
 
-        buttons.Controls.Add(_applyButton);
+buttons.Controls.Add(_applyButton);
         buttons.Controls.Add(reloadButton);
         buttons.Controls.Add(closeButton);
 
@@ -557,10 +573,16 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 2,
-            RowCount = 1
+            RowCount = 2
         };
         infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+        infoPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+        infoPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        _actionMonitorStatus.Dock = DockStyle.Fill;
+        _actionMonitorStatus.AutoEllipsis = true;
+        _actionMonitorStatus.ForeColor = Color.DarkSlateBlue;
+        _actionMonitorStatus.Text = "PCSX2のPINE接続を確認しています（TCP 28011）。";
 
         var copyInfoButton = new Button
         {
@@ -576,8 +598,10 @@ internal sealed class MonsterCreatorForm : Form
             }
         };
 
-        infoPanel.Controls.Add(_selectedInfo, 0, 0);
-        infoPanel.Controls.Add(copyInfoButton, 1, 0);
+        infoPanel.Controls.Add(_actionMonitorStatus, 0, 0);
+        infoPanel.SetColumnSpan(_actionMonitorStatus, 2);
+        infoPanel.Controls.Add(_selectedInfo, 0, 1);
+        infoPanel.Controls.Add(copyInfoButton, 1, 1);
         right.Controls.Add(infoPanel, 0, 2);
         right.Controls.Add(content, 0, 3);
         right.Controls.Add(bottom, 0, 4);
@@ -615,6 +639,8 @@ internal sealed class MonsterCreatorForm : Form
 
         BindLiveEditEvents();
         RefreshList();
+        _actionRestore.StatusChanged += message => { if (IsHandleCreated && !IsDisposed) BeginInvoke((Action)(() => _actionMonitorStatus.Text = message)); };
+        FormClosed += (_, _) => _actionRestore.Dispose();
     }
 
     private void BindLiveEditEvents()
@@ -641,6 +667,7 @@ internal sealed class MonsterCreatorForm : Form
         _allyThrowItem1.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
         _allyThrowItem2.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
         _skillMessage.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+        _actionChange.SelectedIndexChanged += (_, _) => ApplySelectedActionChange();
     }
 
     private void ApplyLiveEdit()
@@ -903,6 +930,7 @@ internal sealed class MonsterCreatorForm : Form
         _allyThrowItem2.Enabled = enabled && _skillDataReady;
         _skillMessage.Enabled = enabled && _skillDataReady;
         _applyButton.Enabled = enabled;
+        _actionChange.Enabled = _selectedMonsterId >= 0;
     }
 
     private void RefreshList()
@@ -960,6 +988,7 @@ internal sealed class MonsterCreatorForm : Form
         int id = _visibleIds[index];
         _selectedMonsterId = id;
         _loadingSelection = true;
+        if (_actionChange.SelectedIndex != 0) _actionChange.SelectedIndex = 0;
         _selectedTitle.Text = MonsterNames[id];
 
         if (!_dataReady || _bin == null)
@@ -1323,4 +1352,46 @@ internal sealed class MonsterCreatorForm : Form
             "モンスター番号：" + _selectedMonsterId.ToString("D3") +
             "　／　BINレコード位置：0x" + offset.ToString("X") +
             "\r\nHP・攻撃力・防御力・最大レベル・経験値を更新しました。";    }
+
+    private static ComboBox CreateActionChoice()
+    {
+        var combo = new ComboBox
+        {
+            Dock = DockStyle.Fill,
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            IntegralHeight = true
+        };
+        combo.Items.Add("（特技を選択）");
+        foreach (var action in ActionAutoRestoreService.ActionChoices)
+            combo.Items.Add("0x" + action.Id.ToString("X2") + "  " + action.Name);
+        combo.SelectedIndex = 0;
+        return combo;
+    }
+
+    private void ApplySelectedActionChange()
+    {
+        if (_loadingSelection || _actionChange.SelectedIndex <= 0)
+            return;
+
+        int index = _actionChange.SelectedIndex - 1;
+
+        if (_selectedMonsterId < 0 || index < 0 ||
+            index >= ActionAutoRestoreService.ActionChoices.Length)
+        {
+            _status.Text = "左側のモンスター一覧から対象を選択してください。";
+            return;
+        }
+
+        var action = ActionAutoRestoreService.ActionChoices[index];
+        if (_actionRestore.TryApply(_selectedMonsterId, action.Id, out string message))
+        {
+            _status.Text = message;
+        }
+        else
+        {
+            _status.Text = "特技変更エラー：" + message;
+            MessageBox.Show(this, message, "特技変更エラー",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
 }
