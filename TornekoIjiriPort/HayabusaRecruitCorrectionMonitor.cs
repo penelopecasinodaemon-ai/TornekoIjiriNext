@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -72,7 +72,7 @@ internal static class HayabusaRecruitCorrectionMonitor
 
         _timer = new System.Windows.Forms.Timer
         {
-            Interval = 500
+            Interval = 1000
         };
 
         _timer.Tick += Poll;
@@ -87,7 +87,9 @@ internal static class HayabusaRecruitCorrectionMonitor
         SetStatus("勧誘修正値の自動監視を開始しました。PCSX2接続待ちです。");
     }
 
-    private static void Poll(object? sender, EventArgs e)
+    private static async void Poll(
+        object? sender,
+        EventArgs e)
     {
         if (_polling)
             return;
@@ -100,10 +102,12 @@ internal static class HayabusaRecruitCorrectionMonitor
         }
 
         _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
 
         try
         {
-            Evaluate(Pcsx2LiveSession.ProcessId);
+            await System.Threading.Tasks.Task.Run(
+                () => Evaluate(processId));
         }
         catch (Exception ex)
         {
@@ -117,16 +121,12 @@ internal static class HayabusaRecruitCorrectionMonitor
 
     private static void Evaluate(int processId)
     {
-        string itemName = ReadItemName(processId);
+
 
         uint equippedWeapon =
             ReadPine32(EquippedWeaponAddress) & 0xFFFF;
 
         bool isHayabusa =
-            string.Equals(
-                itemName,
-                ExpectedItemName,
-                StringComparison.Ordinal) &&
             equippedWeapon == HayabusaWeaponValue;
 
         uint currentWord =
@@ -277,144 +277,15 @@ internal static class HayabusaRecruitCorrectionMonitor
         }
     }
 
-    private static byte[] ReadExact(
-        NetworkStream stream,
-        int count)
-    {
-        byte[] result = new byte[count];
-        int offset = 0;
-
-        while (offset < count)
-        {
-            int received = stream.Read(
-                result,
-                offset,
-                count - offset);
-
-            if (received <= 0)
-            {
-                throw new IOException(
-                    "PINE接続が途中で切断されました。");
-            }
-
-            offset += received;
-        }
-
-        return result;
-    }
-
-    private static uint ReadUInt32(
-        byte[] data,
-        int offset)
-    {
-        return (uint)(
-            data[offset] |
-            (data[offset + 1] << 8) |
-            (data[offset + 2] << 16) |
-            (data[offset + 3] << 24));
-    }
-
-    private static void WriteUInt32(
-        byte[] data,
-        int offset,
-        uint value)
-    {
-        data[offset] = (byte)value;
-        data[offset + 1] = (byte)(value >> 8);
-        data[offset + 2] = (byte)(value >> 16);
-        data[offset + 3] = (byte)(value >> 24);
-    }
-
-    private static byte[] SendPineCommand(byte[] command)
-    {
-        byte[] request = new byte[4 + command.Length];
-
-        WriteUInt32(request, 0, (uint)request.Length);
-
-        Buffer.BlockCopy(
-            command,
-            0,
-            request,
-            4,
-            command.Length);
-
-        using var client = new TcpClient();
-
-        client.ReceiveTimeout = 3000;
-        client.SendTimeout = 3000;
-        client.Connect(PineHost, PinePort);
-
-        using NetworkStream stream = client.GetStream();
-
-        stream.Write(request, 0, request.Length);
-        stream.Flush();
-
-        byte[] header = ReadExact(stream, 4);
-        uint responseLength = ReadUInt32(header, 0);
-
-        if (responseLength < 5 || responseLength > 1024)
-        {
-            throw new IOException(
-                "PINE応答サイズが不正です: " +
-                responseLength);
-        }
-
-        return ReadExact(
-            stream,
-            (int)responseLength - 4);
-    }
-
     private static uint ReadPine32(uint address)
     {
-        byte[] command = new byte[5];
-
-        command[0] = 2;
-        WriteUInt32(command, 1, address);
-
-        byte[] response = SendPineCommand(command);
-
-        if (response.Length != 5)
-        {
-            throw new IOException(
-                "PINE Read32応答サイズが一致しません。");
-        }
-
-        if (response[0] != 0)
-        {
-            throw new IOException(
-                "PINE Read32に失敗しました。ステータス: " +
-                response[0].ToString("X2"));
-        }
-
-        return ReadUInt32(response, 1);
+        return ActionAutoRestoreService.ReadShared32(address);
     }
 
-    private static void WritePine32(
-        uint address,
-        uint value)
+    private static void WritePine32(uint address, uint value)
     {
-        byte[] command = new byte[9];
-
-        command[0] = 6;
-        WriteUInt32(command, 1, address);
-        WriteUInt32(command, 5, value);
-
-        byte[] response = SendPineCommand(command);
-
-        if (response.Length != 1)
-        {
-            throw new IOException(
-                "PINE Write32応答サイズが一致しません。");
-        }
-
-        if (response[0] != 0)
-        {
-            throw new IOException(
-                "PINE Write32に失敗しました。ステータス: " +
-                response[0].ToString("X2"));
-        }
+        ActionAutoRestoreService.WriteShared32(address, value);
     }
-
     private static bool TryLoadState(
         out int processId,
         out ushort originalValue)

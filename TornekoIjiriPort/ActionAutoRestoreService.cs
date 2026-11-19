@@ -128,7 +128,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
         (0xC5, "50ダメージ(ヘルジャスティス)")
     };
 
-    private readonly PineClient _pine = new PineClient();
+    private static readonly PineClient SharedPine = new PineClient();
+    private static readonly object SharedPineAccessSync = new object();
+    private readonly PineClient _pine = SharedPine;
     private readonly System.Threading.Timer _timer;
 
     private readonly object _operationSync = new object();
@@ -149,6 +151,34 @@ internal sealed class ActionAutoRestoreService : IDisposable
     internal ActionAutoRestoreService()
     {
         _timer = new System.Threading.Timer(Poll, null, 500, 500);
+    }
+
+    internal static uint ReadShared32(uint address)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            SharedPine.Write32(address, value);
+        }
     }
 
     private static bool IsLegacyPatch(uint instruction)
