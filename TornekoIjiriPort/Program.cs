@@ -4580,6 +4580,8 @@ internal sealed class MainForm : Form
     private string? _binPath;
     private readonly Label _status;
     private readonly AppSettings _settings;
+    private readonly ActionAutoRestoreService _actionRestore =
+        new ActionAutoRestoreService();
 
     private readonly Label _pcsx2ConnectionStatus =
         new Label();
@@ -4732,7 +4734,10 @@ internal sealed class MainForm : Form
         buttons.Controls.Add(UiFactory.Button(
             "モンスターを編集", (_, _) =>
             {
-                using var monsterForm = new MonsterCreatorForm(_bin, UpdateStatus);
+                using var monsterForm = new MonsterCreatorForm(
+                    _bin,
+                    UpdateStatus,
+                    _actionRestore);
                 monsterForm.ShowDialog(this);
             }));
 buttons.Controls.Add(UiFactory.Button(
@@ -4775,13 +4780,42 @@ buttons.Controls.Add(UiFactory.Button(
         Controls.Add(root);
 
         Pcsx2LiveSession.StateChanged += UpdatePcsx2Status;
+        _actionRestore.StatusChanged += UpdateActionRestoreStatus;
+
         FormClosed += (_, _) =>
         {
             Pcsx2LiveSession.StateChanged -= UpdatePcsx2Status;
+            _actionRestore.StatusChanged -= UpdateActionRestoreStatus;
+
+            // アプリ本体を終了するときだけフックを解除する。
+            _actionRestore.Dispose();
         };
 
         UpdateStatus();
         UpdatePcsx2Status();
+    }
+
+    private void UpdateActionRestoreStatus(string message)
+    {
+        if (IsDisposed || Disposing)
+            return;
+
+        if (InvokeRequired)
+        {
+            try
+            {
+                BeginInvoke(
+                    new Action<string>(UpdateActionRestoreStatus),
+                    message);
+            }
+            catch
+            {
+            }
+
+            return;
+        }
+
+        _pcsx2DataStatus.Text = message;
     }
 
     private async void OpenPcsx2Connection()
@@ -5136,6 +5170,14 @@ buttons.Controls.Add(UiFactory.Button(
 
             _status.Text =
                 "改造データ読み込み完了。PCSX2への適用確認中...";
+
+            // 種族別特技設定をアプリ常駐サービスへ渡す。
+            // PINE未接続の場合も設定は保持され、サービスが再試行する。
+            _actionRestore.TryApply(
+                Torneko4ActionStore.GetCopy(),
+                out string actionApplyMessage);
+
+            _pcsx2DataStatus.Text = actionApplyMessage;
 
             // 読み込み直後に既存の安全検証付き適用処理へ進む。
             ApplyBinToPcsx2();

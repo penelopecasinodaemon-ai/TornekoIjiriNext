@@ -318,7 +318,8 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
     private readonly ComboBox _actionChange = CreateActionChoice();
     private readonly Label _actionMonitorStatus = new Label();
-    private readonly ActionAutoRestoreService _actionRestore = new ActionAutoRestoreService();
+    private readonly ActionAutoRestoreService _actionRestore;
+    private readonly bool _ownsActionRestore;
 
     private static readonly string[] SkillRangeNames =
     {
@@ -349,12 +350,25 @@ internal sealed class MonsterCreatorForm : Form
     private bool _loadingSelection;
     private bool _automaticLiveApply;
 
-    public MonsterCreatorForm() : this(null, null)
+    public MonsterCreatorForm() : this(null, null, null)
     {
     }
 
     public MonsterCreatorForm(byte[]? bin, Action? onChanged)
+        : this(bin, onChanged, null)
     {
+    }
+
+    public MonsterCreatorForm(
+        byte[]? bin,
+        Action? onChanged,
+        ActionAutoRestoreService? actionRestore)
+    {
+        _actionRestore = actionRestore ??
+            new ActionAutoRestoreService();
+
+        _ownsActionRestore = actionRestore == null;
+
         _bin = bin;
         _onChanged = onChanged;
         _recruitModifier.Minimum = short.MinValue;
@@ -639,8 +653,53 @@ buttons.Controls.Add(_applyButton);
 
         BindLiveEditEvents();
         RefreshList();
-        _actionRestore.StatusChanged += message => { if (IsHandleCreated && !IsDisposed) BeginInvoke((Action)(() => _actionMonitorStatus.Text = message)); };
-        FormClosed += (_, _) => _actionRestore.Dispose();
+        Action<string> actionStatusHandler = message =>
+        {
+            if (IsHandleCreated && !IsDisposed)
+            {
+                try
+                {
+                    BeginInvoke(
+                        (Action)(() => _actionMonitorStatus.Text = message));
+                }
+                catch
+                {
+                }
+            }
+        };
+
+        _actionRestore.StatusChanged += actionStatusHandler;
+
+        FormClosed += (_, _) =>
+        {
+            _actionRestore.StatusChanged -= actionStatusHandler;
+
+            // MainFormから注入されたサービスは破棄しない。
+            if (_ownsActionRestore)
+                _actionRestore.Dispose();
+        };
+        // 画面ハンドル生成後に保存済み種族別特技設定を再適用する。
+        // コンストラクター中のイベント通知取りこぼしを防止する。
+        Shown += (_, _) =>
+        {
+            var savedActions = Torneko4ActionStore.GetCopy();
+
+            if (savedActions.Count == 0)
+            {
+                _actionMonitorStatus.Text =
+                    "種族別特技設定なし：元の命令を維持しています。";
+                return;
+            }
+
+            if (!_actionRestore.TryApply(
+                savedActions,
+                out string applyMessage))
+            {
+                _actionMonitorStatus.Text =
+                    "保存済み種族別特技の再適用に失敗: " +
+                    applyMessage;
+            }
+        };
     }
 
     private void BindLiveEditEvents()
