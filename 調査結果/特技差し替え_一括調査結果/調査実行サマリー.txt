@@ -1,0 +1,15 @@
+調査完了
+ELF: C:\Users\penelope\Desktop\トルネコいじり作業環境\Torneko3_MainCandidate.elf
+ELFサイズ: 7,526,424 bytes
+SHA256: 05DF41B593F86DC42D4E91A0239FD6818575B52696F2812ABBC3A19E2D941FCA
+出力文字数: 23,022
+分割ファイル数: 1
+出力先: C:\Users\penelope\Desktop\トルネコいじり作業環境\特技差し替え_一括調査結果
+
+検索結果
+特技判定5命令連続: 1件
+dgEnemyAttack冒頭: 1件
+実行時呼び出し元の先頭2命令: 1件
+特技判定直前の命令: 1件
+dgEnemyAttack内の特徴命令: 1件
+既知の特技判定周辺命令: 1件
