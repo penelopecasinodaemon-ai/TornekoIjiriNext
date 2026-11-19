@@ -988,7 +988,20 @@ buttons.Controls.Add(_applyButton);
         int id = _visibleIds[index];
         _selectedMonsterId = id;
         _loadingSelection = true;
-        if (_actionChange.SelectedIndex != 0) _actionChange.SelectedIndex = 0;
+
+        // まず未選択状態に戻し、このモンスター専用の設定があれば復元する。
+        _actionChange.SelectedIndex = 0;
+
+        if (Torneko4ActionStore.TryGet(id, out ushort savedActionId))
+        {
+            int savedIndex = Array.FindIndex(
+                ActionAutoRestoreService.ActionChoices,
+                x => x.Id == savedActionId);
+
+            if (savedIndex >= 0)
+                _actionChange.SelectedIndex = savedIndex + 1;
+        }
+
         _selectedTitle.Text = MonsterNames[id];
 
         if (!_dataReady || _bin == null)
@@ -1370,19 +1383,34 @@ buttons.Controls.Add(_applyButton);
 
     private void ApplySelectedActionChange()
     {
-        if (_loadingSelection || _actionChange.SelectedIndex <= 0)
+        if (_loadingSelection)
             return;
+
+        if (_selectedMonsterId < 0)
+            return;
+
+        // プレースホルダーを選んだ場合は、そのモンスターの設定を解除する。
+        if (_actionChange.SelectedIndex == 0)
+        {
+            Torneko4ActionStore.Remove(_selectedMonsterId);
+            _status.Text = "このモンスターの特技変更設定を解除しました。";
+            return;
+        }
 
         int index = _actionChange.SelectedIndex - 1;
 
-        if (_selectedMonsterId < 0 || index < 0 ||
+        if (index < 0 ||
             index >= ActionAutoRestoreService.ActionChoices.Length)
         {
-            _status.Text = "左側のモンスター一覧から対象を選択してください。";
+            _status.Text = "特技の選択内容が不正です。";
             return;
         }
 
         var action = ActionAutoRestoreService.ActionChoices[index];
+
+        // PINEへの適用が失敗しても、選択した設定自体は保持する。
+        Torneko4ActionStore.Set(_selectedMonsterId, action.Id);
+
         if (_actionRestore.TryApply(_selectedMonsterId, action.Id, out string message))
         {
             _status.Text = message;

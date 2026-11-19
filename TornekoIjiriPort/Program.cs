@@ -4096,12 +4096,14 @@ internal sealed class Torneko4Package
     public byte[] EditedBase { get; }
     public string OriginalSourcePath { get; }
     public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+    public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
 
     public Torneko4Package(
         TornekoBinPreservationSnapshot snapshot,
         byte[] editedBase,
         string originalSourcePath,
-        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null)
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null)
     {
         Snapshot = snapshot;
         EditedBase = (byte[])editedBase.Clone();
@@ -4110,6 +4112,10 @@ internal sealed class Torneko4Package
         Patches = patches == null
             ? new System.Collections.Generic.List<Torneko4MemoryPatch>()
             : patches.ConvertAll(x => x.Clone());
+
+        MonsterActions = monsterActions == null
+            ? new System.Collections.Generic.Dictionary<int, ushort>()
+            : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
     }
 }
 
@@ -4118,7 +4124,7 @@ internal static class Torneko4FileService
     private static readonly byte[] Magic =
         System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
 
-    private const int FormatVersion = 2;
+    private const int FormatVersion = 3;
     private const int BaseSize = 524288;
     private const int MaximumOriginalSize = 64 * 1024 * 1024;
 
@@ -4134,7 +4140,8 @@ internal static class Torneko4FileService
         byte[] editedBase)
     {
         Save(path, snapshot, editedBase,
-            new System.Collections.Generic.List<Torneko4MemoryPatch>());
+            new System.Collections.Generic.List<Torneko4MemoryPatch>(),
+            null);
     }
 
     public static void Save(
@@ -4142,6 +4149,16 @@ internal static class Torneko4FileService
         TornekoBinPreservationSnapshot snapshot,
         byte[] editedBase,
         System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        Save(path, snapshot, editedBase, patches, null);
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions)
     {
         if (snapshot == null)
             throw new ArgumentNullException(nameof(snapshot));
@@ -4203,6 +4220,29 @@ internal static class Torneko4FileService
             }
         }
 
+        var actionList =
+            new System.Collections.Generic.SortedDictionary<int, ushort>();
+
+        if (monsterActions != null)
+        {
+            foreach (var pair in monsterActions)
+            {
+                if (pair.Key < 0 || pair.Key >= 199)
+                    throw new InvalidDataException(
+                        "モンスター番号が不正です: " + pair.Key);
+
+                if (pair.Value > 0xFF)
+                    throw new InvalidDataException(
+                        "特技IDが不正です: " + pair.Value);
+
+                actionList[pair.Key] = pair.Value;
+            }
+        }
+
+        if (actionList.Count > 199)
+            throw new InvalidDataException(
+                "モンスター別特技設定数が上限を超えています。");
+
         string fullPath = Path.GetFullPath(path);
         string directory = Path.GetDirectoryName(fullPath);
 
@@ -4250,6 +4290,15 @@ internal static class Torneko4FileService
                     writer.Write(patch.Data);
                 }
 
+                // バージョン3追加領域：モンスター別特技設定
+                writer.Write(actionList.Count);
+
+                foreach (var pair in actionList)
+                {
+                    writer.Write(pair.Key);
+                    writer.Write(pair.Value);
+                }
+
                 writer.Flush();
                 stream.Flush(true);
             }
@@ -4277,6 +4326,21 @@ internal static class Torneko4FileService
             if (check.Patches.Count != patchList.Count)
                 throw new IOException(
                     "保存後の追加変更数検証に失敗しました。");
+
+            if (check.MonsterActions.Count != actionList.Count)
+                throw new IOException(
+                    "保存後のモンスター別特技設定数検証に失敗しました。");
+
+            foreach (var pair in actionList)
+            {
+                if (!check.MonsterActions.TryGetValue(pair.Key, out ushort savedId) ||
+                    savedId != pair.Value)
+                {
+                    throw new IOException(
+                        "保存後のモンスター別特技設定検証に失敗しました。番号: " +
+                        pair.Key);
+                }
+            }
 
             for (int i = 0; i < patchList.Count; i++)
             {
@@ -4334,7 +4398,7 @@ internal static class Torneko4FileService
 
         int version = reader.ReadInt32();
 
-        if (version != 1 && version != FormatVersion)
+        if (version != 1 && version != 2 && version != FormatVersion)
             throw new InvalidDataException(
                 "未対応のTorneko4バージョンです: " + version);
 
@@ -4453,6 +4517,39 @@ internal static class Torneko4FileService
             }
         }
 
+        var monsterActions =
+            new System.Collections.Generic.Dictionary<int, ushort>();
+
+        // バージョン3で追加されたモンスター別特技設定。
+        if (version >= 3)
+        {
+            int actionCount = reader.ReadInt32();
+
+            if (actionCount < 0 || actionCount > 199)
+                throw new InvalidDataException(
+                    "モンスター別特技設定の件数が不正です。");
+
+            for (int i = 0; i < actionCount; i++)
+            {
+                int monsterId = reader.ReadInt32();
+                ushort actionId = reader.ReadUInt16();
+
+                if (monsterId < 0 || monsterId >= 199)
+                    throw new InvalidDataException(
+                        "モンスター番号が不正です: " + monsterId);
+
+                if (actionId > 0xFF)
+                    throw new InvalidDataException(
+                        "特技IDが不正です: " + actionId);
+
+                if (monsterActions.ContainsKey(monsterId))
+                    throw new InvalidDataException(
+                        "モンスター別特技設定が重複しています: " + monsterId);
+
+                monsterActions.Add(monsterId, actionId);
+            }
+        }
+
         if (stream.Position != stream.Length)
             throw new InvalidDataException(
                 "Torneko4の末尾に不明なデータがあります。");
@@ -4471,7 +4568,8 @@ internal static class Torneko4FileService
             snapshot,
             editedBase,
             originalSourcePath,
-            patchList);
+            patchList,
+            monsterActions);
     }
 }
 
@@ -4925,7 +5023,8 @@ buttons.Controls.Add(UiFactory.Button(
                 dialog.FileName,
                 _binSnapshot,
                 _bin,
-                Torneko4PatchStore.GetCopy());
+                Torneko4PatchStore.GetCopy(),
+                Torneko4ActionStore.GetCopy());
 
             _binPath = dialog.FileName;
             UpdateStatus();
@@ -5002,6 +5101,7 @@ buttons.Controls.Add(UiFactory.Button(
                 _binSnapshot = package.Snapshot;
                 _bin = (byte[])package.EditedBase.Clone();
                 Torneko4PatchStore.ReplaceAll(package.Patches);
+                Torneko4ActionStore.ReplaceAll(package.MonsterActions);
                 loaded = true;
             }
 
@@ -5023,6 +5123,7 @@ buttons.Controls.Add(UiFactory.Button(
                 _binSnapshot = snapshot;
                 _bin = loadedBase;
                 Torneko4PatchStore.Clear();
+                Torneko4ActionStore.Clear();
                 loaded = true;
             }
 
