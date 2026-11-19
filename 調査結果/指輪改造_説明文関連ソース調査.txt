@@ -1,0 +1,1148 @@
+﻿トルネコいじり Next 指輪改造・説明文関連ソース調査
+調査日時: 2026-11-19 23:21:58
+
+
+============================================================
+ファイル: DungeonCommonSettingsForm.cs
+============================================================
+
+---------- 行 19 ----------
+    private const uint SpawnInstructionAddress = 0x0022FE04;
+
+
+    private const long RuntimeDescriptionOffset = 0x01FFF1F0L;
+    private const long ItemTableDescriptionOffset = 0x00107BC7L;
+
+    private const int OriginalDescriptionLength = 114;
+
+    private NumericUpDown _turns;
+
+---------- 行 20 ----------
+
+
+    private const long RuntimeDescriptionOffset = 0x01FFF1F0L;
+    private const long ItemTableDescriptionOffset = 0x00107BC7L;
+
+    private const int OriginalDescriptionLength = 114;
+
+    private NumericUpDown _turns;
+    private Label _current;
+
+---------- 行 29 ----------
+    private Label _status;
+    private Label _itemStatus;
+
+    private static readonly Encoding Cp932 = CreateCp932();
+
+    private static Encoding CreateCp932()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        return Encoding.GetEncoding(932);
+
+---------- 行 31 ----------
+
+    private static readonly Encoding Cp932 = CreateCp932();
+
+    private static Encoding CreateCp932()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        return Encoding.GetEncoding(932);
+    }
+
+
+---------- 行 633 ----------
+        }
+    }
+
+    private static byte[] ReadMemory(
+        IntPtr process,
+        long address,
+        int length)
+    {
+        if (address <= 0 || length <= 0)
+
+---------- 行 664 ----------
+        return buffer;
+    }
+
+    private static void WriteMemory(
+        IntPtr process,
+        long address,
+        byte[] data)
+    {
+        if (address <= 0 || data == null || data.Length == 0)
+
+---------- 行 697 ----------
+    private static byte[] MakeNullTerminated(
+        string value)
+    {
+        byte[] text = Cp932.GetBytes(value);
+        byte[] result = new byte[text.Length + 1];
+
+        Buffer.BlockCopy(
+            text,
+            0,
+
+---------- 行 728 ----------
+            throw new InvalidOperationException(
+                "EE RAM基準アドレスが不正です。");
+
+        // 既知の表示名候補をCP932・NUL終端で検索する。
+        // 候補を推測で選ばず、EE RAM全体で一致が1件だけの場合に限り採用する。
+        string[] candidates =
+        {
+            "エレファントクロウ",
+            "ｴﾚﾌｧﾝﾄｸﾛｳ",
+
+---------- 行 740 ----------
+        };
+
+        byte[] memory =
+            ReadMemory(process, eeBase, EeRamSize);
+
+        var matches =
+            new System.Collections.Generic.List<(
+                int Offset,
+                string Name,
+
+---------- 行 832 ----------
+            "ﾊﾔぶｻﾉﾖｳﾆ2回攻撃でｷﾙぞ。\r" +
+            "ポポロ専用ﾉ武器だぞ。";
+
+        byte[] encoded = Cp932.GetBytes(value);
+
+        if (encoded.Length + 1 > OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException(
+                "新しい説明文が元の説明文領域より長くなっています。\r\n" +
+
+---------- 行 837 ----------
+        if (encoded.Length + 1 > OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException(
+                "新しい説明文が元の説明文領域より長くなっています。\r\n" +
+                "文字数ではなくCP932のバイト数で検証しました。\r\n" +
+                "必要サイズ: " + (encoded.Length + 1) +
+                "\r\n確保サイズ: " + OriginalDescriptionLength);
+        }
+
+
+---------- 行 838 ----------
+        {
+            throw new InvalidOperationException(
+                "新しい説明文が元の説明文領域より長くなっています。\r\n" +
+                "文字数ではなくCP932のバイト数で検証しました。\r\n" +
+                "必要サイズ: " + (encoded.Length + 1) +
+                "\r\n確保サイズ: " + OriginalDescriptionLength);
+        }
+
+        byte[] result =
+
+---------- 行 923 ----------
+        return (found.Offset, found.Data, found.Name);
+    }
+
+    private static long FindUniqueStaticDescriptionOffset(
+        byte[] ram,
+        byte[] runtimeDescription)
+    {
+        if (runtimeDescription == null ||
+            runtimeDescription.Length != OriginalDescriptionLength)
+
+---------- 行 930 ----------
+        if (runtimeDescription == null ||
+            runtimeDescription.Length != OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException("実行時説明文のサイズが不正です。");
+        }
+
+        int terminator = Array.IndexOf(runtimeDescription, (byte)0);
+
+        if (terminator <= 0)
+
+---------- 行 937 ----------
+
+        if (terminator <= 0)
+            throw new InvalidOperationException(
+                "現在表示中の説明文を取得できません。指輪の説明画面を表示してください。");
+
+        int foundOffset = -1;
+        int matchCount = 0;
+
+        for (int offset = 0; offset <= ram.Length - runtimeDescription.Length; offset++)
+
+---------- 行 944 ----------
+
+        for (int offset = 0; offset <= ram.Length - runtimeDescription.Length; offset++)
+        {
+            if (offset == RuntimeDescriptionOffset)
+                continue;
+
+            if (ram[offset] != runtimeDescription[0])
+                continue;
+
+
+---------- 行 974 ----------
+        if (matchCount != 1)
+        {
+            throw new InvalidOperationException(
+                "現在表示中の説明文に対応する静的データを一意に特定できません。\r\n" +
+                "一致件数: " + matchCount + "\r\n" +
+                "誤ったアイテムの説明文を書き換えないため停止しました。");
+        }
+
+        return foundOffset;
+
+---------- 行 976 ----------
+            throw new InvalidOperationException(
+                "現在表示中の説明文に対応する静的データを一意に特定できません。\r\n" +
+                "一致件数: " + matchCount + "\r\n" +
+                "誤ったアイテムの説明文を書き換えないため停止しました。");
+        }
+
+        return foundOffset;
+    }
+
+
+---------- 行 984 ----------
+
+    private static byte[] MakeFixedRingDescription(string value)
+    {
+        byte[] encoded = Cp932.GetBytes(value);
+
+        if (encoded.Length + 1 > OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException(
+                "新しい指輪の説明文が元の領域より長くなっています。\r\n" +
+
+---------- 行 989 ----------
+        if (encoded.Length + 1 > OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException(
+                "新しい指輪の説明文が元の領域より長くなっています。\r\n" +
+                "必要サイズ: " + (encoded.Length + 1) + "\r\n" +
+                "確保サイズ: " + OriginalDescriptionLength);
+        }
+
+        byte[] result = new byte[OriginalDescriptionLength];
+
+---------- 行 1047 ----------
+            this,
+            itemLabel + "を" + newName + "に変更します。\r\n\r\n" +
+            "必ずゲーム内で対象の指輪の説明画面を表示してから実行してください。\r\n" +
+            "現在表示中の説明文とEE RAM内の静的データを照合します。\r\n\r\n" +
+            "鈍足解除コード:\r\n" +
+            "A02C8F18 00000000\r\n" +
+            "A02C8F04 00000000\r\n\r\n" +
+            "アイテム名・説明文・鈍足解除処理を変更します。\r\n" +
+            "実行しますか？",
+
+---------- 行 1051 ----------
+            "鈍足解除コード:\r\n" +
+            "A02C8F18 00000000\r\n" +
+            "A02C8F04 00000000\r\n\r\n" +
+            "アイテム名・説明文・鈍足解除処理を変更します。\r\n" +
+            "実行しますか？",
+            "指輪改造の確認",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning) != DialogResult.Yes)
+            return;
+
+---------- 行 1085 ----------
+                    Marshal.GetLastWin32Error());
+
+            const int EeRamSize = 0x02000000;
+            byte[] ram = ReadMemory(process, eeBase, EeRamSize);
+
+            StringBuilder diagnosticReport = new StringBuilder();
+
+            diagnosticReport.AppendLine("指輪・読み取り専用メモリ診断");
+            diagnosticReport.AppendLine("書き込み・保存登録は行いません。");
+
+---------- 行 1098 ----------
+
+            Encoding[] diagnosticEncodings =
+            {
+                Cp932,
+                Encoding.Unicode,
+                Encoding.UTF8
+            };
+
+            string[] diagnosticEncodingNames =
+
+---------- 行 1105 ----------
+
+            string[] diagnosticEncodingNames =
+            {
+                "CP932",
+                "UTF-16LE",
+                "UTF-8"
+            };
+
+            diagnosticReport.AppendLine("=== 名前候補の生バイト検索 ===");
+
+---------- 行 1116 ----------
+            {
+                byte[][] diagnosticPatterns =
+                {
+                    Cp932.GetBytes(candidate),
+                    Encoding.Unicode.GetBytes(candidate),
+                    Encoding.UTF8.GetBytes(candidate),
+                    MakeNullTerminated(candidate)
+                };
+
+
+---------- 行 1124 ----------
+
+                string[] diagnosticPatternNames =
+                {
+                    "CP932・終端なし",
+                    "UTF-16LE・終端なし",
+                    "UTF-8・終端なし",
+                    "CP932・NUL終端あり"
+                };
+
+
+---------- 行 1127 ----------
+                    "CP932・終端なし",
+                    "UTF-16LE・終端なし",
+                    "UTF-8・終端なし",
+                    "CP932・NUL終端あり"
+                };
+
+                for (int patternIndex = 0; patternIndex < diagnosticPatterns.Length; patternIndex++)
+                {
+                    byte[] pattern = diagnosticPatterns[patternIndex];
+
+---------- 行 1185 ----------
+            }
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("=== 実行時説明文 ===");
+
+            byte[] diagnosticRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+---------- 行 1187 ----------
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("=== 実行時説明文 ===");
+
+            byte[] diagnosticRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            diagnosticReport.AppendLine(
+
+---------- 行 1189 ----------
+
+            byte[] diagnosticRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            diagnosticReport.AppendLine(
+                "実行時説明文アドレス: EE+0x" + RuntimeDescriptionOffset.ToString("X8"));
+
+
+---------- 行 1193 ----------
+                OriginalDescriptionLength);
+
+            diagnosticReport.AppendLine(
+                "実行時説明文アドレス: EE+0x" + RuntimeDescriptionOffset.ToString("X8"));
+
+            int diagnosticTerminator = Array.IndexOf(diagnosticRuntimeDescription, (byte)0);
+
+            if (diagnosticTerminator < 0)
+                diagnosticTerminator = diagnosticRuntimeDescription.Length;
+
+---------- 行 1201 ----------
+                diagnosticTerminator = diagnosticRuntimeDescription.Length;
+
+            diagnosticReport.AppendLine(
+                "説明文バイト数: " + diagnosticTerminator.ToString());
+
+            diagnosticReport.AppendLine(
+                "説明文CP932: " + Cp932.GetString(diagnosticRuntimeDescription, 0, diagnosticTerminator));
+
+            diagnosticReport.AppendLine(
+
+---------- 行 1204 ----------
+                "説明文バイト数: " + diagnosticTerminator.ToString());
+
+            diagnosticReport.AppendLine(
+                "説明文CP932: " + Cp932.GetString(diagnosticRuntimeDescription, 0, diagnosticTerminator));
+
+            diagnosticReport.AppendLine(
+                "説明文HEX: " + BitConverter.ToString(diagnosticRuntimeDescription));
+
+            diagnosticReport.AppendLine();
+
+---------- 行 1207 ----------
+                "説明文CP932: " + Cp932.GetString(diagnosticRuntimeDescription, 0, diagnosticTerminator));
+
+            diagnosticReport.AppendLine(
+                "説明文HEX: " + BitConverter.ToString(diagnosticRuntimeDescription));
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("=== 静的説明文の位置 ===");
+
+            long diagnosticStaticOffset = -1;
+
+---------- 行 1210 ----------
+                "説明文HEX: " + BitConverter.ToString(diagnosticRuntimeDescription));
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("=== 静的説明文の位置 ===");
+
+            long diagnosticStaticOffset = -1;
+
+            try
+            {
+
+---------- 行 1216 ----------
+
+            try
+            {
+                diagnosticStaticOffset = FindUniqueStaticDescriptionOffset(
+                    ram,
+                    diagnosticRuntimeDescription);
+
+                diagnosticReport.AppendLine(
+                    "静的説明文アドレス: EE+0x" + diagnosticStaticOffset.ToString("X8"));
+
+---------- 行 1221 ----------
+                    diagnosticRuntimeDescription);
+
+                diagnosticReport.AppendLine(
+                    "静的説明文アドレス: EE+0x" + diagnosticStaticOffset.ToString("X8"));
+
+                int dumpStart = Math.Max(
+                    0,
+                    checked((int)diagnosticStaticOffset) - 0x80);
+
+
+---------- 行 1232 ----------
+                    checked((int)diagnosticStaticOffset) + OriginalDescriptionLength + 0x80);
+
+                diagnosticReport.AppendLine();
+                diagnosticReport.AppendLine("=== 静的説明文の前後0x80バイト ===");
+
+                for (int row = dumpStart; row < dumpEnd; row += 16)
+                {
+                    int count = Math.Min(16, dumpEnd - row);
+                    byte[] rowBytes = new byte[count];
+
+---------- 行 1249 ----------
+            catch (Exception diagnosticException)
+            {
+                diagnosticReport.AppendLine(
+                    "静的説明文の特定に失敗: " + diagnosticException.Message);
+            }
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("診断終了。メモリへの書き込みは行っていません。");
+
+
+---------- 行 1273 ----------
+            byte[] nameData = new byte[nameMatch.OriginalData.Length];
+            Buffer.BlockCopy(requestedName, 0, nameData, 0, requestedName.Length);
+
+            byte[] oldRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            long staticDescriptionOffset = FindUniqueStaticDescriptionOffset(
+
+---------- 行 1275 ----------
+
+            byte[] oldRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            long staticDescriptionOffset = FindUniqueStaticDescriptionOffset(
+                ram,
+                oldRuntimeDescription);
+
+---------- 行 1278 ----------
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            long staticDescriptionOffset = FindUniqueStaticDescriptionOffset(
+                ram,
+                oldRuntimeDescription);
+
+            byte[] oldStaticDescription = new byte[OriginalDescriptionLength];
+            Array.Copy(
+
+---------- 行 1285 ----------
+            byte[] oldStaticDescription = new byte[OriginalDescriptionLength];
+            Array.Copy(
+                ram,
+                checked((int)staticDescriptionOffset),
+                oldStaticDescription,
+                0,
+                OriginalDescriptionLength);
+
+            byte[] descriptionData = MakeFixedRingDescription(descriptionText);
+
+---------- 行 1294 ----------
+
+            long nameOffset = nameMatch.Offset;
+            long nameAddress = checked(eeBase + nameOffset);
+            long staticDescriptionAddress = checked(eeBase + staticDescriptionOffset);
+            long runtimeDescriptionAddress = checked(eeBase + RuntimeDescriptionOffset);
+
+            changes.Add(new MemoryChange(
+                "指輪アイテム名",
+                nameAddress,
+
+---------- 行 1295 ----------
+            long nameOffset = nameMatch.Offset;
+            long nameAddress = checked(eeBase + nameOffset);
+            long staticDescriptionAddress = checked(eeBase + staticDescriptionOffset);
+            long runtimeDescriptionAddress = checked(eeBase + RuntimeDescriptionOffset);
+
+            changes.Add(new MemoryChange(
+                "指輪アイテム名",
+                nameAddress,
+                nameData,
+
+---------- 行 1304 ----------
+                nameMatch.OriginalData));
+
+            changes.Add(new MemoryChange(
+                "指輪の説明文・静的データ",
+                staticDescriptionAddress,
+                descriptionData,
+                oldStaticDescription));
+
+            changes.Add(new MemoryChange(
+
+---------- 行 1310 ----------
+                oldStaticDescription));
+
+            changes.Add(new MemoryChange(
+                "指輪の説明文・実行時表示",
+                runtimeDescriptionAddress,
+                descriptionData,
+                oldRuntimeDescription));
+
+            long[] codeOffsets = { 0x002C8F18L, 0x002C8F04L };
+
+---------- 行 1338 ----------
+
+            foreach (MemoryChange change in changes)
+            {
+                byte[] current = ReadMemory(
+                    process,
+                    change.Address,
+                    change.OldData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(current, change.OldData))
+
+---------- 行 1351 ----------
+
+            foreach (MemoryChange change in changes)
+            {
+                WriteMemory(process, change.Address, change.NewData);
+                completed.Add(change);
+
+                byte[] verify = ReadMemory(
+                    process,
+                    change.Address,
+
+---------- 行 1354 ----------
+                WriteMemory(process, change.Address, change.NewData);
+                completed.Add(change);
+
+                byte[] verify = ReadMemory(
+                    process,
+                    change.Address,
+                    change.NewData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(verify, change.NewData))
+
+---------- 行 1371 ----------
+                nameData);
+
+            Torneko4PatchStore.Register(
+                patchPrefix + "・説明文",
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+
+---------- 行 1372 ----------
+
+            Torneko4PatchStore.Register(
+                patchPrefix + "・説明文",
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+                0x002C8F18L,
+
+---------- 行 1393 ----------
+                itemLabel + "の改造が完了しました。\r\n\r\n" +
+                "変更後の名前: " + newName + "\r\n" +
+                "名前アドレス: EE+0x" + nameOffset.ToString("X8") + "\r\n" +
+                "説明文アドレス: EE+0x" + staticDescriptionOffset.ToString("X8") + "\r\n" +
+                "鈍足解除: EE+0x002C8F18 / EE+0x002C8F04\r\n\r\n" +
+                "5か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                ".Torneko4保存対象にも登録しました。",
+                "指輪改造成功",
+                MessageBoxButtons.OK,
+
+---------- 行 1411 ----------
+
+                try
+                {
+                    WriteMemory(process, change.Address, change.OldData);
+
+                    byte[] restored = ReadMemory(
+                        process,
+                        change.Address,
+                        change.OldData.Length);
+
+---------- 行 1413 ----------
+                {
+                    WriteMemory(process, change.Address, change.OldData);
+
+                    byte[] restored = ReadMemory(
+                        process,
+                        change.Address,
+                        change.OldData.Length);
+
+                    bool success = System.Linq.Enumerable.SequenceEqual(
+
+---------- 行 1471 ----------
+            "エレファントクロウをはやぶさの爪に変更します。\r\n\r\n" +
+            "アイテム名:\r\n" +
+            "ﾊﾔぶｻﾉ爪\r\n\r\n" +
+            "説明文:\r\n" +
+            "[ﾊﾔぶｻﾉﾂﾒ]\r\n" +
+            "装備ｽﾙﾄ攻撃力が上がﾙぞ。\r\n" +
+            "ﾊﾔぶｻﾉﾖｳﾆ2回攻撃でｷﾙぞ。\r\n" +
+            "ポポロ専用ﾉ武器だぞ。\r\n\r\n" +
+            "PCSX2のメモリを書き換えます。実行しますか？",
+
+---------- 行 1550 ----------
+                requestedNameData.Length);
+
+            long staticDescriptionAddress =
+                checked(eeBase + ItemTableDescriptionOffset);
+            long runtimeDescriptionAddress =
+                checked(eeBase + RuntimeDescriptionOffset);
+
+
+            byte[] descriptionData =
+
+---------- 行 1552 ----------
+            long staticDescriptionAddress =
+                checked(eeBase + ItemTableDescriptionOffset);
+            long runtimeDescriptionAddress =
+                checked(eeBase + RuntimeDescriptionOffset);
+
+
+            byte[] descriptionData =
+                MakeFixedDescription();
+
+
+---------- 行 1562 ----------
+                "書き込み先を事前確認しています...";
+
+            byte[] currentName =
+                ReadMemory(process, nameAddress, oldName.Length);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                oldName,
+                currentName))
+            {
+
+---------- 行 1574 ----------
+            }
+
+            byte[] oldStaticDescription =
+                ReadMemory(
+                    process,
+                    staticDescriptionAddress,
+                    OriginalDescriptionLength);
+
+            byte[] oldRuntimeDescription =
+
+---------- 行 1580 ----------
+                    OriginalDescriptionLength);
+
+            byte[] oldRuntimeDescription =
+                ReadMemory(
+                    process,
+                    runtimeDescriptionAddress,
+                    OriginalDescriptionLength);
+
+            changes.Add(new MemoryChange(
+
+---------- 行 1592 ----------
+                oldName));
+
+            changes.Add(new MemoryChange(
+                "アイテム説明文・本体",
+                staticDescriptionAddress,
+                descriptionData,
+                oldStaticDescription));
+
+            changes.Add(new MemoryChange(
+
+---------- 行 1598 ----------
+                oldStaticDescription));
+
+            changes.Add(new MemoryChange(
+                "アイテム説明文・実行時コピー",
+                runtimeDescriptionAddress,
+                descriptionData,
+                oldRuntimeDescription));
+
+            _itemStatus.Text =
+
+---------- 行 1608 ----------
+
+            foreach (MemoryChange change in changes)
+            {
+                WriteMemory(
+                    process,
+                    change.Address,
+                    change.NewData);
+
+                completed.Add(change);
+
+---------- 行 1615 ----------
+
+                completed.Add(change);
+
+                byte[] verify = ReadMemory(
+                    process,
+                    change.Address,
+                    change.NewData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(
+
+---------- 行 1631 ----------
+                }
+            }
+
+            // 説明文2か所とアイテム名をEE RAM相対アドレスで登録する。
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・アイテム説明文",
+                ItemTableDescriptionOffset,
+                descriptionData);
+
+
+---------- 行 1633 ----------
+
+            // 説明文2か所とアイテム名をEE RAM相対アドレスで登録する。
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・アイテム説明文",
+                ItemTableDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+
+---------- 行 1634 ----------
+            // 説明文2か所とアイテム名をEE RAM相対アドレスで登録する。
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・アイテム説明文",
+                ItemTableDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+
+---------- 行 1638 ----------
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+                descriptionData);
+
+            // 武器名もEE RAM相対アドレスとして保存する。
+            Torneko4PatchStore.Register(
+
+---------- 行 1639 ----------
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+                descriptionData);
+
+            // 武器名もEE RAM相対アドレスとして保存する。
+            Torneko4PatchStore.Register(
+                "はやぶさ設定・アイテム名",
+
+---------- 行 1657 ----------
+                "はやぶさの爪への変更が完了しました！\r\n\r\n" +
+                "アイテム名: 0x" +
+                nameAddress.ToString("X") + "\r\n" +
+                "説明文本体: EE+0x" +
+                ItemTableDescriptionOffset.ToString("X8") + "\r\n" +
+                "説明文実行時コピー: EE+0x" +
+                RuntimeDescriptionOffset.ToString("X8") + "\r\n\r\n" +
+                "3か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                "ゲーム画面でアイテム名と説明文を確認してください。",
+
+---------- 行 1658 ----------
+                "アイテム名: 0x" +
+                nameAddress.ToString("X") + "\r\n" +
+                "説明文本体: EE+0x" +
+                ItemTableDescriptionOffset.ToString("X8") + "\r\n" +
+                "説明文実行時コピー: EE+0x" +
+                RuntimeDescriptionOffset.ToString("X8") + "\r\n\r\n" +
+                "3か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                "ゲーム画面でアイテム名と説明文を確認してください。",
+                "変更成功",
+
+---------- 行 1659 ----------
+                nameAddress.ToString("X") + "\r\n" +
+                "説明文本体: EE+0x" +
+                ItemTableDescriptionOffset.ToString("X8") + "\r\n" +
+                "説明文実行時コピー: EE+0x" +
+                RuntimeDescriptionOffset.ToString("X8") + "\r\n\r\n" +
+                "3か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                "ゲーム画面でアイテム名と説明文を確認してください。",
+                "変更成功",
+                MessageBoxButtons.OK,
+
+---------- 行 1660 ----------
+                "説明文本体: EE+0x" +
+                ItemTableDescriptionOffset.ToString("X8") + "\r\n" +
+                "説明文実行時コピー: EE+0x" +
+                RuntimeDescriptionOffset.ToString("X8") + "\r\n\r\n" +
+                "3か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                "ゲーム画面でアイテム名と説明文を確認してください。",
+                "変更成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+---------- 行 1662 ----------
+                "説明文実行時コピー: EE+0x" +
+                RuntimeDescriptionOffset.ToString("X8") + "\r\n\r\n" +
+                "3か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                "ゲーム画面でアイテム名と説明文を確認してください。",
+                "変更成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+
+---------- 行 1677 ----------
+
+                try
+                {
+                    WriteMemory(
+                        process,
+                        change.Address,
+                        change.OldData);
+
+                    byte[] verify = ReadMemory(
+
+---------- 行 1682 ----------
+                        change.Address,
+                        change.OldData);
+
+                    byte[] verify = ReadMemory(
+                        process,
+                        change.Address,
+                        change.OldData.Length);
+
+                    bool restored =
+
+============================================================
+ファイル: ItemDescriptionEditorForm.cs
+============================================================
+
+---------- 行 39 ----------
+
+    private bool _scanning;
+
+    private static readonly Encoding Cp932 = CreateEncoding(932);
+    private static readonly Encoding EucJp = CreateEncoding(51932);
+    private static readonly Encoding Iso2022Jp = CreateEncoding(50220);
+    private static readonly Encoding Utf8 = new UTF8Encoding(false, true);
+    private static readonly Encoding Utf16LE = new UnicodeEncoding(false, false, true);
+    private static readonly Encoding Utf16BE = new UnicodeEncoding(true, false, true);
+
+---------- 行 59 ----------
+    {
+        _pid = pid;
+
+        Text = "説明文を改造 - PINE高速日本語検索";
+        Width = 1150;
+        Height = 760;
+        StartPosition = FormStartPosition.CenterParent;
+
+        BuildUI();
+
+---------- 行 104 ----------
+        top.Controls.Add(_scanButton);
+        var rawSearchButton = new Button
+        {
+            Text = "説明文の生データを検索",
+            Width = 210,
+            Height = 32
+        };
+
+        rawSearchButton.Click += async (_, _) =>
+
+---------- 行 237 ----------
+
+    private static IEnumerable<(string Name, Encoding Encoding)> GetEncodings()
+    {
+        yield return ("CP932 / Shift-JIS", Cp932);
+        yield return ("UTF-8", Utf8);
+        yield return ("EUC-JP", EucJp);
+        yield return ("ISO-2022-JP", Iso2022Jp);
+        yield return ("UTF-16 LE", Utf16LE);
+        yield return ("UTF-16 BE", Utf16BE);
+
+---------- 行 486 ----------
+
+    using Form dialog = new Form();
+
+    dialog.Text = "説明文を編集";
+    dialog.Width = 620;
+    dialog.Height = 430;
+    dialog.StartPosition = FormStartPosition.CenterParent;
+    dialog.FormBorderStyle = FormBorderStyle.Sizable;
+    dialog.MinimizeBox = false;
+
+---------- 行 507 ----------
+    addressLabel.Height = 25;
+
+    Label encodingLabel = new Label();
+    encodingLabel.Text = "文字コード: CP932 / Shift-JIS";
+    encodingLabel.Left = 12;
+    encodingLabel.Top = 40;
+    encodingLabel.Width = 570;
+    encodingLabel.Height = 22;
+
+
+---------- 行 605 ----------
+    long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_pid);
+
+    // エレファントクロウの一時コピーではなく、
+    // アイテムデータ一覧内の説明文を編集する
+    long targetOffset = candidate.Address;
+
+    if (candidate.Address == 0x01FFF1F0L)
+    {
+        targetOffset = 0x00107BC7L;
+
+---------- 行 722 ----------
+            if (match2000)
+            {
+                Torneko4PatchStore.Register(
+                    "アイテム説明文編集",
+                    targetOffset,
+                    buffer);
+            }
+
+            finalReport =
+
+---------- 行 874 ----------
+        try
+        {
+            _status.Text =
+                "EE RAM全体から説明文の生データを検索しています...";
+
+            byte[] ram = await Task.Run(() =>
+                ReadEeRam(message => { }, _pid));
+
+            if (IsDisposed)
+
+---------- 行 894 ----------
+
+            var report = new StringBuilder();
+
+            report.AppendLine("説明文の生データ検索結果");
+            report.AppendLine("EE RAM取得サイズ: 32MB");
+            report.AppendLine("検索方式: CP932 / Shift-JIS 完全バイト一致");
+            report.AppendLine();
+
+            int totalHits = 0;
+
+---------- 行 896 ----------
+
+            report.AppendLine("説明文の生データ検索結果");
+            report.AppendLine("EE RAM取得サイズ: 32MB");
+            report.AppendLine("検索方式: CP932 / Shift-JIS 完全バイト一致");
+            report.AppendLine();
+
+            int totalHits = 0;
+
+            foreach (string term in terms)
+
+---------- 行 903 ----------
+
+            foreach (string term in terms)
+            {
+                byte[] pattern = Cp932.GetBytes(term);
+                var hits = new List<int>();
+
+                for (int i = 0; i <= ram.Length - pattern.Length; i++)
+                {
+                    bool match = true;
+
+============================================================
+ファイル: Program.cs
+============================================================
+
+---------- 行 15 ----------
+
+internal static class MessageTextAutoDecoder
+{
+    private static readonly System.Text.Encoding Cp932 =
+        CreateCp932();
+
+    private static readonly System.Text.Encoding Utf8 =
+        new System.Text.UTF8Encoding(false, true);
+
+
+---------- 行 16 ----------
+internal static class MessageTextAutoDecoder
+{
+    private static readonly System.Text.Encoding Cp932 =
+        CreateCp932();
+
+    private static readonly System.Text.Encoding Utf8 =
+        new System.Text.UTF8Encoding(false, true);
+
+    private static readonly System.Text.Encoding Utf16LE =
+
+---------- 行 27 ----------
+    private static readonly System.Text.Encoding Utf16BE =
+        new System.Text.UnicodeEncoding(true, false, true);
+
+    private static System.Text.Encoding CreateCp932()
+    {
+        System.Text.Encoding.RegisterProvider(
+            System.Text.CodePagesEncodingProvider.Instance);
+
+        return System.Text.Encoding.GetEncoding(
+
+---------- 行 66 ----------
+
+        try
+        {
+            return Cp932.GetString(data, offset, count);
+        }
+        catch
+        {
+            // CP932として成立しないバイト列は候補にしない
+            return "";
+
+---------- 行 70 ----------
+        }
+        catch
+        {
+            // CP932として成立しないバイト列は候補にしない
+            return "";
+        }
+    }
+
+    private static string SafeCp932(byte[] bytes)
+
+---------- 行 75 ----------
+        }
+    }
+
+    private static string SafeCp932(byte[] bytes)
+    {
+        try
+        {
+            return Cp932.GetString(bytes);
+        }
+
+---------- 行 79 ----------
+    {
+        try
+        {
+            return Cp932.GetString(bytes);
+        }
+        catch
+        {
+            return System.Text.Encoding.GetEncoding(932)
+                .GetString(bytes);
+
+---------- 行 4717 ----------
+                form.ShowDialog(this);
+            }));
+        buttons.Controls.Add(UiFactory.Button(
+            "説明文を改造", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+
+---------- 行 7000 ----------
+// ============================================================
+internal sealed class MonsterNameEditor20261114 : Form
+{
+    // Shift-JIS (CP932) を使用可能にする。
+    // 静的コンストラクターはインスタンスフィールド初期化より先に実行される。
+    static MonsterNameEditor20261114()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
+
+---------- 行 7108 ----------
+private static string DecodeMonsterName(byte[] data, int offset, int count)
+    {
+        string utf8 = "";
+        string cp932 = "";
+
+        try {
+            utf8 = new UTF8Encoding(false, true).GetString(data, offset, count);
+        } catch { }
+
+
+---------- 行 7115 ----------
+        } catch { }
+
+        try {
+            cp932 = Encoding.GetEncoding(932).GetString(data, offset, count);
+        } catch { }
+
+        int Score(string value)
+        {
+            int score = 0;
+
+---------- 行 7141 ----------
+                "取得バイト数: " + count +
+                "\nHEX: " + BitConverter.ToString(data, offset, count) +
+                "\n\nUTF-8: " + utf8 +
+                "\n\nCP932: " + cp932,
+                "モンスター名・生データ診断");
+        }
+
+        return Score(utf8) >= Score(cp932) ? utf8 : cp932;
+    }
+
+---------- 行 7145 ----------
+                "モンスター名・生データ診断");
+        }
+
+        return Score(utf8) >= Score(cp932) ? utf8 : cp932;
+    }
+    private long _eeBase;
+
+    public MonsterNameEditor20261114(int pid)
+    {
