@@ -1393,7 +1393,15 @@ buttons.Controls.Add(_applyButton);
         if (_actionChange.SelectedIndex == 0)
         {
             Torneko4ActionStore.Remove(_selectedMonsterId);
-            _status.Text = "このモンスターの特技変更設定を解除しました。";
+
+            _actionRestore.TryApply(
+                Torneko4ActionStore.GetCopy(),
+                out string clearMessage);
+
+            _status.Text =
+                "このモンスターの特技変更設定を解除しました。\r\n" +
+                clearMessage;
+
             return;
         }
 
@@ -1411,7 +1419,7 @@ buttons.Controls.Add(_applyButton);
         // PINEへの適用が失敗しても、選択した設定自体は保持する。
         Torneko4ActionStore.Set(_selectedMonsterId, action.Id);
 
-        if (_actionRestore.TryApply(_selectedMonsterId, action.Id, out string message))
+        if (_actionRestore.TryApply(Torneko4ActionStore.GetCopy(), out string message))
         {
             _status.Text = message;
         }
@@ -1423,3 +1431,4 @@ buttons.Controls.Add(_applyButton);
         }
     }
 }
+

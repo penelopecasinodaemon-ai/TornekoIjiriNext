@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -7,13 +8,29 @@ namespace TornekoIjiriPort;
 
 internal sealed class ActionAutoRestoreService : IDisposable
 {
-    private const uint PatchAddress = 0x002435C8u;
-    private const uint OriginalInstruction = 0x84510004u;
+    // 敵特技呼び出し命令
+    private const uint PatchAddress = 0x002435C4u;
 
-    // ori s1, zero, actionId
-    private const uint PatchInstructionBase = 0x34110000u;
+    // 元の jal dgEnemyAttack
+    private const uint OriginalCallInstruction = 0x0C08F1D4u;
 
-    internal static readonly (ushort Id, string Name)[] ActionChoices =
+    // 元の遅延スロット lh s1,4(v0)
+    private const uint DelaySlotAddress = 0x002435C8u;
+    private const uint OriginalDelayInstruction = 0x84510004u;
+
+    // 旧版の全敵共通パッチ ori s1,zero,actionId
+    private const uint LegacyPatchBase = 0x34110000u;
+
+    // EE RAMの高位領域から512バイトの空き領域を探す
+    private const uint CaveSearchStart = 0x01FF0000u;
+    private const uint CaveSearchEnd = 0x01F00000u;
+    private const uint CaveSearchStep = 0x00010000u;
+
+    private const uint CaveSize = 0x200u;
+    private const uint TableOffset = 0x100u;
+    private const int TableSize = 256;
+
+        internal static readonly (ushort Id, string Name)[] ActionChoices =
     {
         (0x08, "体力が回復しなくなった"),
         (0x09, "体力が減っていく"),
@@ -114,6 +131,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private readonly PineClient _pine = new PineClient();
     private readonly System.Threading.Timer _timer;
 
+    private readonly object _operationSync = new object();
+    private readonly object _stateSync = new object();
+
+    private Dictionary<int, ushort> _actions =
+        new Dictionary<int, ushort>();
+
+    private byte[]? _lastTable;
+    private uint _codeCaveAddress;
+
     private int _pollBusy;
     private bool _disposed;
     private string _lastStatus = "";
@@ -125,142 +151,479 @@ internal sealed class ActionAutoRestoreService : IDisposable
         _timer = new System.Threading.Timer(Poll, null, 500, 500);
     }
 
-    private static bool IsOurPatch(uint instruction)
+    private static bool IsLegacyPatch(uint instruction)
     {
-        return (instruction & 0xFFFF0000u) == PatchInstructionBase;
+        return (instruction & 0xFFFF0000u) == LegacyPatchBase;
     }
 
-    internal bool TryApply(int monsterListId, ushort actionId, out string message)
+    private static bool IsDispatcherCall(uint instruction)
+    {
+        if ((instruction >> 26) != 3u)
+            return false;
+
+        uint target = (instruction & 0x03FFFFFFu) << 2;
+
+        return target >= CaveSearchEnd &&
+               target <= CaveSearchStart;
+    }
+
+    private static uint DecodeDispatcherAddress(uint instruction)
+    {
+        return (instruction & 0x03FFFFFFu) << 2;
+    }
+
+    private static uint EncodeJal(uint address)
+    {
+        if ((address & 0xF0000000u) !=
+            ((PatchAddress + 4u) & 0xF0000000u))
+        {
+            throw new InvalidOperationException(
+                "ディスパッチャーのアドレスがJALの到達範囲外です。");
+        }
+
+        return 0x0C000000u | ((address >> 2) & 0x03FFFFFFu);
+    }
+
+    internal bool TryApply(
+        IEnumerable<KeyValuePair<int, ushort>> monsterActions,
+        out string message)
     {
         message = "";
 
-        if (monsterListId < 0)
+        if (monsterActions == null)
         {
-            message = "モンスターが選択されていません。";
+            message = "モンスター別特技設定がありません。";
             return false;
         }
 
-        if (actionId > 0xFF)
+        var copy = new Dictionary<int, ushort>();
+
+        foreach (var pair in monsterActions)
+            copy[pair.Key] = pair.Value;
+
+        lock (_stateSync)
+            _actions = copy;
+
+        lock (_operationSync)
         {
-            message = "特技IDが不正です。";
-            return false;
-        }
-
-        try
-        {
-            if (!_pine.TryConnect())
+            try
             {
-                message = "PCSX2のPINEに接続できません。TCP 28011を確認してください。";
-                return false;
+                if (!_pine.TryConnect())
+                {
+                    message =
+                        "設定はアプリ内に保持しました。\n" +
+                        "PCSX2のPINE TCP 28011に接続できません。";
+                    return false;
+                }
+
+                uint status = _pine.GetStatus();
+
+                if (status != 0)
+                {
+                    message =
+                        "設定は保持しました。\n" +
+                        "PCSX2をゲーム実行状態にしてください。";
+                    return false;
+                }
+
+                ApplyRuntime(copy);
+
+                if (copy.Count == 0)
+                {
+                    message =
+                        "種族別特技設定をすべて解除しました。\n" +
+                        "元の特技処理命令へ復元しました。";
+                    RaiseStatus("種族別特技設定なし：元の命令へ復元済みです。");
+                    return true;
+                }
+
+                message =
+                    "種族別特技設定をPCSX2へ適用しました。\n" +
+                    "設定種族数: " + copy.Count + "\n" +
+                    "種族IDはモンスター一覧番号+1で照合します。\n" +
+                    "個体データは変更していません。\n" +
+                    "実際の特技動作はゲーム内で確認してください。";
+
+                RaiseStatus(
+                    "種族別特技ディスパッチャー適用中：" +
+                    copy.Count + "種類");
+
+                return true;
             }
-
-            uint status = _pine.GetStatus();
-
-            if (status != 0)
-            {
-                message = "PCSX2をゲーム実行中にしてください。";
-                return false;
-            }
-
-            uint currentInstruction = _pine.Read32(PatchAddress);
-
-            if (currentInstruction != OriginalInstruction && !IsOurPatch(currentInstruction))
+            catch (Exception ex)
             {
                 message =
-                    "安全確認のため変更を中止しました。\n" +
-                    "対象アドレスの命令が想定と異なります。\n" +
-                    "現在値: 0x" + currentInstruction.ToString("X8");
+                    "種族別特技の適用に失敗しました。\n" +
+                    ex.Message;
                 return false;
             }
-
-            uint newInstruction = PatchInstructionBase | actionId;
-
-            _pine.Write32(PatchAddress, newInstruction);
-
-            uint verifyInstruction = _pine.Read32(PatchAddress);
-
-            if (verifyInstruction != newInstruction)
-            {
-                message =
-                    "命令の書き換え後の読み戻しに失敗しました。\n" +
-                    "書き込み値: 0x" + newInstruction.ToString("X8") +
-                    "\n読み戻し値: 0x" + verifyInstruction.ToString("X8");
-                return false;
-            }
-
-            message =
-                "特技命令の書き換えに成功しました。\n" +
-                "特技ID: 0x" + actionId.ToString("X2") + "\n" +
-                "命令: 0x" + verifyInstruction.ToString("X8") + "\n" +
-                "試作中のため、選択した特技は全敵に適用されます。\n" +
-                "ゲーム内での反映は実動作テストが必要です。";
-
-            RaiseStatus(
-                "特技命令を書き換え済み：0x" +
-                actionId.ToString("X2") +
-                "。試作中のため全敵対象です。");
-
-            return true;
         }
-        catch (Exception ex)
+    }
+
+    private byte[] BuildActionTable(
+        Dictionary<int, ushort> actions)
+    {
+        var table = new byte[TableSize];
+
+        foreach (var pair in actions)
         {
-            message = "特技変更エラー: " + ex.Message;
+            if (pair.Key < 0 || pair.Key >= 255)
+            {
+                throw new InvalidOperationException(
+                    "モンスター一覧番号が範囲外です: " + pair.Key);
+            }
+
+            if (pair.Value == 0 || pair.Value > 0xFF)
+            {
+                throw new InvalidOperationException(
+                    "特技IDが範囲外です: " + pair.Value);
+            }
+
+            bool knownAction = Array.Exists(
+                ActionChoices,
+                x => x.Id == pair.Value);
+
+            if (!knownAction)
+            {
+                throw new InvalidOperationException(
+                    "未登録の特技IDです: 0x" +
+                    pair.Value.ToString("X2"));
+            }
+
+            // C#の一覧番号は0始まり。
+            // ゲーム内の種族IDは一覧番号+1。
+            int speciesId = pair.Key + 1;
+
+            table[speciesId] = (byte)pair.Value;
+        }
+
+        return table;
+    }
+
+    private static bool TablesEqual(byte[]? a, byte[] b)
+    {
+        if (a == null || a.Length != b.Length)
             return false;
+
+        for (int i = 0; i < b.Length; i++)
+        {
+            if (a[i] != b[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    private bool IsDispatcherCode(uint address)
+    {
+        uint tableAddress = address + TableOffset;
+
+        uint[] expected =
+        {
+            0x94480006u,
+            0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
+            0x35290000u | (tableAddress & 0xFFFFu),
+            0x01284821u,
+            0x912A0000u,
+            0x11400002u,
+            0x00000000u,
+            0x01408821u,
+            0x0808F1D4u,
+            0x00000000u
+        };
+
+        for (int i = 0; i < expected.Length; i++)
+        {
+            if (_pine.Read32(address + (uint)(i * 4)) != expected[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    private uint FindCodeCave()
+    {
+        for (
+            uint candidate = CaveSearchStart;
+            candidate >= CaveSearchEnd;
+            candidate -= CaveSearchStep)
+        {
+            bool free = true;
+
+            for (uint offset = 0; offset < CaveSize; offset += 4)
+            {
+                if (_pine.Read32(candidate + offset) != 0)
+                {
+                    free = false;
+                    break;
+                }
+            }
+
+            if (free)
+                return candidate;
+        }
+
+        throw new InvalidOperationException(
+            "EE RAMの指定範囲に512バイトの空き領域が見つかりません。\n" +
+            "安全確認のため、コードを書き込みませんでした。");
+    }
+
+    private void WriteDispatcherCode(uint address)
+    {
+        uint tableAddress = address + TableOffset;
+
+        uint[] code =
+        {
+            // lhu t0,6(v0) : 種族IDを読み取る
+            0x94480006u,
+
+            // lui t1,hi(table)
+            0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
+
+            // ori t1,t1,lo(table)
+            0x35290000u | (tableAddress & 0xFFFFu),
+
+            // addu t1,t1,t0
+            0x01284821u,
+
+            // lbu t2,0(t1)
+            0x912A0000u,
+
+            // beq t2,zero,skip
+            0x11400002u,
+
+            // nop
+            0x00000000u,
+
+            // addu s1,t2,zero
+            0x01408821u,
+
+            // j dgEnemyAttack
+            0x0808F1D4u,
+
+            // nop
+            0x00000000u
+        };
+
+        for (int i = 0; i < code.Length; i++)
+            _pine.Write32(address + (uint)(i * 4), code[i]);
+
+        if (!IsDispatcherCode(address))
+        {
+            throw new InvalidOperationException(
+                "MIPSディスパッチャーの書き込み検証に失敗しました。");
+        }
+    }
+
+    private void WriteActionTable(uint address, byte[] table)
+    {
+        for (int i = 0; i < table.Length; i += 4)
+        {
+            uint value =
+                (uint)table[i] |
+                ((uint)table[i + 1] << 8) |
+                ((uint)table[i + 2] << 16) |
+                ((uint)table[i + 3] << 24);
+
+            _pine.Write32(address + (uint)i, value);
+        }
+
+        for (int i = 0; i < table.Length; i += 4)
+        {
+            uint expected =
+                (uint)table[i] |
+                ((uint)table[i + 1] << 8) |
+                ((uint)table[i + 2] << 16) |
+                ((uint)table[i + 3] << 24);
+
+            uint actual = _pine.Read32(address + (uint)i);
+
+            if (actual != expected)
+            {
+                throw new InvalidOperationException(
+                    "種族別特技テーブルの検証に失敗しました。位置: 0x" +
+                    (address + (uint)i).ToString("X8"));
+            }
+        }
+    }
+
+    private void RestoreCallInstruction()
+    {
+        uint current = _pine.Read32(PatchAddress);
+
+        if (current == OriginalCallInstruction)
+            return;
+
+        if (!IsDispatcherCall(current))
+        {
+            throw new InvalidOperationException(
+                "呼び出し命令が想定外のため復元を中止しました: 0x" +
+                current.ToString("X8"));
+        }
+
+        _pine.Write32(PatchAddress, OriginalCallInstruction);
+
+        uint verify = _pine.Read32(PatchAddress);
+
+        if (verify != OriginalCallInstruction)
+        {
+            throw new InvalidOperationException(
+                "元の呼び出し命令への復元に失敗しました。");
+        }
+    }
+
+    private void ApplyRuntime(Dictionary<int, ushort> actions)
+    {
+        uint currentCall = _pine.Read32(PatchAddress);
+
+        bool currentIsDispatcher = IsDispatcherCall(currentCall);
+
+        if (currentCall != OriginalCallInstruction &&
+            !currentIsDispatcher)
+        {
+            throw new InvalidOperationException(
+                "敵特技呼び出し命令が想定外です。\n" +
+                "現在値: 0x" + currentCall.ToString("X8"));
+        }
+
+        uint delayInstruction = _pine.Read32(DelaySlotAddress);
+
+        if (IsLegacyPatch(delayInstruction))
+        {
+            _pine.Write32(
+                DelaySlotAddress,
+                OriginalDelayInstruction);
+
+            delayInstruction = _pine.Read32(DelaySlotAddress);
+        }
+
+        if (delayInstruction != OriginalDelayInstruction)
+        {
+            throw new InvalidOperationException(
+                "遅延スロットが想定外です。\n" +
+                "現在値: 0x" + delayInstruction.ToString("X8"));
+        }
+
+        if (currentIsDispatcher)
+        {
+            uint detectedCave = DecodeDispatcherAddress(currentCall);
+
+            if (!IsDispatcherCode(detectedCave))
+            {
+                RestoreCallInstruction();
+
+                throw new InvalidOperationException(
+                    "既存ディスパッチャーのコード検証に失敗しました。\n" +
+                    "安全のため元の呼び出し命令へ戻しました。");
+            }
+
+            _codeCaveAddress = detectedCave;
+        }
+
+        if (actions.Count == 0)
+        {
+            if (currentIsDispatcher)
+                RestoreCallInstruction();
+
+            return;
+        }
+
+        byte[] table = BuildActionTable(actions);
+
+        if (currentIsDispatcher && TablesEqual(_lastTable, table))
+            return;
+
+        if (currentIsDispatcher)
+            RestoreCallInstruction();
+
+        bool newCave = false;
+
+        if (_codeCaveAddress == 0 ||
+            !IsDispatcherCode(_codeCaveAddress))
+        {
+            _codeCaveAddress = FindCodeCave();
+            WriteDispatcherCode(_codeCaveAddress);
+            newCave = true;
+        }
+
+        uint tableAddress = _codeCaveAddress + TableOffset;
+
+        if (newCave || !TablesEqual(_lastTable, table))
+        {
+            WriteActionTable(tableAddress, table);
+            _lastTable = (byte[])table.Clone();
+        }
+
+        uint newCall = EncodeJal(_codeCaveAddress);
+
+        _pine.Write32(PatchAddress, newCall);
+
+        uint verifyCall = _pine.Read32(PatchAddress);
+
+        if (verifyCall != newCall)
+        {
+            throw new InvalidOperationException(
+                "ディスパッチャー呼び出し命令の検証に失敗しました。\n" +
+                "書き込み値: 0x" + newCall.ToString("X8") +
+                "\n読み戻し値: 0x" + verifyCall.ToString("X8"));
         }
     }
 
     private void Poll(object? state)
     {
-        if (_disposed || Interlocked.Exchange(ref _pollBusy, 1) != 0)
+        if (_disposed ||
+            Interlocked.Exchange(ref _pollBusy, 1) != 0)
             return;
 
         try
         {
-            if (!_pine.TryConnect())
+            lock (_operationSync)
             {
-                RaiseStatus("PINE未接続：PCSX2のTCP 28011を確認してください。");
-                return;
-            }
-
-            uint status = _pine.GetStatus();
-
-            if (status == 0)
-            {
-                uint instruction = _pine.Read32(PatchAddress);
-
-                if (instruction == OriginalInstruction)
-                {
-                    RaiseStatus("PINE接続中：特技変更命令は未適用です。");
-                    return;
-                }
-
-                if (IsOurPatch(instruction))
+                if (!_pine.TryConnect())
                 {
                     RaiseStatus(
-                        "特技命令適用中：0x" +
-                        (instruction & 0xFFFFu).ToString("X2") +
-                        "。試作中のため全敵対象です。");
+                        "PINE未接続：PCSX2のTCP 28011を確認してください。");
                     return;
                 }
 
-                RaiseStatus(
-                    "PINE接続中：対象命令が想定外です。現在値 0x" +
-                    instruction.ToString("X8"));
-                return;
-            }
+                uint status = _pine.GetStatus();
 
-            if (status == 1)
-            {
-                RaiseStatus("PCSX2一時停止中：ゲームを再開すると監視を続けます。");
-                return;
-            }
+                if (status == 0)
+                {
+                    Dictionary<int, ushort> snapshot;
 
-            RaiseStatus("PCSX2の仮想マシンが停止しています。");
+                    lock (_stateSync)
+                        snapshot = new Dictionary<int, ushort>(_actions);
+
+                    ApplyRuntime(snapshot);
+
+                    if (snapshot.Count == 0)
+                    {
+                        RaiseStatus(
+                            "種族別特技設定なし：元の命令を維持しています。");
+                        return;
+                    }
+
+                    RaiseStatus(
+                        "種族別特技ディスパッチャー適用中：" +
+                        snapshot.Count + "種類");
+                    return;
+                }
+
+                if (status == 1)
+                {
+                    RaiseStatus(
+                        "PCSX2一時停止中：再開後に設定を確認します。");
+                    return;
+                }
+
+                RaiseStatus("PCSX2の仮想マシンが停止しています。");
+            }
         }
         catch (Exception ex)
         {
             _pine.Disconnect();
-            RaiseStatus("PINE監視エラー: " + ex.Message);
+            RaiseStatus("種族別特技監視エラー: " + ex.Message);
         }
         finally
         {
@@ -273,7 +636,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         if (StatusChanged == null)
             return;
 
-        if (string.Equals(_lastStatus, message, StringComparison.Ordinal))
+        if (string.Equals(
+            _lastStatus,
+            message,
+            StringComparison.Ordinal))
             return;
 
         _lastStatus = message;
@@ -294,9 +660,21 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         _disposed = true;
         _timer.Dispose();
-        _pine.Dispose();
-    }
 
+        lock (_operationSync)
+        {
+            try
+            {
+                if (_pine.TryConnect() && _pine.GetStatus() == 0)
+                    RestoreCallInstruction();
+            }
+            catch
+            {
+            }
+
+            _pine.Dispose();
+        }
+    }
     private sealed class PineClient : IDisposable
     {
         private const int Port = 28011;
