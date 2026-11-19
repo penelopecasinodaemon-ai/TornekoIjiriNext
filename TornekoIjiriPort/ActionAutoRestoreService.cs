@@ -253,6 +253,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     message =
                         "設定は保持しました。\n" +
                         "PCSX2をゲーム実行状態にしてください。";
+                    _pine.Disconnect();
                     return false;
                 }
 
@@ -260,6 +261,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
                 if (copy.Count == 0)
                 {
+                    _pine.Disconnect();
                     message =
                         "種族別特技設定をすべて解除しました。\n" +
                         "元の特技処理命令へ復元しました。";
@@ -282,6 +284,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             }
             catch (Exception ex)
             {
+                _pine.Disconnect();
                 message =
                     "種族別特技の適用に失敗しました。\n" +
                     ex.Message;
@@ -609,45 +612,52 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             lock (_operationSync)
             {
-                if (!_pine.TryConnect())
+                Dictionary<int, ushort> snapshot;
+
+                lock (_stateSync)
+                    snapshot = new Dictionary<int, ushort>(_actions);
+
+                if (snapshot.Count == 0)
                 {
+                    _pine.Disconnect();
                     RaiseStatus(
-                        "PINE未接続：PCSX2のTCP 28011を確認してください。");
-                    return;
+                        "種族別特技設定なし：元の命令を維持しています。");
                 }
 
-                uint status = _pine.GetStatus();
-
-                if (status == 0)
+                if (snapshot.Count > 0)
                 {
-                    Dictionary<int, ushort> snapshot;
+                    bool connected = _pine.TryConnect();
 
-                    lock (_stateSync)
-                        snapshot = new Dictionary<int, ushort>(_actions);
-
-                    ApplyRuntime(snapshot);
-
-                    if (snapshot.Count == 0)
+                    if (!connected)
                     {
                         RaiseStatus(
-                            "種族別特技設定なし：元の命令を維持しています。");
-                        return;
+                            "PINE未接続：PCSX2のTCP 28011を確認してください。");
                     }
 
-                    RaiseStatus(
-                        "種族別特技ディスパッチャー適用中：" +
-                        snapshot.Count + "種類");
-                    return;
-                }
+                    if (connected)
+                    {
+                        uint status = _pine.GetStatus();
 
-                if (status == 1)
-                {
-                    RaiseStatus(
-                        "PCSX2一時停止中：再開後に設定を確認します。");
-                    return;
-                }
+                        if (status == 0)
+                        {
+                            ApplyRuntime(snapshot);
+                            RaiseStatus(
+                                "種族別特技ディスパッチャー適用中：" +
+                                snapshot.Count + "種類");
+                        }
 
-                RaiseStatus("PCSX2の仮想マシンが停止しています。");
+                        if (status == 1)
+                        {
+                            RaiseStatus(
+                                "PCSX2一時停止中：再開後に設定を確認します。");
+                        }
+
+                        if (status != 0 && status != 1)
+                        {
+                            RaiseStatus("PCSX2の仮想マシンが停止しています。");
+                        }
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -655,12 +665,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
             _pine.Disconnect();
             RaiseStatus("種族別特技監視エラー: " + ex.Message);
         }
-        finally
-        {
-            Interlocked.Exchange(ref _pollBusy, 0);
-        }
-    }
 
+        Interlocked.Exchange(ref _pollBusy, 0);
+    }
     private void RaiseStatus(string message)
     {
         if (StatusChanged == null)

@@ -105,7 +105,7 @@ internal sealed class DungeonCommonSettingsForm : Form
 
         Controls.Add(tabs);
 
-        Shown += (_, _) => ReadCurrent();
+        // ウィンドウ表示時の自動読み込みは行わない。
     }
 
     private void BuildSpawnPage(TabPage page)
@@ -199,90 +199,56 @@ internal sealed class DungeonCommonSettingsForm : Form
         page.Controls.Add(root);
     }
 
-    private void BuildItemPage(TabPage page)
+        private void BuildItemPage(TabPage page)
     {
         var root = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
-            Padding = new Padding(20),
+            Padding = new Padding(16),
             ColumnCount = 1,
-            RowCount = 6
+            RowCount = 3
         };
 
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 55));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
 
-        var heading = new Label
+        var hayabusaButton = new Button
         {
             Text = "エレファントクロウ → はやぶさの爪",
             Dock = DockStyle.Fill,
-            Font = new Font("Yu Gothic UI", 15, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleLeft
-        };
-
-        var nameLabel = new Label
-        {
-            Text = "変更後のアイテム名：ﾊﾔぶｻﾉ爪",
-            Dock = DockStyle.Fill,
-            TextAlign = ContentAlignment.MiddleLeft
-        };
-
-        var description = new TextBox
-        {
-            Dock = DockStyle.Fill,
-            Multiline = true,
-            ReadOnly = true,
-            ScrollBars = ScrollBars.Vertical,
-            Font = new Font("Yu Gothic UI", 11),
-            Text =
-                "[ﾊﾔぶｻﾉﾂﾒ]" + Environment.NewLine +
-                "装備ｽﾙﾄ攻撃力が上がﾙぞ。" + Environment.NewLine +
-                "ﾊﾔぶｻﾉﾖｳﾆ2回攻撃でｷﾙぞ。" + Environment.NewLine +
-                "ポポロ専用ﾉ武器だぞ。"
-        };
-
-        var applyButton = new Button
-        {
-            Text = "エレファントクロウをはやぶさの爪に変更",
-            Dock = DockStyle.Fill,
-            Height = 48,
-            Font = new Font("Yu Gothic UI", 12, FontStyle.Bold),
-            BackColor = Color.FromArgb(220, 240, 255)
-        };
-
-        applyButton.Click += (_, _) => ApplyHayabusa();
-
-        var weaponIdButton = new Button
-        {
-            Text = "二回攻撃の監視状態を確認",
-            Dock = DockStyle.Fill,
-            Height = 40,
             Font = new Font("Yu Gothic UI", 11, FontStyle.Bold)
         };
 
-        weaponIdButton.Click += (_, _) =>
+        hayabusaButton.Click += (_, _) => ApplyHayabusa();
+
+        var yamabikoButton = new Button
         {
-            HayabusaDoubleAttackMonitor.ShowStatus(_itemStatus);
+            Text = "魔封じの指輪 → やまびこの指輪",
+            Dock = DockStyle.Fill,
+            Font = new Font("Yu Gothic UI", 11, FontStyle.Bold)
         };
+
+        yamabikoButton.Click += (_, _) => ApplyRingUpgrade(true);
+
+        var hoshifuriButton = new Button
+        {
+            Text = "見切りの指輪 → ほしふりの指輪",
+            Dock = DockStyle.Fill,
+            Font = new Font("Yu Gothic UI", 11, FontStyle.Bold)
+        };
+
+        hoshifuriButton.Click += (_, _) => ApplyRingUpgrade(false);
 
         _itemStatus = new Label
         {
-            Text = "PCSX2に接続して、ゲームを起動した状態で実行してください。",
-            Dock = DockStyle.Fill,
-            TextAlign = ContentAlignment.MiddleLeft,
-            AutoEllipsis = true
+            Text = "",
+            Visible = false
         };
 
-        root.Controls.Add(heading, 0, 0);
-        root.Controls.Add(nameLabel, 0, 1);
-        root.Controls.Add(description, 0, 2);
-        root.Controls.Add(applyButton, 0, 3);
-        root.Controls.Add(weaponIdButton, 0, 4);
-        root.Controls.Add(_itemStatus, 0, 5);
+        root.Controls.Add(hayabusaButton, 0, 0);
+        root.Controls.Add(yamabikoButton, 0, 1);
+        root.Controls.Add(hoshifuriButton, 0, 2);
 
         page.Controls.Add(root);
     }
@@ -311,6 +277,18 @@ internal sealed class DungeonCommonSettingsForm : Form
         return result;
     }
 
+    private static void AppendPineDiagnostic(string message)
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "pine-communication.log");
+            string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " " + message + Environment.NewLine;
+            File.AppendAllText(path, line);
+        }
+        catch
+        {
+        }
+    }
     private static byte[] SendPineCommand(byte[] command)
     {
         byte[] request = new byte[4 + command.Length];
@@ -318,24 +296,59 @@ internal sealed class DungeonCommonSettingsForm : Form
         WriteUInt32(request, 0, (uint)request.Length);
         Buffer.BlockCopy(command, 0, request, 4, command.Length);
 
-        using var client = new TcpClient();
+        AppendPineDiagnostic("開始 Command=" + BitConverter.ToString(command));
+        AppendPineDiagnostic("Request=" + BitConverter.ToString(request));
+
+        using var client = new TcpClient(System.Net.Sockets.AddressFamily.InterNetwork);
         client.ReceiveTimeout = 4000;
         client.SendTimeout = 4000;
-        client.Connect(Host, Port);
 
-        using NetworkStream stream = client.GetStream();
-        stream.Write(request, 0, request.Length);
-        stream.Flush();
+        try
+        {
+            AppendPineDiagnostic("Connect開始 Host=" + Host + " Port=" + Port);
+            client.Connect(System.Net.IPAddress.Parse(Host), Port);
+            AppendPineDiagnostic("Connect成功 Local=" + client.Client.LocalEndPoint + " Remote=" + client.Client.RemoteEndPoint);
 
-        byte[] header = ReadExact(stream, 4);
-        uint responseLength = ReadUInt32(header, 0);
+            using NetworkStream stream = client.GetStream();
+            stream.WriteTimeout = 4000;
+            stream.ReadTimeout = 4000;
 
-        if (responseLength < 5 || responseLength > 1024)
-            throw new IOException(
-                "PINE応答サイズが不正です: " + responseLength);
+            AppendPineDiagnostic("Write開始");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
 
-        return ReadExact(stream, (int)responseLength - 4);
+            byte[] header;
+            try
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            AppendPineDiagnostic("通信処理例外 " + ex.ToString());
+            throw;
+        }
     }
+
 
     private static uint ReadUInt32(
         byte[] data,
@@ -414,6 +427,95 @@ internal sealed class DungeonCommonSettingsForm : Form
         return turns >= 1 && turns <= 32767;
     }
 
+    private void ShowCopyableError(string title, string message)
+    {
+        using var dialog = new Form
+        {
+            Text = title,
+            StartPosition = FormStartPosition.CenterParent,
+            Width = 720,
+            Height = 460,
+            MinimumSize = new Size(520, 320),
+            Font = new Font("Yu Gothic UI", 10)
+        };
+
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(12),
+            ColumnCount = 1,
+            RowCount = 2
+        };
+
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+
+        var errorText = new TextBox
+        {
+            Dock = DockStyle.Fill,
+            Multiline = true,
+            ReadOnly = true,
+            ScrollBars = ScrollBars.Both,
+            WordWrap = false,
+            Font = new Font("Yu Gothic UI", 10),
+            Text = message
+        };
+
+        var buttonPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.RightToLeft,
+            WrapContents = false
+        };
+
+        var closeButton = new Button
+        {
+            Text = "閉じる",
+            Width = 110,
+            Height = 36
+        };
+
+        closeButton.Click += (_, _) => dialog.Close();
+
+        var copyButton = new Button
+        {
+            Text = "エラー全文をコピー",
+            Width = 180,
+            Height = 36
+        };
+
+        copyButton.Click += (_, _) =>
+        {
+            try
+            {
+                Clipboard.SetText(errorText.Text);
+                MessageBox.Show(
+                    dialog,
+                    "エラー全文をクリップボードにコピーしました。",
+                    "コピー成功",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception copyError)
+            {
+                MessageBox.Show(
+                    dialog,
+                    copyError.Message,
+                    "コピー失敗",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        };
+
+        buttonPanel.Controls.Add(closeButton);
+        buttonPanel.Controls.Add(copyButton);
+
+        root.Controls.Add(errorText, 0, 0);
+        root.Controls.Add(buttonPanel, 0, 1);
+        dialog.Controls.Add(root);
+
+        dialog.ShowDialog(this);
+    }
     private void ReadCurrent()
     {
         try
@@ -444,6 +546,7 @@ internal sealed class DungeonCommonSettingsForm : Form
         catch (Exception ex)
         {
             _status.Text = "読み込み失敗: " + ex.Message;
+            ShowCopyableError("敵湧き設定の読み込みエラー", ex.ToString());
         }
     }
 
@@ -750,6 +853,599 @@ internal sealed class DungeonCommonSettingsForm : Form
         result[encoded.Length] = 0;
 
         return result;
+    }
+
+    private static (long Offset, byte[] OriginalData, string MatchedName) FindUniqueRingName(
+        byte[] ram,
+        string[] candidates,
+        string itemLabel)
+    {
+        var matches = new System.Collections.Generic.List<(int Offset, string Name, byte[] Data)>();
+
+        foreach (string candidate in candidates)
+        {
+            byte[] pattern = MakeNullTerminated(candidate);
+            int searchFrom = 0;
+
+            while (searchFrom <= ram.Length - pattern.Length)
+            {
+                int hit = Array.IndexOf(ram, pattern[0], searchFrom);
+
+                if (hit < 0)
+                    break;
+
+                bool same = true;
+
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (ram[hit + i] != pattern[i])
+                    {
+                        same = false;
+                        break;
+                    }
+                }
+
+                if (same)
+                {
+                    matches.Add((hit, candidate, (byte[])pattern.Clone()));
+                    searchFrom = hit + pattern.Length;
+                }
+
+                if (!same)
+                    searchFrom = hit + 1;
+            }
+        }
+
+        if (matches.Count != 1)
+        {
+            var detail = new StringBuilder();
+
+            foreach (var match in matches)
+            {
+                detail.Append("候補: ")
+                    .Append(match.Name)
+                    .Append(" / EE+0x")
+                    .Append(match.Offset.ToString("X8"))
+                    .Append("\r\n");
+            }
+
+            throw new InvalidOperationException(
+                itemLabel + "の名前をEE RAM内で一意に特定できません。\r\n" +
+                "検出件数: " + matches.Count + "\r\n" +
+                detail.ToString() +
+                "安全のため書き込みを中止しました。");
+        }
+
+        var found = matches[0];
+        return (found.Offset, found.Data, found.Name);
+    }
+
+    private static long FindUniqueStaticDescriptionOffset(
+        byte[] ram,
+        byte[] runtimeDescription)
+    {
+        if (runtimeDescription == null ||
+            runtimeDescription.Length != OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException("実行時説明文のサイズが不正です。");
+        }
+
+        int terminator = Array.IndexOf(runtimeDescription, (byte)0);
+
+        if (terminator <= 0)
+            throw new InvalidOperationException(
+                "現在表示中の説明文を取得できません。指輪の説明画面を表示してください。");
+
+        int foundOffset = -1;
+        int matchCount = 0;
+
+        for (int offset = 0; offset <= ram.Length - runtimeDescription.Length; offset++)
+        {
+            if (offset == RuntimeDescriptionOffset)
+                continue;
+
+            if (ram[offset] != runtimeDescription[0])
+                continue;
+
+            bool same = true;
+
+            for (int i = 0; i < runtimeDescription.Length; i++)
+            {
+                if (ram[offset + i] != runtimeDescription[i])
+                {
+                    same = false;
+                    break;
+                }
+            }
+
+            if (same)
+            {
+                foundOffset = offset;
+                matchCount++;
+            }
+
+            if (matchCount > 1)
+                break;
+        }
+
+        if (matchCount != 1)
+        {
+            throw new InvalidOperationException(
+                "現在表示中の説明文に対応する静的データを一意に特定できません。\r\n" +
+                "一致件数: " + matchCount + "\r\n" +
+                "誤ったアイテムの説明文を書き換えないため停止しました。");
+        }
+
+        return foundOffset;
+    }
+
+    private static byte[] MakeFixedRingDescription(string value)
+    {
+        byte[] encoded = Cp932.GetBytes(value);
+
+        if (encoded.Length + 1 > OriginalDescriptionLength)
+        {
+            throw new InvalidOperationException(
+                "新しい指輪の説明文が元の領域より長くなっています。\r\n" +
+                "必要サイズ: " + (encoded.Length + 1) + "\r\n" +
+                "確保サイズ: " + OriginalDescriptionLength);
+        }
+
+        byte[] result = new byte[OriginalDescriptionLength];
+        Buffer.BlockCopy(encoded, 0, result, 0, encoded.Length);
+        result[encoded.Length] = 0;
+        return result;
+    }
+
+    private void ApplyRingUpgrade(bool yamabiko)
+    {
+        if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        string itemLabel = yamabiko ? "魔封じの指輪" : "見切りの指輪";
+        string newName = yamabiko ? "ﾔﾏびｺﾉﾕびﾜ" : "ﾎｼﾌﾘﾉﾕびﾜ";
+        string patchPrefix = yamabiko ? "ﾔﾏびｺﾉ指輪" : "ﾎｼﾌﾘﾉ指輪";
+
+        string descriptionText = yamabiko
+            ? "[ﾔﾏびｺﾉﾕびﾜ]\r魔法攻撃ｦ 防ぐｺﾄがでｷﾙぞ。\rｺﾉ指輪ｦ装備ｼﾃﾓ\r動ｷが遅ｸﾅﾗﾅｲぞ。"
+            : "[ﾎｼﾌﾘﾉﾕびﾜ]\r攻撃ｦﾖｹﾔｽｸﾅﾙぞ。\rｺﾉ指輪ｦ装備ｼﾃﾓ\r動ｷが遅ｸﾅﾗﾅｲぞ。";
+
+        string[] nameCandidates = yamabiko
+            ? new string[]
+            {
+                "魔封じの指輪",
+                "まふうじの指輪",
+                "まふうじのゆびわ",
+                "マフウジノ指輪",
+                "マフウジノユビワ",
+                "ﾏﾌｳｼﾞﾉ指輪",
+                "ﾏﾌｳｼﾞﾉﾕﾋﾞﾜ"
+            }
+            : new string[]
+            {
+                "見切りの指輪",
+                "みきりの指輪",
+                "みきりのゆびわ",
+                "ミキリノ指輪",
+                "ミキリノユビワ",
+                "ﾐｷﾘﾉ指輪",
+                "ﾐｷﾘﾉﾕﾋﾞﾜ"
+            };
+
+        if (MessageBox.Show(
+            this,
+            itemLabel + "を" + newName + "に変更します。\r\n\r\n" +
+            "必ずゲーム内で対象の指輪の説明画面を表示してから実行してください。\r\n" +
+            "現在表示中の説明文とEE RAM内の静的データを照合します。\r\n\r\n" +
+            "鈍足解除コード:\r\n" +
+            "A02C8F18 00000000\r\n" +
+            "A02C8F04 00000000\r\n\r\n" +
+            "アイテム名・説明文・鈍足解除処理を変更します。\r\n" +
+            "実行しますか？",
+            "指輪改造の確認",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning) != DialogResult.Yes)
+            return;
+
+        IntPtr process = IntPtr.Zero;
+        var changes = new System.Collections.Generic.List<MemoryChange>();
+        var completed = new System.Collections.Generic.List<MemoryChange>();
+
+        try
+        {
+            _itemStatus.Text = "PCSX2のEE RAMを読み取っています...";
+
+            long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException("EE RAM基準アドレスを取得できません。");
+
+            const uint access = 0x0008 | 0x0010 | 0x0020 | 0x0400;
+
+            process = OpenProcess(
+                access,
+                false,
+                Pcsx2LiveSession.ProcessId);
+
+            if (process == IntPtr.Zero)
+                throw new IOException(
+                    "PCSX2プロセスを開けません。\r\nWin32エラー: " +
+                    Marshal.GetLastWin32Error());
+
+            const int EeRamSize = 0x02000000;
+            byte[] ram = ReadMemory(process, eeBase, EeRamSize);
+
+            StringBuilder diagnosticReport = new StringBuilder();
+
+            diagnosticReport.AppendLine("指輪・読み取り専用メモリ診断");
+            diagnosticReport.AppendLine("書き込み・保存登録は行いません。");
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("対象: " + itemLabel);
+            diagnosticReport.AppendLine("EE RAMサイズ: 0x" + EeRamSize.ToString("X8"));
+            diagnosticReport.AppendLine();
+
+            Encoding[] diagnosticEncodings =
+            {
+                Cp932,
+                Encoding.Unicode,
+                Encoding.UTF8
+            };
+
+            string[] diagnosticEncodingNames =
+            {
+                "CP932",
+                "UTF-16LE",
+                "UTF-8"
+            };
+
+            diagnosticReport.AppendLine("=== 名前候補の生バイト検索 ===");
+
+            foreach (string candidate in nameCandidates)
+            {
+                byte[][] diagnosticPatterns =
+                {
+                    Cp932.GetBytes(candidate),
+                    Encoding.Unicode.GetBytes(candidate),
+                    Encoding.UTF8.GetBytes(candidate),
+                    MakeNullTerminated(candidate)
+                };
+
+                string[] diagnosticPatternNames =
+                {
+                    "CP932・終端なし",
+                    "UTF-16LE・終端なし",
+                    "UTF-8・終端なし",
+                    "CP932・NUL終端あり"
+                };
+
+                for (int patternIndex = 0; patternIndex < diagnosticPatterns.Length; patternIndex++)
+                {
+                    byte[] pattern = diagnosticPatterns[patternIndex];
+                    int searchFrom = 0;
+                    int foundCount = 0;
+
+                    while (searchFrom <= ram.Length - pattern.Length)
+                    {
+                        int hit = Array.IndexOf(ram, pattern[0], searchFrom);
+
+                        if (hit < 0)
+                            break;
+
+                        bool same = true;
+
+                        for (int i = 0; i < pattern.Length; i++)
+                        {
+                            if (ram[hit + i] != pattern[i])
+                            {
+                                same = false;
+                                break;
+                            }
+                        }
+
+                        if (same)
+                        {
+                            foundCount++;
+
+                            if (foundCount <= 6)
+                            {
+                                diagnosticReport.Append("  EE+0x")
+                                    .Append(hit.ToString("X8"))
+                                    .Append("  ");
+
+                                int previewLength = Math.Min(24, ram.Length - hit);
+                                byte[] preview = new byte[previewLength];
+                                Array.Copy(ram, hit, preview, 0, previewLength);
+
+                                diagnosticReport.AppendLine(BitConverter.ToString(preview));
+                            }
+                        }
+
+                        searchFrom = hit + 1;
+                    }
+
+                    diagnosticReport.Append("候補「")
+                        .Append(candidate)
+                        .Append("」 / ")
+                        .Append(diagnosticPatternNames[patternIndex])
+                        .Append(" / 検出件数: ")
+                        .AppendLine(foundCount.ToString());
+                }
+            }
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("=== 実行時説明文 ===");
+
+            byte[] diagnosticRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            diagnosticReport.AppendLine(
+                "実行時説明文アドレス: EE+0x" + RuntimeDescriptionOffset.ToString("X8"));
+
+            int diagnosticTerminator = Array.IndexOf(diagnosticRuntimeDescription, (byte)0);
+
+            if (diagnosticTerminator < 0)
+                diagnosticTerminator = diagnosticRuntimeDescription.Length;
+
+            diagnosticReport.AppendLine(
+                "説明文バイト数: " + diagnosticTerminator.ToString());
+
+            diagnosticReport.AppendLine(
+                "説明文CP932: " + Cp932.GetString(diagnosticRuntimeDescription, 0, diagnosticTerminator));
+
+            diagnosticReport.AppendLine(
+                "説明文HEX: " + BitConverter.ToString(diagnosticRuntimeDescription));
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("=== 静的説明文の位置 ===");
+
+            long diagnosticStaticOffset = -1;
+
+            try
+            {
+                diagnosticStaticOffset = FindUniqueStaticDescriptionOffset(
+                    ram,
+                    diagnosticRuntimeDescription);
+
+                diagnosticReport.AppendLine(
+                    "静的説明文アドレス: EE+0x" + diagnosticStaticOffset.ToString("X8"));
+
+                int dumpStart = Math.Max(
+                    0,
+                    checked((int)diagnosticStaticOffset) - 0x80);
+
+                int dumpEnd = Math.Min(
+                    ram.Length,
+                    checked((int)diagnosticStaticOffset) + OriginalDescriptionLength + 0x80);
+
+                diagnosticReport.AppendLine();
+                diagnosticReport.AppendLine("=== 静的説明文の前後0x80バイト ===");
+
+                for (int row = dumpStart; row < dumpEnd; row += 16)
+                {
+                    int count = Math.Min(16, dumpEnd - row);
+                    byte[] rowBytes = new byte[count];
+                    Array.Copy(ram, row, rowBytes, 0, count);
+
+                    diagnosticReport.Append("EE+0x")
+                        .Append(row.ToString("X8"))
+                        .Append(" : ")
+                        .AppendLine(BitConverter.ToString(rowBytes));
+                }
+            }
+            catch (Exception diagnosticException)
+            {
+                diagnosticReport.AppendLine(
+                    "静的説明文の特定に失敗: " + diagnosticException.Message);
+            }
+
+            diagnosticReport.AppendLine();
+            diagnosticReport.AppendLine("診断終了。メモリへの書き込みは行っていません。");
+
+            throw new InvalidOperationException(diagnosticReport.ToString());
+
+            var nameMatch = FindUniqueRingName(
+                ram,
+                nameCandidates,
+                itemLabel);
+
+            byte[] requestedName = MakeNullTerminated(newName);
+
+            if (requestedName.Length > nameMatch.OriginalData.Length)
+                throw new InvalidOperationException(
+                    "変更後の名前が元の名前領域より長くなっています。\r\n" +
+                    "元の領域: " + nameMatch.OriginalData.Length + " bytes\r\n" +
+                    "変更後: " + requestedName.Length + " bytes");
+
+            byte[] nameData = new byte[nameMatch.OriginalData.Length];
+            Buffer.BlockCopy(requestedName, 0, nameData, 0, requestedName.Length);
+
+            byte[] oldRuntimeDescription = ReadMemory(
+                process,
+                checked(eeBase + RuntimeDescriptionOffset),
+                OriginalDescriptionLength);
+
+            long staticDescriptionOffset = FindUniqueStaticDescriptionOffset(
+                ram,
+                oldRuntimeDescription);
+
+            byte[] oldStaticDescription = new byte[OriginalDescriptionLength];
+            Array.Copy(
+                ram,
+                checked((int)staticDescriptionOffset),
+                oldStaticDescription,
+                0,
+                OriginalDescriptionLength);
+
+            byte[] descriptionData = MakeFixedRingDescription(descriptionText);
+
+            long nameOffset = nameMatch.Offset;
+            long nameAddress = checked(eeBase + nameOffset);
+            long staticDescriptionAddress = checked(eeBase + staticDescriptionOffset);
+            long runtimeDescriptionAddress = checked(eeBase + RuntimeDescriptionOffset);
+
+            changes.Add(new MemoryChange(
+                "指輪アイテム名",
+                nameAddress,
+                nameData,
+                nameMatch.OriginalData));
+
+            changes.Add(new MemoryChange(
+                "指輪の説明文・静的データ",
+                staticDescriptionAddress,
+                descriptionData,
+                oldStaticDescription));
+
+            changes.Add(new MemoryChange(
+                "指輪の説明文・実行時表示",
+                runtimeDescriptionAddress,
+                descriptionData,
+                oldRuntimeDescription));
+
+            long[] codeOffsets = { 0x002C8F18L, 0x002C8F04L };
+            string[] codeNames =
+            {
+                "鈍足解除・A02C8F18",
+                "鈍足解除・A02C8F04"
+            };
+
+            for (int i = 0; i < codeOffsets.Length; i++)
+            {
+                byte[] oldCode = new byte[4];
+                Array.Copy(ram, checked((int)codeOffsets[i]), oldCode, 0, 4);
+
+                changes.Add(new MemoryChange(
+                    codeNames[i],
+                    checked(eeBase + codeOffsets[i]),
+                    new byte[4],
+                    oldCode));
+            }
+
+            _itemStatus.Text = "書き込み先を事前照合しています...";
+
+            foreach (MemoryChange change in changes)
+            {
+                byte[] current = ReadMemory(
+                    process,
+                    change.Address,
+                    change.OldData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(current, change.OldData))
+                    throw new IOException(
+                        change.Name + "の書き込み直前照合に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+            }
+
+            foreach (MemoryChange change in changes)
+            {
+                WriteMemory(process, change.Address, change.NewData);
+                completed.Add(change);
+
+                byte[] verify = ReadMemory(
+                    process,
+                    change.Address,
+                    change.NewData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(verify, change.NewData))
+                    throw new IOException(
+                        change.Name + "の読み戻し検証に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+            }
+
+            Torneko4PatchStore.Register(
+                patchPrefix + "・アイテム名",
+                nameOffset,
+                nameData);
+
+            Torneko4PatchStore.Register(
+                patchPrefix + "・説明文",
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+                0x002C8F18L,
+                new byte[4]);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F04",
+                0x002C8F04L,
+                new byte[4]);
+
+            _itemStatus.Text =
+                itemLabel + "の改造が完了しました。全5か所の読み戻し検証に成功しました。";
+
+            MessageBox.Show(
+                this,
+                itemLabel + "の改造が完了しました。\r\n\r\n" +
+                "変更後の名前: " + newName + "\r\n" +
+                "名前アドレス: EE+0x" + nameOffset.ToString("X8") + "\r\n" +
+                "説明文アドレス: EE+0x" + staticDescriptionOffset.ToString("X8") + "\r\n" +
+                "鈍足解除: EE+0x002C8F18 / EE+0x002C8F04\r\n\r\n" +
+                "5か所すべての書き込みと読み戻しを確認しました。\r\n" +
+                ".Torneko4保存対象にも登録しました。",
+                "指輪改造成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            var rollbackReport = new StringBuilder();
+
+            for (int i = completed.Count - 1; i >= 0; i--)
+            {
+                MemoryChange change = completed[i];
+
+                try
+                {
+                    WriteMemory(process, change.Address, change.OldData);
+
+                    byte[] restored = ReadMemory(
+                        process,
+                        change.Address,
+                        change.OldData.Length);
+
+                    bool success = System.Linq.Enumerable.SequenceEqual(
+                        restored,
+                        change.OldData);
+
+                    rollbackReport.AppendLine(
+                        change.Name + ": " + (success ? "復元成功" : "復元確認失敗"));
+                }
+                catch (Exception rollbackError)
+                {
+                    rollbackReport.AppendLine(
+                        change.Name + ": 復元エラー " + rollbackError.Message);
+                }
+            }
+
+            _itemStatus.Text = "指輪改造失敗: " + ex.Message;
+
+            MessageBox.Show(
+                this,
+                "指輪改造に失敗しました。\r\n\r\n" +
+                ex.Message + "\r\n\r\n" +
+                "書き込み済みデータの復元結果:\r\n" +
+                (rollbackReport.Length == 0
+                    ? "書き込み前の確認段階で停止しました。"
+                    : rollbackReport.ToString()),
+                "指輪改造エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+
+        if (process != IntPtr.Zero)
+            CloseHandle(process);
     }
 
     private void ApplyHayabusa()
