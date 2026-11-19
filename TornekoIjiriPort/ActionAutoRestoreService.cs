@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -9,9 +7,11 @@ namespace TornekoIjiriPort;
 
 internal sealed class ActionAutoRestoreService : IDisposable
 {
-    private const uint BaseActionAddress = 0x00396A74u;
-    private const uint SlotStride = 0x370u;
-    private const int EnemySlotCount = 39;
+    private const uint PatchAddress = 0x002435C8u;
+    private const uint OriginalInstruction = 0x84510004u;
+
+    // ori s1, zero, actionId
+    private const uint PatchInstructionBase = 0x34110000u;
 
     internal static readonly (ushort Id, string Name)[] ActionChoices =
     {
@@ -112,12 +112,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
     };
 
     private readonly PineClient _pine = new PineClient();
-    private readonly object _pendingLock = new object();
-    private readonly Dictionary<int, ushort> _pending = new Dictionary<int, ushort>();
     private readonly System.Threading.Timer _timer;
+
     private int _pollBusy;
-    private bool _sawRunning;
-    private bool _handledPause;
     private bool _disposed;
     private string _lastStatus = "";
 
@@ -125,15 +122,27 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     internal ActionAutoRestoreService()
     {
-        _timer = new System.Threading.Timer(Poll, null, 500, 100);
+        _timer = new System.Threading.Timer(Poll, null, 500, 500);
+    }
+
+    private static bool IsOurPatch(uint instruction)
+    {
+        return (instruction & 0xFFFF0000u) == PatchInstructionBase;
     }
 
     internal bool TryApply(int monsterListId, ushort actionId, out string message)
     {
         message = "";
+
         if (monsterListId < 0)
         {
             message = "モンスターが選択されていません。";
+            return false;
+        }
+
+        if (actionId > 0xFF)
+        {
+            message = "特技IDが不正です。";
             return false;
         }
 
@@ -141,70 +150,61 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             if (!_pine.TryConnect())
             {
-                message = "PCSX2のPINEに接続できません。PCSX2側でPINEを有効にしてください（標準ポート TCP 28011）。";
+                message = "PCSX2のPINEに接続できません。TCP 28011を確認してください。";
                 return false;
             }
 
-            if (_pine.GetStatus() != 0)
+            uint status = _pine.GetStatus();
+
+            if (status != 0)
             {
-                message = "特技変更はゲーム実行中に行ってください。PCSX2が一時停止中、またはVM停止中です。";
+                message = "PCSX2をゲーム実行中にしてください。";
                 return false;
             }
 
-            // HSP側IDはC#モンスター一覧番号+1。個体レコード+2の元IDと照合する。
-            ushort targetMonsterId = checked((ushort)(monsterListId + 1));
-            int changed = 0;
-            int skipped = 0;
+            uint currentInstruction = _pine.Read32(PatchAddress);
 
-            for (int slot = 1; slot <= EnemySlotCount; slot++)
+            if (currentInstruction != OriginalInstruction && !IsOurPatch(currentInstruction))
             {
-                uint actionAddress = BaseActionAddress + (uint)(slot - 1) * SlotStride;
-                ushort originalId = _pine.Read16(actionAddress + 2u);
-                if (originalId != targetMonsterId)
-                    continue;
-
-                ushort currentId = _pine.Read16(actionAddress);
-                bool hasPending;
-                ushort previousAction;
-                lock (_pendingLock)
-                    hasPending = _pending.TryGetValue(slot, out previousAction);
-
-                if (hasPending && currentId != previousAction && currentId != originalId)
-                {
-                    skipped++;
-                    continue;
-                }
-                if (!hasPending && currentId != originalId)
-                {
-                    skipped++;
-                    continue;
-                }
-
-                lock (_pendingLock)
-                    _pending[slot] = actionId;
-
-                _pine.Write16(actionAddress, actionId);
-                if (_pine.Read16(actionAddress) != actionId)
-                    throw new InvalidOperationException("行動IDの読み戻し検証に失敗しました。敵枠 " + slot.ToString("D2"));
-
-                changed++;
-            }
-
-            if (changed == 0)
-            {
-                message = "現在のフロアに対象モンスターがいないか、行動IDが別の値に変更されているため安全に変更できません。";
+                message =
+                    "安全確認のため変更を中止しました。\n" +
+                    "対象アドレスの命令が想定と異なります。\n" +
+                    "現在値: 0x" + currentInstruction.ToString("X8");
                 return false;
             }
 
-            message = "特技変更成功：0x" + actionId.ToString("X2") +
-                " ／ 対象 " + changed + "枠" +
-                (skipped > 0 ? " ／ 安全確認でスキップ " + skipped + "枠" : "") +
-                "。EE 002435D0で停止すると元IDへ復元します。";
+            uint newInstruction = PatchInstructionBase | actionId;
+
+            _pine.Write32(PatchAddress, newInstruction);
+
+            uint verifyInstruction = _pine.Read32(PatchAddress);
+
+            if (verifyInstruction != newInstruction)
+            {
+                message =
+                    "命令の書き換え後の読み戻しに失敗しました。\n" +
+                    "書き込み値: 0x" + newInstruction.ToString("X8") +
+                    "\n読み戻し値: 0x" + verifyInstruction.ToString("X8");
+                return false;
+            }
+
+            message =
+                "特技命令の書き換えに成功しました。\n" +
+                "特技ID: 0x" + actionId.ToString("X2") + "\n" +
+                "命令: 0x" + verifyInstruction.ToString("X8") + "\n" +
+                "試作中のため、選択した特技は全敵に適用されます。\n" +
+                "ゲーム内での反映は実動作テストが必要です。";
+
+            RaiseStatus(
+                "特技命令を書き換え済み：0x" +
+                actionId.ToString("X2") +
+                "。試作中のため全敵対象です。");
+
             return true;
         }
         catch (Exception ex)
         {
-            message = ex.Message;
+            message = "特技変更エラー: " + ex.Message;
             return false;
         }
     }
@@ -218,43 +218,49 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             if (!_pine.TryConnect())
             {
-                RaiseStatus("PINE未接続：PCSX2側でPINEを有効化してください（TCP 28011）。");
+                RaiseStatus("PINE未接続：PCSX2のTCP 28011を確認してください。");
                 return;
             }
 
             uint status = _pine.GetStatus();
+
             if (status == 0)
             {
-                _sawRunning = true;
-                _handledPause = false;
-                RaiseStatus("PINE接続中：特技処理後の一時停止を監視しています。");
+                uint instruction = _pine.Read32(PatchAddress);
+
+                if (instruction == OriginalInstruction)
+                {
+                    RaiseStatus("PINE接続中：特技変更命令は未適用です。");
+                    return;
+                }
+
+                if (IsOurPatch(instruction))
+                {
+                    RaiseStatus(
+                        "特技命令適用中：0x" +
+                        (instruction & 0xFFFFu).ToString("X2") +
+                        "。試作中のため全敵対象です。");
+                    return;
+                }
+
+                RaiseStatus(
+                    "PINE接続中：対象命令が想定外です。現在値 0x" +
+                    instruction.ToString("X8"));
                 return;
             }
 
             if (status == 1)
             {
-                if (_sawRunning && !_handledPause)
-                {
-                    _handledPause = true;
-                    int restored = RestorePending();
-                    RaiseStatus("PCSX2の一時停止を検知：元モンスターIDへ " +
-                        restored + "枠を復元しました。デバッガーで実行を再開してください。");
-                }
-                else
-                {
-                    RaiseStatus("PCSX2一時停止中：実行再開後に監視を続けます。");
-                }
+                RaiseStatus("PCSX2一時停止中：ゲームを再開すると監視を続けます。");
                 return;
             }
 
-            _sawRunning = false;
-            _handledPause = false;
             RaiseStatus("PCSX2の仮想マシンが停止しています。");
         }
         catch (Exception ex)
         {
             _pine.Disconnect();
-            RaiseStatus("PINE監視エラー：" + ex.Message);
+            RaiseStatus("PINE監視エラー: " + ex.Message);
         }
         finally
         {
@@ -262,60 +268,30 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 
-    private int RestorePending()
-    {
-        KeyValuePair<int, ushort>[] pending;
-        lock (_pendingLock)
-            pending = _pending.ToArray();
-
-        int restored = 0;
-        foreach (var item in pending)
-        {
-            int slot = item.Key;
-            ushort expectedAction = item.Value;
-            uint actionAddress = BaseActionAddress + (uint)(slot - 1) * SlotStride;
-
-            try
-            {
-                ushort originalId = _pine.Read16(actionAddress + 2u);
-                ushort currentId = _pine.Read16(actionAddress);
-
-                if (currentId == expectedAction)
-                {
-                    _pine.Write16(actionAddress, originalId);
-                    if (_pine.Read16(actionAddress) != originalId)
-                        throw new InvalidOperationException("復元確認失敗：敵枠 " + slot.ToString("D2"));
-                    restored++;
-                }
-                else if (currentId != originalId)
-                {
-                    // 他の処理が値を変更していた場合は上書きしない。
-                    continue;
-                }
-
-                lock (_pendingLock)
-                    _pending.Remove(slot);
-            }
-            catch
-            {
-                // 失敗した枠は次の停止時に再試行する。
-            }
-        }
-        return restored;
-    }
-
     private void RaiseStatus(string message)
     {
-        if (StatusChanged == null || string.Equals(_lastStatus, message, StringComparison.Ordinal))
+        if (StatusChanged == null)
             return;
+
+        if (string.Equals(_lastStatus, message, StringComparison.Ordinal))
+            return;
+
         _lastStatus = message;
-        try { StatusChanged?.Invoke(message); } catch { }
+
+        try
+        {
+            StatusChanged?.Invoke(message);
+        }
+        catch
+        {
+        }
     }
 
     public void Dispose()
     {
         if (_disposed)
             return;
+
         _disposed = true;
         _timer.Dispose();
         _pine.Dispose();
@@ -324,7 +300,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private sealed class PineClient : IDisposable
     {
         private const int Port = 28011;
+
         private readonly object _sync = new object();
+
         private TcpClient? _client;
         private NetworkStream? _stream;
 
@@ -336,10 +314,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     return true;
 
                 DisconnectCore();
+
                 var client = new TcpClient();
+
                 try
                 {
-                    IAsyncResult result = client.BeginConnect(IPAddress.Loopback, Port, null, null);
+                    IAsyncResult result =
+                        client.BeginConnect(IPAddress.Loopback, Port, null, null);
+
                     using (result.AsyncWaitHandle)
                     {
                         if (!result.AsyncWaitHandle.WaitOne(250))
@@ -348,11 +330,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
                             return false;
                         }
                     }
+
                     client.EndConnect(result);
+
                     client.ReceiveTimeout = 500;
                     client.SendTimeout = 500;
+
                     _client = client;
                     _stream = client.GetStream();
+
                     return true;
                 }
                 catch
@@ -365,26 +351,33 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         internal uint GetStatus()
         {
-            return BitConverter.ToUInt32(Request(0x0F, Array.Empty<byte>(), 4), 0);
+            return BitConverter.ToUInt32(
+                Request(0x0F, Array.Empty<byte>(), 4), 0);
         }
 
-        internal ushort Read16(uint address)
+        internal uint Read32(uint address)
         {
             byte[] args = new byte[4];
             WriteUInt32(args, 0, address);
-            return BitConverter.ToUInt16(Request(0x01, args, 2), 0);
+
+            return BitConverter.ToUInt32(
+                Request(0x02, args, 4), 0);
         }
 
-        internal void Write16(uint address, ushort value)
+        internal void Write32(uint address, uint value)
         {
-            byte[] args = new byte[6];
+            byte[] args = new byte[8];
+
             WriteUInt32(args, 0, address);
-            args[4] = (byte)(value & 0xFF);
-            args[5] = (byte)(value >> 8);
-            Request(0x05, args, 0);
+            WriteUInt32(args, 4, value);
+
+            Request(0x06, args, 0);
         }
 
-        private byte[] Request(byte opcode, byte[] args, int expectedPayloadLength)
+        private byte[] Request(
+            byte opcode,
+            byte[] args,
+            int expectedPayloadLength)
         {
             lock (_sync)
             {
@@ -393,31 +386,43 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
                 byte[] body = new byte[1 + args.Length];
                 body[0] = opcode;
+
                 Array.Copy(args, 0, body, 1, args.Length);
 
                 byte[] packet = new byte[4 + body.Length];
+
                 WriteUInt32(packet, 0, (uint)packet.Length);
                 Array.Copy(body, 0, packet, 4, body.Length);
 
                 try
                 {
                     _stream.Write(packet, 0, packet.Length);
+
                     byte[] header = ReadExactly(_stream, 4);
                     uint responseLength = BitConverter.ToUInt32(header, 0);
-                    if (responseLength < 5 || responseLength > 1024)
-                        throw new InvalidOperationException("PINE応答サイズが不正です: " + responseLength);
 
-                    byte[] response = ReadExactly(_stream, checked((int)responseLength - 4));
+                    if (responseLength < 5 || responseLength > 1024)
+                        throw new InvalidOperationException(
+                            "PINE応答サイズが不正です: " + responseLength);
+
+                    byte[] response =
+                        ReadExactly(_stream, checked((int)responseLength - 4));
+
                     if (response[0] != 0)
-                        throw new InvalidOperationException("PCSX2 PINEが要求を拒否しました。");
+                        throw new InvalidOperationException(
+                            "PCSX2 PINEが要求を拒否しました。");
 
                     int actualPayloadLength = response.Length - 1;
+
                     if (actualPayloadLength != expectedPayloadLength)
-                        throw new InvalidOperationException("PINE応答長が一致しません。");
+                        throw new InvalidOperationException(
+                            "PINE応答長が一致しません。");
 
                     byte[] payload = new byte[actualPayloadLength];
+
                     if (actualPayloadLength > 0)
                         Array.Copy(response, 1, payload, 0, actualPayloadLength);
+
                     return payload;
                 }
                 catch
@@ -432,17 +437,25 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             byte[] data = new byte[length];
             int offset = 0;
+
             while (offset < length)
             {
                 int read = stream.Read(data, offset, length - offset);
+
                 if (read <= 0)
-                    throw new InvalidOperationException("PINE接続が途中で切断されました。");
+                    throw new InvalidOperationException(
+                        "PINE接続が途中で切断されました。");
+
                 offset += read;
             }
+
             return data;
         }
 
-        private static void WriteUInt32(byte[] data, int offset, uint value)
+        private static void WriteUInt32(
+            byte[] data,
+            int offset,
+            uint value)
         {
             data[offset] = (byte)(value & 0xFF);
             data[offset + 1] = (byte)((value >> 8) & 0xFF);
@@ -460,6 +473,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             try { _stream?.Dispose(); } catch { }
             try { _client?.Close(); } catch { }
+
             _stream = null;
             _client = null;
         }
