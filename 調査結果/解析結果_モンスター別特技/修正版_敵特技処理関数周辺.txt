@@ -1,0 +1,1541 @@
+トルネコいじりネクスト MIPS逆アセンブル
+領域: 修正版_敵特技処理関数周辺
+開始: 0x0023C600
+サイズ: 0x1800
+
+0023C600  00 01 C6 30  30C60100  op=12 rs=6 rt=6 rd=0 sa=4 fn=0 imm=256
+0023C604  02 00 44 34  34440002  ori rs=2 rt=4 imm=0x0002
+0023C608  00 1F 03 3C  3C031F00  lui rt=3 imm=0x1F00
+0023C60C  0B 10 86 00  0086100B  op=0 rs=4 rt=6 rd=2 sa=0 fn=11 imm=4107
+0023C610  03 00 63 34  34630003  ori rs=3 rt=3 imm=0x0003
+0023C614  24 28 A3 00  00A32824  op=0 rs=5 rt=3 rd=5 sa=0 fn=36 imm=10276
+0023C618  04 00 44 34  34440004  ori rs=2 rt=4 imm=0x0004
+0023C61C  0B 10 85 00  0085100B  op=0 rs=4 rt=5 rd=2 sa=0 fn=11 imm=4107
+0023C620  00 E8 46 48  4846E800  op=18 rs=2 rt=6 rd=29 sa=0 fn=0 imm=-6144
+0023C624  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023C628  00 01 C6 30  30C60100  op=12 rs=6 rt=6 rd=0 sa=4 fn=0 imm=256
+0023C62C  20 30 63 34  34633020  ori rs=3 rt=3 imm=0x3020
+0023C630  08 00 45 34  34450008  ori rs=2 rt=5 imm=0x0008
+0023C634  00 00 64 8C  8C640000  lw rt=4 offset=0(rs=3)
+0023C638  0B 10 A6 00  00A6100B  op=0 rs=5 rt=6 rd=2 sa=0 fn=11 imm=4107
+0023C63C  10 00 43 34  34430010  ori rs=2 rt=3 imm=0x0010
+0023C640  00 0C 84 30  30840C00  op=12 rs=4 rt=4 rd=1 sa=16 fn=0 imm=3072
+0023C644  0B 10 64 00  0064100B  op=0 rs=3 rt=4 rd=2 sa=0 fn=11 imm=4107
+0023C648  00 00 BF DF  DFBF0000  op=55 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023C64C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023C650  10 00 BD 27  27BD0010  addiu rs=29 rt=29 imm=16
+0023C654  00 00 00 00  00000000  nop
+0023C658  00 3C 07 00  00073C00  op=0 rs=0 rt=7 rd=7 sa=16 fn=0 imm=15360
+0023C65C  00 34 06 00  00063400  op=0 rs=0 rt=6 rd=6 sa=16 fn=0 imm=13312
+0023C660  00 44 08 00  00084400  op=0 rs=0 rt=8 rd=8 sa=16 fn=0 imm=17408
+0023C664  03 6C 07 00  00076C03  op=0 rs=0 rt=7 rd=13 sa=16 fn=3 imm=27651
+0023C668  F0 FF BD 27  27BDFFF0  addiu rs=29 rt=29 imm=-16
+0023C66C  00 2C 05 00  00052C00  op=0 rs=0 rt=5 rd=5 sa=16 fn=0 imm=11264
+0023C670  00 4C 09 00  00094C00  op=0 rs=0 rt=9 rd=9 sa=16 fn=0 imm=19456
+0023C674  00 54 0A 00  000A5400  op=0 rs=0 rt=10 rd=10 sa=16 fn=0 imm=21504
+0023C678  00 5C 0B 00  000B5C00  op=0 rs=0 rt=11 rd=11 sa=16 fn=0 imm=23552
+0023C67C  03 64 06 00  00066403  op=0 rs=0 rt=6 rd=12 sa=16 fn=3 imm=25603
+0023C680  03 7C 08 00  00087C03  op=0 rs=0 rt=8 rd=15 sa=16 fn=3 imm=31747
+0023C684  00 00 BF FF  FFBF0000  op=63 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023C688  03 3C 05 00  00053C03  op=0 rs=0 rt=5 rd=7 sa=16 fn=3 imm=15363
+0023C68C  03 C4 09 00  0009C403  op=0 rs=0 rt=9 rd=24 sa=16 fn=3 imm=-15357
+0023C690  03 54 0A 00  000A5403  op=0 rs=0 rt=10 rd=10 sa=16 fn=3 imm=21507
+0023C694  03 44 0B 00  000B4403  op=0 rs=0 rt=11 rd=8 sa=16 fn=3 imm=17411
+0023C698  2D 70 80 00  0080702D  op=0 rs=4 rt=0 rd=14 sa=0 fn=45 imm=28717
+0023C69C  3B 00 A2 2D  2DA2003B  op=11 rs=13 rt=2 rd=0 sa=0 fn=59 imm=59
+0023C6A0  18 00 40 10  10400018  beq rs=2 rt=0 -> 0x0023C704
+0023C6A4  2D 30 00 00  0000302D  op=0 rs=0 rt=0 rd=6 sa=0 fn=45 imm=12333
+0023C6A8  92 00 02 3C  3C020092  lui rt=2 imm=0x0092
+0023C6AC  80 18 0D 00  000D1880  op=0 rs=0 rt=13 rd=3 sa=2 fn=0 imm=6272
+0023C6B0  00 42 42 24  24424200  addiu rs=2 rt=2 imm=16896
+0023C6B4  21 18 62 00  00621821  op=0 rs=3 rt=2 rd=3 sa=0 fn=33 imm=6177
+0023C6B8  00 00 64 8C  8C640000  lw rt=4 offset=0(rs=3)
+0023C6BC  08 00 80 00  00800008  op=0 rs=4 rt=0 rd=0 sa=0 fn=8 imm=8
+0023C6C0  00 00 00 00  00000000  nop
+0023C6C4  18 10 48 01  01481018  op=0 rs=10 rt=8 rd=2 sa=0 fn=24 imm=4120
+0023C6C8  0E 00 00 10  1000000E  beq rs=0 rt=0 -> 0x0023C704
+0023C6CC  83 30 02 00  00023083  op=0 rs=0 rt=2 rd=6 sa=2 fn=3 imm=12419
+0023C6D0  18 18 48 01  01481818  op=0 rs=10 rt=8 rd=3 sa=0 fn=24 imm=6168
+0023C6D4  40 10 03 00  00031040  op=0 rs=0 rt=3 rd=2 sa=1 fn=0 imm=4160
+0023C6D8  21 10 43 00  00431021  op=0 rs=2 rt=3 rd=2 sa=0 fn=33 imm=4129
+0023C6DC  09 00 00 10  10000009  beq rs=0 rt=0 -> 0x0023C704
+0023C6E0  03 31 02 00  00023103  op=0 rs=0 rt=2 rd=6 sa=4 fn=3 imm=12547
+0023C6E4  18 10 48 01  01481018  op=0 rs=10 rt=8 rd=2 sa=0 fn=24 imm=4120
+0023C6E8  06 00 00 10  10000006  beq rs=0 rt=0 -> 0x0023C704
+0023C6EC  C3 30 02 00  000230C3  op=0 rs=0 rt=2 rd=6 sa=3 fn=3 imm=12483
+0023C6F0  18 10 48 01  01481018  op=0 rs=10 rt=8 rd=2 sa=0 fn=24 imm=4120
+0023C6F4  03 00 00 10  10000003  beq rs=0 rt=0 -> 0x0023C704
+0023C6F8  03 31 02 00  00023103  op=0 rs=0 rt=2 rd=6 sa=4 fn=3 imm=12547
+0023C6FC  18 10 48 01  01481018  op=0 rs=10 rt=8 rd=2 sa=0 fn=24 imm=4120
+0023C700  43 31 02 00  00023143  op=0 rs=0 rt=2 rd=6 sa=5 fn=3 imm=12611
+0023C704  FF 7F 02 24  24027FFF  addiu rs=0 rt=2 imm=32767
+0023C708  2A 10 46 00  0046102A  op=0 rs=2 rt=6 rd=2 sa=0 fn=42 imm=4138
+0023C70C  05 00 40 10  10400005  beq rs=2 rt=0 -> 0x0023C724
+0023C710  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023C714  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023C718  D0 41 84 24  248441D0  addiu rs=4 rt=4 imm=16848
+0023C71C  44 00 00 10  10000044  beq rs=0 rt=0 -> 0x0023C830
+0023C720  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023C724  A9 14 00 70  700014A9  op=28 rs=0 rt=0 rd=2 sa=18 fn=41 imm=5289
+0023C728  FF 7F C3 30  30C37FFF  op=12 rs=6 rt=3 rd=15 sa=31 fn=63 imm=32767
+0023C72C  50 00 C2 7D  7DC20050  op=31 rs=14 rt=2 rd=0 sa=1 fn=16 imm=80
+0023C730  3C 34 07 00  0007343C  op=0 rs=0 rt=7 rd=6 sa=16 fn=60 imm=13372
+0023C734  00 00 C2 7D  7DC20000  op=31 rs=14 rt=2 rd=0 sa=0 fn=0 imm=0
+0023C738  FF F3 07 3C  3C07F3FF  lui rt=7 imm=0xF3FF
+0023C73C  FF FF E7 34  34E7FFFF  ori rs=7 rt=7 imm=0xFFFF
+0023C740  38 3C 07 00  00073C38  op=0 rs=0 rt=7 rd=7 sa=16 fn=56 imm=15416
+0023C744  FF FF E7 34  34E7FFFF  ori rs=7 rt=7 imm=0xFFFF
+0023C748  38 3C 07 00  00073C38  op=0 rs=0 rt=7 rd=7 sa=16 fn=56 imm=15416
+0023C74C  FF FF E7 34  34E7FFFF  ori rs=7 rt=7 imm=0xFFFF
+0023C750  50 00 C4 DD  DDC40050  op=55 rs=14 rt=4 rd=0 sa=1 fn=16 imm=80
+0023C754  00 80 02 24  24028000  addiu rs=0 rt=2 imm=-32768
+0023C758  00 00 C5 DD  DDC50000  op=55 rs=14 rt=5 rd=0 sa=0 fn=0 imm=0
+0023C75C  3C 64 0C 00  000C643C  op=0 rs=0 rt=12 rd=12 sa=16 fn=60 imm=25660
+0023C760  24 20 82 00  00822024  op=0 rs=4 rt=2 rd=4 sa=0 fn=36 imm=8228
+0023C764  08 00 CB DD  DDCB0008  op=55 rs=14 rt=11 rd=0 sa=0 fn=8 imm=8
+0023C768  24 28 A2 00  00A22824  op=0 rs=5 rt=2 rd=5 sa=0 fn=36 imm=10276
+0023C76C  25 20 83 00  00832025  op=0 rs=4 rt=3 rd=4 sa=0 fn=37 imm=8229
+0023C770  04 00 02 24  24020004  addiu rs=0 rt=2 imm=4
+0023C774  00 80 03 34  34038000  ori rs=0 rt=3 imm=0x8000
+0023C778  25 28 A2 00  00A22825  op=0 rs=5 rt=2 rd=5 sa=0 fn=37 imm=10277
+0023C77C  25 20 83 00  00832025  op=0 rs=4 rt=3 rd=4 sa=0 fn=37 imm=8229
+0023C780  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023C784  3A 11 02 00  0002113A  op=0 rs=0 rt=2 rd=2 sa=4 fn=58 imm=4410
+0023C788  F0 FF 03 24  2403FFF0  addiu rs=0 rt=3 imm=-16
+0023C78C  24 28 A2 00  00A22824  op=0 rs=5 rt=2 rd=5 sa=0 fn=36 imm=10276
+0023C790  24 58 63 01  01635824  op=0 rs=11 rt=3 rd=11 sa=0 fn=36 imm=22564
+0023C794  24 20 87 00  00872024  op=0 rs=4 rt=7 rd=4 sa=0 fn=36 imm=8228
+0023C798  3B 34 06 00  0006343B  op=0 rs=0 rt=6 rd=6 sa=16 fn=59 imm=13371
+0023C79C  3C 54 0A 00  000A543C  op=0 rs=0 rt=10 rd=10 sa=16 fn=60 imm=21564
+0023C7A0  3C 44 08 00  0008443C  op=0 rs=0 rt=8 rd=8 sa=16 fn=60 imm=17468
+0023C7A4  25 30 CC 00  00CC3025  op=0 rs=6 rt=12 rd=6 sa=0 fn=37 imm=12325
+0023C7A8  3B 44 08 00  0008443B  op=0 rs=0 rt=8 rd=8 sa=16 fn=59 imm=17467
+0023C7AC  00 80 02 34  34028000  ori rs=0 rt=2 imm=0x8000
+0023C7B0  7C 13 02 00  0002137C  op=0 rs=0 rt=2 rd=2 sa=13 fn=60 imm=4988
+0023C7B4  0E 00 03 24  2403000E  addiu rs=0 rt=3 imm=14
+0023C7B8  00 80 07 34  34078000  ori rs=0 rt=7 imm=0x8000
+0023C7BC  3C 3B 07 00  00073B3C  op=0 rs=0 rt=7 rd=7 sa=12 fn=60 imm=15164
+0023C7C0  3C 4C 0F 00  000F4C3C  op=0 rs=0 rt=15 rd=9 sa=16 fn=60 imm=19516
+0023C7C4  3F 54 0A 00  000A543F  op=0 rs=0 rt=10 rd=10 sa=16 fn=63 imm=21567
+0023C7C8  25 28 A2 00  00A22825  op=0 rs=5 rt=2 rd=5 sa=0 fn=37 imm=10277
+0023C7CC  25 50 48 01  01485025  op=0 rs=10 rt=8 rd=10 sa=0 fn=37 imm=20517
+0023C7D0  25 58 63 01  01635825  op=0 rs=11 rt=3 rd=11 sa=0 fn=37 imm=22565
+0023C7D4  25 20 87 00  00872025  op=0 rs=4 rt=7 rd=4 sa=0 fn=37 imm=8229
+0023C7D8  3C 6E 0D 00  000D6E3C  op=0 rs=0 rt=13 rd=13 sa=24 fn=60 imm=28220
+0023C7DC  3B 4C 09 00  00094C3B  op=0 rs=0 rt=9 rd=9 sa=16 fn=59 imm=19515
+0023C7E0  3C 64 18 00  0018643C  op=0 rs=0 rt=24 rd=12 sa=16 fn=60 imm=25660
+0023C7E4  25 30 CD 00  00CD3025  op=0 rs=6 rt=13 rd=6 sa=0 fn=37 imm=12325
+0023C7E8  25 48 2C 01  012C4825  op=0 rs=9 rt=12 rd=9 sa=0 fn=37 imm=18469
+0023C7EC  50 00 02 24  24020050  addiu rs=0 rt=2 imm=80
+0023C7F0  51 00 03 24  24030051  addiu rs=0 rt=3 imm=81
+0023C7F4  52 00 07 24  24070052  addiu rs=0 rt=7 imm=82
+0023C7F8  53 00 08 24  24080053  addiu rs=0 rt=8 imm=83
+0023C7FC  50 00 C4 FD  FDC40050  op=63 rs=14 rt=4 rd=0 sa=1 fn=16 imm=80
+0023C800  00 00 C5 FD  FDC50000  op=63 rs=14 rt=5 rd=0 sa=0 fn=0 imm=0
+0023C804  08 00 CB FD  FDCB0008  op=63 rs=14 rt=11 rd=0 sa=0 fn=8 imm=8
+0023C808  10 00 C6 FD  FDC60010  op=63 rs=14 rt=6 rd=0 sa=0 fn=16 imm=16
+0023C80C  18 00 C2 FD  FDC20018  op=63 rs=14 rt=2 rd=0 sa=0 fn=24 imm=24
+0023C810  20 00 C9 FD  FDC90020  op=63 rs=14 rt=9 rd=0 sa=0 fn=32 imm=32
+0023C814  28 00 C3 FD  FDC30028  op=63 rs=14 rt=3 rd=0 sa=0 fn=40 imm=40
+0023C818  30 00 CA FD  FDCA0030  op=63 rs=14 rt=10 rd=0 sa=0 fn=48 imm=48
+0023C81C  38 00 C7 FD  FDC70038  op=63 rs=14 rt=7 rd=0 sa=0 fn=56 imm=56
+0023C820  48 00 C8 FD  FDC80048  op=63 rs=14 rt=8 rd=0 sa=1 fn=8 imm=72
+0023C824  40 00 C0 FD  FDC00040  op=63 rs=14 rt=0 rd=0 sa=1 fn=0 imm=64
+0023C828  0F 00 00 00  0000000F  op=0 rs=0 rt=0 rd=0 sa=0 fn=15 imm=15
+0023C82C  06 00 02 24  24020006  addiu rs=0 rt=2 imm=6
+0023C830  00 00 BF DF  DFBF0000  op=55 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023C834  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023C838  10 00 BD 27  27BD0010  addiu rs=29 rt=29 imm=16
+0023C83C  00 00 00 00  00000000  nop
+0023C840  F0 FF BD 27  27BDFFF0  addiu rs=29 rt=29 imm=-16
+0023C844  A9 14 00 70  700014A9  op=28 rs=0 rt=0 rd=2 sa=18 fn=41 imm=5289
+0023C848  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023C84C  00 2C 05 00  00052C00  op=0 rs=0 rt=5 rd=5 sa=16 fn=0 imm=11264
+0023C850  10 00 82 7C  7C820010  op=31 rs=4 rt=2 rd=0 sa=0 fn=16 imm=16
+0023C854  03 2C 05 00  00052C03  op=0 rs=0 rt=5 rd=5 sa=16 fn=3 imm=11267
+0023C858  00 80 02 24  24028000  addiu rs=0 rt=2 imm=-32768
+0023C85C  00 3C 07 00  00073C00  op=0 rs=0 rt=7 rd=7 sa=16 fn=0 imm=15360
+0023C860  10 00 8C DC  DC8C0010  op=55 rs=4 rt=12 rd=0 sa=0 fn=16 imm=16
+0023C864  00 44 08 00  00084400  op=0 rs=0 rt=8 rd=8 sa=16 fn=0 imm=17408
+0023C868  00 54 0A 00  000A5400  op=0 rs=0 rt=10 rd=10 sa=16 fn=0 imm=21504
+0023C86C  00 5C 0B 00  000B5C00  op=0 rs=0 rt=11 rd=11 sa=16 fn=0 imm=23552
+0023C870  24 60 82 01  01826024  op=0 rs=12 rt=2 rd=12 sa=0 fn=36 imm=24612
+0023C874  18 00 8D DC  DC8D0018  op=55 rs=4 rt=13 rd=0 sa=0 fn=24 imm=24
+0023C878  05 00 02 24  24020005  addiu rs=0 rt=2 imm=5
+0023C87C  03 3C 07 00  00073C03  op=0 rs=0 rt=7 rd=7 sa=16 fn=3 imm=15363
+0023C880  25 60 82 01  01826025  op=0 rs=12 rt=2 rd=12 sa=0 fn=37 imm=24613
+0023C884  03 44 08 00  00084403  op=0 rs=0 rt=8 rd=8 sa=16 fn=3 imm=17411
+0023C888  00 80 02 34  34028000  ori rs=0 rt=2 imm=0x8000
+0023C88C  03 54 0A 00  000A5403  op=0 rs=0 rt=10 rd=10 sa=16 fn=3 imm=21507
+0023C890  25 60 82 01  01826025  op=0 rs=12 rt=2 rd=12 sa=0 fn=37 imm=24613
+0023C894  03 5C 0B 00  000B5C03  op=0 rs=0 rt=11 rd=11 sa=16 fn=3 imm=23555
+0023C898  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023C89C  3A 11 02 00  0002113A  op=0 rs=0 rt=2 rd=2 sa=4 fn=58 imm=4410
+0023C8A0  3C 2C 05 00  00052C3C  op=0 rs=0 rt=5 rd=5 sa=16 fn=60 imm=11324
+0023C8A4  00 34 06 00  00063400  op=0 rs=0 rt=6 rd=6 sa=16 fn=0 imm=13312
+0023C8A8  F0 FF 03 24  2403FFF0  addiu rs=0 rt=3 imm=-16
+0023C8AC  24 60 82 01  01826024  op=0 rs=12 rt=2 rd=12 sa=0 fn=36 imm=24612
+0023C8B0  3F 2C 05 00  00052C3F  op=0 rs=0 rt=5 rd=5 sa=16 fn=63 imm=11327
+0023C8B4  3C 3C 07 00  00073C3C  op=0 rs=0 rt=7 rd=7 sa=16 fn=60 imm=15420
+0023C8B8  3C 44 08 00  0008443C  op=0 rs=0 rt=8 rd=8 sa=16 fn=60 imm=17468
+0023C8BC  3C 54 0A 00  000A543C  op=0 rs=0 rt=10 rd=10 sa=16 fn=60 imm=21564
+0023C8C0  3C 5C 0B 00  000B5C3C  op=0 rs=0 rt=11 rd=11 sa=16 fn=60 imm=23612
+0023C8C4  24 68 A3 01  01A36824  op=0 rs=13 rt=3 rd=13 sa=0 fn=36 imm=26660
+0023C8C8  25 28 C5 00  00C52825  op=0 rs=6 rt=5 rd=5 sa=0 fn=37 imm=10277
+0023C8CC  00 4C 09 00  00094C00  op=0 rs=0 rt=9 rd=9 sa=16 fn=0 imm=19456
+0023C8D0  3B 3E 07 00  00073E3B  op=0 rs=0 rt=7 rd=7 sa=24 fn=59 imm=15931
+0023C8D4  3B 5C 0B 00  000B5C3B  op=0 rs=0 rt=11 rd=11 sa=16 fn=59 imm=23611
+0023C8D8  00 80 02 34  34028000  ori rs=0 rt=2 imm=0x8000
+0023C8DC  7C 13 02 00  0002137C  op=0 rs=0 rt=2 rd=2 sa=13 fn=60 imm=4988
+0023C8E0  0E 00 0E 24  240E000E  addiu rs=0 rt=14 imm=14
+0023C8E4  3F 44 08 00  0008443F  op=0 rs=0 rt=8 rd=8 sa=16 fn=63 imm=17471
+0023C8E8  3F 54 0A 00  000A543F  op=0 rs=0 rt=10 rd=10 sa=16 fn=63 imm=21567
+0023C8EC  25 28 A7 00  00A72825  op=0 rs=5 rt=7 rd=5 sa=0 fn=37 imm=10277
+0023C8F0  25 40 28 01  01284025  op=0 rs=9 rt=8 rd=8 sa=0 fn=37 imm=16421
+0023C8F4  25 50 4B 01  014B5025  op=0 rs=10 rt=11 rd=10 sa=0 fn=37 imm=20517
+0023C8F8  25 60 82 01  01826025  op=0 rs=12 rt=2 rd=12 sa=0 fn=37 imm=24613
+0023C8FC  25 68 AE 01  01AE6825  op=0 rs=13 rt=14 rd=13 sa=0 fn=37 imm=26661
+0023C900  00 06 03 3C  3C030600  lui rt=3 imm=0x0600
+0023C904  00 50 06 3C  3C065000  lui rt=6 imm=0x5000
+0023C908  00 80 63 34  34638000  ori rs=3 rt=3 imm=0x8000
+0023C90C  00 13 07 3C  3C071300  lui rt=7 imm=0x1300
+0023C910  06 00 C6 34  34C60006  ori rs=6 rt=6 imm=0x0006
+0023C914  50 00 09 24  24090050  addiu rs=0 rt=9 imm=80
+0023C918  51 00 0B 24  240B0051  addiu rs=0 rt=11 imm=81
+0023C91C  52 00 0E 24  240E0052  addiu rs=0 rt=14 imm=82
+0023C920  61 00 0F 24  240F0061  addiu rs=0 rt=15 imm=97
+0023C924  01 00 10 24  24100001  addiu rs=0 rt=16 imm=1
+0023C928  53 00 02 24  24020053  addiu rs=0 rt=2 imm=83
+0023C92C  04 00 83 AC  AC830004  sw rt=3 offset=4(rs=4)
+0023C930  68 00 82 FC  FC820068  op=63 rs=4 rt=2 rd=0 sa=1 fn=40 imm=104
+0023C934  08 00 87 AC  AC870008  sw rt=7 offset=8(rs=4)
+0023C938  0C 00 86 AC  AC86000C  sw rt=6 offset=12(rs=4)
+0023C93C  10 00 8C FC  FC8C0010  op=63 rs=4 rt=12 rd=0 sa=0 fn=16 imm=16
+0023C940  18 00 8D FC  FC8D0018  op=63 rs=4 rt=13 rd=0 sa=0 fn=24 imm=24
+0023C944  20 00 85 FC  FC850020  op=63 rs=4 rt=5 rd=0 sa=0 fn=32 imm=32
+0023C948  28 00 89 FC  FC890028  op=63 rs=4 rt=9 rd=0 sa=0 fn=40 imm=40
+0023C94C  30 00 88 FC  FC880030  op=63 rs=4 rt=8 rd=0 sa=0 fn=48 imm=48
+0023C950  38 00 8B FC  FC8B0038  op=63 rs=4 rt=11 rd=0 sa=0 fn=56 imm=56
+0023C954  40 00 8A FC  FC8A0040  op=63 rs=4 rt=10 rd=0 sa=1 fn=0 imm=64
+0023C958  48 00 8E FC  FC8E0048  op=63 rs=4 rt=14 rd=0 sa=1 fn=8 imm=72
+0023C95C  58 00 8F FC  FC8F0058  op=63 rs=4 rt=15 rd=0 sa=1 fn=24 imm=88
+0023C960  60 00 90 FC  FC900060  op=63 rs=4 rt=16 rd=0 sa=1 fn=32 imm=96
+0023C964  00 00 80 AC  AC800000  sw rt=0 offset=0(rs=4)
+0023C968  50 00 80 FC  FC800050  op=63 rs=4 rt=0 rd=0 sa=1 fn=16 imm=80
+0023C96C  0F 00 00 00  0000000F  op=0 rs=0 rt=0 rd=0 sa=0 fn=15 imm=15
+0023C970  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023C974  07 00 02 24  24020007  addiu rs=0 rt=2 imm=7
+0023C978  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023C97C  10 00 BD 27  27BD0010  addiu rs=29 rt=29 imm=16
+0023C980  F0 FF BD 27  27BDFFF0  addiu rs=29 rt=29 imm=-16
+0023C984  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023C988  00 00 BF FF  FFBF0000  op=63 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023C98C  00 A0 63 34  3463A000  ori rs=3 rt=3 imm=0xA000
+0023C990  2D 38 80 00  0080382D  op=0 rs=4 rt=0 rd=7 sa=0 fn=45 imm=14381
+0023C994  2D 40 A0 00  00A0402D  op=0 rs=5 rt=0 rd=8 sa=0 fn=45 imm=16429
+0023C998  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023C99C  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023C9A0  0C 00 40 10  1040000C  beq rs=2 rt=0 -> 0x0023C9D4
+0023C9A4  2D 30 00 00  0000302D  op=0 rs=0 rt=0 rd=6 sa=0 fn=45 imm=12333
+0023C9A8  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023C9AC  00 01 04 3C  3C040100  lui rt=4 imm=0x0100
+0023C9B0  00 A0 63 34  3463A000  ori rs=3 rt=3 imm=0xA000
+0023C9B4  2D 10 C0 00  00C0102D  op=0 rs=6 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023C9B8  2B 10 82 00  0082102B  op=0 rs=4 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023C9BC  3D 00 40 14  1440003D  bne rs=2 rt=0 -> 0x0023CAB4
+0023C9C0  01 00 C6 24  24C60001  addiu rs=6 rt=6 imm=1
+0023C9C4  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023C9C8  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023C9CC  FA FF 40 14  1440FFFA  bne rs=2 rt=0 -> 0x0023C9B8
+0023C9D0  2D 10 C0 00  00C0102D  op=0 rs=6 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023C9D4  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023C9D8  06 00 05 24  24050006  addiu rs=0 rt=5 imm=6
+0023C9DC  20 A0 42 34  3442A020  ori rs=2 rt=2 imm=0xA020
+0023C9E0  00 70 04 3C  3C047000  lui rt=4 imm=0x7000
+0023C9E4  00 00 45 AC  AC450000  sw rt=5 offset=0(rs=2)
+0023C9E8  24 18 E4 00  00E41824  op=0 rs=7 rt=4 rd=3 sa=0 fn=36 imm=6180
+0023C9EC  08 00 64 14  14640008  bne rs=3 rt=4 -> 0x0023CA10
+0023C9F0  FF 0F 02 3C  3C020FFF  lui rt=2 imm=0x0FFF
+0023C9F4  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023C9F8  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023C9FC  00 80 04 3C  3C048000  lui rt=4 imm=0x8000
+0023CA00  24 10 E2 00  00E21024  op=0 rs=7 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CA04  10 A0 63 34  3463A010  ori rs=3 rt=3 imm=0xA010
+0023CA08  05 00 00 10  10000005  beq rs=0 rt=0 -> 0x0023CA20
+0023CA0C  25 10 44 00  00441025  op=0 rs=2 rt=4 rd=2 sa=0 fn=37 imm=4133
+0023CA10  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CA14  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CA18  10 A0 63 34  3463A010  ori rs=3 rt=3 imm=0xA010
+0023CA1C  24 10 E2 00  00E21024  op=0 rs=7 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CA20  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023CA24  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CA28  01 01 04 24  24040101  addiu rs=0 rt=4 imm=257
+0023CA2C  00 A0 42 34  3442A000  ori rs=2 rt=2 imm=0xA000
+0023CA30  00 00 44 AC  AC440000  sw rt=4 offset=0(rs=2)
+0023CA34  00 00 43 8C  8C430000  lw rt=3 offset=0(rs=2)
+0023CA38  00 01 63 30  30630100  op=12 rs=3 rt=3 rd=0 sa=4 fn=0 imm=256
+0023CA3C  0B 00 60 10  1060000B  beq rs=3 rt=0 -> 0x0023CA6C
+0023CA40  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CA44  00 01 04 3C  3C040100  lui rt=4 imm=0x0100
+0023CA48  00 A0 63 34  3463A000  ori rs=3 rt=3 imm=0xA000
+0023CA4C  2D 10 C0 00  00C0102D  op=0 rs=6 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CA50  2B 10 82 00  0082102B  op=0 rs=4 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023CA54  17 00 40 14  14400017  bne rs=2 rt=0 -> 0x0023CAB4
+0023CA58  01 00 C6 24  24C60001  addiu rs=6 rt=6 imm=1
+0023CA5C  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023CA60  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023CA64  FA FF 40 14  1440FFFA  bne rs=2 rt=0 -> 0x0023CA50
+0023CA68  2D 10 C0 00  00C0102D  op=0 rs=6 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CA6C  50 00 E2 DC  DCE20050  op=55 rs=7 rt=2 rd=0 sa=1 fn=16 imm=80
+0023CA70  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CA74  20 A0 63 34  3463A020  ori rs=3 rt=3 imm=0xA020
+0023CA78  00 70 05 3C  3C057000  lui rt=5 imm=0x7000
+0023CA7C  FF 7F 42 30  30427FFF  op=12 rs=2 rt=2 rd=15 sa=31 fn=63 imm=32767
+0023CA80  24 20 05 01  01052024  op=0 rs=8 rt=5 rd=4 sa=0 fn=36 imm=8228
+0023CA84  3C 10 02 00  0002103C  op=0 rs=0 rt=2 rd=2 sa=0 fn=60 imm=4156
+0023CA88  3F 10 02 00  0002103F  op=0 rs=0 rt=2 rd=2 sa=0 fn=63 imm=4159
+0023CA8C  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023CA90  0D 00 85 14  1485000D  bne rs=4 rt=5 -> 0x0023CAC8
+0023CA94  FF 0F 02 3C  3C020FFF  lui rt=2 imm=0x0FFF
+0023CA98  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CA9C  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CAA0  00 80 04 3C  3C048000  lui rt=4 imm=0x8000
+0023CAA4  24 10 02 01  01021024  op=0 rs=8 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CAA8  10 A0 63 34  3463A010  ori rs=3 rt=3 imm=0xA010
+0023CAAC  0A 00 00 10  1000000A  beq rs=0 rt=0 -> 0x0023CAD8
+0023CAB0  25 10 44 00  00441025  op=0 rs=2 rt=4 rd=2 sa=0 fn=37 imm=4133
+0023CAB4  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023CAB8  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023CABC  F0 42 84 24  248442F0  addiu rs=4 rt=4 imm=17136
+0023CAC0  0B 00 00 10  1000000B  beq rs=0 rt=0 -> 0x0023CAF0
+0023CAC4  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023CAC8  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CACC  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CAD0  10 A0 63 34  3463A010  ori rs=3 rt=3 imm=0xA010
+0023CAD4  24 10 02 01  01021024  op=0 rs=8 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CAD8  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023CADC  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CAE0  01 01 04 24  24040101  addiu rs=0 rt=4 imm=257
+0023CAE4  00 A0 63 34  3463A000  ori rs=3 rt=3 imm=0xA000
+0023CAE8  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CAEC  00 00 64 AC  AC640000  sw rt=4 offset=0(rs=3)
+0023CAF0  00 00 BF DF  DFBF0000  op=55 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023CAF4  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023CAF8  10 00 BD 27  27BD0010  addiu rs=29 rt=29 imm=16
+0023CAFC  00 00 00 00  00000000  nop
+0023CB00  70 FF BD 27  27BDFF70  addiu rs=29 rt=29 imm=-144
+0023CB04  70 00 B6 FF  FFB60070  op=63 rs=29 rt=22 rd=0 sa=1 fn=48 imm=112
+0023CB08  60 00 B5 FF  FFB50060  op=63 rs=29 rt=21 rd=0 sa=1 fn=32 imm=96
+0023CB0C  2D B0 00 00  0000B02D  op=0 rs=0 rt=0 rd=22 sa=0 fn=45 imm=-20435
+0023CB10  50 00 B4 FF  FFB40050  op=63 rs=29 rt=20 rd=0 sa=1 fn=16 imm=80
+0023CB14  2D A8 A0 00  00A0A82D  op=0 rs=5 rt=0 rd=21 sa=0 fn=45 imm=-22483
+0023CB18  40 00 B3 FF  FFB30040  op=63 rs=29 rt=19 rd=0 sa=1 fn=0 imm=64
+0023CB1C  2D A0 80 00  0080A02D  op=0 rs=4 rt=0 rd=20 sa=0 fn=45 imm=-24531
+0023CB20  30 00 B2 FF  FFB20030  op=63 rs=29 rt=18 rd=0 sa=0 fn=48 imm=48
+0023CB24  2D 98 00 00  0000982D  op=0 rs=0 rt=0 rd=19 sa=0 fn=45 imm=-26579
+0023CB28  20 00 B1 FF  FFB10020  op=63 rs=29 rt=17 rd=0 sa=0 fn=32 imm=32
+0023CB2C  2D 90 00 00  0000902D  op=0 rs=0 rt=0 rd=18 sa=0 fn=45 imm=-28627
+0023CB30  10 00 B0 FF  FFB00010  op=63 rs=29 rt=16 rd=0 sa=0 fn=16 imm=16
+0023CB34  2D 88 00 00  0000882D  op=0 rs=0 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023CB38  80 00 BF FF  FFBF0080  op=63 rs=29 rt=31 rd=0 sa=2 fn=0 imm=128
+0023CB3C  2D 80 00 00  0000802D  op=0 rs=0 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023CB40  40 00 89 DE  DE890040  op=55 rs=20 rt=9 rd=0 sa=1 fn=0 imm=64
+0023CB44  20 00 82 DE  DE820020  op=55 rs=20 rt=2 rd=0 sa=0 fn=32 imm=32
+0023CB48  FF 0F 24 31  31240FFF  op=12 rs=9 rt=4 rd=1 sa=31 fn=63 imm=4095
+0023CB4C  3E 18 09 00  0009183E  op=0 rs=0 rt=9 rd=3 sa=0 fn=62 imm=6206
+0023CB50  3A 16 02 00  0002163A  op=0 rs=0 rt=2 rd=2 sa=24 fn=58 imm=5690
+0023CB54  3C 40 04 00  0004403C  op=0 rs=0 rt=4 rd=8 sa=0 fn=60 imm=16444
+0023CB58  3F 40 08 00  0008403F  op=0 rs=0 rt=8 rd=8 sa=0 fn=63 imm=16447
+0023CB5C  3F 00 42 30  3042003F  op=12 rs=2 rt=2 rd=0 sa=0 fn=63 imm=63
+0023CB60  FF 0F 63 30  30630FFF  op=12 rs=3 rt=3 rd=1 sa=31 fn=63 imm=4095
+0023CB64  3C 20 02 00  0002203C  op=0 rs=0 rt=2 rd=4 sa=0 fn=60 imm=8252
+0023CB68  3F 20 04 00  0004203F  op=0 rs=0 rt=4 rd=4 sa=0 fn=63 imm=8255
+0023CB6C  3C 38 03 00  0003383C  op=0 rs=0 rt=3 rd=7 sa=0 fn=60 imm=14396
+0023CB70  3F 38 07 00  0007383F  op=0 rs=0 rt=7 rd=7 sa=0 fn=63 imm=14399
+0023CB74  3B 00 82 2C  2C82003B  op=11 rs=4 rt=2 rd=0 sa=0 fn=59 imm=59
+0023CB78  58 00 40 10  10400058  beq rs=2 rt=0 -> 0x0023CCDC
+0023CB7C  2D 28 00 00  0000282D  op=0 rs=0 rt=0 rd=5 sa=0 fn=45 imm=10285
+0023CB80  92 00 02 3C  3C020092  lui rt=2 imm=0x0092
+0023CB84  80 18 04 00  00041880  op=0 rs=0 rt=4 rd=3 sa=2 fn=0 imm=6272
+0023CB88  10 44 42 24  24424410  addiu rs=2 rt=2 imm=17424
+0023CB8C  21 18 62 00  00621821  op=0 rs=3 rt=2 rd=3 sa=0 fn=33 imm=6177
+0023CB90  00 00 64 8C  8C640000  lw rt=4 offset=0(rs=3)
+0023CB94  08 00 80 00  00800008  op=0 rs=4 rt=0 rd=0 sa=0 fn=8 imm=8
+0023CB98  00 00 00 00  00000000  nop
+0023CB9C  18 20 07 01  01072018  op=0 rs=8 rt=7 rd=4 sa=0 fn=24 imm=8216
+0023CBA0  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023CBA4  F8 FF 42 34  3442FFF8  ori rs=2 rt=2 imm=0xFFF8
+0023CBA8  80 30 04 00  00043080  op=0 rs=0 rt=4 rd=6 sa=2 fn=0 imm=12416
+0023CBAC  03 19 06 00  00061903  op=0 rs=0 rt=6 rd=3 sa=4 fn=3 imm=6403
+0023CBB0  0F 00 D3 30  30D3000F  op=12 rs=6 rt=19 rd=0 sa=0 fn=15 imm=15
+0023CBB4  24 90 62 00  00629024  op=0 rs=3 rt=2 rd=18 sa=0 fn=36 imm=-28636
+0023CBB8  3E 00 60 12  1260003E  beq rs=19 rt=0 -> 0x0023CCB4
+0023CBBC  07 00 71 30  30710007  op=12 rs=3 rt=17 rd=0 sa=0 fn=7 imm=7
+0023CBC0  03 00 E2 24  24E20003  addiu rs=7 rt=2 imm=3
+0023CBC4  FC 1F 45 30  30451FFC  op=12 rs=2 rt=5 rd=3 sa=31 fn=60 imm=8188
+0023CBC8  18 18 05 01  01051818  op=0 rs=8 rt=5 rd=3 sa=0 fn=24 imm=6168
+0023CBCC  40 00 00 10  10000040  beq rs=0 rt=0 -> 0x0023CCD0
+0023CBD0  83 10 03 00  00031083  op=0 rs=0 rt=3 rd=2 sa=2 fn=3 imm=4227
+0023CBD4  18 28 07 01  01072818  op=0 rs=8 rt=7 rd=5 sa=0 fn=24 imm=10264
+0023CBD8  FF FF 03 3C  3C03FFFF  lui rt=3 imm=0xFFFF
+0023CBDC  F8 FF 63 34  3463FFF8  ori rs=3 rt=3 imm=0xFFF8
+0023CBE0  40 10 05 00  00051040  op=0 rs=0 rt=5 rd=2 sa=1 fn=0 imm=4160
+0023CBE4  21 30 45 00  00453021  op=0 rs=2 rt=5 rd=6 sa=0 fn=33 imm=12321
+0023CBE8  03 21 06 00  00062103  op=0 rs=0 rt=6 rd=4 sa=4 fn=3 imm=8451
+0023CBEC  0F 00 D3 30  30D3000F  op=12 rs=6 rt=19 rd=0 sa=0 fn=15 imm=15
+0023CBF0  24 90 83 00  00839024  op=0 rs=4 rt=3 rd=18 sa=0 fn=36 imm=-28636
+0023CBF4  2F 00 60 12  1260002F  beq rs=19 rt=0 -> 0x0023CCB4
+0023CBF8  07 00 91 30  30910007  op=12 rs=4 rt=17 rd=0 sa=0 fn=7 imm=7
+0023CBFC  0F 00 E2 24  24E2000F  addiu rs=7 rt=2 imm=15
+0023CC00  F0 1F 45 30  30451FF0  op=12 rs=2 rt=5 rd=3 sa=31 fn=48 imm=8176
+0023CC04  18 18 05 01  01051818  op=0 rs=8 rt=5 rd=3 sa=0 fn=24 imm=6168
+0023CC08  40 10 03 00  00031040  op=0 rs=0 rt=3 rd=2 sa=1 fn=0 imm=4160
+0023CC0C  21 10 43 00  00431021  op=0 rs=2 rt=3 rd=2 sa=0 fn=33 imm=4129
+0023CC10  03 11 02 00  00021103  op=0 rs=0 rt=2 rd=2 sa=4 fn=3 imm=4355
+0023CC14  23 18 52 00  00521823  op=0 rs=2 rt=18 rd=3 sa=0 fn=35 imm=6179
+0023CC18  23 18 71 00  00711823  op=0 rs=3 rt=17 rd=3 sa=0 fn=35 imm=6179
+0023CC1C  2F 00 00 10  1000002F  beq rs=0 rt=0 -> 0x0023CCDC
+0023CC20  FF FF 76 24  2476FFFF  addiu rs=3 rt=22 imm=-1
+0023CC24  18 18 07 01  01071818  op=0 rs=8 rt=7 rd=3 sa=0 fn=24 imm=6168
+0023CC28  FF FF 05 3C  3C05FFFF  lui rt=5 imm=0xFFFF
+0023CC2C  F8 FF A5 34  34A5FFF8  ori rs=5 rt=5 imm=0xFFF8
+0023CC30  40 30 03 00  00033040  op=0 rs=0 rt=3 rd=6 sa=1 fn=0 imm=12352
+0023CC34  03 11 06 00  00061103  op=0 rs=0 rt=6 rd=2 sa=4 fn=3 imm=4355
+0023CC38  0F 00 D3 30  30D3000F  op=12 rs=6 rt=19 rd=0 sa=0 fn=15 imm=15
+0023CC3C  24 90 45 00  00459024  op=0 rs=2 rt=5 rd=18 sa=0 fn=36 imm=-28636
+0023CC40  1C 00 60 12  1260001C  beq rs=19 rt=0 -> 0x0023CCB4
+0023CC44  07 00 51 30  30510007  op=12 rs=2 rt=17 rd=0 sa=0 fn=7 imm=7
+0023CC48  07 00 E2 24  24E20007  addiu rs=7 rt=2 imm=7
+0023CC4C  24 28 45 00  00452824  op=0 rs=2 rt=5 rd=5 sa=0 fn=36 imm=10276
+0023CC50  18 18 05 01  01051818  op=0 rs=8 rt=5 rd=3 sa=0 fn=24 imm=6168
+0023CC54  1E 00 00 10  1000001E  beq rs=0 rt=0 -> 0x0023CCD0
+0023CC58  C3 10 03 00  000310C3  op=0 rs=0 rt=3 rd=2 sa=3 fn=3 imm=4291
+0023CC5C  18 30 07 01  01073018  op=0 rs=8 rt=7 rd=6 sa=0 fn=24 imm=12312
+0023CC60  FF FF 03 3C  3C03FFFF  lui rt=3 imm=0xFFFF
+0023CC64  F8 FF 63 34  3463FFF8  ori rs=3 rt=3 imm=0xFFF8
+0023CC68  03 11 06 00  00061103  op=0 rs=0 rt=6 rd=2 sa=4 fn=3 imm=4355
+0023CC6C  0F 00 D3 30  30D3000F  op=12 rs=6 rt=19 rd=0 sa=0 fn=15 imm=15
+0023CC70  24 90 43 00  00439024  op=0 rs=2 rt=3 rd=18 sa=0 fn=36 imm=-28636
+0023CC74  0F 00 60 12  1260000F  beq rs=19 rt=0 -> 0x0023CCB4
+0023CC78  07 00 51 30  30510007  op=12 rs=2 rt=17 rd=0 sa=0 fn=7 imm=7
+0023CC7C  07 00 E2 24  24E20007  addiu rs=7 rt=2 imm=7
+0023CC80  24 28 43 00  00432824  op=0 rs=2 rt=3 rd=5 sa=0 fn=36 imm=10276
+0023CC84  18 18 05 01  01051818  op=0 rs=8 rt=5 rd=3 sa=0 fn=24 imm=6168
+0023CC88  11 00 00 10  10000011  beq rs=0 rt=0 -> 0x0023CCD0
+0023CC8C  03 11 03 00  00031103  op=0 rs=0 rt=3 rd=2 sa=4 fn=3 imm=4355
+0023CC90  18 10 07 01  01071018  op=0 rs=8 rt=7 rd=2 sa=0 fn=24 imm=4120
+0023CC94  FF FF 05 3C  3C05FFFF  lui rt=5 imm=0xFFFF
+0023CC98  F8 FF A5 34  34A5FFF8  ori rs=5 rt=5 imm=0xFFF8
+0023CC9C  43 19 02 00  00021943  op=0 rs=0 rt=2 rd=3 sa=5 fn=3 imm=6467
+0023CCA0  43 30 02 00  00023043  op=0 rs=0 rt=2 rd=6 sa=1 fn=3 imm=12355
+0023CCA4  0F 00 D3 30  30D3000F  op=12 rs=6 rt=19 rd=0 sa=0 fn=15 imm=15
+0023CCA8  24 90 65 00  00659024  op=0 rs=3 rt=5 rd=18 sa=0 fn=36 imm=-28636
+0023CCAC  04 00 60 16  16600004  bne rs=19 rt=0 -> 0x0023CCC0
+0023CCB0  07 00 71 30  30710007  op=12 rs=3 rt=17 rd=0 sa=0 fn=7 imm=7
+0023CCB4  2D 28 E0 00  00E0282D  op=0 rs=7 rt=0 rd=5 sa=0 fn=45 imm=10285
+0023CCB8  08 00 00 10  10000008  beq rs=0 rt=0 -> 0x0023CCDC
+0023CCBC  2D B0 00 00  0000B02D  op=0 rs=0 rt=0 rd=22 sa=0 fn=45 imm=-20435
+0023CCC0  07 00 E2 24  24E20007  addiu rs=7 rt=2 imm=7
+0023CCC4  24 28 45 00  00452824  op=0 rs=2 rt=5 rd=5 sa=0 fn=36 imm=10276
+0023CCC8  18 18 05 01  01051818  op=0 rs=8 rt=5 rd=3 sa=0 fn=24 imm=6168
+0023CCCC  43 11 03 00  00031143  op=0 rs=0 rt=3 rd=2 sa=5 fn=3 imm=4419
+0023CCD0  23 10 52 00  00521023  op=0 rs=2 rt=18 rd=2 sa=0 fn=35 imm=4131
+0023CCD4  23 10 51 00  00511023  op=0 rs=2 rt=17 rd=2 sa=0 fn=35 imm=4131
+0023CCD8  FF FF 56 24  2456FFFF  addiu rs=2 rt=22 imm=-1
+0023CCDC  09 00 60 12  12600009  beq rs=19 rt=0 -> 0x0023CD04
+0023CCE0  FF 0F 23 31  31230FFF  op=12 rs=9 rt=3 rd=1 sa=31 fn=63 imm=4095
+0023CCE4  3C 28 05 00  0005283C  op=0 rs=0 rt=5 rd=5 sa=0 fn=60 imm=10300
+0023CCE8  3C 18 03 00  0003183C  op=0 rs=0 rt=3 rd=3 sa=0 fn=60 imm=6204
+0023CCEC  3F 18 03 00  0003183F  op=0 rs=0 rt=3 rd=3 sa=0 fn=63 imm=6207
+0023CCF0  40 00 82 26  26820040  addiu rs=20 rt=2 imm=64
+0023CCF4  00 20 04 3C  3C042000  lui rt=4 imm=0x2000
+0023CCF8  25 18 65 00  00651825  op=0 rs=3 rt=5 rd=3 sa=0 fn=37 imm=6181
+0023CCFC  25 10 44 00  00441025  op=0 rs=2 rt=4 rd=2 sa=0 fn=37 imm=4133
+0023CD00  00 00 43 FC  FC430000  op=63 rs=2 rt=3 rd=0 sa=0 fn=0 imm=0
+0023CD04  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CD08  00 90 42 34  34429000  ori rs=2 rt=2 imm=0x9000
+0023CD0C  00 00 43 8C  8C430000  lw rt=3 offset=0(rs=2)
+0023CD10  00 01 63 30  30630100  op=12 rs=3 rt=3 rd=0 sa=4 fn=0 imm=256
+0023CD14  0B 00 60 10  1060000B  beq rs=3 rt=0 -> 0x0023CD44
+0023CD18  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CD1C  00 01 04 3C  3C040100  lui rt=4 imm=0x0100
+0023CD20  00 90 63 34  34639000  ori rs=3 rt=3 imm=0x9000
+0023CD24  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CD28  2B 10 82 00  0082102B  op=0 rs=4 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023CD2C  5E 00 40 14  1440005E  bne rs=2 rt=0 -> 0x0023CEA8
+0023CD30  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023CD34  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023CD38  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023CD3C  FA FF 40 14  1440FFFA  bne rs=2 rt=0 -> 0x0023CD28
+0023CD40  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CD44  10 3E 0D 0C  0C0D3E10  jal 0x0034F840
+0023CD48  00 00 00 00  00000000  nop
+0023CD4C  00 02 04 24  24040200  addiu rs=0 rt=4 imm=512
+0023CD50  18 3E 0D 0C  0C0D3E18  jal 0x0034F860
+0023CD54  25 20 44 00  00442025  op=0 rs=2 rt=4 rd=4 sa=0 fn=37 imm=8229
+0023CD58  2D 58 40 00  0040582D  op=0 rs=2 rt=0 rd=11 sa=0 fn=45 imm=22573
+0023CD5C  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023CD60  00 12 02 3C  3C021200  lui rt=2 imm=0x1200
+0023CD64  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CD68  00 10 42 34  34421000  ori rs=2 rt=2 imm=0x1000
+0023CD6C  20 90 63 34  34639020  ori rs=3 rt=3 imm=0x9020
+0023CD70  00 00 44 FC  FC440000  op=63 rs=2 rt=4 rd=0 sa=0 fn=0 imm=0
+0023CD74  00 70 05 3C  3C057000  lui rt=5 imm=0x7000
+0023CD78  07 00 04 24  24040007  addiu rs=0 rt=4 imm=7
+0023CD7C  24 10 85 02  02851024  op=0 rs=20 rt=5 rd=2 sa=0 fn=36 imm=4132
+0023CD80  00 00 64 AC  AC640000  sw rt=4 offset=0(rs=3)
+0023CD84  08 00 45 14  14450008  bne rs=2 rt=5 -> 0x0023CDA8
+0023CD88  FF 0F 02 3C  3C020FFF  lui rt=2 imm=0x0FFF
+0023CD8C  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CD90  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CD94  00 80 04 3C  3C048000  lui rt=4 imm=0x8000
+0023CD98  24 10 82 02  02821024  op=0 rs=20 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CD9C  10 90 63 34  34639010  ori rs=3 rt=3 imm=0x9010
+0023CDA0  05 00 00 10  10000005  beq rs=0 rt=0 -> 0x0023CDB8
+0023CDA4  25 10 44 00  00441025  op=0 rs=2 rt=4 rd=2 sa=0 fn=37 imm=4133
+0023CDA8  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CDAC  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CDB0  10 90 63 34  34639010  ori rs=3 rt=3 imm=0x9010
+0023CDB4  24 10 82 02  02821024  op=0 rs=20 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CDB8  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023CDBC  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CDC0  01 01 04 24  24040101  addiu rs=0 rt=4 imm=257
+0023CDC4  00 90 42 34  34429000  ori rs=2 rt=2 imm=0x9000
+0023CDC8  00 00 44 AC  AC440000  sw rt=4 offset=0(rs=2)
+0023CDCC  00 00 43 8C  8C430000  lw rt=3 offset=0(rs=2)
+0023CDD0  00 01 63 30  30630100  op=12 rs=3 rt=3 rd=0 sa=4 fn=0 imm=256
+0023CDD4  0B 00 60 10  1060000B  beq rs=3 rt=0 -> 0x0023CE04
+0023CDD8  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CDDC  00 01 04 3C  3C040100  lui rt=4 imm=0x0100
+0023CDE0  00 90 63 34  34639000  ori rs=3 rt=3 imm=0x9000
+0023CDE4  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CDE8  2B 10 82 00  0082102B  op=0 rs=4 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023CDEC  2E 00 40 14  1440002E  bne rs=2 rt=0 -> 0x0023CEA8
+0023CDF0  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023CDF4  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023CDF8  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023CDFC  FA FF 40 14  1440FFFA  bne rs=2 rt=0 -> 0x0023CDE8
+0023CE00  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CE04  00 12 02 3C  3C021200  lui rt=2 imm=0x1200
+0023CE08  00 10 42 34  34421000  ori rs=2 rt=2 imm=0x1000
+0023CE0C  00 00 43 DC  DC430000  op=55 rs=2 rt=3 rd=0 sa=0 fn=0 imm=0
+0023CE10  02 00 63 30  30630002  op=12 rs=3 rt=3 rd=0 sa=0 fn=2 imm=2
+0023CE14  0E 00 60 14  1460000E  bne rs=3 rt=0 -> 0x0023CE50
+0023CE18  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CE1C  00 12 03 3C  3C031200  lui rt=3 imm=0x1200
+0023CE20  00 01 04 3C  3C040100  lui rt=4 imm=0x0100
+0023CE24  00 10 63 34  34631000  ori rs=3 rt=3 imm=0x1000
+0023CE28  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CE2C  00 00 00 00  00000000  nop
+0023CE30  2B 10 82 00  0082102B  op=0 rs=4 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023CE34  21 00 40 14  14400021  bne rs=2 rt=0 -> 0x0023CEBC
+0023CE38  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023CE3C  00 00 62 DC  DC620000  op=55 rs=3 rt=2 rd=0 sa=0 fn=0 imm=0
+0023CE40  02 00 42 30  30420002  op=12 rs=2 rt=2 rd=0 sa=0 fn=2 imm=2
+0023CE44  FA FF 40 10  1040FFFA  beq rs=2 rt=0 -> 0x0023CE30
+0023CE48  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CE4C  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CE50  80 00 04 3C  3C040080  lui rt=4 imm=0x0080
+0023CE54  00 3C 42 34  34423C00  ori rs=2 rt=2 imm=0x3C00
+0023CE58  00 12 03 3C  3C031200  lui rt=3 imm=0x1200
+0023CE5C  00 00 44 AC  AC440000  sw rt=4 offset=0(rs=2)
+0023CE60  40 10 63 34  34631040  ori rs=3 rt=3 imm=0x1040
+0023CE64  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023CE68  00 00 62 FC  FC620000  op=63 rs=3 rt=2 rd=0 sa=0 fn=0 imm=0
+0023CE6C  4F 00 40 12  1240004F  beq rs=18 rt=0 -> 0x0023CFAC
+0023CE70  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CE74  00 70 04 3C  3C047000  lui rt=4 imm=0x7000
+0023CE78  20 90 42 34  34429020  ori rs=2 rt=2 imm=0x9020
+0023CE7C  24 18 A4 02  02A41824  op=0 rs=21 rt=4 rd=3 sa=0 fn=36 imm=6180
+0023CE80  00 00 52 AC  AC520000  sw rt=18 offset=0(rs=2)
+0023CE84  31 00 64 14  14640031  bne rs=3 rt=4 -> 0x0023CF4C
+0023CE88  FF 0F 02 3C  3C020FFF  lui rt=2 imm=0x0FFF
+0023CE8C  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CE90  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CE94  00 80 04 3C  3C048000  lui rt=4 imm=0x8000
+0023CE98  24 10 A2 02  02A21024  op=0 rs=21 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CE9C  10 90 63 34  34639010  ori rs=3 rt=3 imm=0x9010
+0023CEA0  2E 00 00 10  1000002E  beq rs=0 rt=0 -> 0x0023CF5C
+0023CEA4  25 10 44 00  00441025  op=0 rs=2 rt=4 rd=2 sa=0 fn=37 imm=4133
+0023CEA8  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023CEAC  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023CEB0  30 43 84 24  24844330  addiu rs=4 rt=4 imm=17200
+0023CEB4  AB 00 00 10  100000AB  beq rs=0 rt=0 -> 0x0023D164
+0023CEB8  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023CEBC  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023CEC0  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023CEC4  68 43 84 24  24844368  addiu rs=4 rt=4 imm=17256
+0023CEC8  6F 00 02 3C  3C02006F  lui rt=2 imm=0x006F
+0023CECC  00 10 04 3C  3C041000  lui rt=4 imm=0x1000
+0023CED0  40 DE 42 24  2442DE40  addiu rs=2 rt=2 imm=-8640
+0023CED4  00 50 84 34  34845000  ori rs=4 rt=4 imm=0x5000
+0023CED8  00 00 43 78  78430000  op=30 rs=2 rt=3 rd=0 sa=0 fn=0 imm=0
+0023CEDC  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023CEE0  00 00 83 7C  7C830000  op=31 rs=4 rt=3 rd=0 sa=0 fn=0 imm=0
+0023CEE4  A0 00 00 10  100000A0  beq rs=0 rt=0 -> 0x0023D168
+0023CEE8  80 00 BF DF  DFBF0080  op=55 rs=29 rt=31 rd=0 sa=2 fn=0 imm=128
+0023CEEC  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023CEF0  03 00 00 10  10000003  beq rs=0 rt=0 -> 0x0023CF00
+0023CEF4  98 43 84 24  24844398  addiu rs=4 rt=4 imm=17304
+0023CEF8  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023CEFC  D8 43 84 24  248443D8  addiu rs=4 rt=4 imm=17368
+0023CF00  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023CF04  00 00 00 00  00000000  nop
+0023CF08  00 12 02 3C  3C021200  lui rt=2 imm=0x1200
+0023CF0C  00 01 04 24  24040100  addiu rs=0 rt=4 imm=256
+0023CF10  00 10 42 34  34421000  ori rs=2 rt=2 imm=0x1000
+0023CF14  00 12 03 3C  3C031200  lui rt=3 imm=0x1200
+0023CF18  00 00 44 FC  FC440000  op=63 rs=2 rt=4 rd=0 sa=0 fn=0 imm=0
+0023CF1C  40 10 63 34  34631040  ori rs=3 rt=3 imm=0x1040
+0023CF20  00 00 60 FC  FC600000  op=63 rs=3 rt=0 rd=0 sa=0 fn=0 imm=0
+0023CF24  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CF28  01 00 04 24  24040001  addiu rs=0 rt=4 imm=1
+0023CF2C  00 30 42 34  34423000  ori rs=2 rt=2 imm=0x3000
+0023CF30  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CF34  00 00 44 AC  AC440000  sw rt=4 offset=0(rs=2)
+0023CF38  10 3C 63 34  34633C10  ori rs=3 rt=3 imm=0x3C10
+0023CF3C  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023CF40  00 00 64 AC  AC640000  sw rt=4 offset=0(rs=3)
+0023CF44  88 00 00 10  10000088  beq rs=0 rt=0 -> 0x0023D168
+0023CF48  80 00 BF DF  DFBF0080  op=55 rs=29 rt=31 rd=0 sa=2 fn=0 imm=128
+0023CF4C  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CF50  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023CF54  10 90 63 34  34639010  ori rs=3 rt=3 imm=0x9010
+0023CF58  24 10 A2 02  02A21024  op=0 rs=21 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023CF5C  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023CF60  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023CF64  00 01 04 24  24040100  addiu rs=0 rt=4 imm=256
+0023CF68  00 90 42 34  34429000  ori rs=2 rt=2 imm=0x9000
+0023CF6C  00 00 44 AC  AC440000  sw rt=4 offset=0(rs=2)
+0023CF70  00 00 43 8C  8C430000  lw rt=3 offset=0(rs=2)
+0023CF74  00 01 63 30  30630100  op=12 rs=3 rt=3 rd=0 sa=4 fn=0 imm=256
+0023CF78  0C 00 60 10  1060000C  beq rs=3 rt=0 -> 0x0023CFAC
+0023CF7C  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CF80  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CF84  00 01 04 3C  3C040100  lui rt=4 imm=0x0100
+0023CF88  00 90 63 34  34639000  ori rs=3 rt=3 imm=0x9000
+0023CF8C  00 00 00 00  00000000  nop
+0023CF90  2B 10 82 00  0082102B  op=0 rs=4 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023CF94  D5 FF 40 14  1440FFD5  bne rs=2 rt=0 -> 0x0023CEEC
+0023CF98  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023CF9C  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023CFA0  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023CFA4  FA FF 40 14  1440FFFA  bne rs=2 rt=0 -> 0x0023CF90
+0023CFA8  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CFAC  1D 00 20 12  1220001D  beq rs=17 rt=0 -> 0x0023D024
+0023CFB0  2D 28 00 00  0000282D  op=0 rs=0 rt=0 rd=5 sa=0 fn=45 imm=10285
+0023CFB4  00 10 09 3C  3C091000  lui rt=9 imm=0x1000
+0023CFB8  00 10 08 3C  3C081000  lui rt=8 imm=0x1000
+0023CFBC  00 11 12 00  00121100  op=0 rs=0 rt=18 rd=2 sa=4 fn=0 imm=4352
+0023CFC0  00 3C 29 35  35293C00  ori rs=9 rt=9 imm=0x3C00
+0023CFC4  21 30 55 00  00553021  op=0 rs=2 rt=21 rd=6 sa=0 fn=33 imm=12321
+0023CFC8  00 1F 0A 3C  3C0A1F00  lui rt=10 imm=0x1F00
+0023CFCC  00 50 08 35  35085000  ori rs=8 rt=8 imm=0x5000
+0023CFD0  00 00 22 8D  8D220000  lw rt=2 offset=0(rs=9)
+0023CFD4  24 10 4A 00  004A1024  op=0 rs=2 rt=10 rd=2 sa=0 fn=36 imm=4132
+0023CFD8  0C 00 40 14  1440000C  bne rs=2 rt=0 -> 0x0023D00C
+0023CFDC  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023CFE0  00 01 07 3C  3C070100  lui rt=7 imm=0x0100
+0023CFE4  00 3C 63 34  34633C00  ori rs=3 rt=3 imm=0x3C00
+0023CFE8  00 1F 04 3C  3C041F00  lui rt=4 imm=0x1F00
+0023CFEC  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023CFF0  2B 10 E2 00  00E2102B  op=0 rs=7 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023CFF4  C0 FF 40 14  1440FFC0  bne rs=2 rt=0 -> 0x0023CEF8
+0023CFF8  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023CFFC  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D000  24 10 44 00  00441024  op=0 rs=2 rt=4 rd=2 sa=0 fn=36 imm=4132
+0023D004  FA FF 40 10  1040FFFA  beq rs=2 rt=0 -> 0x0023CFF0
+0023D008  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D00C  00 00 02 79  79020000  op=30 rs=8 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D010  01 00 A5 24  24A50001  addiu rs=5 rt=5 imm=1
+0023D014  2A 18 B1 00  00B1182A  op=0 rs=5 rt=17 rd=3 sa=0 fn=42 imm=6186
+0023D018  00 00 C2 7C  7CC20000  op=31 rs=6 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D01C  EC FF 60 14  1460FFEC  bne rs=3 rt=0 -> 0x0023CFD0
+0023D020  10 00 C6 24  24C60010  addiu rs=6 rt=6 imm=16
+0023D024  3C 00 60 12  1260003C  beq rs=19 rt=0 -> 0x0023D118
+0023D028  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D02C  00 1F 04 3C  3C041F00  lui rt=4 imm=0x1F00
+0023D030  00 3C 42 34  34423C00  ori rs=2 rt=2 imm=0x3C00
+0023D034  00 00 43 8C  8C430000  lw rt=3 offset=0(rs=2)
+0023D038  24 18 64 00  00641824  op=0 rs=3 rt=4 rd=3 sa=0 fn=36 imm=6180
+0023D03C  0C 00 60 14  1460000C  bne rs=3 rt=0 -> 0x0023D070
+0023D040  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D044  00 01 05 3C  3C050100  lui rt=5 imm=0x0100
+0023D048  00 3C 63 34  34633C00  ori rs=3 rt=3 imm=0x3C00
+0023D04C  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D050  2B 10 A2 00  00A2102B  op=0 rs=5 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023D054  A8 FF 40 14  1440FFA8  bne rs=2 rt=0 -> 0x0023CEF8
+0023D058  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023D05C  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D060  24 10 44 00  00441024  op=0 rs=2 rt=4 rd=2 sa=0 fn=36 imm=4132
+0023D064  FA FF 40 10  1040FFFA  beq rs=2 rt=0 -> 0x0023D050
+0023D068  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D06C  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D070  2D 28 00 00  0000282D  op=0 rs=0 rt=0 rd=5 sa=0 fn=45 imm=10285
+0023D074  00 50 63 34  34635000  ori rs=3 rt=3 imm=0x5000
+0023D078  00 00 62 78  78620000  op=30 rs=3 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D07C  0B 00 60 12  1260000B  beq rs=19 rt=0 -> 0x0023D0AC
+0023D080  00 00 A2 7F  7FA20000  op=31 rs=29 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D084  21 30 51 02  02513021  op=0 rs=18 rt=17 rd=6 sa=0 fn=33 imm=12321
+0023D088  00 19 06 00  00061900  op=0 rs=0 rt=6 rd=3 sa=4 fn=0 imm=6400
+0023D08C  21 10 A5 03  03A51021  op=0 rs=29 rt=5 rd=2 sa=0 fn=33 imm=4129
+0023D090  21 18 75 00  00751821  op=0 rs=3 rt=21 rd=3 sa=0 fn=33 imm=6177
+0023D094  00 00 44 90  90440000  lbu rt=4 offset=0(rs=2)
+0023D098  21 18 65 00  00651821  op=0 rs=3 rt=5 rd=3 sa=0 fn=33 imm=6177
+0023D09C  01 00 A5 24  24A50001  addiu rs=5 rt=5 imm=1
+0023D0A0  2A 10 B3 00  00B3102A  op=0 rs=5 rt=19 rd=2 sa=0 fn=42 imm=4138
+0023D0A4  F8 FF 40 14  1440FFF8  bne rs=2 rt=0 -> 0x0023D088
+0023D0A8  00 00 64 A0  A0640000  sb rt=4 offset=0(rs=3)
+0023D0AC  1A 00 C0 1A  1AC0001A  op=6 rs=22 rt=0 rd=0 sa=0 fn=26 imm=26
+0023D0B0  2D 28 00 00  0000282D  op=0 rs=0 rt=0 rd=5 sa=0 fn=45 imm=10285
+0023D0B4  00 10 08 3C  3C081000  lui rt=8 imm=0x1000
+0023D0B8  00 10 07 3C  3C071000  lui rt=7 imm=0x1000
+0023D0BC  00 3C 08 35  35083C00  ori rs=8 rt=8 imm=0x3C00
+0023D0C0  00 1F 09 3C  3C091F00  lui rt=9 imm=0x1F00
+0023D0C4  00 50 E7 34  34E75000  ori rs=7 rt=7 imm=0x5000
+0023D0C8  00 00 02 8D  8D020000  lw rt=2 offset=0(rs=8)
+0023D0CC  24 10 49 00  00491024  op=0 rs=2 rt=9 rd=2 sa=0 fn=36 imm=4132
+0023D0D0  0C 00 40 14  1440000C  bne rs=2 rt=0 -> 0x0023D104
+0023D0D4  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D0D8  00 01 06 3C  3C060100  lui rt=6 imm=0x0100
+0023D0DC  00 3C 63 34  34633C00  ori rs=3 rt=3 imm=0x3C00
+0023D0E0  00 1F 04 3C  3C041F00  lui rt=4 imm=0x1F00
+0023D0E4  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D0E8  2B 10 C2 00  00C2102B  op=0 rs=6 rt=2 rd=2 sa=0 fn=43 imm=4139
+0023D0EC  82 FF 40 14  1440FF82  bne rs=2 rt=0 -> 0x0023CEF8
+0023D0F0  01 00 10 26  26100001  addiu rs=16 rt=16 imm=1
+0023D0F4  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D0F8  24 10 44 00  00441024  op=0 rs=2 rt=4 rd=2 sa=0 fn=36 imm=4132
+0023D0FC  FA FF 40 10  1040FFFA  beq rs=2 rt=0 -> 0x0023D0E8
+0023D100  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D104  00 00 E2 78  78E20000  op=30 rs=7 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D108  01 00 A5 24  24A50001  addiu rs=5 rt=5 imm=1
+0023D10C  2A 18 B6 00  00B6182A  op=0 rs=5 rt=22 rd=3 sa=0 fn=42 imm=6186
+0023D110  ED FF 60 14  1460FFED  bne rs=3 rt=0 -> 0x0023D0C8
+0023D114  00 00 A2 7F  7FA20000  op=31 rs=29 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D118  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D11C  00 12 03 3C  3C031200  lui rt=3 imm=0x1200
+0023D120  00 3C 42 34  34423C00  ori rs=2 rt=2 imm=0x3C00
+0023D124  40 10 63 34  34631040  ori rs=3 rt=3 imm=0x1040
+0023D128  00 00 40 AC  AC400000  sw rt=0 offset=0(rs=2)
+0023D12C  2D 20 60 01  0160202D  op=0 rs=11 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D130  18 3E 0D 0C  0C0D3E18  jal 0x0034F860
+0023D134  00 00 60 FC  FC600000  op=63 rs=3 rt=0 rd=0 sa=0 fn=0 imm=0
+0023D138  6F 00 03 3C  3C03006F  lui rt=3 imm=0x006F
+0023D13C  00 12 02 3C  3C021200  lui rt=2 imm=0x1200
+0023D140  40 DE 63 24  2463DE40  addiu rs=3 rt=3 imm=-8640
+0023D144  00 10 42 34  34421000  ori rs=2 rt=2 imm=0x1000
+0023D148  00 00 65 78  78650000  op=30 rs=3 rt=5 rd=0 sa=0 fn=0 imm=0
+0023D14C  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D150  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D154  00 00 44 FC  FC440000  op=63 rs=2 rt=4 rd=0 sa=0 fn=0 imm=0
+0023D158  00 50 63 34  34635000  ori rs=3 rt=3 imm=0x5000
+0023D15C  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D160  00 00 65 7C  7C650000  op=31 rs=3 rt=5 rd=0 sa=0 fn=0 imm=0
+0023D164  80 00 BF DF  DFBF0080  op=55 rs=29 rt=31 rd=0 sa=2 fn=0 imm=128
+0023D168  70 00 B6 DF  DFB60070  op=55 rs=29 rt=22 rd=0 sa=1 fn=48 imm=112
+0023D16C  60 00 B5 DF  DFB50060  op=55 rs=29 rt=21 rd=0 sa=1 fn=32 imm=96
+0023D170  50 00 B4 DF  DFB40050  op=55 rs=29 rt=20 rd=0 sa=1 fn=16 imm=80
+0023D174  40 00 B3 DF  DFB30040  op=55 rs=29 rt=19 rd=0 sa=1 fn=0 imm=64
+0023D178  30 00 B2 DF  DFB20030  op=55 rs=29 rt=18 rd=0 sa=0 fn=48 imm=48
+0023D17C  20 00 B1 DF  DFB10020  op=55 rs=29 rt=17 rd=0 sa=0 fn=32 imm=32
+0023D180  10 00 B0 DF  DFB00010  op=55 rs=29 rt=16 rd=0 sa=0 fn=16 imm=16
+0023D184  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D188  90 00 BD 27  27BD0090  addiu rs=29 rt=29 imm=144
+0023D18C  00 00 00 00  00000000  nop
+0023D190  C0 FF BD 27  27BDFFC0  addiu rs=29 rt=29 imm=-64
+0023D194  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D198  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D19C  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D1A0  30 00 BF FF  FFBF0030  op=63 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D1A4  82 EF 0C 0C  0C0CEF82  jal 0x0033BE08
+0023D1A8  2D 88 80 00  0080882D  op=0 rs=4 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D1AC  2D 80 40 00  0040802D  op=0 rs=2 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D1B0  09 00 20 16  16200009  bne rs=17 rt=0 -> 0x0023D1D8
+0023D1B4  08 00 12 8E  8E120008  lw rt=18 offset=8(rs=16)
+0023D1B8  00 40 0D 0C  0C0D4000  jal 0x00350000
+0023D1BC  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D1C0  0C 00 05 8E  8E05000C  lw rt=5 offset=12(rs=16)
+0023D1C4  88 3C 0D 0C  0C0D3C88  jal 0x0034F220
+0023D1C8  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D1CC  08 00 00 AE  AE000008  sw rt=0 offset=8(rs=16)
+0023D1D0  10 00 00 10  10000010  beq rs=0 rt=0 -> 0x0023D214
+0023D1D4  0C 00 00 AE  AE00000C  sw rt=0 offset=12(rs=16)
+0023D1D8  07 00 40 52  52400007  op=20 rs=18 rt=0 rd=0 sa=0 fn=7 imm=7
+0023D1DC  08 00 11 AE  AE110008  sw rt=17 offset=8(rs=16)
+0023D1E0  00 40 0D 0C  0C0D4000  jal 0x00350000
+0023D1E4  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D1E8  0C 00 05 8E  8E05000C  lw rt=5 offset=12(rs=16)
+0023D1EC  88 3C 0D 0C  0C0D3C88  jal 0x0034F220
+0023D1F0  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D1F4  08 00 11 AE  AE110008  sw rt=17 offset=8(rs=16)
+0023D1F8  2D 28 20 02  0220282D  op=0 rs=17 rt=0 rd=5 sa=0 fn=45 imm=10285
+0023D1FC  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D200  80 3C 0D 0C  0C0D3C80  jal 0x0034F200
+0023D204  FF FF 06 24  2406FFFF  addiu rs=0 rt=6 imm=-1
+0023D208  0C 00 02 AE  AE02000C  sw rt=2 offset=12(rs=16)
+0023D20C  1A 40 0D 0C  0C0D401A  jal 0x00350068
+0023D210  02 00 04 24  24040002  addiu rs=0 rt=4 imm=2
+0023D214  2D 10 40 02  0240102D  op=0 rs=18 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D218  30 00 BF DF  DFBF0030  op=55 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D21C  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D220  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D224  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D228  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D22C  40 00 BD 27  27BD0040  addiu rs=29 rt=29 imm=64
+0023D230  C0 FF BD 27  27BDFFC0  addiu rs=29 rt=29 imm=-64
+0023D234  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D238  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D23C  00 01 11 3C  3C110100  lui rt=17 imm=0x0100
+0023D240  30 00 BF FF  FFBF0030  op=63 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D244  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D248  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D24C  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D250  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023D254  0C 00 40 10  1040000C  beq rs=2 rt=0 -> 0x0023D288
+0023D258  92 00 12 3C  3C120092  lui rt=18 imm=0x0092
+0023D25C  FF FF 31 26  2631FFFF  addiu rs=17 rt=17 imm=-1
+0023D260  05 00 21 06  06210005  op=1 rs=17 rt=1 rd=0 sa=0 fn=5 imm=5
+0023D264  00 00 00 00  00000000  nop
+0023D268  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023D26C  00 45 44 26  26444500  addiu rs=18 rt=4 imm=17664
+0023D270  72 F6 0C 0C  0C0CF672  jal 0x0033D9C8
+0023D274  2D 20 00 02  0200202D  op=0 rs=16 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D278  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D27C  00 01 42 30  30420100  op=12 rs=2 rt=2 rd=0 sa=4 fn=0 imm=256
+0023D280  F7 FF 40 14  1440FFF7  bne rs=2 rt=0 -> 0x0023D260
+0023D284  FF FF 31 26  2631FFFF  addiu rs=17 rt=17 imm=-1
+0023D288  30 00 BF DF  DFBF0030  op=55 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D28C  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D290  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D294  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D298  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D29C  40 00 BD 27  27BD0040  addiu rs=29 rt=29 imm=64
+0023D2A0  B0 FF BD 27  27BDFFB0  addiu rs=29 rt=29 imm=-80
+0023D2A4  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D2A8  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D2AC  2D 90 A0 00  00A0902D  op=0 rs=5 rt=0 rd=18 sa=0 fn=45 imm=-28627
+0023D2B0  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D2B4  2D 88 80 00  0080882D  op=0 rs=4 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D2B8  40 00 BF FF  FFBF0040  op=63 rs=29 rt=31 rd=0 sa=1 fn=0 imm=64
+0023D2BC  00 01 10 3C  3C100100  lui rt=16 imm=0x0100
+0023D2C0  30 00 B3 FF  FFB30030  op=63 rs=29 rt=19 rd=0 sa=0 fn=48 imm=48
+0023D2C4  0B 80 C6 00  00C6800B  op=0 rs=6 rt=6 rd=16 sa=0 fn=11 imm=-32757
+0023D2C8  10 00 22 8E  8E220010  lw rt=2 offset=16(rs=17)
+0023D2CC  2B 10 52 00  0052102B  op=0 rs=2 rt=18 rd=2 sa=0 fn=43 imm=4139
+0023D2D0  0D 00 40 10  1040000D  beq rs=2 rt=0 -> 0x0023D308
+0023D2D4  92 00 13 3C  3C130092  lui rt=19 imm=0x0092
+0023D2D8  FF FF 10 26  2610FFFF  addiu rs=16 rt=16 imm=-1
+0023D2DC  00 00 00 00  00000000  nop
+0023D2E0  05 00 01 06  06010005  op=1 rs=16 rt=1 rd=0 sa=0 fn=5 imm=5
+0023D2E4  00 00 00 00  00000000  nop
+0023D2E8  F8 44 0D 0C  0C0D44F8  jal 0x003513E0
+0023D2EC  00 45 64 26  26644500  addiu rs=19 rt=4 imm=17664
+0023D2F0  72 F6 0C 0C  0C0CF672  jal 0x0033D9C8
+0023D2F4  2D 20 20 02  0220202D  op=0 rs=17 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D2F8  10 00 22 8E  8E220010  lw rt=2 offset=16(rs=17)
+0023D2FC  2B 10 52 00  0052102B  op=0 rs=2 rt=18 rd=2 sa=0 fn=43 imm=4139
+0023D300  F7 FF 40 14  1440FFF7  bne rs=2 rt=0 -> 0x0023D2E0
+0023D304  FF FF 10 26  2610FFFF  addiu rs=16 rt=16 imm=-1
+0023D308  40 00 BF DF  DFBF0040  op=55 rs=29 rt=31 rd=0 sa=1 fn=0 imm=64
+0023D30C  30 00 B3 DF  DFB30030  op=55 rs=29 rt=19 rd=0 sa=0 fn=48 imm=48
+0023D310  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D314  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D318  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D31C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D320  50 00 BD 27  27BD0050  addiu rs=29 rt=29 imm=80
+0023D324  00 00 00 00  00000000  nop
+0023D328  07 00 03 24  24030007  addiu rs=0 rt=3 imm=7
+0023D32C  02 17 04 00  00041702  op=0 rs=0 rt=4 rd=2 sa=28 fn=2 imm=5890
+0023D330  05 00 43 14  14430005  bne rs=2 rt=3 -> 0x0023D348
+0023D334  FF 0F 02 3C  3C020FFF  lui rt=2 imm=0x0FFF
+0023D338  00 80 03 3C  3C038000  lui rt=3 imm=0x8000
+0023D33C  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023D340  24 20 82 00  00822024  op=0 rs=4 rt=2 rd=4 sa=0 fn=36 imm=8228
+0023D344  25 20 83 00  00832025  op=0 rs=4 rt=3 rd=4 sa=0 fn=37 imm=8229
+0023D348  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D34C  2D 10 80 00  0080102D  op=0 rs=4 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D350  0A 00 A0 10  10A0000A  beq rs=5 rt=0 -> 0x0023D37C
+0023D354  FF FF A2 24  24A2FFFF  addiu rs=5 rt=2 imm=-1
+0023D358  FF FF 03 24  2403FFFF  addiu rs=0 rt=3 imm=-1
+0023D35C  00 00 00 00  00000000  nop
+0023D360  00 00 80 A0  A0800000  sb rt=0 offset=0(rs=4)
+0023D364  FF FF 42 24  2442FFFF  addiu rs=2 rt=2 imm=-1
+0023D368  01 00 84 24  24840001  addiu rs=4 rt=4 imm=1
+0023D36C  00 00 00 00  00000000  nop
+0023D370  00 00 00 00  00000000  nop
+0023D374  FA FF 43 14  1443FFFA  bne rs=2 rt=3 -> 0x0023D360
+0023D378  00 00 00 00  00000000  nop
+0023D37C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D380  00 00 00 00  00000000  nop
+0023D384  00 00 00 00  00000000  nop
+0023D388  0A 00 82 2C  2C82000A  op=11 rs=4 rt=2 rd=0 sa=0 fn=10 imm=10
+0023D38C  06 00 40 10  10400006  beq rs=2 rt=0 -> 0x0023D3A8
+0023D390  6F 00 02 3C  3C02006F  lui rt=2 imm=0x006F
+0023D394  80 18 04 00  00041880  op=0 rs=0 rt=4 rd=3 sa=2 fn=0 imm=6272
+0023D398  60 DE 42 24  2442DE60  addiu rs=2 rt=2 imm=-8608
+0023D39C  21 18 62 00  00621821  op=0 rs=3 rt=2 rd=3 sa=0 fn=33 imm=6177
+0023D3A0  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D3A4  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D3A8  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D3AC  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D3B0  B0 FF BD 27  27BDFFB0  addiu rs=29 rt=29 imm=-80
+0023D3B4  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D3B8  30 00 B1 FF  FFB10030  op=63 rs=29 rt=17 rd=0 sa=0 fn=48 imm=48
+0023D3BC  00 E0 42 34  3442E000  ori rs=2 rt=2 imm=0xE000
+0023D3C0  20 00 B0 FF  FFB00020  op=63 rs=29 rt=16 rd=0 sa=0 fn=32 imm=32
+0023D3C4  92 00 06 3C  3C060092  lui rt=6 imm=0x0092
+0023D3C8  40 00 BF FF  FFBF0040  op=63 rs=29 rt=31 rd=0 sa=1 fn=0 imm=64
+0023D3CC  6F 00 03 3C  3C03006F  lui rt=3 imm=0x006F
+0023D3D0  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D3D4  60 DE 63 24  2463DE60  addiu rs=3 rt=3 imm=-8608
+0023D3D8  00 00 45 8C  8C450000  lw rt=5 offset=0(rs=2)
+0023D3DC  18 45 C6 24  24C64518  addiu rs=6 rt=6 imm=17688
+0023D3E0  09 00 04 24  24040009  addiu rs=0 rt=4 imm=9
+0023D3E4  01 00 B1 30  30B10001  op=12 rs=5 rt=17 rd=0 sa=0 fn=1 imm=1
+0023D3E8  00 00 C2 8C  8CC20000  lw rt=2 offset=0(rs=6)
+0023D3EC  09 00 40 50  50400009  op=20 rs=2 rt=0 rd=0 sa=0 fn=9 imm=9
+0023D3F0  04 00 63 24  24630004  addiu rs=3 rt=3 imm=4
+0023D3F4  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D3F8  80 00 40 AC  AC400080  sw rt=0 offset=128(rs=2)
+0023D3FC  00 00 40 AC  AC400000  sw rt=0 offset=0(rs=2)
+0023D400  30 00 40 AC  AC400030  sw rt=0 offset=48(rs=2)
+0023D404  10 00 40 AC  AC400010  sw rt=0 offset=16(rs=2)
+0023D408  50 00 40 AC  AC400050  sw rt=0 offset=80(rs=2)
+0023D40C  40 00 40 AC  AC400040  sw rt=0 offset=64(rs=2)
+0023D410  04 00 63 24  24630004  addiu rs=3 rt=3 imm=4
+0023D414  FF FF 84 24  2484FFFF  addiu rs=4 rt=4 imm=-1
+0023D418  F3 FF 81 04  0481FFF3  op=1 rs=4 rt=1 rd=31 sa=31 fn=51 imm=-13
+0023D41C  04 00 C6 24  24C60004  addiu rs=6 rt=6 imm=4
+0023D420  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D424  1F FF 02 34  3402FF1F  ori rs=0 rt=2 imm=0xFF1F
+0023D428  10 E0 63 34  3463E010  ori rs=3 rt=3 imm=0xE010
+0023D42C  1F FF 06 3C  3C06FF1F  lui rt=6 imm=0xFF1F
+0023D430  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023D434  2D 20 A0 03  03A0202D  op=0 rs=29 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D438  14 00 05 24  24050014  addiu rs=0 rt=5 imm=20
+0023D43C  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D440  24 10 46 00  00461024  op=0 rs=2 rt=6 rd=2 sa=0 fn=36 imm=4132
+0023D444  D4 F4 0C 0C  0C0CF4D4  jal 0x0033D350
+0023D448  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023D44C  24 F5 0C 0C  0C0CF524  jal 0x0033D490
+0023D450  2D 20 A0 03  03A0202D  op=0 rs=29 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D454  01 00 03 24  24030001  addiu rs=0 rt=3 imm=1
+0023D458  07 00 03 16  16030007  bne rs=16 rt=3 -> 0x0023D478
+0023D45C  2D 10 20 02  0220102D  op=0 rs=17 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D460  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D464  00 E0 63 34  3463E000  ori rs=3 rt=3 imm=0xE000
+0023D468  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D46C  01 00 42 34  34420001  ori rs=2 rt=2 imm=0x0001
+0023D470  00 00 62 AC  AC620000  sw rt=2 offset=0(rs=3)
+0023D474  2D 10 20 02  0220102D  op=0 rs=17 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D478  40 00 BF DF  DFBF0040  op=55 rs=29 rt=31 rd=0 sa=1 fn=0 imm=64
+0023D47C  30 00 B1 DF  DFB10030  op=55 rs=29 rt=17 rd=0 sa=0 fn=48 imm=48
+0023D480  20 00 B0 DF  DFB00020  op=55 rs=29 rt=16 rd=0 sa=0 fn=32 imm=32
+0023D484  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D488  50 00 BD 27  27BD0050  addiu rs=29 rt=29 imm=80
+0023D48C  00 00 00 00  00000000  nop
+0023D490  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D494  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D498  00 E0 42 34  3442E000  ori rs=2 rt=2 imm=0xE000
+0023D49C  20 E0 63 34  3463E020  ori rs=3 rt=3 imm=0xE020
+0023D4A0  00 00 4A 8C  8C4A0000  lw rt=10 offset=0(rs=2)
+0023D4A4  00 10 05 3C  3C051000  lui rt=5 imm=0x1000
+0023D4A8  00 00 66 8C  8C660000  lw rt=6 offset=0(rs=3)
+0023D4AC  2D 48 80 00  0080482D  op=0 rs=4 rt=0 rd=9 sa=0 fn=45 imm=18477
+0023D4B0  30 E0 A5 34  34A5E030  ori rs=5 rt=5 imm=0xE030
+0023D4B4  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D4B8  00 00 A5 8C  8CA50000  lw rt=5 offset=0(rs=5)
+0023D4BC  50 E0 63 34  3463E050  ori rs=3 rt=3 imm=0xE050
+0023D4C0  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D4C4  00 00 24 91  91240000  lbu rt=4 offset=0(rs=9)
+0023D4C8  00 00 66 8C  8C660000  lw rt=6 offset=0(rs=3)
+0023D4CC  40 E0 42 34  3442E040  ori rs=2 rt=2 imm=0xE040
+0023D4D0  00 00 48 8C  8C480000  lw rt=8 offset=0(rs=2)
+0023D4D4  0A 00 84 2C  2C84000A  op=11 rs=4 rt=4 rd=0 sa=0 fn=10 imm=10
+0023D4D8  03 00 80 54  54800003  op=21 rs=4 rt=0 rd=0 sa=0 fn=3 imm=3
+0023D4DC  01 00 22 91  91220001  lbu rt=2 offset=1(rs=9)
+0023D4E0  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D4E4  FF FF 02 24  2402FFFF  addiu rs=0 rt=2 imm=-1
+0023D4E8  0A 00 42 2C  2C42000A  op=11 rs=2 rt=2 rd=0 sa=0 fn=10 imm=10
+0023D4EC  03 00 40 54  54400003  op=21 rs=2 rt=0 rd=0 sa=0 fn=3 imm=3
+0023D4F0  02 00 22 91  91220002  lbu rt=2 offset=2(rs=9)
+0023D4F4  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D4F8  FE FF 02 24  2402FFFE  addiu rs=0 rt=2 imm=-2
+0023D4FC  0A 00 42 2C  2C42000A  op=11 rs=2 rt=2 rd=0 sa=0 fn=10 imm=10
+0023D500  03 00 40 54  54400003  op=21 rs=2 rt=0 rd=0 sa=0 fn=3 imm=3
+0023D504  03 00 2B 91  912B0003  lbu rt=11 offset=3(rs=9)
+0023D508  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D50C  FD FF 02 24  2402FFFD  addiu rs=0 rt=2 imm=-3
+0023D510  07 00 62 2D  2D620007  op=11 rs=11 rt=2 rd=0 sa=0 fn=7 imm=7
+0023D514  03 00 40 14  14400003  bne rs=2 rt=0 -> 0x0023D524
+0023D518  92 00 02 3C  3C020092  lui rt=2 imm=0x0092
+0023D51C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D520  FC FF 02 24  2402FFFC  addiu rs=0 rt=2 imm=-4
+0023D524  00 00 23 91  91230000  lbu rt=3 offset=0(rs=9)
+0023D528  40 45 42 24  24424540  addiu rs=2 rt=2 imm=17728
+0023D52C  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023D530  01 00 25 91  91250001  lbu rt=5 offset=1(rs=9)
+0023D534  21 18 62 00  00621821  op=0 rs=3 rt=2 rd=3 sa=0 fn=33 imm=6177
+0023D538  50 45 84 24  24844550  addiu rs=4 rt=4 imm=17744
+0023D53C  00 00 68 90  90680000  lbu rt=8 offset=0(rs=3)
+0023D540  21 28 A4 00  00A42821  op=0 rs=5 rt=4 rd=5 sa=0 fn=33 imm=10273
+0023D544  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D548  CF FF 42 34  3442FFCF  ori rs=2 rt=2 imm=0xFFCF
+0023D54C  92 00 04 3C  3C040092  lui rt=4 imm=0x0092
+0023D550  02 00 27 91  91270002  lbu rt=7 offset=2(rs=9)
+0023D554  24 10 42 01  01421024  op=0 rs=10 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023D558  60 45 84 24  24844560  addiu rs=4 rt=4 imm=17760
+0023D55C  00 41 08 00  00084100  op=0 rs=0 rt=8 rd=8 sa=4 fn=0 imm=16640
+0023D560  00 00 A6 90  90A60000  lbu rt=6 offset=0(rs=5)
+0023D564  FF FF 03 3C  3C03FFFF  lui rt=3 imm=0xFFFF
+0023D568  25 50 48 00  00485025  op=0 rs=2 rt=8 rd=10 sa=0 fn=37 imm=20517
+0023D56C  21 38 E4 00  00E43821  op=0 rs=7 rt=4 rd=7 sa=0 fn=33 imm=14369
+0023D570  3F FF 63 34  3463FF3F  ori rs=3 rt=3 imm=0xFF3F
+0023D574  80 31 06 00  00063180  op=0 rs=0 rt=6 rd=6 sa=6 fn=0 imm=12672
+0023D578  24 18 43 01  01431824  op=0 rs=10 rt=3 rd=3 sa=0 fn=36 imm=6180
+0023D57C  00 00 E4 90  90E40000  lbu rt=4 offset=0(rs=7)
+0023D580  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D584  25 50 66 00  00665025  op=0 rs=3 rt=6 rd=10 sa=0 fn=37 imm=20517
+0023D588  F3 FF 42 34  3442FFF3  ori rs=2 rt=2 imm=0xFFF3
+0023D58C  80 20 04 00  00042080  op=0 rs=0 rt=4 rd=4 sa=2 fn=0 imm=8320
+0023D590  24 10 42 01  01421024  op=0 rs=10 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023D594  0A 00 60 11  1160000A  beq rs=11 rt=0 -> 0x0023D5C0
+0023D598  25 50 44 00  00445025  op=0 rs=2 rt=4 rd=10 sa=0 fn=37 imm=20517
+0023D59C  03 00 23 91  91230003  lbu rt=3 offset=3(rs=9)
+0023D5A0  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D5A4  02 00 4A 35  354A0002  ori rs=10 rt=10 imm=0x0002
+0023D5A8  FF FC 42 34  3442FCFF  ori rs=2 rt=2 imm=0xFCFF
+0023D5AC  FF FF 63 24  2463FFFF  addiu rs=3 rt=3 imm=-1
+0023D5B0  24 10 42 01  01421024  op=0 rs=10 rt=2 rd=2 sa=0 fn=36 imm=4132
+0023D5B4  00 1A 03 00  00031A00  op=0 rs=0 rt=3 rd=3 sa=8 fn=0 imm=6656
+0023D5B8  04 00 00 10  10000004  beq rs=0 rt=0 -> 0x0023D5CC
+0023D5BC  25 50 43 00  00435025  op=0 rs=2 rt=3 rd=10 sa=0 fn=37 imm=20517
+0023D5C0  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D5C4  FD FF 42 34  3442FFFD  ori rs=2 rt=2 imm=0xFFFD
+0023D5C8  24 50 42 01  01425024  op=0 rs=10 rt=2 rd=10 sa=0 fn=36 imm=20516
+0023D5CC  04 00 22 95  95220004  lhu rt=2 offset=4(rs=9)
+0023D5D0  00 10 04 3C  3C041000  lui rt=4 imm=0x1000
+0023D5D4  06 00 26 95  95260006  lhu rt=6 offset=6(rs=9)
+0023D5D8  00 E0 84 34  3484E000  ori rs=4 rt=4 imm=0xE000
+0023D5DC  0A 00 25 95  9525000A  lhu rt=5 offset=10(rs=9)
+0023D5E0  00 14 02 00  00021400  op=0 rs=0 rt=2 rd=2 sa=16 fn=0 imm=5120
+0023D5E4  10 00 28 8D  8D280010  lw rt=8 offset=16(rs=9)
+0023D5E8  25 30 46 00  00463025  op=0 rs=2 rt=6 rd=6 sa=0 fn=37 imm=12325
+0023D5EC  08 00 27 95  95270008  lhu rt=7 offset=8(rs=9)
+0023D5F0  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D5F4  00 00 8A AC  AC8A0000  sw rt=10 offset=0(rs=4)
+0023D5F8  20 E0 63 34  3463E020  ori rs=3 rt=3 imm=0xE020
+0023D5FC  00 2C 05 00  00052C00  op=0 rs=0 rt=5 rd=5 sa=16 fn=0 imm=11264
+0023D600  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D604  00 00 66 AC  AC660000  sw rt=6 offset=0(rs=3)
+0023D608  25 28 A7 00  00A72825  op=0 rs=5 rt=7 rd=5 sa=0 fn=37 imm=10277
+0023D60C  30 E0 42 34  3442E030  ori rs=2 rt=2 imm=0xE030
+0023D610  0C 00 26 8D  8D26000C  lw rt=6 offset=12(rs=9)
+0023D614  00 00 45 AC  AC450000  sw rt=5 offset=0(rs=2)
+0023D618  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D61C  50 E0 63 34  3463E050  ori rs=3 rt=3 imm=0xE050
+0023D620  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D624  00 00 66 AC  AC660000  sw rt=6 offset=0(rs=3)
+0023D628  40 E0 42 34  3442E040  ori rs=2 rt=2 imm=0xE040
+0023D62C  00 00 48 AC  AC480000  sw rt=8 offset=0(rs=2)
+0023D630  93 00 03 3C  3C030093  lui rt=3 imm=0x0093
+0023D634  70 42 66 24  24664270  addiu rs=3 rt=6 imm=17008
+0023D638  07 00 22 69  69220007  op=26 rs=9 rt=2 rd=0 sa=0 fn=7 imm=7
+0023D63C  00 00 22 6D  6D220000  op=27 rs=9 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D640  0F 00 24 69  6924000F  op=26 rs=9 rt=4 rd=0 sa=0 fn=15 imm=15
+0023D644  08 00 24 6D  6D240008  op=27 rs=9 rt=4 rd=0 sa=0 fn=8 imm=8
+0023D648  10 00 25 8D  8D250010  lw rt=5 offset=16(rs=9)
+0023D64C  07 00 C2 B0  B0C20007  op=44 rs=6 rt=2 rd=0 sa=0 fn=7 imm=7
+0023D650  00 00 C2 B4  B4C20000  op=45 rs=6 rt=2 rd=0 sa=0 fn=0 imm=0
+0023D654  0F 00 C4 B0  B0C4000F  op=44 rs=6 rt=4 rd=0 sa=0 fn=15 imm=15
+0023D658  08 00 C4 B4  B4C40008  op=45 rs=6 rt=4 rd=0 sa=0 fn=8 imm=8
+0023D65C  10 00 C5 AC  ACC50010  sw rt=5 offset=16(rs=6)
+0023D660  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D664  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D668  93 00 03 3C  3C030093  lui rt=3 imm=0x0093
+0023D66C  70 42 68 24  24684270  addiu rs=3 rt=8 imm=17008
+0023D670  07 00 05 69  69050007  op=26 rs=8 rt=5 rd=0 sa=0 fn=7 imm=7
+0023D674  00 00 05 6D  6D050000  op=27 rs=8 rt=5 rd=0 sa=0 fn=0 imm=0
+0023D678  0F 00 06 69  6906000F  op=26 rs=8 rt=6 rd=0 sa=0 fn=15 imm=15
+0023D67C  08 00 06 6D  6D060008  op=27 rs=8 rt=6 rd=0 sa=0 fn=8 imm=8
+0023D680  10 00 07 8D  8D070010  lw rt=7 offset=16(rs=8)
+0023D684  07 00 85 B0  B0850007  op=44 rs=4 rt=5 rd=0 sa=0 fn=7 imm=7
+0023D688  00 00 85 B4  B4850000  op=45 rs=4 rt=5 rd=0 sa=0 fn=0 imm=0
+0023D68C  0F 00 86 B0  B086000F  op=44 rs=4 rt=6 rd=0 sa=0 fn=15 imm=15
+0023D690  08 00 86 B4  B4860008  op=45 rs=4 rt=6 rd=0 sa=0 fn=8 imm=8
+0023D694  10 00 87 AC  AC870010  sw rt=7 offset=16(rs=4)
+0023D698  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D69C  2D 10 80 00  0080102D  op=0 rs=4 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D6A0  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023D6A4  60 E0 63 34  3463E060  ori rs=3 rt=3 imm=0xE060
+0023D6A8  00 00 62 8C  8C620000  lw rt=2 offset=0(rs=3)
+0023D6AC  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D6B0  00 00 64 AC  AC640000  sw rt=4 offset=0(rs=3)
+0023D6B4  00 00 00 00  00000000  nop
+0023D6B8  D0 FF BD 27  27BDFFD0  addiu rs=29 rt=29 imm=-48
+0023D6BC  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D6C0  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D6C4  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D6C8  20 00 BF FF  FFBF0020  op=63 rs=29 rt=31 rd=0 sa=0 fn=32 imm=32
+0023D6CC  CA F4 0C 0C  0C0CF4CA  jal 0x0033D328
+0023D6D0  2D 20 A0 00  00A0202D  op=0 rs=5 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D6D4  2D 88 40 00  0040882D  op=0 rs=2 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D6D8  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D6DC  2D 20 00 02  0200202D  op=0 rs=16 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D6E0  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D6E4  30 00 03 8E  8E030030  lw rt=3 offset=48(rs=16)
+0023D6E8  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023D6EC  01 00 62 54  54620001  op=21 rs=3 rt=2 rd=0 sa=0 fn=1 imm=1
+0023D6F0  30 00 11 AE  AE110030  sw rt=17 offset=48(rs=16)
+0023D6F4  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D6F8  F3 FF 03 24  2403FFF3  addiu rs=0 rt=3 imm=-13
+0023D6FC  20 00 00 AE  AE000020  sw rt=0 offset=32(rs=16)
+0023D700  24 10 43 00  00431024  op=0 rs=2 rt=3 rd=2 sa=0 fn=36 imm=4132
+0023D704  20 00 BF DF  DFBF0020  op=55 rs=29 rt=31 rd=0 sa=0 fn=32 imm=32
+0023D708  05 01 42 34  34420105  ori rs=2 rt=2 imm=0x0105
+0023D70C  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D710  00 00 02 AE  AE020000  sw rt=2 offset=0(rs=16)
+0023D714  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D718  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D71C  30 00 BD 27  27BD0030  addiu rs=29 rt=29 imm=48
+0023D720  C0 FF BD 27  27BDFFC0  addiu rs=29 rt=29 imm=-64
+0023D724  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D728  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D72C  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D730  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D734  2D 90 C0 00  00C0902D  op=0 rs=6 rt=0 rd=18 sa=0 fn=45 imm=-28627
+0023D738  30 00 BF FF  FFBF0030  op=63 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D73C  CA F4 0C 0C  0C0CF4CA  jal 0x0033D328
+0023D740  2D 20 A0 00  00A0202D  op=0 rs=5 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D744  2D 88 40 00  0040882D  op=0 rs=2 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D748  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D74C  2D 20 00 02  0200202D  op=0 rs=16 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D750  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D754  10 00 03 8E  8E030010  lw rt=3 offset=16(rs=16)
+0023D758  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023D75C  01 00 62 54  54620001  op=21 rs=3 rt=2 rd=0 sa=0 fn=1 imm=1
+0023D760  10 00 11 AE  AE110010  sw rt=17 offset=16(rs=16)
+0023D764  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D768  F3 FF 03 24  2403FFF3  addiu rs=0 rt=3 imm=-13
+0023D76C  20 00 12 AE  AE120020  sw rt=18 offset=32(rs=16)
+0023D770  24 10 43 00  00431024  op=0 rs=2 rt=3 rd=2 sa=0 fn=36 imm=4132
+0023D774  30 00 BF DF  DFBF0030  op=55 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D778  01 01 42 34  34420101  ori rs=2 rt=2 imm=0x0101
+0023D77C  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D780  00 00 02 AE  AE020000  sw rt=2 offset=0(rs=16)
+0023D784  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D788  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D78C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D790  40 00 BD 27  27BD0040  addiu rs=29 rt=29 imm=64
+0023D794  00 00 00 00  00000000  nop
+0023D798  C0 FF BD 27  27BDFFC0  addiu rs=29 rt=29 imm=-64
+0023D79C  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D7A0  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D7A4  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D7A8  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D7AC  2D 90 C0 00  00C0902D  op=0 rs=6 rt=0 rd=18 sa=0 fn=45 imm=-28627
+0023D7B0  30 00 BF FF  FFBF0030  op=63 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D7B4  CA F4 0C 0C  0C0CF4CA  jal 0x0033D328
+0023D7B8  2D 20 A0 00  00A0202D  op=0 rs=5 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D7BC  2D 88 40 00  0040882D  op=0 rs=2 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D7C0  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D7C4  2D 20 00 02  0200202D  op=0 rs=16 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D7C8  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D7CC  10 00 03 8E  8E030010  lw rt=3 offset=16(rs=16)
+0023D7D0  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023D7D4  01 00 62 54  54620001  op=21 rs=3 rt=2 rd=0 sa=0 fn=1 imm=1
+0023D7D8  10 00 11 AE  AE110010  sw rt=17 offset=16(rs=16)
+0023D7DC  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D7E0  F3 FF 03 24  2403FFF3  addiu rs=0 rt=3 imm=-13
+0023D7E4  20 00 12 AE  AE120020  sw rt=18 offset=32(rs=16)
+0023D7E8  24 10 43 00  00431024  op=0 rs=2 rt=3 rd=2 sa=0 fn=36 imm=4132
+0023D7EC  30 00 BF DF  DFBF0030  op=55 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D7F0  09 01 42 34  34420109  ori rs=2 rt=2 imm=0x0109
+0023D7F4  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D7F8  00 00 02 AE  AE020000  sw rt=2 offset=0(rs=16)
+0023D7FC  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D800  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D804  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D808  40 00 BD 27  27BD0040  addiu rs=29 rt=29 imm=64
+0023D80C  00 00 00 00  00000000  nop
+0023D810  E0 FF BD 27  27BDFFE0  addiu rs=29 rt=29 imm=-32
+0023D814  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D818  10 00 BF FF  FFBF0010  op=63 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023D81C  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D820  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D824  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D828  F3 FF 03 24  2403FFF3  addiu rs=0 rt=3 imm=-13
+0023D82C  FE FF 04 24  2404FFFE  addiu rs=0 rt=4 imm=-2
+0023D830  20 00 00 AE  AE000020  sw rt=0 offset=32(rs=16)
+0023D834  24 10 43 00  00431024  op=0 rs=2 rt=3 rd=2 sa=0 fn=36 imm=4132
+0023D838  10 00 BF DF  DFBF0010  op=55 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023D83C  04 00 42 34  34420004  ori rs=2 rt=2 imm=0x0004
+0023D840  24 10 44 00  00441024  op=0 rs=2 rt=4 rd=2 sa=0 fn=36 imm=4132
+0023D844  00 01 42 34  34420100  ori rs=2 rt=2 imm=0x0100
+0023D848  00 00 02 AE  AE020000  sw rt=2 offset=0(rs=16)
+0023D84C  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D850  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D854  20 00 BD 27  27BD0020  addiu rs=29 rt=29 imm=32
+0023D858  C0 FF BD 27  27BDFFC0  addiu rs=29 rt=29 imm=-64
+0023D85C  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D860  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D864  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D868  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D86C  2D 90 C0 00  00C0902D  op=0 rs=6 rt=0 rd=18 sa=0 fn=45 imm=-28627
+0023D870  30 00 BF FF  FFBF0030  op=63 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D874  CA F4 0C 0C  0C0CF4CA  jal 0x0033D328
+0023D878  2D 20 A0 00  00A0202D  op=0 rs=5 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D87C  2D 88 40 00  0040882D  op=0 rs=2 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D880  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D884  2D 20 00 02  0200202D  op=0 rs=16 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D888  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D88C  10 00 03 8E  8E030010  lw rt=3 offset=16(rs=16)
+0023D890  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023D894  01 00 62 54  54620001  op=21 rs=3 rt=2 rd=0 sa=0 fn=1 imm=1
+0023D898  10 00 11 AE  AE110010  sw rt=17 offset=16(rs=16)
+0023D89C  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D8A0  F3 FF 03 24  2403FFF3  addiu rs=0 rt=3 imm=-13
+0023D8A4  FE FF 04 24  2404FFFE  addiu rs=0 rt=4 imm=-2
+0023D8A8  20 00 12 AE  AE120020  sw rt=18 offset=32(rs=16)
+0023D8AC  24 10 43 00  00431024  op=0 rs=2 rt=3 rd=2 sa=0 fn=36 imm=4132
+0023D8B0  30 00 BF DF  DFBF0030  op=55 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D8B4  24 10 44 00  00441024  op=0 rs=2 rt=4 rd=2 sa=0 fn=36 imm=4132
+0023D8B8  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D8BC  00 01 42 34  34420100  ori rs=2 rt=2 imm=0x0100
+0023D8C0  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D8C4  00 00 02 AE  AE020000  sw rt=2 offset=0(rs=16)
+0023D8C8  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D8CC  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D8D0  40 00 BD 27  27BD0040  addiu rs=29 rt=29 imm=64
+0023D8D4  00 00 00 00  00000000  nop
+0023D8D8  C0 FF BD 27  27BDFFC0  addiu rs=29 rt=29 imm=-64
+0023D8DC  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D8E0  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023D8E4  20 00 B2 FF  FFB20020  op=63 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D8E8  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D8EC  2D 90 C0 00  00C0902D  op=0 rs=6 rt=0 rd=18 sa=0 fn=45 imm=-28627
+0023D8F0  30 00 BF FF  FFBF0030  op=63 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D8F4  CA F4 0C 0C  0C0CF4CA  jal 0x0033D328
+0023D8F8  2D 20 A0 00  00A0202D  op=0 rs=5 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D8FC  2D 88 40 00  0040882D  op=0 rs=2 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D900  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D904  2D 20 00 02  0200202D  op=0 rs=16 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023D908  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023D90C  10 00 03 8E  8E030010  lw rt=3 offset=16(rs=16)
+0023D910  FF FF 42 34  3442FFFF  ori rs=2 rt=2 imm=0xFFFF
+0023D914  01 00 62 54  54620001  op=21 rs=3 rt=2 rd=0 sa=0 fn=1 imm=1
+0023D918  10 00 11 AE  AE110010  sw rt=17 offset=16(rs=16)
+0023D91C  00 00 02 8E  8E020000  lw rt=2 offset=0(rs=16)
+0023D920  F3 FF 03 24  2403FFF3  addiu rs=0 rt=3 imm=-13
+0023D924  FE FF 04 24  2404FFFE  addiu rs=0 rt=4 imm=-2
+0023D928  20 00 12 AE  AE120020  sw rt=18 offset=32(rs=16)
+0023D92C  24 10 43 00  00431024  op=0 rs=2 rt=3 rd=2 sa=0 fn=36 imm=4132
+0023D930  30 00 BF DF  DFBF0030  op=55 rs=29 rt=31 rd=0 sa=0 fn=48 imm=48
+0023D934  08 00 42 34  34420008  ori rs=2 rt=2 imm=0x0008
+0023D938  20 00 B2 DF  DFB20020  op=55 rs=29 rt=18 rd=0 sa=0 fn=32 imm=32
+0023D93C  24 10 44 00  00441024  op=0 rs=2 rt=4 rd=2 sa=0 fn=36 imm=4132
+0023D940  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D944  00 01 42 34  34420100  ori rs=2 rt=2 imm=0x0100
+0023D948  00 00 02 AE  AE020000  sw rt=2 offset=0(rs=16)
+0023D94C  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D950  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D954  40 00 BD 27  27BD0040  addiu rs=29 rt=29 imm=64
+0023D958  F0 FF BD 27  27BDFFF0  addiu rs=29 rt=29 imm=-16
+0023D95C  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023D960  05 00 A2 14  14A20005  bne rs=5 rt=2 -> 0x0023D978
+0023D964  00 00 BF FF  FFBF0000  op=63 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023D968  00 00 82 8C  8C820000  lw rt=2 offset=0(rs=4)
+0023D96C  02 12 02 00  00021202  op=0 rs=0 rt=2 rd=2 sa=8 fn=2 imm=4610
+0023D970  04 00 00 10  10000004  beq rs=0 rt=0 -> 0x0023D984
+0023D974  01 00 42 30  30420001  op=12 rs=2 rt=2 rd=0 sa=0 fn=1 imm=1
+0023D978  8C F4 0C 0C  0C0CF48C  jal 0x0033D230
+0023D97C  00 00 00 00  00000000  nop
+0023D980  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D984  00 00 BF DF  DFBF0000  op=55 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023D988  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D98C  10 00 BD 27  27BD0010  addiu rs=29 rt=29 imm=16
+0023D990  F0 FF BD 27  27BDFFF0  addiu rs=29 rt=29 imm=-16
+0023D994  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023D998  04 00 C2 14  14C20004  bne rs=6 rt=2 -> 0x0023D9AC
+0023D99C  00 00 BF FF  FFBF0000  op=63 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023D9A0  10 00 82 8C  8C820010  lw rt=2 offset=16(rs=4)
+0023D9A4  04 00 00 10  10000004  beq rs=0 rt=0 -> 0x0023D9B8
+0023D9A8  2B 10 45 00  0045102B  op=0 rs=2 rt=5 rd=2 sa=0 fn=43 imm=4139
+0023D9AC  A8 F4 0C 0C  0C0CF4A8  jal 0x0033D2A0
+0023D9B0  2D 30 E0 00  00E0302D  op=0 rs=7 rt=0 rd=6 sa=0 fn=45 imm=12333
+0023D9B4  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023D9B8  00 00 BF DF  DFBF0000  op=55 rs=29 rt=31 rd=0 sa=0 fn=0 imm=0
+0023D9BC  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023D9C0  10 00 BD 27  27BD0010  addiu rs=29 rt=29 imm=16
+0023D9C4  00 00 00 00  00000000  nop
+0023D9C8  D0 FF BD 27  27BDFFD0  addiu rs=29 rt=29 imm=-48
+0023D9CC  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023D9D0  20 00 BF FF  FFBF0020  op=63 rs=29 rt=31 rd=0 sa=0 fn=32 imm=32
+0023D9D4  2D 88 80 00  0080882D  op=0 rs=4 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023D9D8  C2 5D 0D 0C  0C0D5DC2  jal 0x00357708
+0023D9DC  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023D9E0  2D 38 40 00  0040382D  op=0 rs=2 rt=0 rd=7 sa=0 fn=45 imm=14381
+0023D9E4  01 00 04 3C  3C040001  lui rt=4 imm=0x0001
+0023D9E8  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023D9EC  20 F5 42 34  3442F520  ori rs=2 rt=2 imm=0xF520
+0023D9F0  00 00 46 8C  8C460000  lw rt=6 offset=0(rs=2)
+0023D9F4  24 18 C4 00  00C41824  op=0 rs=6 rt=4 rd=3 sa=0 fn=36 imm=6180
+0023D9F8  05 00 60 14  14600005  bne rs=3 rt=0 -> 0x0023DA10
+0023D9FC  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023DA00  25 18 C4 00  00C41825  op=0 rs=6 rt=4 rd=3 sa=0 fn=37 imm=6181
+0023DA04  90 F5 42 34  3442F590  ori rs=2 rt=2 imm=0xF590
+0023DA08  00 00 43 AC  AC430000  sw rt=3 offset=0(rs=2)
+0023DA0C  00 10 02 3C  3C021000  lui rt=2 imm=0x1000
+0023DA10  FF FF 04 3C  3C04FFFF  lui rt=4 imm=0xFFFF
+0023DA14  00 E0 42 34  3442E000  ori rs=2 rt=2 imm=0xE000
+0023DA18  FF FE 84 34  3484FEFF  ori rs=4 rt=4 imm=0xFEFF
+0023DA1C  00 00 45 8C  8C450000  lw rt=5 offset=0(rs=2)
+0023DA20  00 10 03 3C  3C031000  lui rt=3 imm=0x1000
+0023DA24  00 00 30 8E  8E300000  lw rt=16 offset=0(rs=17)
+0023DA28  90 F5 63 34  3463F590  ori rs=3 rt=3 imm=0xF590
+0023DA2C  24 20 04 02  02042024  op=0 rs=16 rt=4 rd=4 sa=0 fn=36 imm=8228
+0023DA30  00 00 24 AE  AE240000  sw rt=4 offset=0(rs=17)
+0023DA34  00 00 66 AC  AC660000  sw rt=6 offset=0(rs=3)
+0023DA38  04 00 E0 10  10E00004  beq rs=7 rt=0 -> 0x0023DA4C
+0023DA3C  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DA40  D4 5D 0D 0C  0C0D5DD4  jal 0x00357750
+0023DA44  00 00 00 00  00000000  nop
+0023DA48  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DA4C  20 00 BF DF  DFBF0020  op=55 rs=29 rt=31 rd=0 sa=0 fn=32 imm=32
+0023DA50  10 00 B1 DF  DFB10010  op=55 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023DA54  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DA58  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DA5C  30 00 BD 27  27BD0030  addiu rs=29 rt=29 imm=48
+0023DA60  00 00 82 8C  8C820000  lw rt=2 offset=0(rs=4)
+0023DA64  00 00 85 AC  AC850000  sw rt=5 offset=0(rs=4)
+0023DA68  02 12 02 00  00021202  op=0 rs=0 rt=2 rd=2 sa=8 fn=2 imm=4610
+0023DA6C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DA70  01 00 42 30  30420001  op=12 rs=2 rt=2 rd=0 sa=0 fn=1 imm=1
+0023DA74  00 00 00 00  00000000  nop
+0023DA78  00 E8 42 48  4842E800  op=18 rs=2 rt=2 rd=29 sa=0 fn=0 imm=-6144
+0023DA7C  0F 00 42 30  3042000F  op=12 rs=2 rt=2 rd=0 sa=0 fn=15 imm=15
+0023DA80  01 00 42 38  38420001  op=14 rs=2 rt=2 rd=0 sa=0 fn=1 imm=1
+0023DA84  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DA88  01 00 42 2C  2C420001  op=11 rs=2 rt=2 rd=0 sa=0 fn=1 imm=1
+0023DA8C  00 00 00 00  00000000  nop
+0023DA90  00 E0 42 48  4842E000  op=18 rs=2 rt=2 rd=28 sa=0 fn=0 imm=-8192
+0023DA94  02 00 42 34  34420002  ori rs=2 rt=2 imm=0x0002
+0023DA98  00 E0 C2 48  48C2E000  op=18 rs=6 rt=2 rd=28 sa=0 fn=0 imm=-8192
+0023DA9C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DAA0  00 00 00 00  00000000  nop
+0023DAA4  00 00 00 00  00000000  nop
+0023DAA8  E0 FF BD 27  27BDFFE0  addiu rs=29 rt=29 imm=-32
+0023DAAC  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DAB0  10 00 BF FF  FFBF0010  op=63 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DAB4  F6 F6 0C 0C  0C0CF6F6  jal 0x0033DBD8
+0023DAB8  2D 80 00 00  0000802D  op=0 rs=0 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023DABC  2D 18 40 00  0040182D  op=0 rs=2 rt=0 rd=3 sa=0 fn=45 imm=6189
+0023DAC0  05 00 62 2C  2C620005  op=11 rs=3 rt=2 rd=0 sa=0 fn=5 imm=5
+0023DAC4  0B 00 40 10  1040000B  beq rs=2 rt=0 -> 0x0023DAF4
+0023DAC8  92 00 02 3C  3C020092  lui rt=2 imm=0x0092
+0023DACC  80 18 03 00  00031880  op=0 rs=0 rt=3 rd=3 sa=2 fn=0 imm=6272
+0023DAD0  70 45 42 24  24424570  addiu rs=2 rt=2 imm=17776
+0023DAD4  21 18 62 00  00621821  op=0 rs=3 rt=2 rd=3 sa=0 fn=33 imm=6177
+0023DAD8  00 00 64 8C  8C640000  lw rt=4 offset=0(rs=3)
+0023DADC  08 00 80 00  00800008  op=0 rs=4 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DAE0  00 00 00 00  00000000  nop
+0023DAE4  00 E0 42 48  4842E000  op=18 rs=2 rt=2 rd=28 sa=0 fn=0 imm=-8192
+0023DAE8  01 00 42 34  34420001  ori rs=2 rt=2 imm=0x0001
+0023DAEC  00 E0 C2 48  48C2E000  op=18 rs=6 rt=2 rd=28 sa=0 fn=0 imm=-8192
+0023DAF0  01 00 10 24  24100001  addiu rs=0 rt=16 imm=1
+0023DAF4  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DAF8  10 00 BF DF  DFBF0010  op=55 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DAFC  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DB00  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DB04  20 00 BD 27  27BD0020  addiu rs=29 rt=29 imm=32
+0023DB08  E0 FF BD 27  27BDFFE0  addiu rs=29 rt=29 imm=-32
+0023DB0C  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DB10  10 00 BF FF  FFBF0010  op=63 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DB14  F6 F6 0C 0C  0C0CF6F6  jal 0x0033DBD8
+0023DB18  2D 80 00 00  0000802D  op=0 rs=0 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023DB1C  2D 18 40 00  0040182D  op=0 rs=2 rt=0 rd=3 sa=0 fn=45 imm=6189
+0023DB20  04 00 62 28  28620004  op=10 rs=3 rt=2 rd=0 sa=0 fn=4 imm=4
+0023DB24  08 00 40 10  10400008  beq rs=2 rt=0 -> 0x0023DB48
+0023DB28  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DB2C  07 00 60 18  18600007  op=6 rs=3 rt=0 rd=0 sa=0 fn=7 imm=7
+0023DB30  10 00 BF DF  DFBF0010  op=55 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DB34  0A F7 0C 0C  0C0CF70A  jal 0x0033DC28
+0023DB38  01 00 10 24  24100001  addiu rs=0 rt=16 imm=1
+0023DB3C  06 F7 0C 0C  0C0CF706  jal 0x0033DC18
+0023DB40  2D 20 40 00  0040202D  op=0 rs=2 rt=0 rd=4 sa=0 fn=45 imm=8237
+0023DB44  2D 10 00 02  0200102D  op=0 rs=16 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DB48  10 00 BF DF  DFBF0010  op=55 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DB4C  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DB50  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DB54  20 00 BD 27  27BD0020  addiu rs=29 rt=29 imm=32
+0023DB58  00 E0 43 48  4843E000  op=18 rs=2 rt=3 rd=28 sa=0 fn=0 imm=-8192
+0023DB5C  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023DB60  03 00 82 14  14820003  bne rs=4 rt=2 -> 0x0023DB70
+0023DB64  00 00 00 00  00000000  nop
+0023DB68  04 00 00 10  10000004  beq rs=0 rt=0 -> 0x0023DB7C
+0023DB6C  04 00 63 34  34630004  ori rs=3 rt=3 imm=0x0004
+0023DB70  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023DB74  FB FF 42 34  3442FFFB  ori rs=2 rt=2 imm=0xFFFB
+0023DB78  24 18 62 00  00621824  op=0 rs=3 rt=2 rd=3 sa=0 fn=36 imm=6180
+0023DB7C  00 E0 C3 48  48C3E000  op=18 rs=6 rt=3 rd=28 sa=0 fn=0 imm=-8192
+0023DB80  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DB84  00 00 00 00  00000000  nop
+0023DB88  00 E0 43 48  4843E000  op=18 rs=2 rt=3 rd=28 sa=0 fn=0 imm=-8192
+0023DB8C  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023DB90  03 00 82 14  14820003  bne rs=4 rt=2 -> 0x0023DBA0
+0023DB94  00 00 00 00  00000000  nop
+0023DB98  04 00 00 10  10000004  beq rs=0 rt=0 -> 0x0023DBAC
+0023DB9C  08 00 63 34  34630008  ori rs=3 rt=3 imm=0x0008
+0023DBA0  FF FF 02 3C  3C02FFFF  lui rt=2 imm=0xFFFF
+0023DBA4  F7 FF 42 34  3442FFF7  ori rs=2 rt=2 imm=0xFFF7
+0023DBA8  24 18 62 00  00621824  op=0 rs=3 rt=2 rd=3 sa=0 fn=36 imm=6180
+0023DBAC  00 E0 C3 48  48C3E000  op=18 rs=6 rt=3 rd=28 sa=0 fn=0 imm=-8192
+0023DBB0  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DBB4  00 00 00 00  00000000  nop
+0023DBB8  00 E0 42 48  4842E000  op=18 rs=2 rt=2 rd=28 sa=0 fn=0 imm=-8192
+0023DBBC  82 10 02 00  00021082  op=0 rs=0 rt=2 rd=2 sa=2 fn=2 imm=4226
+0023DBC0  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DBC4  01 00 42 30  30420001  op=12 rs=2 rt=2 rd=0 sa=0 fn=1 imm=1
+0023DBC8  00 E0 42 48  4842E000  op=18 rs=2 rt=2 rd=28 sa=0 fn=0 imm=-8192
+0023DBCC  C2 10 02 00  000210C2  op=0 rs=0 rt=2 rd=2 sa=3 fn=2 imm=4290
+0023DBD0  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DBD4  01 00 42 30  30420001  op=12 rs=2 rt=2 rd=0 sa=0 fn=1 imm=1
+0023DBD8  00 E8 43 48  4843E800  op=18 rs=2 rt=3 rd=29 sa=0 fn=0 imm=-6144
+0023DBDC  02 00 62 30  30620002  op=12 rs=3 rt=2 rd=0 sa=0 fn=2 imm=2
+0023DBE0  03 00 40 10  10400003  beq rs=2 rt=0 -> 0x0023DBF0
+0023DBE4  04 00 62 30  30620004  op=12 rs=3 rt=2 rd=0 sa=0 fn=4 imm=4
+0023DBE8  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DBEC  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023DBF0  03 00 40 10  10400003  beq rs=2 rt=0 -> 0x0023DC00
+0023DBF4  08 00 62 30  30620008  op=12 rs=3 rt=2 rd=0 sa=0 fn=8 imm=8
+0023DBF8  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DBFC  02 00 02 24  24020002  addiu rs=0 rt=2 imm=2
+0023DC00  03 00 40 10  10400003  beq rs=2 rt=0 -> 0x0023DC10
+0023DC04  01 00 62 30  30620001  op=12 rs=3 rt=2 rd=0 sa=0 fn=1 imm=1
+0023DC08  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DC0C  03 00 02 24  24020003  addiu rs=0 rt=2 imm=3
+0023DC10  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DC14  80 10 02 00  00021080  op=0 rs=0 rt=2 rd=2 sa=2 fn=0 imm=4224
+0023DC18  FF FF 84 30  3084FFFF  op=12 rs=4 rt=4 rd=31 sa=31 fn=63 imm=-1
+0023DC1C  00 D8 C4 48  48C4D800  op=18 rs=6 rt=4 rd=27 sa=0 fn=0 imm=-10240
+0023DC20  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DC24  39 D8 00 4A  4A00D839  op=18 rs=16 rt=0 rd=27 sa=0 fn=57 imm=-10183
+0023DC28  00 D0 42 48  4842D000  op=18 rs=2 rt=2 rd=26 sa=0 fn=0 imm=-12288
+0023DC2C  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DC30  FF FF 42 30  3042FFFF  op=12 rs=2 rt=2 rd=31 sa=31 fn=63 imm=-1
+0023DC34  00 00 00 00  00000000  nop
+0023DC38  E0 FF BD 27  27BDFFE0  addiu rs=29 rt=29 imm=-32
+0023DC3C  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DC40  10 00 BF FF  FFBF0010  op=63 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DC44  9E F6 0C 0C  0C0CF69E  jal 0x0033DA78
+0023DC48  2D 80 80 00  0080802D  op=0 rs=4 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023DC4C  2E 00 40 14  1440002E  bne rs=2 rt=0 -> 0x0023DD08
+0023DC50  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DC54  00 80 43 48  48438000  op=18 rs=2 rt=3 rd=16 sa=0 fn=0 imm=-32768
+0023DC58  01 00 02 24  24020001  addiu rs=0 rt=2 imm=1
+0023DC5C  00 02 03 AE  AE030200  sw rt=3 offset=512(rs=16)
+0023DC60  00 88 43 48  48438800  op=18 rs=2 rt=3 rd=17 sa=0 fn=0 imm=-30720
+0023DC64  04 02 03 AE  AE030204  sw rt=3 offset=516(rs=16)
+0023DC68  00 90 43 48  48439000  op=18 rs=2 rt=3 rd=18 sa=0 fn=0 imm=-28672
+0023DC6C  08 02 03 AE  AE030208  sw rt=3 offset=520(rs=16)
+0023DC70  00 A0 43 48  4843A000  op=18 rs=2 rt=3 rd=20 sa=0 fn=0 imm=-24576
+0023DC74  0C 02 03 AE  AE03020C  sw rt=3 offset=524(rs=16)
+0023DC78  00 A8 43 48  4843A800  op=18 rs=2 rt=3 rd=21 sa=0 fn=0 imm=-22528
+0023DC7C  10 02 03 AE  AE030210  sw rt=3 offset=528(rs=16)
+0023DC80  00 B0 43 48  4843B000  op=18 rs=2 rt=3 rd=22 sa=0 fn=0 imm=-20480
+0023DC84  14 02 03 AE  AE030214  sw rt=3 offset=532(rs=16)
+0023DC88  00 00 43 48  48430000  op=18 rs=2 rt=3 rd=0 sa=0 fn=0 imm=0
+0023DC8C  18 02 03 A6  A6030218  sh rt=3 offset=536(rs=16)
+0023DC90  00 08 43 48  48430800  op=18 rs=2 rt=3 rd=1 sa=0 fn=0 imm=2048
+0023DC94  1A 02 03 A6  A603021A  sh rt=3 offset=538(rs=16)
+0023DC98  00 10 43 48  48431000  op=18 rs=2 rt=3 rd=2 sa=0 fn=0 imm=4096
+0023DC9C  1C 02 03 A6  A603021C  sh rt=3 offset=540(rs=16)
+0023DCA0  00 18 43 48  48431800  op=18 rs=2 rt=3 rd=3 sa=0 fn=0 imm=6144
+0023DCA4  1E 02 03 A6  A603021E  sh rt=3 offset=542(rs=16)
+0023DCA8  00 20 43 48  48432000  op=18 rs=2 rt=3 rd=4 sa=0 fn=0 imm=8192
+0023DCAC  20 02 03 A6  A6030220  sh rt=3 offset=544(rs=16)
+0023DCB0  00 28 43 48  48432800  op=18 rs=2 rt=3 rd=5 sa=0 fn=0 imm=10240
+0023DCB4  22 02 03 A6  A6030222  sh rt=3 offset=546(rs=16)
+0023DCB8  00 30 43 48  48433000  op=18 rs=2 rt=3 rd=6 sa=0 fn=0 imm=12288
+0023DCBC  24 02 03 A6  A6030224  sh rt=3 offset=548(rs=16)
+0023DCC0  00 38 43 48  48433800  op=18 rs=2 rt=3 rd=7 sa=0 fn=0 imm=14336
+0023DCC4  26 02 03 A6  A6030226  sh rt=3 offset=550(rs=16)
+0023DCC8  00 40 43 48  48434000  op=18 rs=2 rt=3 rd=8 sa=0 fn=0 imm=16384
+0023DCCC  28 02 03 A6  A6030228  sh rt=3 offset=552(rs=16)
+0023DCD0  00 48 43 48  48434800  op=18 rs=2 rt=3 rd=9 sa=0 fn=0 imm=18432
+0023DCD4  2A 02 03 A6  A603022A  sh rt=3 offset=554(rs=16)
+0023DCD8  00 50 43 48  48435000  op=18 rs=2 rt=3 rd=10 sa=0 fn=0 imm=20480
+0023DCDC  2C 02 03 A6  A603022C  sh rt=3 offset=556(rs=16)
+0023DCE0  00 58 43 48  48435800  op=18 rs=2 rt=3 rd=11 sa=0 fn=0 imm=22528
+0023DCE4  2E 02 03 A6  A603022E  sh rt=3 offset=558(rs=16)
+0023DCE8  00 60 43 48  48436000  op=18 rs=2 rt=3 rd=12 sa=0 fn=0 imm=24576
+0023DCEC  30 02 03 A6  A6030230  sh rt=3 offset=560(rs=16)
+0023DCF0  00 68 43 48  48436800  op=18 rs=2 rt=3 rd=13 sa=0 fn=0 imm=26624
+0023DCF4  32 02 03 A6  A6030232  sh rt=3 offset=562(rs=16)
+0023DCF8  00 70 43 48  48437000  op=18 rs=2 rt=3 rd=14 sa=0 fn=0 imm=28672
+0023DCFC  34 02 03 A6  A6030234  sh rt=3 offset=564(rs=16)
+0023DD00  00 78 43 48  48437800  op=18 rs=2 rt=3 rd=15 sa=0 fn=0 imm=30720
+0023DD04  36 02 03 A6  A6030236  sh rt=3 offset=566(rs=16)
+0023DD08  10 00 BF DF  DFBF0010  op=55 rs=29 rt=31 rd=0 sa=0 fn=16 imm=16
+0023DD0C  00 00 B0 DF  DFB00000  op=55 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DD10  08 00 E0 03  03E00008  op=0 rs=31 rt=0 rd=0 sa=0 fn=8 imm=8
+0023DD14  20 00 BD 27  27BD0020  addiu rs=29 rt=29 imm=32
+0023DD18  D0 FF BD 27  27BDFFD0  addiu rs=29 rt=29 imm=-48
+0023DD1C  10 00 B1 FF  FFB10010  op=63 rs=29 rt=17 rd=0 sa=0 fn=16 imm=16
+0023DD20  00 00 B0 FF  FFB00000  op=63 rs=29 rt=16 rd=0 sa=0 fn=0 imm=0
+0023DD24  2D 88 80 00  0080882D  op=0 rs=4 rt=0 rd=17 sa=0 fn=45 imm=-30675
+0023DD28  20 00 BF FF  FFBF0020  op=63 rs=29 rt=31 rd=0 sa=0 fn=32 imm=32
+0023DD2C  9E F6 0C 0C  0C0CF69E  jal 0x0033DA78
+0023DD30  2D 80 20 02  0220802D  op=0 rs=17 rt=0 rd=16 sa=0 fn=45 imm=-32723
+0023DD34  4E 00 40 14  1440004E  bne rs=2 rt=0 -> 0x0023DE70
+0023DD38  2D 10 00 00  0000102D  op=0 rs=0 rt=0 rd=2 sa=0 fn=45 imm=4141
+0023DD3C  00 00 00 DA  DA000000  op=54 rs=16 rt=0 rd=0 sa=0 fn=0 imm=0
+0023DD40  10 00 01 DA  DA010010  op=54 rs=16 rt=1 rd=0 sa=0 fn=16 imm=16
+0023DD44  20 00 02 DA  DA020020  op=54 rs=16 rt=2 rd=0 sa=0 fn=32 imm=32
+0023DD48  30 00 03 DA  DA030030  op=54 rs=16 rt=3 rd=0 sa=0 fn=48 imm=48
+0023DD4C  40 00 04 DA  DA040040  op=54 rs=16 rt=4 rd=0 sa=1 fn=0 imm=64
+0023DD50  50 00 05 DA  DA050050  op=54 rs=16 rt=5 rd=0 sa=1 fn=16 imm=80
+0023DD54  60 00 06 DA  DA060060  op=54 rs=16 rt=6 rd=0 sa=1 fn=32 imm=96
+0023DD58  70 00 07 DA  DA070070  op=54 rs=16 rt=7 rd=0 sa=1 fn=48 imm=112
+0023DD5C  80 00 08 DA  DA080080  op=54 rs=16 rt=8 rd=0 sa=2 fn=0 imm=128
+0023DD60  90 00 09 DA  DA090090  op=54 rs=16 rt=9 rd=0 sa=2 fn=16 imm=144
+0023DD64  A0 00 0A DA  DA0A00A0  op=54 rs=16 rt=10 rd=0 sa=2 fn=32 imm=160
+0023DD68  B0 00 0B DA  DA0B00B0  op=54 rs=16 rt=11 rd=0 sa=2 fn=48 imm=176
+0023DD6C  C0 00 0C DA  DA0C00C0  op=54 rs=16 rt=12 rd=0 sa=3 fn=0 imm=192
+0023DD70  D0 00 0D DA  DA0D00D0  op=54 rs=16 rt=13 rd=0 sa=3 fn=16 imm=208
+0023DD74  E0 00 0E DA  DA0E00E0  op=54 rs=16 rt=14 rd=0 sa=3 fn=32 imm=224
+0023DD78  F0 00 0F DA  DA0F00F0  op=54 rs=16 rt=15 rd=0 sa=3 fn=48 imm=240
+0023DD7C  00 01 10 DA  DA100100  op=54 rs=16 rt=16 rd=0 sa=4 fn=0 imm=256
+0023DD80  10 01 11 DA  DA110110  op=54 rs=16 rt=17 rd=0 sa=4 fn=16 imm=272
+0023DD84  20 01 12 DA  DA120120  op=54 rs=16 rt=18 rd=0 sa=4 fn=32 imm=288
+0023DD88  30 01 13 DA  DA130130  op=54 rs=16 rt=19 rd=0 sa=4 fn=48 imm=304
+0023DD8C  40 01 14 DA  DA140140  op=54 rs=16 rt=20 rd=0 sa=5 fn=0 imm=320
+0023DD90  50 01 15 DA  DA150150  op=54 rs=16 rt=21 rd=0 sa=5 fn=16 imm=336
+0023DD94  60 01 16 DA  DA160160  op=54 rs=16 rt=22 rd=0 sa=5 fn=32 imm=352
+0023DD98  70 01 17 DA  DA170170  op=54 rs=16 rt=23 rd=0 sa=5 fn=48 imm=368
+0023DD9C  80 01 18 DA  DA180180  op=54 rs=16 rt=24 rd=0 sa=6 fn=0 imm=384
+0023DDA0  90 01 19 DA  DA190190  op=54 rs=16 rt=25 rd=0 sa=6 fn=16 imm=400
+0023DDA4  A0 01 1A DA  DA1A01A0  op=54 rs=16 rt=26 rd=0 sa=6 fn=32 imm=416
+0023DDA8  B0 01 1B DA  DA1B01B0  op=54 rs=16 rt=27 rd=0 sa=6 fn=48 imm=432
+0023DDAC  C0 01 1C DA  DA1C01C0  op=54 rs=16 rt=28 rd=0 sa=7 fn=0 imm=448
+0023DDB0  D0 01 1D DA  DA1D01D0  op=54 rs=16 rt=29 rd=0 sa=7 fn=16 imm=464
+0023DDB4  E0 01 1E DA  DA1E01E0  op=54 rs=16 rt=30 rd=0 sa=7 fn=32 imm=480
+0023DDB8  F0 01 1F DA  DA1F01F0  op=54 rs=16 rt=31 rd=0 sa=7 fn=48 imm=496
+0023DDBC  00 02 22 8E  8E220200  lw rt=2 offset=512(rs=17)
+0023DDC0  00 80 C2 48  48C28000  op=18 rs=6 rt=2 rd=16 sa=0 fn=0 imm=-32768
+0023DDC4  04 02 22 8E  8E220204  lw rt=2 offset=516(rs=17)
+0023DDC8  00 88 C2 48  48C28800  op=18 rs=6 rt=2 rd=17 sa=0 fn=0 imm=-30720
+0023DDCC  08 02 22 8E  8E220208  lw rt=2 offset=520(rs=17)
+0023DDD0  00 90 C2 48  48C29000  op=18 rs=6 rt=2 rd=18 sa=0 fn=0 imm=-28672
+0023DDD4  0C 02 22 8E  8E22020C  lw rt=2 offset=524(rs=17)
+0023DDD8  00 A0 C2 48  48C2A000  op=18 rs=6 rt=2 rd=20 sa=0 fn=0 imm=-24576
+0023DDDC  10 02 22 8E  8E220210  lw rt=2 offset=528(rs=17)
+0023DDE0  00 A8 C2 48  48C2A800  op=18 rs=6 rt=2 rd=21 sa=0 fn=0 imm=-22528
+0023DDE4  14 02 22 8E  8E220214  lw rt=2 offset=532(rs=17)
+0023DDE8  00 B0 C2 48  48C2B000  op=18 rs=6 rt=2 rd=22 sa=0 fn=0 imm=-20480
+0023DDEC  18 02 22 96  96220218  lhu rt=2 offset=536(rs=17)
+0023DDF0  00 00 C2 48  48C20000  op=18 rs=6 rt=2 rd=0 sa=0 fn=0 imm=0
+0023DDF4  1A 02 22 96  9622021A  lhu rt=2 offset=538(rs=17)
+0023DDF8  00 08 C2 48  48C20800  op=18 rs=6 rt=2 rd=1 sa=0 fn=0 imm=2048
+0023DDFC  1C 02 22 96  9622021C  lhu rt=2 offset=540(rs=17)
