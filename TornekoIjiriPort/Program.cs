@@ -2068,10 +2068,15 @@ internal static class Pcsx2BinApplier
             // var_164は一時的に保護属性を変更して書き込む。
             bool isVar164 = block.Name == "var_164";
 
+            bool isRingSlowPatchReadOnly =
+                (block.Name == "鈍足解除・A02C8F18" ||
+                 block.Name == "鈍足解除・A02C8F04") &&
+                protection == 0x02;
+
             // 未確保・Guard・アクセス禁止ページは引き続き拒否する。
             // var_164に限り、読み取り専用ページを許可する。
             if (!committed || guarded || noAccess ||
-                (!writable && !isVar164))
+                (!writable && !isVar164 && !isRingSlowPatchReadOnly))
             {
                 throw new System.InvalidOperationException(
                     "書き込み予定領域の事前検証に失敗: " + block.Name +
@@ -2170,8 +2175,19 @@ internal static class Pcsx2BinApplier
 
                 // var_164の読み取り専用ページだけ、一時的にPAGE_READWRITEへ変更する。
                 // 書き込み後はfinallyで必ず元の保護属性へ戻す。
+                uint protection = mbi.Protect & 0xFF;
+
+                bool isRingSlowPatch =
+                    name == "鈍足解除・A02C8F18" ||
+                    name == "鈍足解除・A02C8F04" ||
+                    name == "鈍足解除・A02C8F18の復元" ||
+                    name == "鈍足解除・A02C8F04の復元";
+
                 uint temporaryProtect =
-                    name == "var_164" ? 0x04u : mbi.Protect;
+                    name == "var_164" ||
+                    (isRingSlowPatch && protection == 0x02)
+                        ? 0x04u
+                        : mbi.Protect;
 
                 bool changed = VirtualProtectEx(
                     handle, partAddress, partSize,
@@ -4309,12 +4325,7 @@ internal static class Torneko4FileService
                 throw new InvalidDataException(
                     "保存ファイルが安全上限を超えています。");
 
-            if (File.Exists(fullPath))
-                File.Move(tempPath, fullPath, true);
-            else
-                File.Move(tempPath, fullPath);
-
-            Torneko4Package check = Load(fullPath);
+            Torneko4Package check = Load(tempPath);
 
             if (!System.Linq.Enumerable.SequenceEqual(
                 check.EditedBase, editedBase))
@@ -4355,6 +4366,7 @@ internal static class Torneko4FileService
                         "保存後の追加変更データ検証に失敗しました。");
                 }
             }
+            File.Move(tempPath, fullPath, true);
         }
         finally
         {
