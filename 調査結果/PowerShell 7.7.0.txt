@@ -1,0 +1,1257 @@
+PowerShell 7.7.0
+PS C:\Users\penelope> & {
+>>     $ErrorActionPreference = "Stop"
+>>
+>>     $ProjectDir = "C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort"
+>>
+>>     $Targets = @(
+>>         @{
+>>             Path = Join-Path $ProjectDir "ActionAutoRestoreService.cs"
+>>             Pattern = "CaveSearchStart|Find.*Cave|Allocate|WriteDispatcherCode|IsDispatcherCode|WriteActionTable"
+>>         },
+>>         @{
+>>             Path = Join-Path $ProjectDir "DungeonCommonSettingsForm.cs"
+>>             Pattern = "VirtualProtectEx|FlushInstructionCache|WriteProcessMemory"
+>>         },
+>>         @{
+>>             Path = Join-Path $ProjectDir "Program.cs"
+>>             Pattern = "class Pcsx2MemoryLayoutBuilder|ResolveEEmemBase|GetEEmemBase"
+>>         }
+>>     )
+>>
+>>     foreach ($target in $Targets) {
+>>         if (-not (Test-Path -LiteralPath $target.Path -PathType Leaf)) {
+>>             throw "対象ファイルがありません: $($target.Path)"
+>>         }
+>>
+>>         Write-Host "`n===== $([System.IO.Path]::GetFileName($target.Path)) ====="
+>>
+>>         Select-String `
+>>             -LiteralPath $target.Path `
+>>             -Pattern $target.Pattern `
+>>             -Context 12,35
+>>     }
+>> }
+
+===== ActionAutoRestoreService.cs =====
+
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:13:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:14:    // 元の jal dgEnemyAttack
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:15:    private const uint OriginalCallIns
+truction = 0x0C08F1D4u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:16:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:17:    // 元の遅延スロット lh s1,4(v0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:18:    private const uint DelaySlotAddres
+s = 0x002435C8u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:19:    private const uint OriginalDelayIn
+struction = 0x84510004u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:20:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:21:    // 旧版の全敵共通パッチ ori s1,zer
+o,actionId
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:22:    private const uint LegacyPatchBase
+ = 0x34110000u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:23:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:24:    // EE RAMの高位領域から512バイトの
+空き領域を探す
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:25:    private const uint CaveSearchStart
+ = 0x01FF0000u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:26:    private const uint CaveSearchEnd =
+ 0x01F00000u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:27:    private const uint CaveSearchStep
+= 0x00010000u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:28:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:29:    private const uint CaveSize = 0x20
+0u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:30:    private const uint TableOffset = 0
+x100u;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:31:    private const int TableSize = 256;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:32:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:33:        internal static readonly (usho
+rt Id, string Name)[] ActionChoices =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:34:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:35:        (0x08, "体力が回復しなくなった
+"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:36:        (0x09, "体力が減っていく"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:37:        (0x13, "かなしばり"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:38:        (0x1A, "仲間たちを呼ぶ"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:39:        (0x1C, "凍える吹雪"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:40:        (0x1F, "呪いの言葉"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:41:        (0x20, "杖の使用回数0"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:42:        (0x21, "睨みつけ"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:43:        (0x22, "アストロン"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:44:        (0x23, "力を溜めた(トロル)"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:45:        (0x24, "力を溜めた(トロルボン
+バー)"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:46:        (0x25, "超ちからため(トロルキ
+ング)"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:47:        (0x26, "くさった死体のくさった
+液"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:48:        (0x27, "リビングデッドのくさっ
+た液"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:49:        (0x28, "グールのくさった液"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:50:        (0x29, "どくどくゾンビのくさっ
+た液"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:51:        (0x2B, "キースのホーミングブレ
+ス"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:52:        (0x2C, "ダースのホーミングブレ
+ス"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:53:        (0x2D, "装備弾き"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:54:        (0x2E, "しりょうのきしのアイテ
+ム弾き"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:55:        (0x2F, "かげのきしのアイテム弾
+き"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:56:        (0x33, "わらいぶくろのお金盗み
+"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:57:        (0x34, "毒を受けて力が1下がっ
+た"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:58:        (0x35, "毒を受けて力が3下がっ
+た(マタンゴ)"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:59:        (0x36, "毒を受けて力が3下がっ
+た(マージマタンゴ)"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:60:        (0x37, "ラリホー"),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:185:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:186:        return (instruction & 0xFFFF0
+000u) == LegacyPatchBase;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:187:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:188:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:189:    private static bool IsDispatcherC
+all(uint instruction)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:190:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:191:        if ((instruction >> 26) != 3u
+)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:192:            return false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:193:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:194:        uint target = (instruction &
+0x03FFFFFFu) << 2;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:195:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:196:        return target >= CaveSearchEn
+d &&
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:197:               target <= CaveSearchSt
+art;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:198:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:199:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:200:    private static uint DecodeDispatc
+herAddress(uint instruction)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:201:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:202:        return (instruction & 0x03FFF
+FFFu) << 2;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:203:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:204:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:205:    private static uint EncodeJal(uin
+t address)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:206:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:207:        if ((address & 0xF0000000u) !
+=
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:208:            ((PatchAddress + 4u) & 0x
+F0000000u))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:209:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:210:            throw new InvalidOperatio
+nException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:211:                "ディスパッチャーのア
+ドレスがJALの到達範囲外です。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:212:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:213:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:214:        return 0x0C000000u | ((addres
+s >> 2) & 0x03FFFFFFu);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:215:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:216:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:217:    internal bool TryApply(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:218:        IEnumerable<KeyValuePair<int,
+ ushort>> monsterActions,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:219:        out string message)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:220:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:221:        message = "";
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:222:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:223:        if (monsterActions == null)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:224:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:225:            message = "モンスター別特
+技設定がありません。";
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:226:            return false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:227:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:228:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:229:        var copy = new Dictionary<int
+, ushort>();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:230:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:231:        foreach (var pair in monsterA
+ctions)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:232:            copy[pair.Key] = pair.Val
+ue;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:335:        if (a == null || a.Length !=
+b.Length)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:336:            return false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:337:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:338:        for (int i = 0; i < b.Length;
+ i++)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:339:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:340:            if (a[i] != b[i])
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:341:                return false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:342:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:343:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:344:        return true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:345:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:346:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:347:    private bool IsDispatcherCode(uin
+t address)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:348:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:349:        uint tableAddress = address +
+ TableOffset;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:350:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:351:        uint[] expected =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:352:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:353:            0x90480006u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:354:            0x3C090000u | ((tableAddr
+ess >> 16) & 0xFFFFu),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:355:            0x35290000u | (tableAddre
+ss & 0xFFFFu),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:356:            0x01284821u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:357:            0x912A0000u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:358:            0x11400002u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:359:            0x00000000u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:360:            0x01408821u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:361:            0x0808F1D4u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:362:            0x00000000u
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:363:        };
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:364:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:365:        for (int i = 0; i < expected.
+Length; i++)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:366:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:367:            if (_pine.Read32(address
++ (uint)(i * 4)) != expected[i])
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:368:                return false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:369:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:370:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:371:        return true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:372:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:373:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:374:    private uint FindCodeCave()
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:375:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:376:        for (
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:377:            uint candidate = CaveSear
+chStart;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:378:            candidate >= CaveSearchEn
+d;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:379:            candidate -= CaveSearchSt
+ep)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:380:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:381:            bool free = true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:382:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:383:            for (uint offset = 0; off
+set < CaveSize; offset += 4)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:384:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:385:                if (_pine.Read32(cand
+idate + offset) != 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:386:                {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:387:                    free = false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:388:                    break;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:389:                }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:390:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:391:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:392:            if (free)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:393:                return candidate;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:394:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:395:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:396:        throw new InvalidOperationExc
+eption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:397:            "EE RAMの指定範囲に512バ
+イトの空き領域が見つかりません。\n" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:398:            "安全確認のため、コードを
+書き込みませんでした。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:399:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:400:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:401:    private void WriteDispatcherCode(
+uint address)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:402:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:403:        uint tableAddress = address +
+ TableOffset;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:404:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:405:        uint[] code =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:406:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:407:            // lbu t0,6(v0) : 1バイト
+の種族IDを読み取る
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:408:            0x90480006u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:409:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:410:            // lui t1,hi(table)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:411:            0x3C090000u | ((tableAddr
+ess >> 16) & 0xFFFFu),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:412:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:413:            // ori t1,t1,lo(table)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:414:            0x35290000u | (tableAddre
+ss & 0xFFFFu),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:415:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:416:            // addu t1,t1,t0
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:417:            0x01284821u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:418:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:419:            // lbu t2,0(t1)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:420:            0x912A0000u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:421:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:422:            // beq t2,zero,skip
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:423:            0x11400002u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:424:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:425:            // nop
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:426:            0x00000000u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:427:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:428:            // addu s1,t2,zero
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:429:            0x01408821u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:430:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:431:            // j dgEnemyAttack
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:432:            0x0808F1D4u,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:433:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:434:            // nop
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:435:            0x00000000u
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:436:        };
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:437:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:438:        for (int i = 0; i < code.Leng
+th; i++)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:439:            _pine.Write32(address + (
+uint)(i * 4), code[i]);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:440:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:441:        if (!IsDispatcherCode(address
+))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:442:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:443:            throw new InvalidOperatio
+nException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:444:                "MIPSディスパッチャー
+の書き込み検証に失敗しました。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:445:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:446:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:447:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:448:    private void WriteActionTable(uin
+t address, byte[] table)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:449:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:450:        for (int i = 0; i < table.Len
+gth; i += 4)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:451:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:452:            uint value =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:453:                (uint)table[i] |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:454:                ((uint)table[i + 1] <
+< 8) |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:455:                ((uint)table[i + 2] <
+< 16) |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:456:                ((uint)table[i + 3] <
+< 24);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:457:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:458:            _pine.Write32(address + (
+uint)i, value);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:459:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:460:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:461:        for (int i = 0; i < table.Len
+gth; i += 4)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:462:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:463:            uint expected =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:464:                (uint)table[i] |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:465:                ((uint)table[i + 1] <
+< 8) |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:466:                ((uint)table[i + 2] <
+< 16) |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:467:                ((uint)table[i + 3] <
+< 24);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:468:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:469:            uint actual = _pine.Read3
+2(address + (uint)i);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:470:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:471:            if (actual != expected)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:472:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:473:                throw new InvalidOper
+ationException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:474:                    "種族別特技テーブ
+ルの検証に失敗しました。位置: 0x" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:475:                    (address + (uint)
+i).ToString("X8"));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:476:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:477:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:478:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:479:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:480:    private void RestoreCallInstructi
+on()
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:481:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:482:        uint current = _pine.Read32(P
+atchAddress);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:483:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:529:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:530:        if (delayInstruction != Origi
+nalDelayInstruction)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:531:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:532:            throw new InvalidOperatio
+nException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:533:                "遅延スロットが想定外
+です。\n" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:534:                "現在値: 0x" + delayI
+nstruction.ToString("X8"));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:535:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:536:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:537:        if (currentIsDispatcher)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:538:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:539:            uint detectedCave = Decod
+eDispatcherAddress(currentCall);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:540:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:541:            if (!IsDispatcherCode(det
+ectedCave))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:542:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:543:                RestoreCallInstructio
+n();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:544:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:545:                throw new InvalidOper
+ationException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:546:                    "既存ディスパッチ
+ャーのコード検証に失敗しました。\n" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:547:                    "安全のため元の呼
+び出し命令へ戻しました。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:548:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:549:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:550:            _codeCaveAddress = detect
+edCave;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:551:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:552:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:553:        if (actions.Count == 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:554:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:555:            if (currentIsDispatcher)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:556:                RestoreCallInstructio
+n();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:557:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:558:            return;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:559:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:560:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:561:        byte[] table = BuildActionTab
+le(actions);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:562:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:563:        if (currentIsDispatcher && Ta
+blesEqual(_lastTable, table))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:564:            return;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:565:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:566:        if (currentIsDispatcher)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:567:            RestoreCallInstruction();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:568:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:569:        bool newCave = false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:570:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:571:        if (_codeCaveAddress == 0 ||
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:572:            !IsDispatcherCode(_codeCa
+veAddress))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:573:        {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:574:            _codeCaveAddress = FindCo
+deCave();
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:575:            WriteDispatcherCode(_code
+CaveAddress);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:576:            newCave = true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:577:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:578:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:579:        uint tableAddress = _codeCave
+Address + TableOffset;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:580:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:581:        if (newCave || !TablesEqual(_
+lastTable, table))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:582:        {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:583:            WriteActionTable(tableAdd
+ress, table);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:584:            _lastTable = (byte[])tabl
+e.Clone();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:585:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:586:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:587:        uint newCall = EncodeJal(_cod
+eCaveAddress);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:588:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:589:        _pine.Write32(PatchAddress, n
+ewCall);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:590:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:591:        uint verifyCall = _pine.Read3
+2(PatchAddress);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:592:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:593:        if (verifyCall != newCall)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:594:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:595:            throw new InvalidOperatio
+nException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:596:                "ディスパッチャー呼び
+出し命令の検証に失敗しました。\n" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:597:                "書き込み値: 0x" + ne
+wCall.ToString("X8") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:598:                "\n読み戻し値: 0x" +
+verifyCall.ToString("X8"));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:599:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:600:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:601:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:602:    private void Poll(object? state)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:603:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:604:        if (_disposed ||
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:605:            Interlocked.Exchange(ref
+_pollBusy, 1) != 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:606:            return;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:607:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:608:        try
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:609:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:610:            lock (_operationSync)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:611:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:612:                Dictionary<int, ushor
+t> snapshot;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:613:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:614:                lock (_stateSync)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:615:                    snapshot = new Di
+ctionary<int, ushort>(_actions);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:616:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:617:                if (snapshot.Count ==
+ 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs:618:                {
+
+===== DungeonCommonSettingsForm.cs =====
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:43:    [DllImport("kernel32.dll", SetLas
+tError = true)]
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:44:    private static extern bool CloseH
+andle(IntPtr handle);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:45:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:46:    [DllImport("kernel32.dll", SetLas
+tError = true)]
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:47:    private static extern bool ReadPr
+ocessMemory(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:48:        IntPtr process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:49:        IntPtr address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:50:        byte[] buffer,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:51:        UIntPtr size,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:52:        out UIntPtr read);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:53:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:54:    [DllImport("kernel32.dll", SetLas
+tError = true)]
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:55:    private static extern bool WriteP
+rocessMemory(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:56:        IntPtr process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:57:        IntPtr address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:58:        byte[] buffer,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:59:        UIntPtr size,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:60:        out UIntPtr written);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:61:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:62:    [DllImport("kernel32.dll", SetLas
+tError = true)]
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:63:    private static extern bool Virtua
+lProtectEx(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:64:        IntPtr process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:65:        IntPtr address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:66:        UIntPtr size,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:67:        uint newProtection,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:68:        out uint oldProtection);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:69:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:70:    [DllImport("kernel32.dll", SetLas
+tError = true)]
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:71:    private static extern bool FlushI
+nstructionCache(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:72:        IntPtr process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:73:        IntPtr address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:74:        UIntPtr size);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:75:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:76:    private sealed class MemoryChange
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:77:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:78:        public string Name { get; }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:79:        public long Address { get; }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:80:        public byte[] NewData { get;
+}
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:81:        public byte[] OldData { get;
+}
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:82:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:83:        public MemoryChange(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:84:            string name,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:85:            long address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:86:            byte[] newData,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:87:            byte[] oldData)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:88:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:89:            Name = name;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:90:            Address = address;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:91:            NewData = newData;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:92:            OldData = oldData;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:93:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:94:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:95:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:96:    public DungeonCommonSettingsForm(
+)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:97:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:98:        Text = "ダンジョン共通設定";
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:99:        StartPosition = FormStartPosi
+tion.CenterParent;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:100:        Width = 720;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:101:        Height = 470;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:102:        MinimumSize = new Size(620,
+400);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:103:        Font = new Font("Yu Gothic U
+I", 10);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:104:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:105:        var tabs = new TabControl
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:106:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:680:        long address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:681:        byte[] data,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:682:        bool executable = false)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:683:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:684:        if (address <= 0 || data ==
+null || data.Length == 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:685:            throw new InvalidOperati
+onException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:686:                "書き込みアドレスま
+たはデータが不正です。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:687:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:688:        if (!executable)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:689:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:690:            UIntPtr dataWritten;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:691:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:692:            bool dataSuccess = Write
+ProcessMemory(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:693:                process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:694:                new IntPtr(address),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:695:                data,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:696:                new UIntPtr((uint)da
+ta.Length),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:697:                out dataWritten);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:698:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:699:            int dataError = Marshal.
+GetLastWin32Error();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:700:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:701:            if (!dataSuccess || data
+Written.ToUInt64() != (ulong)data.Length)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:702:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:703:                throw new IOExceptio
+n(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:704:                    "通常データのメ
+モリ書き込みに失敗しました。" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:705:                    "\r\nアドレス: 0
+x" + address.ToString("X") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:706:                    "\r\n要求サイズ:
+ " + data.Length +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:707:                    "\r\n書き込みサ
+イズ: " + dataWritten.ToUInt64() +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:708:                    "\r\nWin32エラー
+: " + dataError);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:709:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:710:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:711:            return;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:712:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:713:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:714:        uint oldProtection;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:715:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:716:        bool protectionChanged = Vir
+tualProtectEx(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:717:            process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:718:            new IntPtr(address),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:719:            new UIntPtr((uint)data.L
+ength),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:720:            0x04,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:721:            out oldProtection);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:722:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:723:        if (!protectionChanged)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:724:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:725:            throw new IOException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:726:                "実行コードのメモリ
+保護変更に失敗しました。" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:727:                "\r\nアドレス: 0x" +
+ address.ToString("X") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:728:                "\r\nWin32エラー: "
++ Marshal.GetLastWin32Error());
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:729:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:730:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:731:        UIntPtr written;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:732:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:733:        bool success = WriteProcessM
+emory(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:734:            process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:735:            new IntPtr(address),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:736:            data,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:737:            new UIntPtr((uint)data.L
+ength),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:738:            out written);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:739:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:740:        int writeError = Marshal.Get
+LastWin32Error();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:741:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:742:        bool protectionRestored = Vi
+rtualProtectEx(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:743:            process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:744:            new IntPtr(address),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:745:            new UIntPtr((uint)data.L
+ength),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:746:            oldProtection,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:747:            out uint ignoredProtecti
+on);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:748:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:749:        if (!protectionRestored)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:750:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:751:            throw new IOException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:752:                "実行コードのメモリ
+保護を元に戻せませんでした。" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:753:                "\r\nアドレス: 0x" +
+ address.ToString("X") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:754:                "\r\nWin32エラー: "
++ Marshal.GetLastWin32Error());
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:755:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:756:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:757:        if (!success || written.ToUI
+nt64() != (ulong)data.Length)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:758:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:759:            throw new IOException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:760:                "実行コードのメモリ
+書き込みに失敗しました。" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:761:                "\r\nアドレス: 0x" +
+ address.ToString("X") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:762:                "\r\n要求サイズ: " +
+ data.Length +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:763:                "\r\n書き込みサイズ:
+ " + written.ToUInt64() +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:764:                "\r\nWin32エラー: "
++ writeError);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:765:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:766:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:767:        bool flushed = FlushInstruct
+ionCache(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:768:            process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:769:            new IntPtr(address),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:770:            new UIntPtr((uint)data.L
+ength));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:771:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:772:        if (!flushed)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:773:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:774:            throw new IOException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:775:                "命令キャッシュの更
+新に失敗しました。" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:776:                "\r\nアドレス: 0x" +
+ address.ToString("X") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:777:                "\r\nWin32エラー: "
++ Marshal.GetLastWin32Error());
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:778:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:779:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:780:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:781:    private static uint ReadPineWord
+(uint address)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:782:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:783:        byte[] command = new byte[5]
+;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:784:        command[0] = 2;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:785:        WriteUInt32(command, 1, addr
+ess);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:786:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:787:        byte[] response = SendPineCo
+mmand(command);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:788:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:789:        if (response.Length != 5)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:790:            throw new IOException("P
+INE Read32応答サイズが不正です。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:791:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:792:        if (response[0] != 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:793:            throw new IOException(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:794:                "PINE Read32失敗。ア
+ドレス: 0x" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:795:                address.ToString("X8
+") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:796:                " / ステータス: " +
+response[0].ToString("X2"));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:797:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:798:        return ReadUInt32(response,
+1);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:799:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:800:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:801:    private static void WritePineWor
+d(uint address, uint value)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs:802:    {
+
+===== Program.cs =====
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:800:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:801:            lines.Add(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:802:                pair.Key + ": 0x" +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:803:                pair.Value.ToString("X"));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:804:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:805:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:806:        return string.Join(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:807:            System.Environment.NewLine,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:808:            lines);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:809:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:810:}
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:811:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:812:internal static class Pcsx2MemoryLayoutBuilder
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:813:{
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:814:    private const uint PROCESS_VM_READ = 0x0010;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:815:    private const uint PROCESS_QUERY_INFORMATION = 0x0
+400;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:816:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:817:    [System.Runtime.InteropServices.DllImport(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:818:        "kernel32.dll", SetLastError = true)]
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:819:    private static extern System.IntPtr OpenProcess(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:820:        uint access,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:821:        bool inherit,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:822:        int processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:823:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:824:    [System.Runtime.InteropServices.DllImport(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:825:        "kernel32.dll", SetLastError = true)]
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:826:    private static extern bool CloseHandle(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:827:        System.IntPtr handle);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:828:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:829:    [System.Runtime.InteropServices.DllImport(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:830:        "kernel32.dll", SetLastError = true)]
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:831:    private static extern bool ReadProcessMemory(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:832:        System.IntPtr process,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:833:        System.IntPtr address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:834:        byte[] buffer,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:835:        System.UIntPtr size,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:836:        out System.UIntPtr read);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:837:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:838:    private static byte[] Read(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:839:        System.IntPtr handle,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:840:        long address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:841:        int size)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:842:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:843:        if (address <= 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:844:            throw new System.ArgumentOutOfRangeExcepti
+on(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:845:                nameof(address));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:846:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:847:        byte[] buffer = new byte[size];
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:866:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:867:    private static uint ReadUInt32(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:868:        System.IntPtr handle,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:869:        long address)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:870:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:871:        return System.BitConverter.ToUInt32(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:872:            Read(handle, address, 4), 0);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:873:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:874:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:875:    // PCSX2 v2.8.2 専用:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:876:    // メインモジュールのPEエクスポートからEEmem変数を
+探し、
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:877:    // EEメモリの実際のホストアドレスを取得する。
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:878:    private static long ResolveEEmemBase(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:879:        int processId,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:880:        System.IntPtr handle)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:881:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:882:        using (var process =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:883:            System.Diagnostics.Process.GetProcessById(
+processId))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:884:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:885:            if (process.MainModule == null)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:886:                throw new System.InvalidOperationExcep
+tion(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:887:                    "PCSX2のメインモジュールを取得でき
+ません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:888:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:889:            long moduleBase =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:890:                process.MainModule.BaseAddress.ToInt64
+();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:891:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:892:            byte[] dos = Read(handle, moduleBase, 64);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:893:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:894:            if (dos[0] != 0x4D || dos[1] != 0x5A)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:895:                throw new System.InvalidOperationExcep
+tion(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:896:                    "PCSX2のDOSヘッダーが不正です。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:897:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:898:            int peOffset =
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:899:                System.BitConverter.ToInt32(dos, 0x3C)
+;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:900:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:901:            if (peOffset <= 0 || peOffset > 1024 * 102
+4)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:902:                throw new System.InvalidOperationExcep
+tion(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:903:                    "PCSX2のPEヘッダー位置が不正です。
+");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:904:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:905:            byte[] pe = Read(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:906:                handle,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:907:                checked(moduleBase + peOffset),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:908:                24 + 120);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:909:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:910:            if (pe[0] != 0x50 || pe[1] != 0x45 ||
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:911:                pe[2] != 0 || pe[3] != 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:912:                throw new System.InvalidOperationExcep
+tion(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:913:                    "PCSX2のPEシグネチャが不正です。")
+;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1009:                if (eeBase <= 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1010:                    throw new System.InvalidOperation
+Exception(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1011:                        "PCSX2のEEmemポインタが無効で
+す。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1012:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1013:                return eeBase;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1014:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1015:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1016:            throw new System.InvalidOperationExceptio
+n(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1017:                "PCSX2 v2.8.2のEEmemエクスポートが見
+つかりません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1018:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1019:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1020:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1021:    public static long GetEEmemBase(int processId)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1022:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1023:        System.IntPtr handle = OpenProcess(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1024:            PROCESS_VM_READ | PROCESS_QUERY_INFORMATI
+ON,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1025:            false,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1026:            processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1027:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1028:        if (handle == System.IntPtr.Zero)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1029:            throw new System.ComponentModel.Win32Exce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1030:                System.Runtime.InteropServices.Marsha
+l.GetLastWin32Error(),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1031:                "PCSX2のメモリを開けません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1032:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1033:        try
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1034:        {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1035:            return ResolveEEmemBase(processId, handle
+);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1036:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1037:        finally
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1038:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1039:            CloseHandle(handle);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1040:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1041:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1042:    private static long AddOffset(long address, long
+offset)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1043:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1044:        return checked(address + offset);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1045:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1046:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1047:    public static Pcsx2MemoryLayout Build(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1048:        int processId,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1049:        long signatureA,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1050:        long signatureB)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1051:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1052:        var layout = new Pcsx2MemoryLayout();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1053:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1054:        layout.SignatureA = signatureA;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1055:        layout.SignatureB = signatureB;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1056:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1057:        System.IntPtr handle = OpenProcess(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1058:            PROCESS_VM_READ | PROCESS_QUERY_INFORMATI
+ON,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1059:            false,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1060:            processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1061:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1062:        if (handle == System.IntPtr.Zero)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1063:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1064:            throw new System.ComponentModel.Win32Exce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1065:                System.Runtime.InteropServices.Marsha
+l.GetLastWin32Error(),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1066:                "ポインタ計算用にPCSX2を開けません。"
+);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1067:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1068:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1069:        try
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1070:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1092:            // 旧HSP label_073 のアドレス式を忠実に反
+映。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1093:// var_134 = 第1識別パターンのアドレス
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1094:// var_136 = 第2識別パターンのアドレス
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1095:long a = signatureA;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1096:long b = signatureB;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1097:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1098:var map = layout.Addresses;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1099:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1100:// TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1101:// 64bit版PCSX2では旧HSPのCorrectionをホストアドレス
+として使わず、
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1102:// EEmemエクスポートから取得した実際のEEメモリ先頭を
+使用する。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1103:long eeMemBaseForFixedAddresses =
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1104:    ResolveEEmemBase(processId, handle);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1105:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1106:// PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する
+。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1107:// 旧HSPと同じ補正値を使用する。var_143 = peek(var_13
+4, 3) * 16777216
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1108:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1109:// 第2識別アドレスを基準にする領域
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1110:map["var_150"] = AddOffset(b, 87592);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1111:map["var_152"] = AddOffset(b, 89224);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1112:map["var_154"] = AddOffset(b, 16);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1113:map["var_156"] = AddOffset(b, 23797200);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1114:map["var_170"] = AddOffset(b, 232804);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1115:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1116:// サイズ・定数。アドレスではない。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1117:map["var_151_size"] = 32 * 30;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1118:map["var_153_size"] = 64;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1119:map["var_155_size"] = 144;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1120:map["var_157_size"] = 8192;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1121:map["var_159_size"] = 11;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1122:map["var_161_size"] = 10;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1123:map["var_163_size"] = 10;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1124:map["var_165_size"] = 4;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1125:map["var_167_size"] = 256 * 2;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1126:map["var_169_size"] = 256 * 2;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1127:map["var_171_size"] = 1;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1128:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1129:// 第1識別アドレスを基準にする領域
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1130:map["var_158"] = AddOffset(a, -350603);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1131:map["var_160"] = AddOffset(a, -297327);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1132:map["var_162"] = AddOffset(a, -297238);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1133:map["var_164"] = AddOffset(a, 1371800);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1134:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1135:// 補正値を基準にする領域
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1136:map["var_166"] = AddOffset(eeMemBaseForFixedAddresses
+, 9384904L);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1137:map["var_168"] = AddOffset(eeMemBaseForFixedAddresses
+, 9385504L);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1138:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:1139:// 旧HSPの固定アドレス差分。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2540:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2541:                if (!layout.Addresses.TryGetValue("va
+r_648", out long allyAddress) ||
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2542:                    allyAddress <= 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2543:                    throw new System.InvalidOperation
+Exception("特技拡張領域 var_648 のアドレスを取得できません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2544:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2545:                targetAddress = checked(allyAddress +
+ (item.Item1 - 386212));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2546:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2547:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2548:            // 旧HSPの var_166 / var_168 はEE RAM上の
+独立配列。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2549:            // BIN拡張内の位置と実メモリアドレスを対
+応させる。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2550:            if (item.Item1 >= 364595 && item.Item1 +
+item.Item2 <= 364595 + 512)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2551:            {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2552:                long eeBase = Pcsx2MemoryLayoutBuilde
+r.GetEEmemBase(processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2553:                targetAddress = checked(eeBase + 0x00
+8F33C8L + (item.Item1 - 364595));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2554:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2555:            else if (item.Item1 >= 365123 && item.Ite
+m1 + item.Item2 <= 365123 + 512)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2556:            {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2557:                long eeBase = Pcsx2MemoryLayoutBuilde
+r.GetEEmemBase(processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2558:                targetAddress = checked(eeBase + 0x00
+8F3620L + (item.Item1 - 365123));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2559:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2560:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2561:            requested.Add(new WriteBlock(item.Item3,
+targetAddress, new byte[item.Item2]));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2562:            requestedOffsets.Add(item.Item1);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2563:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2564:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2565:        var result = new System.Collections.Generic.L
+ist<System.Tuple<int, byte[], string>>();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2566:        if (requested.Count == 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2567:            return result;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2568:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2569:        System.IntPtr handle = OpenProcess(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2570:            PROCESS_VM_READ | PROCESS_QUERY_INFORMATI
+ON,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2571:            false,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2572:            processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2573:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2574:        if (handle == System.IntPtr.Zero)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2575:            throw new System.ComponentModel.Win32Exce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2576:                System.Runtime.InteropServices.Marsha
+l.GetLastWin32Error(),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2577:                "PCSX2の読み取り用ハンドルを取得でき
+ません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2578:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2579:        try
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2580:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2581:            byte[] signature = ReadExact(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2582:                handle, layout.SignatureA, SignatureA
+.Length, "識別パターンA");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2583:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2584:            if (!System.Linq.Enumerable.SequenceEqual
+(signature, SignatureA))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2585:                throw new System.InvalidOperationExce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2586:                    "識別パターンAが一致しません。誤
+読み込み防止のため中止しました。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2587:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2588:            for (int i = 0; i < requested.Count; i++)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2589:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2590:                WriteBlock block = requested[i];
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2591:                byte[] data = ReadExact(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2592:                    handle, block.Address, block.Data
+.Length, block.Name);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2657:                    throw new System.InvalidOperation
+Exception(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2658:                        "特技拡張領域 var_648 のアド
+レスを取得できません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2659:                }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2660:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2661:                targetAddress = checked(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2662:                    allyAddress + (item.Item1 - 38621
+2));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2663:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2664:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2665:            // 旧HSPの var_166 / var_168 はEE RAM上の
+独立配列。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2666:            // BIN拡張内の位置と実メモリアドレスを対
+応させる。
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2667:            if (item.Item1 >= 364595 && item.Item1 +
+item.Item2.Length <= 364595 + 512)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2668:            {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2669:                long eeBase = Pcsx2MemoryLayoutBuilde
+r.GetEEmemBase(processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2670:                targetAddress = checked(eeBase + 0x00
+8F33C8L + (item.Item1 - 364595));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2671:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2672:            else if (item.Item1 >= 365123 && item.Ite
+m1 + item.Item2.Length <= 365123 + 512)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2673:            {
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2674:                long eeBase = Pcsx2MemoryLayoutBuilde
+r.GetEEmemBase(processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2675:                targetAddress = checked(eeBase + 0x00
+8F3620L + (item.Item1 - 365123));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2676:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2677:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2678:            blocks.Add(new WriteBlock(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2679:                item.Item3,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2680:                targetAddress,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2681:                (byte[])item.Item2.Clone()));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2682:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2683:            mappingDetails.Add(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2684:                item.Item3 +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2685:                ": BIN 0x" + item.Item1.ToString("X")
+ +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2686:                " -> PCSX2 0x" + targetAddress.ToStri
+ng("X"));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2687:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2688:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2689:        if (blocks.Count == 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2690:            return "書き込み対象なし";
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2691:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2692:        System.IntPtr handle = OpenProcess(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2693:            PROCESS_VM_READ | PROCESS_VM_WRITE |
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2694:            PROCESS_VM_OPERATION | PROCESS_QUERY_INFO
+RMATION,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2695:            false,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2696:            processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2697:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2698:        if (handle == System.IntPtr.Zero)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2699:            throw new System.ComponentModel.Win32Exce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2700:                System.Runtime.InteropServices.Marsha
+l.GetLastWin32Error(),
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2701:                "PCSX2の書き込み用ハンドルを取得でき
+ません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2702:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2703:        try
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2704:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2705:            byte[] signature = ReadExact(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2706:                handle, layout.SignatureA, SignatureA
+.Length, "識別パターンA");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2707:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2708:            if (!System.Linq.Enumerable.SequenceEqual
+(signature, SignatureA))
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2709:                throw new System.InvalidOperationExce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2822:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2823:            if (patch == null || patch.Data == null |
+| patch.Data.Length == 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2824:                throw new System.InvalidOperationExce
+ption("追加メモリ変更データが不正です。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2825:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2826:            source.Add(patch.Clone());
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2827:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2828:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2829:        if (source.Count == 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2830:            return "追加メモリ変更: 0件";
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2831:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2832:        const long EeRamSize = 0x02000000L;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2833:
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2834:        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEm
+emBase(processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2835:        if (eeBase <= 0)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2836:            throw new System.InvalidOperationExceptio
+n(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2837:                "追加メモリ変更の適用に必要なEE RAM基
+準アドレスを取得できません。");
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2838:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2839:        var blocks = new System.Collections.Generic.L
+ist<WriteBlock>();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2840:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2841:        foreach (var patch in source)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2842:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2843:            if (patch.Address < 0 ||
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2844:                patch.Data.Length <= 0 ||
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2845:                patch.Address > EeRamSize - patch.Dat
+a.Length)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2846:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2847:                throw new System.InvalidOperationExce
+ption(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2848:                    "EE RAM範囲外の追加変更を検出しま
+した: " + patch.Name +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2849:                    " / Offset=0x" + patch.Address.To
+String("X") +
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2850:                    " / Size=" + patch.Data.Length);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2851:            }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2852:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2853:            long address = checked(eeBase + patch.Add
+ress);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2854:            blocks.Add(new WriteBlock(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2855:                patch.Name,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2856:                address,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2857:                (byte[])patch.Data.Clone()));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2858:        }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2859:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2860:        // 重複する書き込み範囲を禁止
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2861:        for (int i = 0; i < blocks.Count; i++)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2862:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2863:            ulong aStart = unchecked((ulong)blocks[i]
+.Address);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2864:            ulong aEnd = checked(aStart + (ulong)bloc
+ks[i].Data.Length);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2865:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2866:            for (int j = i + 1; j < blocks.Count; j++
+)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2867:            {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2868:                ulong bStart = unchecked((ulong)block
+s[j].Address);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:2869:                ulong bEnd = checked(bStart + (ulong)
+blocks[j].Data.Length);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3581:        CreateJapaneseEncoding();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3582:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3583:    private static System.Text.Encoding CreateJapanes
+eEncoding()
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3584:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3585:        System.Text.Encoding.RegisterProvider(
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3586:            System.Text.CodePagesEncodingProvider.Ins
+tance);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3587:        return System.Text.Encoding.GetEncoding(932);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3588:    }
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3589:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3590:    public MonsterNameEditorForm(int processId)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3591:    {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3592:        _processId = processId;
+> Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3593:        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBa
+se(processId);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3594:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3595:        Text = "モンスター名変更・名前データ確認";
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3596:        StartPosition = FormStartPosition.CenterParen
+t;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3597:        Width = 900;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3598:        Height = 700;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3599:        MinimumSize = new Size(650, 450);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3600:        Font = new Font("Yu Gothic UI", 10);
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3601:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3602:        var root = new TableLayoutPanel
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3603:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3604:            Dock = DockStyle.Fill,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3605:            ColumnCount = 1,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3606:            RowCount = 3,
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3607:            Padding = new Padding(8)
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3608:        };
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3609:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3610:        root.ColumnStyles.Add(new ColumnStyle(SizeTyp
+e.Percent, 100));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3611:        root.RowStyles.Add(new RowStyle(SizeType.Perc
+ent, 100));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3612:        root.RowStyles.Add(new RowStyle(SizeType.Abso
+lute, 54));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3613:        root.RowStyles.Add(new RowStyle(SizeType.Abso
+lute, 48));
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3614:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3615:        _list.Dock = DockStyle.Fill;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3616:        _list.IntegralHeight = false;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3617:        _list.HorizontalScrollbar = true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3618:        _list.SelectedIndexChanged += (_, _) => ShowS
+elected();
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3619:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3620:        _detail.Dock = DockStyle.Fill;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3621:        _detail.Multiline = true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3622:        _detail.ReadOnly = true;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3623:        _detail.ScrollBars = ScrollBars.Vertical;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3624:        _detail.Height = 80;
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3625:
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3626:        var center = new SplitContainer
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3627:        {
+  Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs:3628:            Dock = DockStyle.Fill,
+
+PS C:\Users\penelope>
