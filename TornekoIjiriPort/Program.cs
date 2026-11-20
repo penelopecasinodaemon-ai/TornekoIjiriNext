@@ -4770,7 +4770,8 @@ buttons.Controls.Add(UiFactory.Button(
         buttons.Controls.Add(UiFactory.Button(
             "拡張名前データベース（試験版）", (_, _) =>
             {
-                using var extendedNameForm = new ExtendedNameDatabaseForm();
+                using var extendedNameForm = new ExtendedItemNameRegistryForm(
+                    Pcsx2LiveSession.ProcessId);
                 extendedNameForm.ShowDialog(this);
             }));
 
