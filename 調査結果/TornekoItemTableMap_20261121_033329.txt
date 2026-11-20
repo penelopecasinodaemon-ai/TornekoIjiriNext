@@ -1,0 +1,285 @@
+﻿Torneko Item ID and Name Table Map
+Date: 2026-11-21 03:33:28
+PID: 6708
+EE Base: 0x1B919910000
+Table start: EE+0x00100758
+Read only
+
+[000] Ptr=0x00100758 Record=0x001051B5 ID=item_172 Name=「メタルリング」 IDBytes=8 NameBytes=12 RecordBytes=22
+[001] Ptr=0x0010075C Record=0x001051CB ID=item_171_e Name=「[ﾊﾊﾉｶﾀﾐ]ロサﾉﾀｶﾗﾓﾉﾉ１ﾂだぞ。」 IDBytes=10 NameBytes=29 RecordBytes=41
+[002] Ptr=0x00100760 Record=0x001051F4 ID=item_171 Name=「母ﾉ形見」 IDBytes=8 NameBytes=7 RecordBytes=17
+[003] Ptr=0x00100764 Record=0x00105205 ID=item_170_e Name=「[ﾜざﾌｳじﾉﾕびﾜ]モンスターｶﾗﾉ技攻撃ｦ防ぐｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=52 RecordBytes=64
+[004] Ptr=0x00100768 Record=0x00105245 ID=item_170 Name=「技封じﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[005] Ptr=0x0010076C Record=0x0010525A ID=item_169_e Name=「[ﾐﾆでーﾓﾝﾉﾕびﾜ]モンスターｶﾗアイテムｦ盗ﾏﾚﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=49 RecordBytes=61
+[006] Ptr=0x00100770 Record=0x00105297 ID=item_169 Name=「ミニデーモンﾉ指輪」 IDBytes=8 NameBytes=17 RecordBytes=27
+[007] Ptr=0x00100774 Record=0x001052B2 ID=item_168_e Name=「[ﾐｷﾘﾉﾕびﾜ]攻撃ｦﾖｹﾔｽｸﾅﾙぞ。ｺﾉ指輪ｦ装備ｽﾙﾄ動ｷが遅ｸﾅｯﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=61 RecordBytes=73
+[008] Ptr=0x00100778 Record=0x001052FB ID=item_168 Name=「見切ﾘﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[009] Ptr=0x0010077C Record=0x0010530F ID=item_167_e Name=「[ﾏﾌｳじﾉﾕびﾜ]魔法攻撃ｦ 防ぐｺﾄがでｷﾙぞ。ｺﾉ指輪ｦ装備ｽﾙﾄ動ｷが遅ｸﾅｯﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=73 RecordBytes=85
+[010] Ptr=0x00100780 Record=0x00105364 ID=item_167 Name=「魔封じﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[011] Ptr=0x00100784 Record=0x00105379 ID=item_166_e Name=「オーガﾉ指輪だｯﾀが 盾ﾆﾅｯﾀぞ。ﾖｯﾃ ｺｺﾊﾖび３ﾆﾅｯﾃｲﾙぞ。」 IDBytes=10 NameBytes=51 RecordBytes=63
+[012] Ptr=0x00100788 Record=0x001053B8 ID=item_166 Name=「item_224」 IDBytes=8 NameBytes=9 RecordBytes=19
+[013] Ptr=0x0010078C Record=0x001053CB ID=item_165_e Name=「[どﾗごﾝﾉﾕびﾜ]炎系ﾉモンスターｶﾗﾉ炎ﾉ攻撃ｦ弱ﾒﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=57 RecordBytes=69
+[014] Ptr=0x00100790 Record=0x00105410 ID=item_165 Name=「ドラゴンﾉ指輪」 IDBytes=8 NameBytes=13 RecordBytes=23
+[015] Ptr=0x00100794 Record=0x00105427 ID=item_164_e Name=「指輪ﾉﾖび２だ。」 IDBytes=10 NameBytes=14 RecordBytes=26
+[016] Ptr=0x00100798 Record=0x00105441 ID=item_164 Name=「スラ指」 IDBytes=8 NameBytes=6 RecordBytes=17
+[017] Ptr=0x0010079C Record=0x00105452 ID=item_163_e Name=「[ﾌﾂｳﾉﾕびﾜ]ﾌﾂｳﾉ指輪だぞ。」 IDBytes=10 NameBytes=25 RecordBytes=37
+[018] Ptr=0x001007A0 Record=0x00105477 ID=item_163 Name=「ﾌﾂｳﾉ指輪」 IDBytes=8 NameBytes=8 RecordBytes=18
+[019] Ptr=0x001007A4 Record=0x00105489 ID=item_162_e Name=「[ﾊﾗﾓﾁﾉﾕびﾜ]ｵ腹が減ﾘﾆｸｸﾅﾙぞ。」 IDBytes=10 NameBytes=29 RecordBytes=41
+[020] Ptr=0x001007A8 Record=0x001054B2 ID=item_162 Name=「ハラモチﾉ指輪」 IDBytes=8 NameBytes=13 RecordBytes=23
+[021] Ptr=0x001007AC Record=0x001054C9 ID=item_161_e Name=「[ﾏﾓﾘﾉﾕびﾜ]防御力が上がﾙぞ。」 IDBytes=10 NameBytes=28 RecordBytes=40
+[022] Ptr=0x001007B0 Record=0x001054F1 ID=item_161 Name=「ﾏﾓﾘﾉ指輪」 IDBytes=8 NameBytes=8 RecordBytes=18
+[023] Ptr=0x001007B4 Record=0x00105503 ID=item_160_e Name=「[ｲﾉﾁﾉﾕびﾜ]最大HPが上がﾙぞ。」 IDBytes=10 NameBytes=28 RecordBytes=40
+[024] Ptr=0x001007B8 Record=0x0010552B ID=item_160 Name=「命ﾉ指輪」 IDBytes=8 NameBytes=7 RecordBytes=17
+[025] Ptr=0x001007BC Record=0x0010553C ID=item_159_e Name=「[ばｸﾊﾂﾉﾕびﾜ]ﾄｷどｷ爆発ｽﾙぞ。」 IDBytes=10 NameBytes=28 RecordBytes=40
+[026] Ptr=0x001007C0 Record=0x00105564 ID=item_159 Name=「爆発ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[027] Ptr=0x001007C4 Record=0x00105577 ID=item_158_e Name=「[ｵｳごﾝﾉﾕびﾜ]黄金シリーズﾉ１ﾂだ。」 IDBytes=10 NameBytes=33 RecordBytes=45
+[028] Ptr=0x001007C8 Record=0x001055A4 ID=item_158 Name=「黄金ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[029] Ptr=0x001007CC Record=0x001055B7 ID=item_157_e Name=「[ざﾒﾊﾉﾕびﾜ]部屋ﾉ出入ﾘでモンスターｦ必ず起ｺｼﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=52 RecordBytes=64
+[030] Ptr=0x001007D0 Record=0x001055F7 ID=item_157 Name=「ザメハﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[031] Ptr=0x001007D4 Record=0x0010560C ID=item_156_e Name=「[ﾆﾝぎｮｳﾖｹﾉﾕびﾜ]人形系ﾉモンスターｶﾗﾉ特殊攻撃ｦ防ぐｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=62 RecordBytes=74
+[032] Ptr=0x001007D8 Record=0x00105656 ID=item_156 Name=「人形ﾖｹﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[033] Ptr=0x001007DC Record=0x0010566B ID=item_155_e Name=「[ﾜﾅﾇｹﾉﾕびﾜ]ワナﾆｶｶﾗﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=28 RecordBytes=40
+[034] Ptr=0x001007E0 Record=0x00105693 ID=item_155 Name=「ワナﾇｹﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[035] Ptr=0x001007E4 Record=0x001056A8 ID=item_154_e Name=「[ﾊﾗぺｺﾉﾕびﾜ]ｵ腹が減ﾘﾔｽｸﾅﾙぞ。」 IDBytes=10 NameBytes=30 RecordBytes=42
+[036] Ptr=0x001007E8 Record=0x001056D2 ID=item_154 Name=「ハラペコﾉ指輪」 IDBytes=8 NameBytes=13 RecordBytes=23
+[037] Ptr=0x001007EC Record=0x001056E9 ID=item_153_e Name=「[ｼｬどーﾉﾕびﾜ]ワナﾔ見ｴﾅｲモンスターが見ｴﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=50 RecordBytes=62
+[038] Ptr=0x001007F0 Record=0x00105727 ID=item_153 Name=「シャドーﾉ指輪」 IDBytes=8 NameBytes=13 RecordBytes=23
+[039] Ptr=0x001007F4 Record=0x0010573E ID=item_152_e Name=「[ｷﾚｲﾅﾕびﾜ]店で高ｸ売ﾚﾙぞ。」 IDBytes=10 NameBytes=26 RecordBytes=38
+[040] Ptr=0x001007F8 Record=0x00105764 ID=item_152 Name=「ｷﾚｲﾅ指輪」 IDBytes=8 NameBytes=8 RecordBytes=18
+[041] Ptr=0x001007FC Record=0x00105776 ID=item_151_e Name=「[ﾄｳぞｸﾉﾕびﾜ]眠ｯﾃｲﾙモンスターｦ起ｺｻﾅｲで部屋ｦ出入ﾘでｷﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=62 RecordBytes=74
+[042] Ptr=0x00100800 Record=0x001057C0 ID=item_151 Name=「ﾄｳぞｸﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[043] Ptr=0x00100804 Record=0x001057D4 ID=item_150_e Name=「[ﾊﾗﾍﾗずﾉﾕびﾜ]ｵ腹が減ﾗﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=30 RecordBytes=42
+[044] Ptr=0x00100808 Record=0x001057FE ID=item_150 Name=「ハラヘラズﾉ指輪」 IDBytes=8 NameBytes=15 RecordBytes=25
+[045] Ptr=0x0010080C Record=0x00105817 ID=item_149_e Name=「[ﾙーﾗﾉﾕびﾜ]ﾄｷどｷ別ﾉ場所ﾆワープｽﾙぞ。」 IDBytes=10 NameBytes=37 RecordBytes=49
+[046] Ptr=0x00100810 Record=0x00105848 ID=item_149 Name=「ルーラﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[047] Ptr=0x00100814 Record=0x0010585D ID=item_148_e Name=「[ﾈﾑﾗずﾉﾕびﾜ]眠ﾗﾅｲﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=27 RecordBytes=39
+[048] Ptr=0x00100818 Record=0x00105884 ID=item_148 Name=「眠ﾗずﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[049] Ptr=0x0010081C Record=0x00105898 ID=item_147_e Name=「[どｸｹｼﾉﾕびﾜ]毒ｦ受ｹﾂｹﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=29 RecordBytes=41
+[050] Ptr=0x00100820 Record=0x001058C1 ID=item_147 Name=「毒ｹｼﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[051] Ptr=0x00100824 Record=0x001058D4 ID=item_146_e Name=「[ﾁｶﾗﾉﾕびﾜ]ﾁｶﾗが上がﾙぞ。」 IDBytes=10 NameBytes=25 RecordBytes=37
+[052] Ptr=0x00100828 Record=0x001058F9 ID=item_146 Name=「ﾁｶﾗﾉ指輪」 IDBytes=8 NameBytes=8 RecordBytes=18
+[053] Ptr=0x0010082C Record=0x0010590B ID=item_145_e Name=「[ｲﾝぱｽﾉﾕびﾜ]ﾋﾛｯﾀアイテムﾉ名前がﾜｶﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=45 RecordBytes=57
+[054] Ptr=0x00100830 Record=0x00105944 ID=item_145 Name=「インパスﾉ指輪」 IDBytes=8 NameBytes=13 RecordBytes=23
+[055] Ptr=0x00100834 Record=0x0010595B ID=item_144_e Name=「[ｺﾝﾗﾝﾖｹﾉﾕびﾜ]混乱ｽﾙｺﾄがﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=32 RecordBytes=44
+[056] Ptr=0x00100838 Record=0x00105987 ID=item_144 Name=「混乱ﾖｹﾉ指輪」 IDBytes=8 NameBytes=11 RecordBytes=21
+[057] Ptr=0x0010083C Record=0x0010599C ID=item_143_e Name=「[ﾄｳｼﾉﾕびﾜ]モンスターﾉ位置がマップでﾜｶﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=49 RecordBytes=61
+[058] Ptr=0x00100840 Record=0x001059D9 ID=item_143 Name=「透視ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[059] Ptr=0x00100844 Record=0x001059EC ID=item_142_e Name=「[ﾀﾚﾅがｼﾉﾕびﾜ]ﾄｷどｷアイテムｦ落ﾄｼﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=40 RecordBytes=52
+[060] Ptr=0x00100848 Record=0x00105A20 ID=item_142 Name=「ﾀﾚ流ｼﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[061] Ptr=0x0010084C Record=0x00105A34 ID=item_141_e Name=「[ｼｱﾜｾﾉﾕびﾜ]モンスターｶﾗ攻撃ｻﾚﾙﾄ経験値がﾓﾗｴﾙぞ。」 IDBytes=10 NameBytes=49 RecordBytes=61
+[062] Ptr=0x00100850 Record=0x00105A71 ID=item_141 Name=「ｼｱﾜｾﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[063] Ptr=0x00100854 Record=0x00105A84 ID=item_140_e Name=「[ｴﾝﾄｳﾉﾕびﾜ]投げﾀアイテムが壁ｦﾂｷﾇｹﾃ飛ﾝでｲｸぞ。」 IDBytes=10 NameBytes=47 RecordBytes=59
+[064] Ptr=0x00100858 Record=0x00105ABF ID=item_140 Name=「遠投ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[065] Ptr=0x0010085C Record=0x00105AD2 ID=item_139_e Name=「[ﾉﾛｲﾖｹﾉﾕびﾜ]モンスターｶﾗﾉ 呪ｲ攻撃ｦ防ぐｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=52 RecordBytes=64
+[066] Ptr=0x00100860 Record=0x00105B12 ID=item_139 Name=「呪ｲﾖｹﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[067] Ptr=0x00100864 Record=0x00105B26 ID=item_138_e Name=「[ﾂｳｺﾝﾉﾕびﾜ]痛恨ﾉ一撃ｦ受ｹﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=35 RecordBytes=47
+[068] Ptr=0x00100868 Record=0x00105B55 ID=item_138 Name=「痛恨ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[069] Ptr=0x0010086C Record=0x00105B68 ID=item_137_e Name=「[ｶｲｼﾝﾉﾕびﾜ]会心ﾉ一撃がでﾔｽｸﾅﾙぞ。」 IDBytes=10 NameBytes=34 RecordBytes=46
+[070] Ptr=0x00100870 Record=0x00105B96 ID=item_137 Name=「会心ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[071] Ptr=0x00100874 Record=0x00105BA9 ID=item_136_e Name=「[ｲﾀﾐﾖｹﾉﾕびﾜ]装備ｼﾃｲﾙ武器ﾔ盾が傷ﾏﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=42 RecordBytes=54
+[072] Ptr=0x00100878 Record=0x00105BDF ID=item_136 Name=「傷ﾐﾖｹﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[073] Ptr=0x0010087C Record=0x00105BF3 ID=item_135_e Name=「[ｶｲﾌｸﾉﾕびﾜ]HPﾉ回復が早ｸﾅﾙぞ。ｼｶｼ ｵ腹ﾉ減ﾘﾓ早ｸﾅﾙぞ。」 IDBytes=10 NameBytes=52 RecordBytes=64
+[074] Ptr=0x00100880 Record=0x00105C33 ID=item_135 Name=「回復ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[075] Ptr=0x00100884 Record=0x00105C46 ID=item_134_e Name=「[ﾈぎﾘﾉﾕびﾜ]ダンジョンﾉｵ店で アイテムｦ値切ｯﾃ買ｳｺﾄがでｷﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=65 RecordBytes=77
+[076] Ptr=0x00100888 Record=0x00105C93 ID=item_134 Name=「値切ﾘﾉ指輪」 IDBytes=8 NameBytes=10 RecordBytes=20
+[077] Ptr=0x0010088C Record=0x00105CA7 ID=item_133_e Name=「[ﾂｳｶﾉﾕびﾜ]水ﾉ上ｦ歩ｸｺﾄがでｷﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=37 RecordBytes=49
+[078] Ptr=0x00100890 Record=0x00105CD8 ID=item_133 Name=「通過ﾉ指輪」 IDBytes=8 NameBytes=9 RecordBytes=19
+[079] Ptr=0x00100894 Record=0x00105CEB ID=item_132_e Name=「[ﾀｲﾎｳﾉﾀﾏ]転がｼﾃ モンスターﾔ 壁ﾆぶﾂｶﾙﾄ 爆発ｽﾙぞ。」 IDBytes=10 NameBytes=50 RecordBytes=62
+[080] Ptr=0x00100898 Record=0x00105D29 ID=item_132 Name=「大砲ﾉ弾」 IDBytes=8 NameBytes=7 RecordBytes=17
+[081] Ptr=0x0010089C Record=0x00105D3A ID=item_131_e Name=「岩ﾄばｼﾉ石像ｶﾗ飛ﾝでｸﾙ岩だぞ。」 IDBytes=10 NameBytes=29 RecordBytes=41
+[082] Ptr=0x001008A0 Record=0x00105D63 ID=item_131 Name=「岩」 IDBytes=8 NameBytes=2 RecordBytes=12
+[083] Ptr=0x001008A4 Record=0x00105D6F ID=item_130_e Name=「[ﾖｳがﾝｾｷ]２マスﾊﾅﾚﾀモンスターｦﾈﾗｯﾃ攻撃ｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=54 RecordBytes=66
+[084] Ptr=0x001008A8 Record=0x00105DB1 ID=item_130 Name=「ﾖｳがﾝ石」 IDBytes=8 NameBytes=7 RecordBytes=17
+[085] Ptr=0x001008AC Record=0x00105DC2 ID=item_129_e Name=「[ﾏﾎｳﾉｲｼ]近ｸﾆｲﾙモンスターﾆ向ｶｯﾃ飛ﾝでｲｸぞ。」 IDBytes=10 NameBytes=43 RecordBytes=55
+[086] Ptr=0x001008B0 Record=0x00105DF9 ID=item_129 Name=「魔法ﾉ石」 IDBytes=8 NameBytes=7 RecordBytes=17
+[087] Ptr=0x001008B4 Record=0x00105E0A ID=item_128_e Name=「[ｲｼ]１マスﾊﾅﾚﾀモンスターｦﾈﾗｯﾃ攻撃ｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=49 RecordBytes=61
+[088] Ptr=0x001008B8 Record=0x00105E47 ID=item_128 Name=「石」 IDBytes=8 NameBytes=2 RecordBytes=12
+[089] Ptr=0x001008BC Record=0x00105E53 ID=item_127_e Name=「ｺﾚﾊ矢ﾉﾖび１だ。ﾂｶﾜﾅｲｺﾄｦｲﾉﾙぞ。」 IDBytes=10 NameBytes=31 RecordBytes=43
+[090] Ptr=0x001008C0 Record=0x00105E7E ID=item_127 Name=「ﾖび127」 IDBytes=8 NameBytes=6 RecordBytes=16
+[091] Ptr=0x001008C4 Record=0x00105E8E ID=item_126_e Name=「[ﾏﾙﾁｱﾛー]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。撃ｯﾀ矢が ５方向ﾆﾁﾗばｯﾃどｺﾏでﾓ 飛ﾝでｲｸぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=115 RecordBytes=127
+[092] Ptr=0x001008C8 Record=0x00105F0D ID=item_126 Name=「マルチアロー」 IDBytes=8 NameBytes=12 RecordBytes=22
+[093] Ptr=0x001008CC Record=0x00105F23 ID=item_125_e Name=「[ｶｲｼﾝﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。会心ﾉ一撃がでﾔｽｲぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=92 RecordBytes=104
+[094] Ptr=0x001008D0 Record=0x00105F8B ID=item_125 Name=「会心ﾉ矢」 IDBytes=8 NameBytes=7 RecordBytes=17
+[095] Ptr=0x001008D4 Record=0x00105F9C ID=item_124_e Name=「[ﾌｷﾄばｼﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。当ﾀﾙﾄモンスターｦﾌｷﾄばｽｺﾄがでｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=109 RecordBytes=121
+[096] Ptr=0x001008D8 Record=0x00106015 ID=item_124 Name=「ﾌｷﾄばｼﾉ矢」 IDBytes=8 NameBytes=9 RecordBytes=19
+[097] Ptr=0x001008DC Record=0x00106028 ID=item_123_e Name=「[ﾏじﾝﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。ﾒｯﾀﾆ当ﾀﾗﾅｲが当ﾀﾙﾄモンスターｦ一撃で倒ｽｺﾄがでｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=122 RecordBytes=134
+[098] Ptr=0x001008E0 Record=0x001060AE ID=item_123 Name=「ﾏじﾝﾉ矢」 IDBytes=8 NameBytes=7 RecordBytes=17
+[099] Ptr=0x001008E4 Record=0x001060BF ID=item_122_e Name=「[ｵｳごﾝﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。黄金シリーズﾉ１ﾂだ。」 IDBytes=10 NameBytes=93 RecordBytes=105
+[100] Ptr=0x001008E8 Record=0x00106128 ID=item_122 Name=「黄金ﾉ矢」 IDBytes=8 NameBytes=7 RecordBytes=17
+[101] Ptr=0x001008EC Record=0x00106139 ID=item_121_e Name=「[どｸﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。モンスターﾉ攻撃力ｦ下げﾙｺﾄがでｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=106 RecordBytes=118
+[102] Ptr=0x001008F0 Record=0x001061AF ID=item_121 Name=「毒ﾉ矢」 IDBytes=8 NameBytes=5 RecordBytes=15
+[103] Ptr=0x001008F4 Record=0x001061BE ID=item_120_e Name=「[ﾏﾎｳﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。モンスターﾆ当ﾀｯﾃﾓﾅｸﾅﾗﾅｲぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=98 RecordBytes=110
+[104] Ptr=0x001008F8 Record=0x0010622C ID=item_120 Name=「魔法ﾉ矢」 IDBytes=8 NameBytes=7 RecordBytes=17
+[105] Ptr=0x001008FC Record=0x0010623D ID=item_119_e Name=「[ぶーﾒﾗﾝ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。モンスターﾆ命中ｽﾙﾄ混乱ｻｾﾃ自分ﾉ近ｸﾆﾋｷﾖｾﾙｺﾄがでｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=125 RecordBytes=137
+[106] Ptr=0x00100900 Record=0x001062C6 ID=item_119 Name=「ブーメラン」 IDBytes=8 NameBytes=10 RecordBytes=20
+[107] Ptr=0x00100904 Record=0x001062DA ID=item_118_e Name=「[ぎﾝﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。壁ｦﾂｷﾇｹﾃモンスターｦ攻撃でｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=102 RecordBytes=114
+[108] Ptr=0x00100908 Record=0x0010634C ID=item_118 Name=「銀ﾉ矢」 IDBytes=8 NameBytes=5 RecordBytes=15
+[109] Ptr=0x0010090C Record=0x0010635B ID=item_117_e Name=「[ﾃﾂﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=69 RecordBytes=81
+[110] Ptr=0x00100910 Record=0x001063AC ID=item_117 Name=「鉄ﾉ矢」 IDBytes=8 NameBytes=5 RecordBytes=15
+[111] Ptr=0x00100914 Record=0x001063BB ID=item_116_e Name=「[ｷﾉﾔ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=68 RecordBytes=80
+[112] Ptr=0x00100918 Record=0x0010640B ID=item_116 Name=「木ﾉ矢」 IDBytes=8 NameBytes=5 RecordBytes=15
+[113] Ptr=0x0010091C Record=0x0010641A ID=item_115_e Name=「[ぎﾝﾉだーﾂ]遠ｸｶﾗモンスターｦ攻撃でｷﾙぞ。ロサﾉﾀｶﾗﾓﾉﾉ１ﾂだぞ。壁ｦﾂｷﾇｹﾃモンスターｦ攻撃でｷﾙぞ。装備ｽﾙﾄＬ1ボタンで撃ﾂｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=127 RecordBytes=139
+[114] Ptr=0x00100920 Record=0x001064A5 ID=item_115 Name=「銀ﾉダーツ」 IDBytes=8 NameBytes=9 RecordBytes=19
+[115] Ptr=0x00100924 Record=0x001064B8 ID=item_114_e Name=「ﾖびﾉ杖３だぞ。」 IDBytes=10 NameBytes=14 RecordBytes=26
+[116] Ptr=0x00100928 Record=0x001064D2 ID=item_114 Name=「ﾖび114」 IDBytes=8 NameBytes=6 RecordBytes=16
+[117] Ptr=0x0010092C Record=0x001064E2 ID=item_113_e Name=「ﾖびﾉ杖２だぞ。」 IDBytes=10 NameBytes=14 RecordBytes=26
+[118] Ptr=0x00100930 Record=0x001064FC ID=item_113 Name=「ﾖび113」 IDBytes=8 NameBytes=6 RecordBytes=16
+[119] Ptr=0x00100934 Record=0x0010650C ID=item_112_e Name=「[ｷぼﾘﾉばｯﾄ]ロサﾉﾀｶﾗﾓﾉﾉ１ﾂだぞ。」 IDBytes=10 NameBytes=32 RecordBytes=44
+[120] Ptr=0x00100938 Record=0x00106538 ID=item_112 Name=「木彫ﾘﾉバット」 IDBytes=8 NameBytes=12 RecordBytes=22
+[121] Ptr=0x0010093C Record=0x0010654E ID=item_111_e Name=「[ごｯどｽぱーｸﾉﾂｴ]ﾀｸｻﾝﾉﾁｶﾗが合ﾜｻｯﾃ生ﾐ出ｻﾚﾙ 不思議ﾅ杖だぞ。ﾄﾃﾂﾓﾅｲダメージｦ与ｴﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=91 RecordBytes=103
+[122] Ptr=0x00100940 Record=0x001065B5 ID=item_111 Name=「ゴッドスパークﾉ杖」 IDBytes=8 NameBytes=17 RecordBytes=27
+[123] Ptr=0x00100944 Record=0x001065D0 ID=item_110_e Name=「[ｶぜﾉﾂｴ]風ｦｵｺｽｺﾄがでｷﾙぞ。風ﾉ中ﾆ入ﾙﾄ ﾌｷﾄばｻﾚﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=54 RecordBytes=66
+[124] Ptr=0x00100948 Record=0x00106612 ID=item_110 Name=「風ﾉ杖」 IDBytes=8 NameBytes=5 RecordBytes=15
+[125] Ptr=0x0010094C Record=0x00106621 ID=item_109_e Name=「[ｽﾅばｼﾗﾉﾂｴ]砂柱ｦ立ﾀｾﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=34 RecordBytes=46
+[126] Ptr=0x00100950 Record=0x0010664F ID=item_109 Name=「砂柱ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[127] Ptr=0x00100954 Record=0x00106660 ID=item_108_e Name=「[ｺｵﾘばｼﾗﾉﾂｴ]氷柱ｦ立ﾀｾﾙｺﾄがでｷﾙぞ。モンスターﾆ当ﾀﾙﾄ モンスターｦ凍ﾗｾﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=82 RecordBytes=94
+[128] Ptr=0x00100958 Record=0x001066BE ID=item_108 Name=「氷柱ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[129] Ptr=0x0010095C Record=0x001066CF ID=item_107_e Name=「[ｸｵーﾀーﾉﾂｴ]モンスターﾉHPｦ1/4ﾆｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=46 RecordBytes=58
+[130] Ptr=0x00100960 Record=0x00106709 ID=item_107 Name=「クオーターﾉ杖」 IDBytes=8 NameBytes=13 RecordBytes=23
+[131] Ptr=0x00100964 Record=0x00106720 ID=item_106_e Name=「[ばﾝﾉｳﾉﾂｴ]モンスターﾉｻﾏざﾏﾅ状態ｦ回復ｻｾﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=48 RecordBytes=60
+[132] Ptr=0x00100968 Record=0x0010675C ID=item_106 Name=「万能ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[133] Ptr=0x0010096C Record=0x0010676D ID=item_105_e Name=「[ﾋばｼﾗﾉﾂｴ]火柱ｦ立ﾀｾﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=33 RecordBytes=45
+[134] Ptr=0x00100970 Record=0x0010679A ID=item_105 Name=「火柱ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[135] Ptr=0x00100974 Record=0x001067AB ID=item_104_e Name=「[ﾋｷﾖｾﾉﾂｴ]モンスターﾔアイテムｦ自分ﾉ近ｸﾆ ﾋｷﾖｾﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=58 RecordBytes=70
+[136] Ptr=0x00100978 Record=0x001067F1 ID=item_104 Name=「ﾋｷﾖｾﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[137] Ptr=0x0010097C Record=0x00106802 ID=item_103_e Name=「[ｲﾀﾐﾜｹﾉﾂｴ]モンスターﾆ向ｶｯﾃ振ﾙﾄ自分が受ｹﾀ 痛ﾐｦモンスターﾆﾓ 感じｻｾﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=80 RecordBytes=92
+[138] Ptr=0x00100980 Record=0x0010685E ID=item_103 Name=「痛ﾐﾜｹﾉ杖」 IDBytes=8 NameBytes=8 RecordBytes=18
+[139] Ptr=0x00100984 Record=0x00106870 ID=item_102_e Name=「[ｲﾁじｼﾉぎﾉﾂｴ]モンスターｦ階段ﾉ近ｸﾆワープｻｾﾃｶﾅｼばﾘﾆｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=65 RecordBytes=77
+[140] Ptr=0x00100988 Record=0x001068BD ID=item_102 Name=「一時ｼﾉぎﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[141] Ptr=0x0010098C Record=0x001068D2 ID=item_101_e Name=「[ｶﾅｼばﾘﾉﾂｴ]モンスターｦｶﾅｼばﾘﾆｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=45 RecordBytes=57
+[142] Ptr=0x00100990 Record=0x0010690B ID=item_101 Name=「ｶﾅｼばﾘﾉ杖」 IDBytes=8 NameBytes=9 RecordBytes=19
+[143] Ptr=0x00100994 Record=0x0010691E ID=item_100_e Name=「[ﾚﾐーﾗﾉﾂｴ]フロア中ｦ少ｼﾉ間明ﾙｸｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=45 RecordBytes=57
+[144] Ptr=0x00100998 Record=0x00106957 ID=item_100 Name=「レミーラﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[145] Ptr=0x0010099C Record=0x0010696C ID=item_099_e Name=「[ﾄびﾂｷﾉﾂｴ]当ﾀｯﾀ場所ﾏで自分が飛ﾝでｲｸｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=49 RecordBytes=61
+[146] Ptr=0x001009A0 Record=0x001069A9 ID=item_099 Name=「ﾄびﾂｷﾉ杖」 IDBytes=8 NameBytes=8 RecordBytes=18
+[147] Ptr=0x001009A4 Record=0x001069BB ID=item_098_e Name=「[ｲｶﾘﾉﾂｴ]モンスターｦ怒ﾗｾﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=32 RecordBytes=44
+[148] Ptr=0x001009A8 Record=0x001069E7 ID=item_098 Name=「イカリﾉ杖」 IDBytes=8 NameBytes=9 RecordBytes=19
+[149] Ptr=0x001009AC Record=0x001069FA ID=item_097_e Name=「[ﾄﾝﾈﾙﾉﾂｴ]一度ﾆｲｯぱｲ壁ｦ掘ﾙｺﾄがでｷﾙぞ。ナナメﾆ振ｯﾃﾓ掘ﾙｺﾄがでｷﾅｲﾉで注意が必要だぞ。」 IDBytes=10 NameBytes=83 RecordBytes=95
+[150] Ptr=0x001009B0 Record=0x00106A59 ID=item_097 Name=「トンネルﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[151] Ptr=0x001009B4 Record=0x00106A6E ID=item_096_e Name=「[ｸｻｳｹﾉﾂｴ]ｺﾉ杖ﾊ 他ﾉ杖ﾄﾊﾁｮｯﾄ使ｲ方が違ｳぞ。足元ﾆ草がｱﾙ時ﾆ振ﾙﾄ ｿﾉ草ﾉ効果が魔法ﾉ弾ﾄﾅｯﾃ遠ｸｶﾗ自分ﾆ向ｶｯﾃ飛ﾝでｸﾙぞ。」 IDBytes=10 NameBytes=111 RecordBytes=123
+[152] Ptr=0x001009B8 Record=0x00106AE9 ID=item_096 Name=「草ｳｹﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[153] Ptr=0x001009BC Record=0x00106AFA ID=item_095_e Name=「[ｸｻﾅげﾉﾂｴ]ｺﾉ杖ﾊ 他ﾉ杖ﾄﾊﾁｮｯﾄ使ｲ方が違ｳぞ。足元ﾆ草がｱﾙ時ﾆ振ﾙﾄ ｿﾉ草ﾉ効果が魔法ﾉ弾ﾄﾅｯﾃ飛ﾝでｲｸぞ。」 IDBytes=10 NameBytes=96 RecordBytes=108
+[154] Ptr=0x001009C0 Record=0x00106B66 ID=item_095 Name=「草ﾅげﾉ杖」 IDBytes=8 NameBytes=8 RecordBytes=18
+[155] Ptr=0x001009C4 Record=0x00106B78 ID=item_094_e Name=「[ﾏﾇーｻﾉﾂｴ]モンスターﾉ攻撃がﾏｯﾀｸ当ﾀﾗﾅｸﾅﾙぞ。」 IDBytes=10 NameBytes=45 RecordBytes=57
+[156] Ptr=0x001009C8 Record=0x00106BB1 ID=item_094 Name=「マヌーサﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[157] Ptr=0x001009CC Record=0x00106BC6 ID=item_093_e Name=「モンスターﾉ正体がﾜｶﾙぞ。」 IDBytes=10 NameBytes=24 RecordBytes=36
+[158] Ptr=0x001009D0 Record=0x00106BEA ID=item_093 Name=「モンスター識別ﾉ杖」 IDBytes=8 NameBytes=17 RecordBytes=27
+[159] Ptr=0x001009D4 Record=0x00106C05 ID=item_092_e Name=「[ﾏﾙﾄｸﾉﾂｴ]モンスターﾉHPｦ半分吸ｲ取ｯﾃ自分ﾉHPﾆｽﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=58 RecordBytes=70
+[160] Ptr=0x001009D8 Record=0x00106C4B ID=item_092 Name=「丸得ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[161] Ptr=0x001009DC Record=0x00106C5C ID=item_091_e Name=「[ﾐﾐｯｸﾉﾂｴ]モンスターｦミミックﾆ変身ｻｾﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=45 RecordBytes=57
+[162] Ptr=0x001009E0 Record=0x00106C95 ID=item_091 Name=「ミミックﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[163] Ptr=0x001009E4 Record=0x00106CAA ID=item_090_e Name=「[ばーｻーｶーﾉﾂｴ]モンスターﾆｺﾉ杖ｦ振ﾙﾄ少ｼﾉ間 敵味方ｶﾏﾜず攻撃ｽﾙﾖｳﾆﾅﾙぞ。」 IDBytes=10 NameBytes=71 RecordBytes=83
+[164] Ptr=0x001009E8 Record=0x00106CFD ID=item_090 Name=「バーサーカーﾉ杖」 IDBytes=8 NameBytes=15 RecordBytes=25
+[165] Ptr=0x001009EC Record=0x00106D16 ID=item_089_e Name=「[ﾙｶﾆﾉﾂｴ]モンスターﾉ防御力ｦ下げﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=45 RecordBytes=57
+[166] Ptr=0x001009F0 Record=0x00106D4F ID=item_089 Name=「ルカニﾉ杖」 IDBytes=8 NameBytes=9 RecordBytes=19
+[167] Ptr=0x001009F4 Record=0x00106D62 ID=item_088_e Name=「[ｵびｴﾉﾂｴ]モンスターが逃げ出ｽぞ。」 IDBytes=10 NameBytes=33 RecordBytes=45
+[168] Ptr=0x001009F8 Record=0x00106D8F ID=item_088 Name=「ｵびｴﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[169] Ptr=0x001009FC Record=0x00106DA0 ID=item_087_e Name=「[ﾖｳじｭﾂｼﾉﾂｴ]ｲﾛｲﾛﾅ効果がｱﾙぞ。」 IDBytes=10 NameBytes=30 RecordBytes=42
+[170] Ptr=0x00100A00 Record=0x00106DCA ID=item_087 Name=「ﾖｳじｭﾂｼﾉ杖」 IDBytes=8 NameBytes=10 RecordBytes=20
+[171] Ptr=0x00100A04 Record=0x00106DDE ID=item_086_e Name=「[ｷﾄｳｼﾉﾂｴ]ｲﾛｲﾛﾅ効果がｱﾙぞ。」 IDBytes=10 NameBytes=27 RecordBytes=39
+[172] Ptr=0x00100A08 Record=0x00106E05 ID=item_086 Name=「ｷﾄｳｼﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[173] Ptr=0x00100A0C Record=0x00106E16 ID=item_085_e Name=「[ｵｳごﾝﾉﾂｴ]モンスターﾆ向ｶｯﾃ振ﾙﾄｲﾛｲﾛﾅ効果がｱﾙぞ。黄金シリーズﾉ１ﾂだ。」 IDBytes=10 NameBytes=70 RecordBytes=82
+[174] Ptr=0x00100A10 Record=0x00106E68 ID=item_085 Name=「黄金ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[175] Ptr=0x00100A14 Record=0x00106E79 ID=item_084_e Name=「[ﾌｷﾄばｼﾉﾂｴ]モンスターﾔアイテムｦﾌｷﾄばｽｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=51 RecordBytes=63
+[176] Ptr=0x00100A18 Record=0x00106EB8 ID=item_084 Name=「ﾌｷﾄばｼﾉ杖」 IDBytes=8 NameBytes=9 RecordBytes=19
+[177] Ptr=0x00100A1C Record=0x00106ECB ID=item_083_e Name=「[ﾎｲﾐﾉﾂｴ]モンスターﾉHPｦ回復ｻｾﾃｼﾏｳぞ。ﾀだｼ ゾンビ系ﾉモンスターﾆﾊダメージｦ与ｴﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=90 RecordBytes=102
+[178] Ptr=0x00100A20 Record=0x00106F31 ID=item_083 Name=「ホイミﾉ杖」 IDBytes=8 NameBytes=9 RecordBytes=19
+[179] Ptr=0x00100A24 Record=0x00106F44 ID=item_082_e Name=「[どﾙｲどﾉﾂｴ]モンスターｦワープｻｾワープｼﾀ場所で眠ﾗｾﾙぞ。」 IDBytes=10 NameBytes=55 RecordBytes=67
+[180] Ptr=0x00100A28 Record=0x00106F87 ID=item_082 Name=「ドルイドﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[181] Ptr=0x00100A2C Record=0x00106F9C ID=item_081_e Name=「[げﾝじｭﾂｼﾉﾂｴ]モンスターｦワープｻｾワープｼﾀ場所でｶﾅｼばﾘﾆｽﾙぞ。」 IDBytes=10 NameBytes=61 RecordBytes=73
+[182] Ptr=0x00100A30 Record=0x00106FE5 ID=item_081 Name=「げﾝじｭﾂｼﾉ杖」 IDBytes=8 NameBytes=11 RecordBytes=21
+[183] Ptr=0x00100A34 Record=0x00106FFA ID=item_080_e Name=「[ﾓﾉｶﾉﾂｴ]モンスターｦアイテムﾆ変ｴﾙｺﾄがでｷﾙぞ。」 IDBytes=10 NameBytes=46 RecordBytes=58
+[184] Ptr=0x00100A38 Record=0x00107034 ID=item_080 Name=「モノカﾉ杖」 IDBytes=8 NameBytes=9 RecordBytes=19
+[185] Ptr=0x00100A3C Record=0x00107047 ID=item_079_e Name=「[ｵｵぞﾝﾉﾂｴ]自分ﾉHPﾉ半分ｦモンスターﾆ与ｴﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=47 RecordBytes=59
+[186] Ptr=0x00100A40 Record=0x00107082 ID=item_079 Name=「大損ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[187] Ptr=0x00100A44 Record=0x00107093 ID=item_078_e Name=「[ﾓﾛﾊﾉﾂｴ]自分ﾉHPが半分ﾆﾅﾘモンスターﾉHPﾊ1ﾆﾅﾙぞ。」 IDBytes=10 NameBytes=48 RecordBytes=60
+[188] Ptr=0x00100A48 Record=0x001070CF ID=item_078 Name=「ﾓﾛﾊﾉ杖」 IDBytes=8 NameBytes=6 RecordBytes=16
+[189] Ptr=0x00100A4C Record=0x001070DF ID=item_077_e Name=「[ざｷﾉﾂｴ]モンスターｦ一撃でﾔｯﾂｹﾙｺﾄがでｷﾙぞ。ﾓﾁﾛﾝ経験値ﾓ ﾓﾗｴﾙぞ。」 IDBytes=10 NameBytes=65 RecordBytes=77
+[190] Ptr=0x00100A50 Record=0x0010712C ID=item_077 Name=「ザキﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+[191] Ptr=0x00100A54 Record=0x0010713D ID=item_076_e Name=「[ぶﾝﾚﾂﾉﾂｴ]モンスターｦ分裂ｻｾﾃｼﾏｳぞ。」 IDBytes=10 NameBytes=36 RecordBytes=48
+[192] Ptr=0x00100A58 Record=0x0010716D ID=item_076 Name=「分裂ﾉ杖」 IDBytes=8 NameBytes=7 RecordBytes=17
+
+===== TARGET RECORD DETAILS =====
+
+TARGET: item_041
+Not found in scanned pointer table.
+
+TARGET: item_164
+Pointer entry: EE+0x00100798
+Record start: EE+0x00105441
+Name start: EE+0x0010544A
+Name: スラ指
+ID length: 8
+Name length: 6
+Record length to next pointer: 17
+
+===== SUMMARY =====
+Parsed item records: 193
+Name length distribution:
+NameBytes=2 Count=2
+NameBytes=5 Count=5
+NameBytes=6 Count=5
+NameBytes=7 Count=22
+NameBytes=8 Count=7
+NameBytes=9 Count=19
+NameBytes=10 Count=9
+NameBytes=11 Count=14
+NameBytes=12 Count=3
+NameBytes=13 Count=6
+NameBytes=14 Count=3
+NameBytes=15 Count=2
+NameBytes=17 Count=3
+NameBytes=24 Count=1
+NameBytes=25 Count=2
+NameBytes=26 Count=1
+NameBytes=27 Count=2
+NameBytes=28 Count=4
+NameBytes=29 Count=4
+NameBytes=30 Count=3
+NameBytes=31 Count=1
+NameBytes=32 Count=3
+NameBytes=33 Count=3
+NameBytes=34 Count=2
+NameBytes=35 Count=1
+NameBytes=36 Count=1
+NameBytes=37 Count=2
+NameBytes=40 Count=1
+NameBytes=42 Count=1
+NameBytes=43 Count=1
+NameBytes=45 Count=6
+NameBytes=46 Count=2
+NameBytes=47 Count=2
+NameBytes=48 Count=2
+NameBytes=49 Count=5
+NameBytes=50 Count=2
+NameBytes=51 Count=2
+NameBytes=52 Count=4
+NameBytes=54 Count=2
+NameBytes=55 Count=1
+NameBytes=57 Count=1
+NameBytes=58 Count=2
+NameBytes=61 Count=2
+NameBytes=62 Count=2
+NameBytes=65 Count=3
+NameBytes=68 Count=1
+NameBytes=69 Count=1
+NameBytes=70 Count=1
+NameBytes=71 Count=1
+NameBytes=73 Count=1
+NameBytes=80 Count=1
+NameBytes=82 Count=1
+NameBytes=83 Count=1
+NameBytes=90 Count=1
+NameBytes=91 Count=1
+NameBytes=92 Count=1
+NameBytes=93 Count=1
+NameBytes=96 Count=1
+NameBytes=98 Count=1
+NameBytes=102 Count=1
+NameBytes=106 Count=1
+NameBytes=109 Count=1
+NameBytes=111 Count=1
+NameBytes=115 Count=1
+NameBytes=122 Count=1
+NameBytes=125 Count=1
+NameBytes=127 Count=1
