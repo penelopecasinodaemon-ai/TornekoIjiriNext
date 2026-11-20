@@ -497,7 +497,7 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
         fieldGrid.Controls.Add(CreateField("勧誘修正値", _recruitModifier), 0, 11);
         fieldGrid.Controls.Add(CreateField("回復定数", _recoveryConstant), 1, 11);
-        fieldGrid.Controls.Add(CreateField("特技使用率（A/B共通）", _skillRate), 0, 12);
+        fieldGrid.Controls.Add(CreateField("特技使用率（Aのみ）", _skillRate), 0, 12);
         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
         var actionChangePanel = new Panel
         {
@@ -519,7 +519,7 @@ internal sealed class MonsterCreatorForm : Form
                 "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
-                "特技使用率(+22、+23)は両方に同じ値を書き込みます。\r\n" +
+                "特技使用率(+22)はAのみを書き込みます。+23のBは変更しません。\r\n" +
                 "勧誘修正値・回復定数は旧HSPの独立配列（各256件）を編集します。\r\n" +
                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
                 "PCSX2接続中は、モンスター選択時にゲーム内の現在値を読み込みます。数値や選択肢を変更すると、その場でゲームメモリへ即時反映します。\r\n" +
@@ -1245,7 +1245,6 @@ buttons.Controls.Add(_applyButton);
             BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.SelectedIndex);
         _bin[offset + 18] = (byte)_sleepRate.Value;
         _bin[offset + 22] = (byte)_skillRate.Value;
-        _bin[offset + 23] = (byte)_skillRate.Value;
 
         // HSP var_407 の先頭空行を含むIDに合わせる。
         int hspMonsterIndex = _selectedMonsterId + 1;
@@ -1334,7 +1333,7 @@ buttons.Controls.Add(_applyButton);
 
                 writes.Add(Tuple.Create(
                     offset,
-                    CopyRange(offset, MonsterRecordSize),
+                    CopyRange(offset, MonsterRecordSize - 1),
                     "モンスターレコード"));
 
                 if (modifierChanged)

@@ -22,6 +22,10 @@ internal static class HayabusaDoubleAttackMonitor
     private const uint EquippedWeaponAddress = 0x006A54A4;
     private const uint HayabusaWeaponValue = 0x0000DFD8;
 
+    // モンスター勧誘後に装備表示と食い違った武器ID。
+    // この値だけでは装備解除と判定しない。
+    private const uint AmbiguousAfterRecruitmentWeaponValue = 0x0000516C;
+
     // 二回攻撃命令
     private const uint AttackPatchAddress = 0x0020B264;
     private const uint AttackPatchValue = 0x24020001;
@@ -148,6 +152,9 @@ internal static class HayabusaDoubleAttackMonitor
         }
         catch (Exception ex)
         {
+            WriteDiagnostic(
+                "POLL ERROR: " + ex.ToString());
+
             SetStatus("自動監視エラー: " + ex.Message);
         }
         finally
@@ -158,68 +165,92 @@ internal static class HayabusaDoubleAttackMonitor
 
     private static void Evaluate(int processId)
     {
+        const uint ExpectedOriginalInstruction = 0x0C0B3934u;
+
+        uint rawWeaponValue =
+            ReadPine32(EquippedWeaponAddress);
+
         uint equippedWeapon =
-            ReadPine32(EquippedWeaponAddress) & 0xFFFFu;
+            rawWeaponValue & 0xFFFFu;
 
         uint currentInstruction =
             ReadPine32(AttackPatchAddress);
 
-        // 診断段階では二回攻撃を適用しない。
-        // 装備IDの実測値を確認してから有効化する。
-        bool shouldEnable = equippedWeapon == HayabusaWeaponValue;
+        bool isHayabusaEquipped =
+            equippedWeapon == HayabusaWeaponValue;
 
         bool hasState = TryLoadState(
             out int savedProcessId,
             out uint originalInstruction);
 
-        // はやぶさの爪を装備している場合
-        if (shouldEnable)
+        if (isHayabusaEquipped)
         {
             if (currentInstruction == AttackPatchValue)
             {
-                if (!hasState)
+                if (hasState && savedProcessId == processId)
                 {
-                    SetStatus(
-                        "二回攻撃コードは既に適用されていますが、" +
-                        "元命令の保存記録がありません。" +
-                        "安全のため変更しません。");
+                    SetStatus("はやぶさの爪を検出：二回攻撃パッチ適用中です。");
                     return;
                 }
 
-                if (savedProcessId != processId)
-                {
-                    SetStatus(
-                        "保存された元命令のPCSX2プロセスIDが一致しません。" +
-                        "安全のため変更しません。");
-                    return;
-                }
+                WriteDiagnostic(
+                    "PATCH CONFLICT: パッチ命令は存在しますが、対応する復元情報がありません。" +
+                    " PID=" + processId +
+                    " Instruction=0x" + currentInstruction.ToString("X8"));
 
-                SetStatus(
-                    "はやぶさの爪を確認。二回攻撃は有効です。");
+                SetStatus("パッチ状態が不明です。安全のため書き込みを停止しました。");
                 return;
             }
 
-            if (hasState)
+            if (hasState && savedProcessId != processId)
             {
-                if (savedProcessId != processId)
+                if (currentInstruction != ExpectedOriginalInstruction)
                 {
-                    SetStatus(
-                        "別のPCSX2プロセスの元命令保存データがあります。" +
-                        "安全のため適用を保留しています。");
+                    WriteDiagnostic(
+                        "STALE STATE CONFLICT" +
+                        " PID=" + processId +
+                        " SavedPID=" + savedProcessId +
+                        " Instruction=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus("以前の復元情報と命令が一致しません。書き込みを停止しました。");
                     return;
                 }
 
+                DeleteState();
+                hasState = false;
+            }
+
+            if (hasState && savedProcessId == processId)
+            {
                 if (currentInstruction != originalInstruction)
                 {
-                    SetStatus(
-                        "対象命令が保存済みの元命令と一致しません。" +
-                        "外部変更の可能性があるため適用を保留しています。");
+                    WriteDiagnostic(
+                        "ORIGINAL INSTRUCTION MISMATCH" +
+                        " PID=" + processId +
+                        " Expected=0x" + originalInstruction.ToString("X8") +
+                        " Actual=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus("元の命令が予想と異なります。安全のため停止しました。");
                     return;
                 }
             }
 
             if (!hasState)
             {
+                if (currentInstruction != ExpectedOriginalInstruction)
+                {
+                    WriteDiagnostic(
+                        "UNEXPECTED ORIGINAL INSTRUCTION" +
+                        " PID=" + processId +
+                        " Instruction=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus(
+                        "パッチ対象命令が想定外です: 0x" +
+                        currentInstruction.ToString("X8"));
+
+                    return;
+                }
+
                 originalInstruction = currentInstruction;
 
                 SaveState(
@@ -238,105 +269,118 @@ internal static class HayabusaDoubleAttackMonitor
 
                 if (verify != AttackPatchValue)
                 {
-                    throw new IOException(
-                        "二回攻撃コードの読み戻し検証に失敗しました。");
+                    throw new InvalidOperationException(
+                        "二回攻撃パッチの書き込み検証に失敗しました。" +
+                        " 読み戻し値: 0x" + verify.ToString("X8"));
                 }
 
-                SetStatus(
-                    "はやぶさの爪を検出。二回攻撃を有効化しました。" +
-                    " 元命令: 0x" +
-                    originalInstruction.ToString("X8"));
+                WriteDiagnostic(
+                    "APPLY SUCCESS" +
+                    " PID=" + processId +
+                    " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                    " Original=0x" + originalInstruction.ToString("X8") +
+                    " Applied=0x" + verify.ToString("X8"));
+
+                SetStatus("はやぶさの爪を検出：二回攻撃パッチ適用済みです。");
             }
-            catch (Exception writeError)
+            catch
             {
                 TryRestoreAfterWriteFailure(
                     processId,
                     originalInstruction);
 
-                throw new IOException(
-                    "二回攻撃の適用に失敗しました: " +
-                    writeError.Message,
-                    writeError);
+                uint afterFailure =
+                    ReadPine32(AttackPatchAddress);
+
+                if (afterFailure == originalInstruction)
+                    DeleteState();
+
+                throw;
             }
 
             return;
         }
 
-        // はやぶさの爪以外を装備している場合
+        if (equippedWeapon == AmbiguousAfterRecruitmentWeaponValue &&
+            hasState &&
+            savedProcessId == processId &&
+            currentInstruction == AttackPatchValue)
+        {
+            WriteDiagnostic(
+                "HOLD AMBIGUOUS WEAPON" +
+                " PID=" + processId +
+                " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                " Patch=0x" + currentInstruction.ToString("X8") +
+                " Reason=Recruitment-related equipment read mismatch");
+
+            SetStatus(
+                "勧誘後の装備IDが不確定です。誤解除防止のため二回攻撃を維持しています。");
+
+            return;
+        }
+
+        if (!hasState)
+        {
+            SetStatus("はやぶさの爪は装備されていません。");
+            return;
+        }
+
+        if (savedProcessId != processId)
+        {
+            SetStatus("別のPCSX2プロセスの復元情報があります。");
+            return;
+        }
+
         if (currentInstruction == AttackPatchValue)
         {
-            if (!hasState)
-            {
-                SetStatus(
-                    "二回攻撃コードが残っていますが、" +
-                    "元命令の保存記録がありません。" +
-                    "安全のため復元を保留しています。");
-                return;
-            }
-
-            if (savedProcessId != processId)
-            {
-                SetStatus(
-                    "元命令を保存したPCSX2プロセスと現在のプロセスが異なります。" +
-                    "安全のため復元を保留しています。");
-                return;
-            }
-
             WritePine32(
                 AttackPatchAddress,
                 originalInstruction);
 
-            uint restored =
+            uint verify =
                 ReadPine32(AttackPatchAddress);
 
-            if (restored != originalInstruction)
+            if (verify != originalInstruction)
             {
-                throw new IOException(
-                    "元の命令への復元に失敗しました。");
+                throw new InvalidOperationException(
+                    "二回攻撃パッチの復元に失敗しました。" +
+                    " 読み戻し値: 0x" + verify.ToString("X8"));
             }
 
             DeleteState();
 
-            SetStatus(
-                "はやぶさの爪以外を検出。二回攻撃を解除しました。" +
-                " 元命令: 0x" +
-                originalInstruction.ToString("X8"));
+            WriteDiagnostic(
+                "RESTORE SUCCESS" +
+                " PID=" + processId +
+                " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                " Restored=0x" + verify.ToString("X8"));
 
+            SetStatus("はやぶさの爪を解除：元の攻撃命令へ復元しました。");
             return;
         }
 
-        // パッチが存在しない状態で保存記録が残っている場合
-        if (hasState)
+        if (currentInstruction == originalInstruction)
         {
-            if (savedProcessId != processId)
-            {
-                SetStatus(
-                    "保存記録のPCSX2プロセスIDが一致しません。" +
-                    "保存記録を保持しています。");
-                return;
-            }
+            DeleteState();
 
-            if (currentInstruction == originalInstruction)
-            {
-                DeleteState();
-            }
+            WriteDiagnostic(
+                "RESTORE ALREADY ORIGINAL" +
+                " PID=" + processId +
+                " Instruction=0x" + currentInstruction.ToString("X8"));
 
-            if (currentInstruction != originalInstruction)
-            {
-                SetStatus(
-                    "対象命令が元命令から変更されています。" +
-                    "安全のため監視による書き換えを保留しています。");
-                return;
-            }
+            SetStatus("はやぶさの爪は未装備です。元の命令を確認しました。");
+            return;
         }
 
-        SetStatus(
-            "自動監視中。" +
-            " 装備ID: 0x" +
-            equippedWeapon.ToString("X4") +
-            " / 二回攻撃: 未判定（装備ID確認中）");
-    }
+        WriteDiagnostic(
+            "RESTORE CONFLICT" +
+            " PID=" + processId +
+            " ExpectedPatch=0x" + AttackPatchValue.ToString("X8") +
+            " ExpectedOriginal=0x" + originalInstruction.ToString("X8") +
+            " Actual=0x" + currentInstruction.ToString("X8"));
 
+        SetStatus("復元対象の命令が想定外です。安全のため復元を停止しました。");
+    }
     private static void TryRestoreAfterWriteFailure(
         int processId,
         uint originalInstruction)
@@ -556,6 +600,37 @@ internal static class HayabusaDoubleAttackMonitor
             Debug.WriteLine(
                 "[はやぶさの爪] 終了時の復元に失敗: " +
                 ex.Message);
+        }
+    }
+
+    private static void WriteDiagnostic(string message)
+    {
+        try
+        {
+            string directory = Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                "TornekoIjiriNext");
+
+            Directory.CreateDirectory(directory);
+
+            string path = Path.Combine(
+                directory,
+                "HayabusaDoubleAttack.log");
+
+            string line =
+                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") +
+                " " + message + Environment.NewLine;
+
+            File.AppendAllText(
+                path,
+                line,
+                new UTF8Encoding(false));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(
+                "[はやぶさの爪] ログ出力失敗: " + ex.Message);
         }
     }
 

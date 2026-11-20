@@ -253,7 +253,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     message =
                         "設定は保持しました。\n" +
                         "PCSX2をゲーム実行状態にしてください。";
-                    _pine.Disconnect();
                     return false;
                 }
 
@@ -261,7 +260,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
                 if (copy.Count == 0)
                 {
-                    _pine.Disconnect();
                     message =
                         "種族別特技設定をすべて解除しました。\n" +
                         "元の特技処理命令へ復元しました。";
@@ -284,7 +282,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
             }
             catch (Exception ex)
             {
-                _pine.Disconnect();
                 message =
                     "種族別特技の適用に失敗しました。\n" +
                     ex.Message;
@@ -619,7 +616,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
                 if (snapshot.Count == 0)
                 {
-                    _pine.Disconnect();
                     RaiseStatus(
                         "種族別特技設定なし：元の命令を維持しています。");
                 }
@@ -662,7 +658,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
         catch (Exception ex)
         {
-            _pine.Disconnect();
             RaiseStatus("種族別特技監視エラー: " + ex.Message);
         }
 
@@ -709,7 +704,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
             {
             }
 
-            _pine.Dispose();
         }
     }
     private sealed class PineClient : IDisposable
