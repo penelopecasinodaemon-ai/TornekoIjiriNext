@@ -7214,6 +7214,17 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
             Dock = DockStyle.Top,
             Height = 36
         };
+
+        var extendedNames = new Button {
+            Text = "拡張名前データベース（試験版）",
+            Dock = DockStyle.Top,
+            Height = 42
+        };
+        extendedNames.Click += (_, _) =>
+        {
+            using (var form = new ExtendedItemNameRegistryForm(_pid))
+                form.ShowDialog(this);
+        };
         save.Click += (_, _) => SaveEntries();
 
         _status.Dock = DockStyle.Bottom;
@@ -7223,6 +7234,7 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
         right.Controls.Add(_status);
         right.Controls.Add(reload);
         right.Controls.Add(_scanMessagesButton);
+        right.Controls.Add(extendedNames);
         right.Controls.Add(save);
         right.Controls.Add(apply);
         right.Controls.Add(_name);
