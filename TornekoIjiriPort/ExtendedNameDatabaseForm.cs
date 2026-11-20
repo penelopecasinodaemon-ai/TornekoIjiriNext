@@ -104,7 +104,7 @@ internal sealed class ExtendedNameDatabaseForm : Form
 
         editPanel.Controls.Add(new Label
         {
-            Text = "拡張名（文字数制限なし）",
+            Text = "拡張名（CP932対応・既存領域の長さ制限なし）",
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleLeft
         }, 0, 2);
@@ -201,7 +201,9 @@ internal sealed class ExtendedNameDatabaseForm : Form
             _entries.Clear();
             Directory.CreateDirectory(Path.GetDirectoryName(_databasePath)!);
 
-            if (File.Exists(_databasePath))
+            bool databaseExists = File.Exists(_databasePath);
+
+            if (databaseExists)
             {
                 string json = File.ReadAllText(_databasePath, Encoding.UTF8);
                 List<ExtendedNameDatabaseEntry>? loaded =
@@ -209,6 +211,17 @@ internal sealed class ExtendedNameDatabaseForm : Form
 
                 if (loaded != null)
                     _entries.AddRange(loaded.Where(IsValidStoredEntry));
+            }
+
+            if (!databaseExists)
+            {
+                _entries.Add(new ExtendedNameDatabaseEntry
+                {
+                    Id = "item_164",
+                    Name = "スライムの指輪",
+                    Encoding = "CP932"
+                });
+                SaveDatabase();
             }
 
             RefreshEntries();
