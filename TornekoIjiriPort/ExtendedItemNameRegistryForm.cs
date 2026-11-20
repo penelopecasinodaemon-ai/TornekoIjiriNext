@@ -175,8 +175,8 @@ internal sealed class ExtendedItemNameRegistryForm : Form
                 _status.Text = "データベース読込エラー: " + ex.Message;
                 MessageBox.Show(
                     this,
-                    "拡張名前データベースを読み込めませんでした。\\r\\n" +
-                    "元ファイルは削除・変更していません。\\r\\n\\r\\n" +
+                    "拡張名前データベースを読み込めませんでした。\r\n" +
+                    "元ファイルは削除・変更していません。\r\n\r\n" +
                     ex.Message,
                     "拡張名前DB読込エラー",
                     MessageBoxButtons.OK,
@@ -199,7 +199,7 @@ internal sealed class ExtendedItemNameRegistryForm : Form
         RefreshList();
         _status.Text =
             "登録数: " + _entries.Count +
-            " 件\\r\\n保存先: " + _filePath;
+            " 件\r\n保存先: " + _filePath;
     }
 
     private void RefreshList()
