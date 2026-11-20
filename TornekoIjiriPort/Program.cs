@@ -4767,6 +4767,35 @@ buttons.Controls.Add(UiFactory.Button(
                 nameForm.ShowDialog(this);
             }));
 
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前データベース（試験版）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var extendedNameForm = new ExtendedItemNameRegistryForm(
+                    Pcsx2LiveSession.ProcessId);
+                extendedNameForm.ShowDialog(this);
+            }));
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前メモリ診断（読み取り専用）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var diagnosticsForm = new ExtendedItemNameMemoryDiagnosticsForm(
+                    Pcsx2LiveSession.ProcessId);
+                diagnosticsForm.ShowDialog(this);
+            }));
+
 
 
 

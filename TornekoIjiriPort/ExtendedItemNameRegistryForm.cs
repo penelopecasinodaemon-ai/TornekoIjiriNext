@@ -28,6 +28,7 @@ internal sealed class ExtendedItemNameRegistryForm : Form
     private readonly Label _status = new Label();
     private readonly List<OverrideEntry> _entries = new List<OverrideEntry>();
     private readonly string _filePath;
+    private readonly int _processId;
 
     private static readonly Encoding Cp932 = CreateCp932();
 
@@ -42,6 +43,8 @@ internal sealed class ExtendedItemNameRegistryForm : Form
 
     public ExtendedItemNameRegistryForm(int processId)
     {
+        _processId = processId;
+
         Text = "拡張名前データベース（試験版）";
         Width = 760;
         Height = 560;
@@ -75,12 +78,13 @@ internal sealed class ExtendedItemNameRegistryForm : Form
             Width = 300,
             Padding = new Padding(10),
             ColumnCount = 1,
-            RowCount = 7
+            RowCount = 8
         };
         editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
         editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
         editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
         editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
+        editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         editor.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         editor.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
@@ -124,6 +128,16 @@ internal sealed class ExtendedItemNameRegistryForm : Form
         };
         remove.Click += (_, _) => RemoveSelected();
         editor.Controls.Add(remove, 0, 5);
+
+        var applyToGame = new Button
+        {
+            Text = "選択名をゲームへ適用（item_164）",
+            Dock = DockStyle.Fill,
+            Height = 36
+        };
+
+        applyToGame.Click += (_, _) => ApplySelectedToGame();
+        editor.Controls.Add(applyToGame, 0, 6);
 
         _status.Dock = DockStyle.Bottom;
         _status.Height = 58;
@@ -347,6 +361,54 @@ internal sealed class ExtendedItemNameRegistryForm : Form
         _id.Clear();
         _name.Clear();
         _status.Text = "登録を削除しました。";
+    }
+
+    private void ApplySelectedToGame()
+    {
+        string id = _id.Text.Trim();
+        string name = _name.Text.Trim();
+
+        if (!string.Equals(
+            id,
+            "item_164",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(
+                this,
+                "現在の試験実装でゲームへ適用できるのは item_164 のみです。",
+                "適用対象外",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
+
+        try
+        {
+            string result = ExtendedItemNameMemoryWriter.Apply(
+                _processId,
+                id,
+                name);
+
+            _status.Text = result;
+
+            MessageBox.Show(
+                this,
+                result + "\r\n\r\nゲーム内で表示を確認してください。",
+                "EE RAM書き込み・読み戻し検証成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "ゲーム適用エラー\r\n" + ex.Message;
+
+            MessageBox.Show(
+                this,
+                ex.ToString(),
+                "拡張名前の適用エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
     }
 
     private void SaveEntries()
