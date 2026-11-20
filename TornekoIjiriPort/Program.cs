@@ -4605,7 +4605,7 @@ internal sealed class MainForm : Form
 
     public MainForm()
     {
-        Text = "トルネコいじりネクストv1.0";
+        Text = "トルネコいじりネクストv2.1";
         StartPosition = FormStartPosition.CenterScreen;
         Width = 1050;
         Height = 760;
@@ -4693,7 +4693,7 @@ internal sealed class MainForm : Form
 
         var title = new Label
         {
-            Text = "トルネコいじりネクストv1.0",
+            Text = "トルネコいじりネクストv2.1",
             Font = new Font("Yu Gothic UI", 22, FontStyle.Bold),
             AutoSize = true,
             Location = new Point(8, 4)
