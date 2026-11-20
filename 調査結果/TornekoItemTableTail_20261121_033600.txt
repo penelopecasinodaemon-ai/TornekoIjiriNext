@@ -1,0 +1,233 @@
+﻿Torneko Item Table Tail Probe
+Date: 2026-11-21 03:36:00
+PID: 6708
+EE Base: 0x1B919910000
+Read only
+
+===== TABLE ENTRIES 180-280 =====
+[180] Ptr=0x00100A28 Record=0x00106F87 ID=item_082 Name=「ドルイドﾉ杖」 NameBytes=11
+[181] Ptr=0x00100A2C Record=0x00106F9C ID=item_081_e Name=「[げﾝじｭﾂｼﾉﾂｴ]モンスターｦワープｻｾワープｼﾀ場所でｶﾅｼばﾘﾆｽﾙぞ。」 NameBytes=61
+[182] Ptr=0x00100A30 Record=0x00106FE5 ID=item_081 Name=「げﾝじｭﾂｼﾉ杖」 NameBytes=11
+[183] Ptr=0x00100A34 Record=0x00106FFA ID=item_080_e Name=「[ﾓﾉｶﾉﾂｴ]モンスターｦアイテムﾆ変ｴﾙｺﾄがでｷﾙぞ。」 NameBytes=46
+[184] Ptr=0x00100A38 Record=0x00107034 ID=item_080 Name=「モノカﾉ杖」 NameBytes=9
+[185] Ptr=0x00100A3C Record=0x00107047 ID=item_079_e Name=「[ｵｵぞﾝﾉﾂｴ]自分ﾉHPﾉ半分ｦモンスターﾆ与ｴﾃｼﾏｳぞ。」 NameBytes=47
+[186] Ptr=0x00100A40 Record=0x00107082 ID=item_079 Name=「大損ﾉ杖」 NameBytes=7
+[187] Ptr=0x00100A44 Record=0x00107093 ID=item_078_e Name=「[ﾓﾛﾊﾉﾂｴ]自分ﾉHPが半分ﾆﾅﾘモンスターﾉHPﾊ1ﾆﾅﾙぞ。」 NameBytes=48
+[188] Ptr=0x00100A48 Record=0x001070CF ID=item_078 Name=「ﾓﾛﾊﾉ杖」 NameBytes=6
+[189] Ptr=0x00100A4C Record=0x001070DF ID=item_077_e Name=「[ざｷﾉﾂｴ]モンスターｦ一撃でﾔｯﾂｹﾙｺﾄがでｷﾙぞ。ﾓﾁﾛﾝ経験値ﾓ ﾓﾗｴﾙぞ。」 NameBytes=65
+[190] Ptr=0x00100A50 Record=0x0010712C ID=item_077 Name=「ザキﾉ杖」 NameBytes=7
+[191] Ptr=0x00100A54 Record=0x0010713D ID=item_076_e Name=「[ぶﾝﾚﾂﾉﾂｴ]モンスターｦ分裂ｻｾﾃｼﾏｳぞ。」 NameBytes=36
+[192] Ptr=0x00100A58 Record=0x0010716D ID=item_076 Name=「分裂ﾉ杖」 NameBytes=7
+[193] Ptr=0x00100A5C Record=0x0010717E ID=item_075_e Name=「[ｺﾛばﾇｻｷﾉﾂｴ]持ｯﾃｲﾙだｹで転ばﾅｸﾅﾙぞ。壺ﾉ中ﾆ入ｯﾃｲﾙﾄ 効力が出ﾅｲﾉで注意が必要だぞ。 ｺﾉ杖ﾉ魔法ﾉ弾ｶｺﾉ杖自身ｦモンスターﾆ当ﾃﾙﾄ転ばｾﾙｺﾄがでｷﾙぞ。」 NameBytes=140
+[194] Ptr=0x00100A60 Record=0x00107216 ID=item_075 Name=「転ばﾇ先ﾉ杖」 NameBytes=10
+[195] Ptr=0x00100A64 Record=0x0010722A ID=item_074_e Name=「[ﾚﾑｵﾙﾉﾂｴ]モンスターｦ透明ﾆｽﾙぞ。」 NameBytes=32
+[196] Ptr=0x00100A68 Record=0x00107256 ID=item_074 Name=「レムオルﾉ杖」 NameBytes=11
+[197] Ptr=0x00100A6C Record=0x0010726B ID=item_073_e Name=「[ぴｵﾘﾑﾉﾂｴ]モンスターﾉ 動ｷが ｽばﾔｸﾅﾙぞ。」 NameBytes=40
+[198] Ptr=0x00100A70 Record=0x0010729F ID=item_073 Name=「ピオリムﾉ杖」 NameBytes=11
+[199] Ptr=0x00100A74 Record=0x001072B4 ID=item_072_e Name=「[ﾍﾝげﾉﾂｴ]モンスターｦ 別ﾉモンスターﾆ変身ｻｾﾙｺﾄがでｷﾙぞ。」 NameBytes=56
+[200] Ptr=0x00100A78 Record=0x001072F8 ID=item_072 Name=「ﾍﾝげﾉ杖」 NameBytes=7
+[201] Ptr=0x00100A7C Record=0x00107309 ID=item_071_e Name=「[ばｼﾙーﾗﾉﾂｴ]モンスターｦワープｻｾﾙｺﾄがでｷﾙぞ。」 NameBytes=46
+[202] Ptr=0x00100A80 Record=0x00107343 ID=item_071 Name=「バシルーラﾉ杖」 NameBytes=13
+[203] Ptr=0x00100A84 Record=0x0010735A ID=item_070_e Name=「[ﾒだぱﾆﾉﾂｴ]モンスターｦ少ｼﾉ間混乱ｻｾﾙｺﾄがでｷﾙぞ。」 NameBytes=49
+[204] Ptr=0x00100A88 Record=0x00107397 ID=item_070 Name=「メダパニﾉ杖」 NameBytes=11
+[205] Ptr=0x00100A8C Record=0x001073AC ID=item_069_e Name=「[ﾗﾘﾎーﾉﾂｴ]モンスターｦ少ｼﾉ間眠ﾗｾﾙｺﾄがでｷﾙぞ。」 NameBytes=46
+[206] Ptr=0x00100A90 Record=0x001073E6 ID=item_069 Name=「ラリホーﾉ杖」 NameBytes=11
+[207] Ptr=0x00100A94 Record=0x001073FB ID=item_068_e Name=「[ぼﾐｵｽﾉﾂｴ]モンスターﾉ動ｷｦ遅ｸｽﾙｺﾄがでｷﾙぞ。」 NameBytes=44
+[208] Ptr=0x00100A98 Record=0x00107433 ID=item_068 Name=「ボミオスﾉ杖」 NameBytes=11
+[209] Ptr=0x00100A9C Record=0x00107448 ID=item_067_e Name=「[ｲｶずﾁﾉﾂｴ]モンスターｦ遠ｸｶﾗ攻撃でｷﾙぞ。」 NameBytes=39
+[210] Ptr=0x00100AA0 Record=0x0010747B ID=item_067 Name=「ｲｶずﾁﾉ杖」 NameBytes=8
+[211] Ptr=0x00100AA4 Record=0x0010748D ID=item_066_e Name=「[ばｼｮがｴﾉﾂｴ]モンスターﾄ自分ﾉ位置が入ﾚ替ﾜﾙぞ。」 NameBytes=47
+[212] Ptr=0x00100AA8 Record=0x001074C8 ID=item_066 Name=「場所替ｴﾉ杖」 NameBytes=10
+[213] Ptr=0x00100AAC Record=0x001074DC ID=item_065_e Name=「[ﾐがﾜﾘﾉﾂｴ]モンスターｦ少ｼﾉ間トルネコﾉ姿ﾆ変化ｻｾﾃ自分ﾉ身代ﾜﾘﾆｽﾙｺﾄがでｷﾙぞ。」 NameBytes=75
+[214] Ptr=0x00100AB0 Record=0x00107533 ID=item_065 Name=「身代ﾜﾘﾉ杖」 NameBytes=9
+[215] Ptr=0x00100AB4 Record=0x00107546 ID=item_064_e Name=「[ﾌｳｲﾝﾉﾂｴ]モンスターﾉ特殊攻撃ｦ封じﾙぞ。」 NameBytes=39
+[216] Ptr=0x00100AB8 Record=0x00107579 ID=item_064 Name=「封印ﾉ杖」 NameBytes=7
+[217] Ptr=0x00100ABC Record=0x0010758A ID=item_063_e Name=「ｺﾉ盾ﾊﾖびﾅﾉでｽ。２」 NameBytes=17
+[218] Ptr=0x00100AC0 Record=0x001075A7 ID=item_063 Name=「ﾖび63」 NameBytes=5
+[219] Ptr=0x00100AC4 Record=0x001075B6 ID=item_062_e Name=「ｺﾉ盾ﾊﾖびﾅﾉだ。１」 NameBytes=16
+[220] Ptr=0x00100AC8 Record=0x001075D2 ID=item_062 Name=「ﾖび62」 NameBytes=5
+[221] Ptr=0x00100ACC Record=0x001075E1 ID=item_061_e Name=「[ﾎﾜｲﾄｸﾛｽ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=34
+[222] Ptr=0x00100AD0 Record=0x0010760F ID=item_061 Name=「ホワイトクロス」 NameBytes=14
+[223] Ptr=0x00100AD4 Record=0x00107627 ID=item_060_e Name=「[ｺｳﾗﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=33
+[224] Ptr=0x00100AD8 Record=0x00107654 ID=item_060 Name=「ｺｳﾗﾉ盾」 NameBytes=6
+[225] Ptr=0x00100ADC Record=0x00107664 ID=item_059_e Name=「[ﾗｳﾝどｼーﾙど]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=38
+[226] Ptr=0x00100AE0 Record=0x00107696 ID=item_059 Name=「ラウンドシールド」 NameBytes=16
+[227] Ptr=0x00100AE4 Record=0x001076B0 ID=item_058_e Name=「[ｷﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=31
+[228] Ptr=0x00100AE8 Record=0x001076DB ID=item_058 Name=「木ﾉ盾」 NameBytes=5
+[229] Ptr=0x00100AEC Record=0x001076EA ID=item_057_e Name=「[ｼﾝｸﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=33
+[230] Ptr=0x00100AF0 Record=0x00107717 ID=item_057 Name=「真紅ﾉ盾」 NameBytes=7
+[231] Ptr=0x00100AF4 Record=0x00107728 ID=item_056_e Name=「[ｸﾛﾑｼーﾙど]装備ｽﾙﾄ防御力が上がﾙぞ。ﾄﾃﾓ重ｲﾉで 装備ｽﾙﾄｵ腹が減ﾘﾔｽｸﾅﾙぞ。」 NameBytes=72
+[232] Ptr=0x00100AF8 Record=0x0010777C ID=item_056 Name=「クロムシールド」 NameBytes=14
+[233] Ptr=0x00100AFC Record=0x00107794 ID=item_055_e Name=「[ﾂｶｲｽﾃﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。ﾊじﾒﾉ防御力ﾊ高ｲが攻撃ｦ受ｹﾙﾀびﾆ弱ｸﾅｯﾃｲｸぞ。」 NameBytes=79
+[234] Ptr=0x00100B00 Record=0x001077EF ID=item_055 Name=「使ｲｽﾃﾉ盾」 NameBytes=8
+[235] Ptr=0x00100B04 Record=0x00107801 ID=item_054_e Name=「[ﾛﾄﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。伝説ﾉ勇者ﾉ盾だ。ｽごｲ防御力だぞ。」 NameBytes=66
+[236] Ptr=0x00100B08 Record=0x0010784F ID=item_054 Name=「ロトﾉ盾」 NameBytes=7
+[237] Ptr=0x00100B0C Record=0x00107860 ID=item_053_e Name=「[ｲﾝﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。どｺｶﾆｶｸｻﾚﾃｲﾙ封ﾉ剣ﾄセットで装備ｽﾙﾄ　攻撃ｽﾙだｹでモンスターｦ封印ｽﾙｺﾄがでｷﾙぞ！」 NameBytes=110
+[238] Ptr=0x00100B10 Record=0x001078DA ID=item_053 Name=「印ﾉ盾」 NameBytes=5
+[239] Ptr=0x00100B14 Record=0x001078E9 ID=item_052_e Name=「[ｵｳごﾝﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。黄金シリーズﾉ１ﾂだ。」 NameBytes=56
+[240] Ptr=0x00100B18 Record=0x0010792D ID=item_052 Name=「黄金ﾉ盾」 NameBytes=7
+[241] Ptr=0x00100B1C Record=0x0010793E ID=item_051_e Name=「[ばｸﾊﾂﾖｹﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。爆発ﾆﾖﾙダメージｦ少ﾅｸｼﾃｸﾚﾙぞ。」 NameBytes=68
+[242] Ptr=0x00100B20 Record=0x0010798E ID=item_051 Name=「爆発ﾖｹﾉ盾」 NameBytes=9
+[243] Ptr=0x00100B24 Record=0x001079A1 ID=item_050_e Name=「[ﾒﾀﾙｷﾝぐﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。ﾄﾃﾂﾓﾅｸ防御力ﾉ高ｲ盾だぞ。」 NameBytes=62
+[244] Ptr=0x00100B28 Record=0x001079EB ID=item_050 Name=「メタルキングﾉ盾」 NameBytes=15
+[245] Ptr=0x00100B2C Record=0x00107A04 ID=item_049_e Name=「[ﾔｲばﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。モンスターｶﾗﾉ攻撃ダメージｦ少ｼだｹﾊﾈ返ｽぞ。」 NameBytes=77
+[246] Ptr=0x00100B30 Record=0x00107A5D ID=item_049 Name=「ﾔｲばﾉ盾」 NameBytes=7
+[247] Ptr=0x00100B34 Record=0x00107A6E ID=item_048_e Name=「[ﾊぐﾚﾒﾀﾙﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=37
+[248] Ptr=0x00100B38 Record=0x00107A9F ID=item_048 Name=「ﾊぐﾚメタルﾉ盾」 NameBytes=13
+[249] Ptr=0x00100B3C Record=0x00107AB6 ID=item_047_e Name=「[ﾊがﾈﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=34
+[250] Ptr=0x00100B40 Record=0x00107AE4 ID=item_047 Name=「鋼鉄ﾉ盾」 NameBytes=7
+[251] Ptr=0x00100B44 Record=0x00107AF5 ID=item_046_e Name=「[ｾｲどｳﾉﾀﾃ]装備ｽﾙﾄ防御力が上がﾙぞ。」 NameBytes=35
+[252] Ptr=0x00100B48 Record=0x00107B24 ID=item_046 Name=「青銅ﾉ盾」 NameBytes=7
+[253] Ptr=0x00100B4C Record=0x00107B35 ID=item_045_e Name=「[ｸﾛｳｱﾝどﾚｱ]装備ｽﾙﾄ攻撃力が上がﾙぞ。ｽごｲ輝ｷｦﾊﾅｯﾃｲﾃモンスターﾉ心ｦﾋｷﾂｹﾙぞ。ポポロ専用ﾉ武器だぞ。」 NameBytes=97
+[254] Ptr=0x00100B50 Record=0x00107BA2 ID=item_045 Name=「クロウアンドレア」 NameBytes=16
+[255] Ptr=0x00100B54 Record=0x00107BBC ID=item_044_e Name=「[ｴﾚﾌｧﾝﾄｸﾛｳ]装備ｽﾙﾄ攻撃力が上がﾙぞ。ケモノﾉ匂ｲがｽﾙﾀﾒｶｺﾉ爪でモンスターｦ倒ｼﾃﾓ仲間ﾆﾅﾗﾅｲぞ。ポポロ専用ﾉ武器だぞ。」 NameBytes=113
+[256] Ptr=0x00100B58 Record=0x00107C39 ID=item_044 Name=「エレファントクロウ」 NameBytes=18
+[257] Ptr=0x00100B5C Record=0x00107C55 ID=item_043_e Name=「[ごーﾙどｸﾛｳ]装備ｽﾙﾄ攻撃力が上がﾙぞ。金ででｷﾀ爪だぞ。ポポロ専用ﾉ武器だぞ。」 NameBytes=76
+[258] Ptr=0x00100B60 Record=0x00107CAD ID=item_043 Name=「ゴールドクロウ」 NameBytes=14
+[259] Ptr=0x00100B64 Record=0x00107CC5 ID=item_042_e Name=「[ぎﾝﾉﾂﾒ]装備ｽﾙﾄ攻撃力が上がﾙぞ。水系ﾉモンスターﾆﾖﾘ大ｷﾅダメージｦ与ｴﾙぞ。水ﾉ中ﾆｲﾙ水系ﾉモンスターｦ攻撃でｷﾙ唯一ﾉ武器だぞ。 ポポロ専用ﾉ武器だぞ。」 NameBytes=145
+[260] Ptr=0x00100B68 Record=0x00107D62 ID=item_042 Name=「銀ﾉ爪」 NameBytes=5
+[261] Ptr=0x00100B6C Record=0x00107D71 ID=item_041_e Name=「[ｳﾐどﾘﾉﾂﾒ]装備ｽﾙﾄ攻撃力が上がﾙぞ。ポポロ専用ﾉ武器だぞ。」 NameBytes=57
+[262] Ptr=0x00100B70 Record=0x00107DB6 ID=item_041 Name=「ｳﾐどﾘﾉ爪」 NameBytes=8
+[263] Ptr=0x00100B74 Record=0x00107DC8 ID=item_040_e Name=「[ｼｬどーぶﾚｲｸ]装備ｽﾙﾄ攻撃力が上がﾙぞ。姿ﾉ見ｴﾅｲモンスターﾆﾖﾘ大ｷﾅダメージｦ与ｴﾙぞ。」 NameBytes=82
+[264] Ptr=0x00100B78 Record=0x00107E26 ID=item_040 Name=「シャドーブレイク」 NameBytes=16
+[265] Ptr=0x00100B7C Record=0x00107E40 ID=item_039_e Name=「[ｻｷぼｿﾘﾉｹﾝ]装備ｽﾙﾄ攻撃力が上がﾙぞ。ﾊじﾒﾉ攻撃力ﾊ高ｲが攻撃ｽﾙごﾄﾆ弱ｸﾅｯﾃｲｸぞ。」 NameBytes=77
+[266] Ptr=0x00100B80 Record=0x00107E99 ID=item_039 Name=「ｻｷぼｿﾘﾉ剣」 NameBytes=9
+[267] Ptr=0x00100B84 Record=0x00107EAC ID=item_038_e Name=「[ぶﾚｯどﾊﾝど]装備ｽﾙﾄ攻撃力が上がﾙぞ。倒ｽﾄ モンスターがパンｦ落ﾄｼﾔｽｸﾅﾙぞ。」 NameBytes=74
+[268] Ptr=0x00100B88 Record=0x00107F02 ID=item_038 Name=「ブレッドハンド」 NameBytes=14
+[269] Ptr=0x00100B8C Record=0x00107F1A ID=item_037_e Name=「[ｵｵｷづﾁ]装備ｽﾙﾄ攻撃力が上がﾙぞ。アイテムﾔワナｦ壊ｽｺﾄがでｷﾙが壊ﾚﾃｼﾏｳｺﾄがｱﾙぞ。」 NameBytes=79
+[270] Ptr=0x00100B90 Record=0x00107F75 ID=item_037 Name=「ｵｵｷづﾁ」 NameBytes=6
+[271] Ptr=0x00100B94 Record=0x00107F85 ID=item_036_e Name=「[ｷﾗーﾍｯど]装備ｽﾙﾄ攻撃力が上がﾙぞ。８方向ｦ一度ﾆ攻撃ｽﾙｺﾄがでｷﾙぞ。ｺﾉ武器ﾊ 他ﾉ武器ﾆﾊ合成ｽﾙｺﾄがでｷﾅｲﾉで注意が必要だぞ。」 NameBytes=119
+[272] Ptr=0x00100B98 Record=0x00108008 ID=item_036 Name=「キラーヘッド」 NameBytes=12
+[273] Ptr=0x00100B9C Record=0x0010801E ID=item_035_e Name=「[ごーﾙどｳｨｯぷ]装備ｽﾙﾄ攻撃力が上がﾙぞ。倒ｽﾄ モンスターがゴールドｦ落ﾄｼﾔｽｸﾅﾙぞ。」 NameBytes=80
+[274] Ptr=0x00100BA0 Record=0x0010807A ID=item_035 Name=「ゴールドウィップ」 NameBytes=16
+[275] Ptr=0x00100BA4 Record=0x00108094 ID=item_034_e Name=「[ﾙｶﾅﾝｿーど]装備ｽﾙﾄ攻撃力が上がﾙぞ。攻撃が当ﾀﾙﾀびﾆ モンスターﾉ防御力ｦ減ﾗｽｺﾄがでｷﾙぞ。」 NameBytes=87
+[276] Ptr=0x00100BA8 Record=0x001080F7 ID=item_034 Name=「ルカナンソード」 NameBytes=14
+[277] Ptr=0x00100BAC Record=0x0010810F ID=item_033_e Name=「[ｵーｼｬﾝﾛｯど]装備ｽﾙﾄ攻撃力が上がﾙぞ。水系ﾉモンスターﾆﾖﾘ大ｷﾅダメージｦ与ｴﾙぞ。水ﾉ中ﾆｲﾙ水系ﾉモンスターｦ攻撃でｷﾙ唯一ﾉ武器だぞ。」 NameBytes=127
+[278] Ptr=0x00100BB0 Record=0x0010819A ID=item_033 Name=「オーシャンロッド」 NameBytes=16
+[279] Ptr=0x00100BB4 Record=0x001081B4 ID=item_032_e Name=「[ｽぱーｸｿーど]装備ｽﾙﾄ攻撃力が上がﾙぞ。空振ﾘｼﾀ回数がﾀﾏﾙﾄ次ﾉ攻撃で必ず当ﾀﾙ会心ﾉ一撃がでﾙぞ。」 NameBytes=92
+[280] Ptr=0x00100BB8 Record=0x0010821C ID=item_032 Name=「スパークソード」 NameBytes=14
+
+===== TARGETS AND NEIGHBORS =====
+
+TARGET: item_041
+Target index: 262
+[259] Ptr=0x00100B64 Record=0x00107CC5 ID=item_042_e Name=「[ぎﾝﾉﾂﾒ]装備ｽﾙﾄ攻撃力が上がﾙぞ。水系ﾉモンスターﾆﾖﾘ大ｷﾅダメージｦ与ｴﾙぞ。水ﾉ中ﾆｲﾙ水系ﾉモンスターｦ攻撃でｷﾙ唯一ﾉ武器だぞ。 ポポロ専用ﾉ武器だぞ。」 NameBytes=145
+[260] Ptr=0x00100B68 Record=0x00107D62 ID=item_042 Name=「銀ﾉ爪」 NameBytes=5
+[261] Ptr=0x00100B6C Record=0x00107D71 ID=item_041_e Name=「[ｳﾐどﾘﾉﾂﾒ]装備ｽﾙﾄ攻撃力が上がﾙぞ。ポポロ専用ﾉ武器だぞ。」 NameBytes=57
+[262] Ptr=0x00100B70 Record=0x00107DB6 ID=item_041 Name=「ｳﾐどﾘﾉ爪」 NameBytes=8
+[263] Ptr=0x00100B74 Record=0x00107DC8 ID=item_040_e Name=「[ｼｬどーぶﾚｲｸ]装備ｽﾙﾄ攻撃力が上がﾙぞ。姿ﾉ見ｴﾅｲモンスターﾆﾖﾘ大ｷﾅダメージｦ与ｴﾙぞ。」 NameBytes=82
+[264] Ptr=0x00100B78 Record=0x00107E26 ID=item_040 Name=「シャドーブレイク」 NameBytes=16
+[265] Ptr=0x00100B7C Record=0x00107E40 ID=item_039_e Name=「[ｻｷぼｿﾘﾉｹﾝ]装備ｽﾙﾄ攻撃力が上がﾙぞ。ﾊじﾒﾉ攻撃力ﾊ高ｲが攻撃ｽﾙごﾄﾆ弱ｸﾅｯﾃｲｸぞ。」 NameBytes=77
+
+TARGET: item_164
+Target index: 16
+[013] Ptr=0x0010078C Record=0x001053CB ID=item_165_e Name=「[どﾗごﾝﾉﾕびﾜ]炎系ﾉモンスターｶﾗﾉ炎ﾉ攻撃ｦ弱ﾒﾙｺﾄがでｷﾙぞ。」 NameBytes=57
+[014] Ptr=0x00100790 Record=0x00105410 ID=item_165 Name=「ドラゴンﾉ指輪」 NameBytes=13
+[015] Ptr=0x00100794 Record=0x00105427 ID=item_164_e Name=「指輪ﾉﾖび２だ。」 NameBytes=14
+[016] Ptr=0x00100798 Record=0x00105441 ID=item_164 Name=「スラ指」 NameBytes=6
+[017] Ptr=0x0010079C Record=0x00105452 ID=item_163_e Name=「[ﾌﾂｳﾉﾕびﾜ]ﾌﾂｳﾉ指輪だぞ。」 NameBytes=25
+[018] Ptr=0x001007A0 Record=0x00105477 ID=item_163 Name=「ﾌﾂｳﾉ指輪」 NameBytes=8
+[019] Ptr=0x001007A4 Record=0x00105489 ID=item_162_e Name=「[ﾊﾗﾓﾁﾉﾕびﾜ]ｵ腹が減ﾘﾆｸｸﾅﾙぞ。」 NameBytes=29
+
+===== RAW POINTER TABLE 180-280 =====
+Index=180 Table=0x00100A28 Value=0x00106F87
+Index=181 Table=0x00100A2C Value=0x00106F9C
+Index=182 Table=0x00100A30 Value=0x00106FE5
+Index=183 Table=0x00100A34 Value=0x00106FFA
+Index=184 Table=0x00100A38 Value=0x00107034
+Index=185 Table=0x00100A3C Value=0x00107047
+Index=186 Table=0x00100A40 Value=0x00107082
+Index=187 Table=0x00100A44 Value=0x00107093
+Index=188 Table=0x00100A48 Value=0x001070CF
+Index=189 Table=0x00100A4C Value=0x001070DF
+Index=190 Table=0x00100A50 Value=0x0010712C
+Index=191 Table=0x00100A54 Value=0x0010713D
+Index=192 Table=0x00100A58 Value=0x0010716D
+Index=193 Table=0x00100A5C Value=0x0010717E
+Index=194 Table=0x00100A60 Value=0x00107216
+Index=195 Table=0x00100A64 Value=0x0010722A
+Index=196 Table=0x00100A68 Value=0x00107256
+Index=197 Table=0x00100A6C Value=0x0010726B
+Index=198 Table=0x00100A70 Value=0x0010729F
+Index=199 Table=0x00100A74 Value=0x001072B4
+Index=200 Table=0x00100A78 Value=0x001072F8
+Index=201 Table=0x00100A7C Value=0x00107309
+Index=202 Table=0x00100A80 Value=0x00107343
+Index=203 Table=0x00100A84 Value=0x0010735A
+Index=204 Table=0x00100A88 Value=0x00107397
+Index=205 Table=0x00100A8C Value=0x001073AC
+Index=206 Table=0x00100A90 Value=0x001073E6
+Index=207 Table=0x00100A94 Value=0x001073FB
+Index=208 Table=0x00100A98 Value=0x00107433
+Index=209 Table=0x00100A9C Value=0x00107448
+Index=210 Table=0x00100AA0 Value=0x0010747B
+Index=211 Table=0x00100AA4 Value=0x0010748D
+Index=212 Table=0x00100AA8 Value=0x001074C8
+Index=213 Table=0x00100AAC Value=0x001074DC
+Index=214 Table=0x00100AB0 Value=0x00107533
+Index=215 Table=0x00100AB4 Value=0x00107546
+Index=216 Table=0x00100AB8 Value=0x00107579
+Index=217 Table=0x00100ABC Value=0x0010758A
+Index=218 Table=0x00100AC0 Value=0x001075A7
+Index=219 Table=0x00100AC4 Value=0x001075B6
+Index=220 Table=0x00100AC8 Value=0x001075D2
+Index=221 Table=0x00100ACC Value=0x001075E1
+Index=222 Table=0x00100AD0 Value=0x0010760F
+Index=223 Table=0x00100AD4 Value=0x00107627
+Index=224 Table=0x00100AD8 Value=0x00107654
+Index=225 Table=0x00100ADC Value=0x00107664
+Index=226 Table=0x00100AE0 Value=0x00107696
+Index=227 Table=0x00100AE4 Value=0x001076B0
+Index=228 Table=0x00100AE8 Value=0x001076DB
+Index=229 Table=0x00100AEC Value=0x001076EA
+Index=230 Table=0x00100AF0 Value=0x00107717
+Index=231 Table=0x00100AF4 Value=0x00107728
+Index=232 Table=0x00100AF8 Value=0x0010777C
+Index=233 Table=0x00100AFC Value=0x00107794
+Index=234 Table=0x00100B00 Value=0x001077EF
+Index=235 Table=0x00100B04 Value=0x00107801
+Index=236 Table=0x00100B08 Value=0x0010784F
+Index=237 Table=0x00100B0C Value=0x00107860
+Index=238 Table=0x00100B10 Value=0x001078DA
+Index=239 Table=0x00100B14 Value=0x001078E9
+Index=240 Table=0x00100B18 Value=0x0010792D
+Index=241 Table=0x00100B1C Value=0x0010793E
+Index=242 Table=0x00100B20 Value=0x0010798E
+Index=243 Table=0x00100B24 Value=0x001079A1
+Index=244 Table=0x00100B28 Value=0x001079EB
+Index=245 Table=0x00100B2C Value=0x00107A04
+Index=246 Table=0x00100B30 Value=0x00107A5D
+Index=247 Table=0x00100B34 Value=0x00107A6E
+Index=248 Table=0x00100B38 Value=0x00107A9F
+Index=249 Table=0x00100B3C Value=0x00107AB6
+Index=250 Table=0x00100B40 Value=0x00107AE4
+Index=251 Table=0x00100B44 Value=0x00107AF5
+Index=252 Table=0x00100B48 Value=0x00107B24
+Index=253 Table=0x00100B4C Value=0x00107B35
+Index=254 Table=0x00100B50 Value=0x00107BA2
+Index=255 Table=0x00100B54 Value=0x00107BBC
+Index=256 Table=0x00100B58 Value=0x00107C39
+Index=257 Table=0x00100B5C Value=0x00107C55
+Index=258 Table=0x00100B60 Value=0x00107CAD
+Index=259 Table=0x00100B64 Value=0x00107CC5
+Index=260 Table=0x00100B68 Value=0x00107D62
+Index=261 Table=0x00100B6C Value=0x00107D71
+Index=262 Table=0x00100B70 Value=0x00107DB6
+Index=263 Table=0x00100B74 Value=0x00107DC8
+Index=264 Table=0x00100B78 Value=0x00107E26
+Index=265 Table=0x00100B7C Value=0x00107E40
+Index=266 Table=0x00100B80 Value=0x00107E99
+Index=267 Table=0x00100B84 Value=0x00107EAC
+Index=268 Table=0x00100B88 Value=0x00107F02
+Index=269 Table=0x00100B8C Value=0x00107F1A
+Index=270 Table=0x00100B90 Value=0x00107F75
+Index=271 Table=0x00100B94 Value=0x00107F85
+Index=272 Table=0x00100B98 Value=0x00108008
+Index=273 Table=0x00100B9C Value=0x0010801E
+Index=274 Table=0x00100BA0 Value=0x0010807A
+Index=275 Table=0x00100BA4 Value=0x00108094
+Index=276 Table=0x00100BA8 Value=0x001080F7
+Index=277 Table=0x00100BAC Value=0x0010810F
+Index=278 Table=0x00100BB0 Value=0x0010819A
+Index=279 Table=0x00100BB4 Value=0x001081B4
+Index=280 Table=0x00100BB8 Value=0x0010821C
