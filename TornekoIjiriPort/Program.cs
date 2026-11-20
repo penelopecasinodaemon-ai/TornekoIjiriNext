@@ -4767,6 +4767,13 @@ buttons.Controls.Add(UiFactory.Button(
                 nameForm.ShowDialog(this);
             }));
 
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前データベース（試験版）", (_, _) =>
+            {
+                using var extendedNameForm = new ExtendedNameDatabaseForm();
+                extendedNameForm.ShowDialog(this);
+            }));
+
 
 
 
