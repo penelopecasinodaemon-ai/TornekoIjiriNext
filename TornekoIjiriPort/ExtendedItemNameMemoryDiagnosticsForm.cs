@@ -1035,13 +1035,15 @@ namespace TornekoIjiriPort
             Append("");
             Append("===== アイテム文字列ポインタ配列の内容 =====");
             Append("配列開始: EE+0x00100758");
-            Append("読み取り件数: 32ポインタ");
+            Append("最大読み取り件数: 256ポインタ");
+            Append("停止条件: 無効なポインタが3件連続");
             Append("");
 
             const int tableOffset = 0x00100758;
-            const int entryCount = 128;
+            const int entryCount = 512;
             const int entrySize = 4;
             const int targetReadSize = 48;
+            const int invalidLimit = 3;
 
             byte[] table = new byte[entryCount * entrySize];
 
@@ -1057,12 +1059,17 @@ namespace TornekoIjiriPort
             if (!tableReadOk || tableActual != table.Length)
             {
                 Append("ポインタ配列の読み取りに失敗しました。");
-                Append("Read=" + tableActual);
+                Append("要求バイト数=" + table.Length);
+                Append("読み取りバイト数=" + tableActual);
                 Append("Win32Error=" + Marshal.GetLastWin32Error());
                 return;
             }
 
             Encoding cp932 = Encoding.GetEncoding(932);
+
+            int invalidStreak = 0;
+            int processedCount = 0;
+            string stopReason = "最大読み取り件数に到達";
 
             for (int i = 0; i < entryCount; i++)
             {
@@ -1072,9 +1079,11 @@ namespace TornekoIjiriPort
 
                 int entryOffset = tableOffset + i * entrySize;
 
+                processedCount++;
+
                 Append("");
                 Append(
-                    "[" + i.ToString("D2") + "] " +
+                    "[" + i.ToString("D3") + "] " +
                     "配列位置=EE+0x" +
                     entryOffset.ToString("X8"));
 
@@ -1083,102 +1092,148 @@ namespace TornekoIjiriPort
                     pointer.ToString("X8"));
 
                 if (pointer >= EeRamSize ||
-                    pointer + targetReadSize > EeRamSize)
+                    pointer > EeRamSize - targetReadSize)
                 {
-                    Append("参照先がEE RAM範囲外です。");
-                    continue;
+                    Append("無効: 参照先がEE RAM範囲外です。");
+                    invalidStreak++;
                 }
 
-                byte[] prefix = new byte[5];
-
-                bool prefixReadOk = ReadProcessMemory(
-                    process,
-                    new IntPtr(checked(eeBase + (long)pointer)),
-                    prefix,
-                    prefix.Length,
-                    out IntPtr prefixBytesRead);
-
-                if (!prefixReadOk || prefixBytesRead.ToInt64() != 5)
+                if (pointer < EeRamSize &&
+                    pointer <= EeRamSize - targetReadSize)
                 {
-                    Append("参照先の先頭5バイトを読み取れません。");
+                    byte[] prefix = new byte[5];
+
+                    bool prefixReadOk = ReadProcessMemory(
+                        process,
+                        new IntPtr(checked(eeBase + (long)pointer)),
+                        prefix,
+                        prefix.Length,
+                        out IntPtr prefixBytesRead);
+
+                    if (!prefixReadOk ||
+                        prefixBytesRead.ToInt64() != prefix.Length)
+                    {
+                        Append("無効: 参照先の先頭5バイトを読み取れません。");
+                        Append(
+                            "読み取りバイト数=" +
+                            prefixBytesRead.ToInt64());
+
+                        invalidStreak++;
+                    }
+
+                    if (prefixReadOk &&
+                        prefixBytesRead.ToInt64() == prefix.Length)
+                    {
+                        bool validItemPrefix =
+                            prefix[0] == 0x69 &&
+                            prefix[1] == 0x74 &&
+                            prefix[2] == 0x65 &&
+                            prefix[3] == 0x6D &&
+                            prefix[4] == 0x5F;
+
+                        if (!validItemPrefix)
+                        {
+                            Append("無効: item_文字列ではありません。");
+                            Append(
+                                "先頭5バイト=" +
+                                BitConverter.ToString(prefix));
+
+                            invalidStreak++;
+                        }
+
+                        if (validItemPrefix)
+                        {
+                            byte[] targetBytes = new byte[targetReadSize];
+
+                            bool targetReadOk = ReadProcessMemory(
+                                process,
+                                new IntPtr(checked(eeBase + (long)pointer)),
+                                targetBytes,
+                                targetBytes.Length,
+                                out IntPtr targetBytesRead);
+
+                            long targetActual = targetBytesRead.ToInt64();
+
+                            if (!targetReadOk ||
+                                targetActual != targetBytes.Length)
+                            {
+                                Append("無効: 参照先48バイトの読み取りに失敗しました。");
+                                Append("Read=" + targetActual);
+                                invalidStreak++;
+                            }
+
+                            if (targetReadOk &&
+                                targetActual == targetBytes.Length)
+                            {
+                                invalidStreak = 0;
+
+                                int stringLength = Array.IndexOf(
+                                    targetBytes,
+                                    (byte)0);
+
+                                if (stringLength < 0)
+                                {
+                                    stringLength = targetBytes.Length;
+                                }
+
+                                byte[] stringBytes = new byte[stringLength];
+
+                                Buffer.BlockCopy(
+                                    targetBytes,
+                                    0,
+                                    stringBytes,
+                                    0,
+                                    stringLength);
+
+                                Append(
+                                    "参照先=EE+0x" +
+                                    pointer.ToString("X8"));
+
+                                Append(
+                                    "文字列バイト=" +
+                                    BitConverter.ToString(stringBytes));
+
+                                Append(
+                                    "ASCII=" +
+                                    Encoding.ASCII.GetString(stringBytes));
+
+                                Append(
+                                    "CP932=" +
+                                    cp932.GetString(stringBytes));
+
+                                Append(
+                                    "参照先48バイト=" +
+                                    BitConverter.ToString(targetBytes));
+                            }
+                        }
+                    }
+                }
+
+                Append("連続無効件数=" + invalidStreak);
+
+                if (invalidStreak >= invalidLimit)
+                {
+                    stopReason = "無効なポインタが3件連続";
+                    Append("停止: " + stopReason);
                     break;
                 }
+            }
 
-                bool validItemPrefix =
-                    prefix[0] == 0x69 &&
-                    prefix[1] == 0x74 &&
-                    prefix[2] == 0x65 &&
-                    prefix[3] == 0x6D &&
-                    prefix[4] == 0x5F;
+            Append("");
+            Append("===== ポインタ配列の診断集計 =====");
+            Append("処理件数=" + processedCount);
+            Append("最後に処理した配列位置=EE+0x" +
+                (tableOffset + (processedCount - 1) * entrySize).ToString("X8"));
+            Append("停止理由=" + stopReason);
 
-                if (!validItemPrefix)
-                {
-                    Append("item_文字列ではないポインタを検出しました。");
-                    Append("この位置を配列終端候補とします。");
-                    break;
-                }
-
-                byte[] targetBytes = new byte[targetReadSize];
-
-                bool targetReadOk = ReadProcessMemory(
-                    process,
-                    new IntPtr(checked(eeBase + (long)pointer)),
-                    targetBytes,
-                    targetBytes.Length,
-                    out IntPtr targetBytesRead);
-
-                long targetActual = targetBytesRead.ToInt64();
-
-                if (!targetReadOk || targetActual != targetBytes.Length)
-                {
-                    Append("参照先の読み取りに失敗しました。");
-                    Append("Read=" + targetActual);
-                    continue;
-                }
-
-                int stringLength = Array.IndexOf(
-                    targetBytes,
-                    (byte)0);
-
-                if (stringLength < 0)
-                {
-                    stringLength = targetBytes.Length;
-                }
-
-                byte[] stringBytes = new byte[stringLength];
-
-                Buffer.BlockCopy(
-                    targetBytes,
-                    0,
-                    stringBytes,
-                    0,
-                    stringLength);
-
-                Append(
-                    "参照先=EE+0x" +
-                    pointer.ToString("X8"));
-
-                Append(
-                    "文字列バイト=" +
-                    BitConverter.ToString(stringBytes));
-
-                Append(
-                    "ASCII=" +
-                    Encoding.ASCII.GetString(stringBytes));
-
-                Append(
-                    "CP932=" +
-                    cp932.GetString(stringBytes));
-
-                Append(
-                    "参照先48バイト=" +
-                    BitConverter.ToString(targetBytes));
+            if (processedCount == entryCount)
+            {
+                Append("注意: 256件まで読み取りました。配列終端は未確定です。");
             }
 
             Append("");
             Append("===== ポインタ配列の読み取り終了 =====");
         }
-
         private static void FindPattern(
             byte[] source,
             byte[] pattern,
