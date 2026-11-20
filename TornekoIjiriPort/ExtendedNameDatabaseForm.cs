@@ -15,6 +15,11 @@ internal sealed class ExtendedNameDatabaseEntry
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
     public string Encoding { get; set; } = "CP932";
+
+    public override string ToString()
+    {
+        return Id + "  →  " + Name;
+    }
 }
 
 internal sealed class ExtendedNameDatabaseForm : Form
