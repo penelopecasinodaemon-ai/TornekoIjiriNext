@@ -144,35 +144,62 @@ internal sealed class ExtendedItemNameRegistryForm : Form
 
         if (File.Exists(_filePath))
         {
-            string json = File.ReadAllText(_filePath, Encoding.UTF8);
-            List<OverrideEntry>? loaded =
-                JsonSerializer.Deserialize<List<OverrideEntry>>(json);
-
-            if (loaded != null)
+            try
             {
-                foreach (OverrideEntry entry in loaded)
+                string json = File.ReadAllText(_filePath, Encoding.UTF8);
+                List<OverrideEntry>? loaded =
+                    JsonSerializer.Deserialize<List<OverrideEntry>>(json);
+
+                if (loaded != null)
                 {
-                    if (string.IsNullOrWhiteSpace(entry.Id))
-                        continue;
+                    foreach (OverrideEntry entry in loaded)
+                    {
+                        if (string.IsNullOrWhiteSpace(entry.Id))
+                            continue;
 
-                    if (string.IsNullOrWhiteSpace(entry.Name))
-                        continue;
+                        if (string.IsNullOrWhiteSpace(entry.Name))
+                            continue;
 
-                    if (_entries.Any(x => string.Equals(
-                        x.Id,
-                        entry.Id,
-                        StringComparison.OrdinalIgnoreCase)))
-                        continue;
+                        if (_entries.Any(x => string.Equals(
+                            x.Id,
+                            entry.Id,
+                            StringComparison.OrdinalIgnoreCase)))
+                            continue;
 
-                    _entries.Add(entry);
+                        _entries.Add(entry);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                _status.Text = "データベース読込エラー: " + ex.Message;
+                MessageBox.Show(
+                    this,
+                    "拡張名前データベースを読み込めませんでした。\\r\\n" +
+                    "元ファイルは削除・変更していません。\\r\\n\\r\\n" +
+                    ex.Message,
+                    "拡張名前DB読込エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                RefreshList();
+                return;
+            }
+        }
+
+        if (!File.Exists(_filePath) && _entries.Count == 0)
+        {
+            _entries.Add(new OverrideEntry
+            {
+                Id = "item_164",
+                Name = "スライムの指輪"
+            });
+            SaveEntries();
         }
 
         RefreshList();
         _status.Text =
             "登録数: " + _entries.Count +
-            " 件\r\n保存先: " + _filePath;
+            " 件\\r\\n保存先: " + _filePath;
     }
 
     private void RefreshList()
@@ -342,9 +369,6 @@ internal sealed class ExtendedItemNameRegistryForm : Form
             json,
             new UTF8Encoding(false));
 
-        if (File.Exists(_filePath))
-            File.Delete(_filePath);
-
-        File.Move(temporaryPath, _filePath);
+        File.Move(temporaryPath, _filePath, true);
     }
 }
