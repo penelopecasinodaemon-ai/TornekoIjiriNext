@@ -1,0 +1,299 @@
+﻿Torneko Resource Candidate Reference Scan V55
+Date: 2026-11-21 15:41:02
+Read only: True
+PID: 6708
+RAM size: 0x2000000
+
+===== SCAN SUMMARY =====
+Scan positions: 33554429
+Scan step: 1 byte
+
+===== Candidate_A =====
+Target range: 0x00139D00-0x0013C000
+Reference count: 935
+4-byte aligned source count: 32
+Unaligned source count: 903
+
+--- Reference samples ---
+Source=0x0000103F Target=0x0013B200 Alignment=3
+Source=0x001789BF Target=0x0013A081 Alignment=3
+Source=0x001789C7 Target=0x0013A481 Alignment=3
+Source=0x001789CF Target=0x0013A881 Alignment=3
+Source=0x001789D7 Target=0x0013AC81 Alignment=3
+Source=0x001789DF Target=0x0013B081 Alignment=3
+Source=0x001789E7 Target=0x0013B481 Alignment=3
+Source=0x001789EF Target=0x0013B881 Alignment=3
+Source=0x001789F7 Target=0x0013BC81 Alignment=3
+Source=0x0020207E Target=0x0013A782 Alignment=2
+Source=0x002174F6 Target=0x0013AF80 Alignment=2
+Source=0x002364F6 Target=0x0013A7A3 Alignment=2
+Source=0x00236966 Target=0x0013A7A3 Alignment=2
+Source=0x002396CE Target=0x0013A083 Alignment=2
+Source=0x0024293A Target=0x0013AFA2 Alignment=2
+Source=0x0024E646 Target=0x0013AC62 Alignment=2
+Source=0x00257088 Target=0x0013A040 Alignment=0
+Source=0x002570E6 Target=0x0013A244 Alignment=2
+Source=0x002743EA Target=0x0013A3A0 Alignment=2
+Source=0x00274F7A Target=0x0013A200 Alignment=2
+Source=0x00275B6A Target=0x0013A044 Alignment=2
+Source=0x00277EBC Target=0x0013B900 Alignment=0
+Source=0x0027C806 Target=0x0013A483 Alignment=2
+Source=0x0027F06A Target=0x0013AE22 Alignment=2
+Source=0x002831AA Target=0x0013A380 Alignment=2
+Source=0x0028BF0A Target=0x0013A3A3 Alignment=2
+Source=0x0029A964 Target=0x0013A9C3 Alignment=0
+Source=0x002AA6BE Target=0x0013A202 Alignment=2
+Source=0x002AA74A Target=0x0013A242 Alignment=2
+Source=0x002ADE0A Target=0x0013AF93 Alignment=2
+Source=0x002B1012 Target=0x0013AFA0 Alignment=2
+Source=0x002B300E Target=0x0013AFA3 Alignment=2
+Source=0x002B648E Target=0x0013AFA0 Alignment=2
+Source=0x002CB16E Target=0x0013A7A3 Alignment=2
+Source=0x002CF7D6 Target=0x0013A380 Alignment=2
+Source=0x002D3F2A Target=0x0013AFA3 Alignment=2
+Source=0x002E5998 Target=0x0013A840 Alignment=0
+Source=0x002FBDFA Target=0x0013A622 Alignment=2
+Source=0x002FE954 Target=0x0013A080 Alignment=0
+Source=0x002FF758 Target=0x0013A8C0 Alignment=0
+Source=0x002FFC42 Target=0x0013A222 Alignment=2
+Source=0x00311D1C Target=0x0013A880 Alignment=0
+Source=0x0031B92E Target=0x0013AFA0 Alignment=2
+Source=0x0031C5CC Target=0x0013B880 Alignment=0
+Source=0x0031D650 Target=0x0013A040 Alignment=0
+Source=0x0032A224 Target=0x0013B040 Alignment=0
+Source=0x0032A22C Target=0x0013B040 Alignment=0
+Source=0x0033F68A Target=0x0013AE60 Alignment=2
+Source=0x0034DAB2 Target=0x0013A602 Alignment=2
+Source=0x0060314F Target=0x0013A600 Alignment=3
+Source=0x006E5CDB Target=0x0013B900 Alignment=3
+Source=0x006E6083 Target=0x0013AC01 Alignment=3
+Source=0x006E60BB Target=0x0013AC01 Alignment=3
+Source=0x006E60F3 Target=0x0013AC01 Alignment=3
+Source=0x006E612B Target=0x0013AC01 Alignment=3
+Source=0x006E8803 Target=0x0013B701 Alignment=3
+Source=0x006E8A43 Target=0x00139E01 Alignment=3
+Source=0x006E8FC7 Target=0x0013B401 Alignment=3
+Source=0x006E8FEF Target=0x0013B401 Alignment=3
+Source=0x008F08B4 Target=0x0013AF10 Alignment=0
+Source=0x008F322F Target=0x0013BA00 Alignment=3
+Source=0x00AABAE3 Target=0x0013B501 Alignment=3
+Source=0x00AAEAE3 Target=0x0013B501 Alignment=3
+Source=0x00AC6937 Target=0x0013BF01 Alignment=3
+Source=0x00ADE863 Target=0x0013ADFF Alignment=3
+Source=0x00AEDCF7 Target=0x0013A501 Alignment=3
+Source=0x00AEDD7B Target=0x0013A501 Alignment=3
+Source=0x00AEDDFF Target=0x0013A501 Alignment=3
+Source=0x00B1260F Target=0x0013A60C Alignment=3
+Source=0x00B15EBF Target=0x0013B401 Alignment=3
+Source=0x00B16397 Target=0x0013B401 Alignment=3
+Source=0x00B16763 Target=0x0013AB01 Alignment=3
+Source=0x00B18D6F Target=0x0013BF02 Alignment=3
+Source=0x00B2163B Target=0x0013B300 Alignment=3
+Source=0x00B2166B Target=0x0013B3FF Alignment=3
+Source=0x00B2246B Target=0x00139F00 Alignment=3
+Source=0x00B27533 Target=0x00139F01 Alignment=3
+Source=0x00B27B6B Target=0x00139EFF Alignment=3
+Source=0x00B3A797 Target=0x0013AF01 Alignment=3
+Source=0x00B71BD7 Target=0x0013A200 Alignment=3
+Source=0x00B71BEB Target=0x0013B901 Alignment=3
+Source=0x00B72257 Target=0x0013A801 Alignment=3
+Source=0x00B7225B Target=0x0013A201 Alignment=3
+Source=0x00B724A3 Target=0x0013AD01 Alignment=3
+Source=0x00B755F3 Target=0x0013AB01 Alignment=3
+Source=0x00B76BBB Target=0x0013AA00 Alignment=3
+Source=0x00B776B3 Target=0x0013A701 Alignment=3
+Source=0x00B77717 Target=0x0013A001 Alignment=3
+Source=0x00B77727 Target=0x0013A801 Alignment=3
+Source=0x00B7835B Target=0x0013A900 Alignment=3
+Source=0x00B7836B Target=0x0013A201 Alignment=3
+Source=0x00B7C177 Target=0x0013BE01 Alignment=3
+Source=0x00B8232F Target=0x00139E01 Alignment=3
+Source=0x00B82453 Target=0x0013B103 Alignment=3
+Source=0x00B8769B Target=0x0013AE02 Alignment=3
+Source=0x00B87A17 Target=0x0013AE02 Alignment=3
+Source=0x00B886D3 Target=0x0013AE02 Alignment=3
+Source=0x00B88A3B Target=0x0013AE02 Alignment=3
+Source=0x00B88C47 Target=0x0013AA01 Alignment=3
+Source=0x00B8D4FF Target=0x0013B001 Alignment=3
+
+===== Candidate_B =====
+Target range: 0x0017B3B0-0x00180000
+Reference count: 1536
+4-byte aligned source count: 32
+Unaligned source count: 1504
+
+--- Reference samples ---
+Source=0x00149E53 Target=0x0017BF10 Alignment=3
+Source=0x001655E6 Target=0x0017BC20 Alignment=2
+Source=0x00201A5E Target=0x0017B487 Alignment=2
+Source=0x002027FA Target=0x0017B7AC Alignment=2
+Source=0x00205420 Target=0x0017F040 Alignment=0
+Source=0x002054A8 Target=0x0017F040 Alignment=0
+Source=0x002054B0 Target=0x0017F040 Alignment=0
+Source=0x00209076 Target=0x0017B60A Alignment=2
+Source=0x0020CB06 Target=0x0017B609 Alignment=2
+Source=0x00219292 Target=0x0017B4AA Alignment=2
+Source=0x00219326 Target=0x0017B4AA Alignment=2
+Source=0x0021B056 Target=0x0017B467 Alignment=2
+Source=0x0021BBD1 Target=0x0017C000 Alignment=1
+Source=0x0022067A Target=0x0017E7A0 Alignment=2
+Source=0x0022B138 Target=0x0017F0C0 Alignment=0
+Source=0x0022C076 Target=0x0017C420 Alignment=2
+Source=0x0022F9D2 Target=0x0017FFB0 Alignment=2
+Source=0x0023D48A Target=0x0017DFB0 Alignment=2
+Source=0x0023E4D5 Target=0x0017C000 Alignment=1
+Source=0x00241272 Target=0x0017B6E5 Alignment=2
+Source=0x0024A172 Target=0x0017B465 Alignment=2
+Source=0x0024A30A Target=0x0017B465 Alignment=2
+Source=0x0024E156 Target=0x0017B486 Alignment=2
+Source=0x00256A0A Target=0x0017B486 Alignment=2
+Source=0x00256AA6 Target=0x0017B483 Alignment=2
+Source=0x00256B9A Target=0x0017B486 Alignment=2
+Source=0x00256C36 Target=0x0017B483 Alignment=2
+Source=0x00258BEE Target=0x0017B4C7 Alignment=2
+Source=0x00258C86 Target=0x0017B4A6 Alignment=2
+Source=0x00258E1E Target=0x0017B4C7 Alignment=2
+Source=0x00258EB6 Target=0x0017B4A6 Alignment=2
+Source=0x0025911E Target=0x0017B4C7 Alignment=2
+Source=0x002591B6 Target=0x0017B486 Alignment=2
+Source=0x002592F6 Target=0x0017B4A4 Alignment=2
+Source=0x002593EE Target=0x0017B485 Alignment=2
+Source=0x002595F6 Target=0x0017B4EC Alignment=2
+Source=0x0025969A Target=0x0017B4A8 Alignment=2
+Source=0x0025973E Target=0x0017B4AE Alignment=2
+Source=0x0025E7D6 Target=0x0017B488 Alignment=2
+Source=0x002603EE Target=0x0017B487 Alignment=2
+Source=0x0026E49A Target=0x0017FFB2 Alignment=2
+Source=0x00270065 Target=0x0017C000 Alignment=1
+Source=0x00282C7A Target=0x0017B489 Alignment=2
+Source=0x00282DF2 Target=0x0017B468 Alignment=2
+Source=0x002981F2 Target=0x0017B4E4 Alignment=2
+Source=0x00298282 Target=0x0017B4E9 Alignment=2
+Source=0x002984EA Target=0x0017B6C8 Alignment=2
+Source=0x00299826 Target=0x0017B446 Alignment=2
+Source=0x0029A796 Target=0x0017DFB0 Alignment=2
+Source=0x0029C5FE Target=0x0017B488 Alignment=2
+Source=0x0029C6A6 Target=0x0017B487 Alignment=2
+Source=0x0029E8CE Target=0x0017B447 Alignment=2
+Source=0x0029E9B2 Target=0x0017B444 Alignment=2
+Source=0x0029F64A Target=0x0017B7A4 Alignment=2
+Source=0x0029F6C2 Target=0x0017B624 Alignment=2
+Source=0x0029F73A Target=0x0017B604 Alignment=2
+Source=0x0029FEFE Target=0x0017DFBF Alignment=2
+Source=0x002A260E Target=0x0017B783 Alignment=2
+Source=0x002A29D6 Target=0x0017B486 Alignment=2
+Source=0x002A2A9A Target=0x0017B487 Alignment=2
+Source=0x002A2FBE Target=0x0017B44C Alignment=2
+Source=0x002A3382 Target=0x0017B466 Alignment=2
+Source=0x002A340A Target=0x0017B466 Alignment=2
+Source=0x002A3766 Target=0x0017B48A Alignment=2
+Source=0x002A38AA Target=0x0017B48A Alignment=2
+Source=0x002A3936 Target=0x0017B489 Alignment=2
+Source=0x002A39AE Target=0x0017B486 Alignment=2
+Source=0x002A3ADE Target=0x0017B466 Alignment=2
+Source=0x002A3BA2 Target=0x0017B486 Alignment=2
+Source=0x002A4226 Target=0x0017B462 Alignment=2
+Source=0x002A4482 Target=0x0017B48B Alignment=2
+Source=0x002A450A Target=0x0017B48B Alignment=2
+Source=0x002A48B2 Target=0x0017B486 Alignment=2
+Source=0x002A49AE Target=0x0017B48A Alignment=2
+Source=0x002A4A3A Target=0x0017B482 Alignment=2
+Source=0x002A4ABA Target=0x0017B4CB Alignment=2
+Source=0x002A4BBA Target=0x0017B448 Alignment=2
+Source=0x002A5CFA Target=0x0017B645 Alignment=2
+Source=0x002AED7E Target=0x0017DFB0 Alignment=2
+Source=0x002B0E4E Target=0x0017B48B Alignment=2
+Source=0x002B36BE Target=0x0017B443 Alignment=2
+Source=0x002BE01E Target=0x0017B444 Alignment=2
+Source=0x002BE0E2 Target=0x0017B444 Alignment=2
+Source=0x002C2C3E Target=0x0017B7A6 Alignment=2
+Source=0x002E8C1A Target=0x0017B466 Alignment=2
+Source=0x002E9372 Target=0x0017B486 Alignment=2
+Source=0x002E9426 Target=0x0017B486 Alignment=2
+Source=0x002E94DA Target=0x0017B4E5 Alignment=2
+Source=0x002E9D2A Target=0x0017B4C4 Alignment=2
+Source=0x002EAECA Target=0x0017FFA2 Alignment=2
+Source=0x002EBC42 Target=0x0017B605 Alignment=2
+Source=0x002EBCFA Target=0x0017B605 Alignment=2
+Source=0x002EBDB2 Target=0x0017B605 Alignment=2
+Source=0x002EBE6A Target=0x0017B605 Alignment=2
+Source=0x002EBF22 Target=0x0017B605 Alignment=2
+Source=0x002EBFDA Target=0x0017B605 Alignment=2
+Source=0x002EC0D2 Target=0x0017B605 Alignment=2
+Source=0x002EC18A Target=0x0017B605 Alignment=2
+Source=0x002EC242 Target=0x0017B605 Alignment=2
+Source=0x002EC2FA Target=0x0017B605 Alignment=2
+
+===== BOUNDARY VALUE SCAN =====
+Target: 0x00139CFC
+Reference count: 0
+
+Target: 0x00139D00
+Reference count: 0
+
+Target: 0x0013C000
+Reference count: 23
+  Source=0x002111D1 Alignment=1
+  Source=0x0026FC21 Alignment=1
+  Source=0x00294E7D Alignment=1
+  Source=0x002BEFED Alignment=1
+  Source=0x00927DF8 Alignment=0
+  Source=0x01320D76 Alignment=2
+  Source=0x01320D7E Alignment=2
+  Source=0x013227A6 Alignment=2
+  Source=0x013227AE Alignment=2
+  Source=0x013227BE Alignment=2
+  Source=0x01322D8E Alignment=2
+  Source=0x01322D96 Alignment=2
+  Source=0x0132323E Alignment=2
+  Source=0x01323246 Alignment=2
+  Source=0x01323256 Alignment=2
+  Source=0x01323746 Alignment=2
+  Source=0x01323CA6 Alignment=2
+  Source=0x01323CAE Alignment=2
+  Source=0x01323CCE Alignment=2
+  Source=0x01324CAE Alignment=2
+  Source=0x01324CB6 Alignment=2
+  Source=0x01C1D7E3 Alignment=3
+  Source=0x01C45CE3 Alignment=3
+
+Target: 0x0017B3AB
+Reference count: 0
+
+Target: 0x0017B3B0
+Reference count: 0
+
+Target: 0x00180000
+Reference count: 613
+  Source=0x00000326 Alignment=2
+  Source=0x00000372 Alignment=2
+  Source=0x00000486 Alignment=2
+  Source=0x000005CA Alignment=2
+  Source=0x000006B2 Alignment=2
+  Source=0x00002876 Alignment=2
+  Source=0x00002FBA Alignment=2
+  Source=0x00003006 Alignment=2
+  Source=0x0000302A Alignment=2
+  Source=0x00003086 Alignment=2
+  Source=0x000030AA Alignment=2
+  Source=0x000030EE Alignment=2
+  Source=0x0000312E Alignment=2
+  Source=0x00003186 Alignment=2
+  Source=0x000031AA Alignment=2
+  Source=0x00003206 Alignment=2
+  Source=0x0000322A Alignment=2
+  Source=0x00003286 Alignment=2
+  Source=0x000032AA Alignment=2
+  Source=0x000032FE Alignment=2
+  Source=0x00003336 Alignment=2
+  Source=0x00003386 Alignment=2
+  Source=0x000033AA Alignment=2
+  Source=0x00003406 Alignment=2
+  Source=0x0000342A Alignment=2
+  Source=0x0000348E Alignment=2
+  Source=0x000034AE Alignment=2
+  Source=0x00003506 Alignment=2
+  Source=0x0000352A Alignment=2
+  Source=0x00003586 Alignment=2
+
+===== END =====
