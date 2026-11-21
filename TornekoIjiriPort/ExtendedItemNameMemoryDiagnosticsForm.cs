@@ -396,7 +396,10 @@ namespace TornekoIjiriPort
             {
                 [0x00100758] = "テーブル先頭",
                 [0x00100798] = "item_164テーブル要素",
-                [0x0010079C] = "次のテーブル要素"
+                [0x0010079C] = "次のテーブル要素",
+                [0x00100CB4] = "最後から2番目の要素 item_000_e",
+                [0x00100CB8] = "最後の有効要素 item_000",
+                [0x00100CBC] = "終端直後の要素位置"
             };
 
             var hits = new Dictionary<uint, List<int>>();
@@ -717,7 +720,10 @@ namespace TornekoIjiriPort
             {
                 [0x0758] = "テーブル先頭",
                 [0x0798] = "item_164テーブル要素",
-                [0x079C] = "次のテーブル要素"
+                [0x079C] = "次のテーブル要素",
+                [0x0CB4] = "最後から2番目の要素 item_000_e",
+                [0x0CB8] = "最後の有効要素 item_000",
+                [0x0CBC] = "終端直後の要素位置"
             };
 
             byte[] ram = new byte[EeRamSize];
@@ -1035,7 +1041,7 @@ namespace TornekoIjiriPort
             Append("");
             Append("===== アイテム文字列ポインタ配列の内容 =====");
             Append("配列開始: EE+0x00100758");
-            Append("最大読み取り件数: 256ポインタ");
+            Append("最大読み取り件数: 512ポインタ");
             Append("停止条件: 無効なポインタが3件連続");
             Append("");
 
@@ -1228,7 +1234,7 @@ namespace TornekoIjiriPort
 
             if (processedCount == entryCount)
             {
-                Append("注意: 256件まで読み取りました。配列終端は未確定です。");
+                Append("注意: 512件まで読み取りました。配列終端は未確定です。");
             }
 
             Append("");

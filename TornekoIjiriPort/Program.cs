@@ -4782,6 +4782,20 @@ buttons.Controls.Add(UiFactory.Button(
                 extendedNameForm.ShowDialog(this);
             }));
         buttons.Controls.Add(UiFactory.Button(
+            "アイテム名表示・メモリ差分診断", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var liveSnapshotForm = new ExtendedItemNameLiveSnapshotForm(
+                    Pcsx2LiveSession.ProcessId);
+                liveSnapshotForm.ShowDialog(this);
+            }));
+        buttons.Controls.Add(UiFactory.Button(
             "拡張名前メモリ診断（読み取り専用）", (_, _) =>
             {
                 if (!Pcsx2LiveSession.IsConnected ||
