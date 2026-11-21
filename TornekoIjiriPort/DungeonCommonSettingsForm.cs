@@ -1510,6 +1510,26 @@ internal sealed class DungeonCommonSettingsForm : Form
         const long OriginalDescriptionRecordOffset = 0x00105427L;
         const long OriginalNameRecordOffset = 0x00105441L;
 
+        long[] PriceRecordOffsets =
+        {
+            0x00650354L,
+            0x00650594L,
+            0x006507D4L,
+            0x00650A14L
+        };
+
+        byte[] expectedPriceData =
+        {
+            0x88, 0x13, 0x00, 0xC4,
+            0x09, 0x00, 0x03, 0x05
+        };
+
+        byte[] newPriceData =
+        {
+            0x98, 0x3A, 0x00, 0x4C,
+            0x1D, 0x00, 0x03, 0x05
+        };
+
         string newName = "スライムの指輪";
 
         string descriptionText =
@@ -1526,7 +1546,10 @@ internal sealed class DungeonCommonSettingsForm : Form
             descriptionText.Replace("\r", "\r\n") + "\r\n\r\n" +
             "説明文と名前のリソースレコードを新しい領域へ移設します。\r\n" +
             "元のレコードは上書きしません。\r\n\r\n" +
-            "PCSX2のメモリを書き換えます。実行しますか？",
+            "価格変更: 今回は対象外です。\r\n" +
+            "" +
+            "価格データ4か所も変更します。\r\n\r\n" +
+            "先にPCSX2を一時停止してください。停止中に実行しますか？",
             "スライムの指輪への変更",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Warning) != DialogResult.Yes)
@@ -1793,11 +1816,16 @@ internal sealed class DungeonCommonSettingsForm : Form
                 expectedNamePointer));
 
             // ------------------------------------------------
+            // Slime Ring price records
+            // ------------------------------------------------
+
+
+            // ------------------------------------------------
             // Preflight verification
             // ------------------------------------------------
 
             _itemStatus.Text =
-                "4か所の書き込み先を事前照合しています...";
+                "8か所の書き込み先を事前照合しています...";
 
             foreach (MemoryChange change in changes)
             {
@@ -1868,6 +1896,7 @@ internal sealed class DungeonCommonSettingsForm : Form
                 NameIndexOffset,
                 BitConverter.GetBytes((uint)NameRecordOffset));
 
+
             _itemStatus.Text =
                 "スライムの指輪への変更が完了しました。";
 
@@ -1880,8 +1909,14 @@ internal sealed class DungeonCommonSettingsForm : Form
                 "説明文レコード: EE+0x00139D00\r\n" +
                 "名前レコード: EE+0x00139D50\r\n" +
                 "説明文索引: EE+0x00100794\r\n" +
-                "名前索引: EE+0x00100798\r\n\r\n" +
-                "4か所の書き込みと読み戻し検証に成功しました。\r\n" +
+                "名前索引: EE+0x00100798\r\n" +
+                "価格変更: 今回は対象外です。\r\n" +
+                "" +
+                "価格レコード: EE+0x00650354\r\n" +
+                "価格レコード: EE+0x00650594\r\n" +
+                "価格レコード: EE+0x006507D4\r\n" +
+                "価格レコード: EE+0x00650A14\r\n\r\n" +
+                "名前・説明文・索引の4か所の書き込みと読み戻し検証に成功しました。\r\n" +
                 "元のレコードは変更していません。\r\n" +
                 "保存対象への登録も完了しました。",
                 "スライムの指輪・変更成功",
