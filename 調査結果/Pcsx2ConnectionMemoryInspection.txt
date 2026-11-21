@@ -1,0 +1,3516 @@
+﻿===== CONNECTION AND MEMORY CLASS INSPECTION =====
+Date: 2026-11-21 17:03:54
+Root: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 41
+    private static extern IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr handle);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr process,
+        IntPtr address,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1190
+
+    private void ApplyRingUpgrade(bool yamabiko)
+    {
+        if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1254
+        {
+            _itemStatus.Text = "PCSX2のEE RAMを読み取っています...";
+
+            eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException("EE RAM基準アドレスを取得できません。");
+
+            const uint access = 0x0008 | 0x0010 | 0x0020 | 0x0400;
+
+            process = OpenProcess(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1255
+            _itemStatus.Text = "PCSX2のEE RAMを読み取っています...";
+
+            eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException("EE RAM基準アドレスを取得できません。");
+
+            const uint access = 0x0008 | 0x0010 | 0x0020 | 0x0400;
+
+            process = OpenProcess(
+                access,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1265
+            process = OpenProcess(
+                access,
+                false,
+                Pcsx2LiveSession.ProcessId);
+
+            if (process == IntPtr.Zero)
+                throw new IOException(
+                    "PCSX2プロセスを開けません。\r\nWin32エラー: " +
+                    Marshal.GetLastWin32Error());
+
+            const int EeRamSize = 0x02000000;
+            byte[] ram = ReadMemory(process, eeBase, EeRamSize);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1489
+
+    private void ApplySlimeRing()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1490
+    private void ApplySlimeRing()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1552
+            _itemStatus.Text =
+                "PCSX2のEE RAMを確認しています...";
+
+            eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException(
+                    "EE RAM基準アドレスを取得できません。");
+
+            const uint access =
+                0x0008 |
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1553
+                "PCSX2のEE RAMを確認しています...";
+
+            eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException(
+                    "EE RAM基準アドレスを取得できません。");
+
+            const uint access =
+                0x0008 |
+                0x0010 |
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1568
+            process = OpenProcess(
+                access,
+                false,
+                Pcsx2LiveSession.ProcessId);
+
+            if (process == IntPtr.Zero)
+                throw new IOException(
+                    "PCSX2プロセスを開けません。\r\nWin32エラー: " +
+                    Marshal.GetLastWin32Error());
+
+            // ------------------------------------------------
+            // Verify original resource IDs
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1953
+    }
+    private void ApplyHayabusa()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1954
+    private void ApplyHayabusa()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1991
+                "PCSX2のメモリを確認しています...";
+
+            long eeBase =
+                Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                    Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException(
+                    "PCSX2のEE RAM基準アドレスを取得できません。");
+
+            const uint access =
+                0x0008 |
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 1992
+
+            long eeBase =
+                Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                    Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException(
+                    "PCSX2のEE RAM基準アドレスを取得できません。");
+
+            const uint access =
+                0x0008 |
+                0x0010 |
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+LINE: 2007
+            process = OpenProcess(
+                access,
+                false,
+                Pcsx2LiveSession.ProcessId);
+
+            if (process == IntPtr.Zero)
+            {
+                throw new IOException(
+                    "PCSX2プロセスを開けません。\r\nWin32エラー: " +
+                    Marshal.GetLastWin32Error());
+            }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 24
+    private static System.Windows.Forms.Timer? _timer;
+    private static Label? _statusLabel;
+
+    private static int _processId;
+    private static uint? _originalInstruction;
+    private static bool _patchApplied;
+    private static bool _exitHooked;
+
+    private static string StatePath
+    {
+        get
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 50
+
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0)
+            {
+                throw new InvalidOperationException(
+                    "先にPCSX2へ接続してください。");
+            }
+
+            int pid = Pcsx2LiveSession.ProcessId;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 51
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0)
+            {
+                throw new InvalidOperationException(
+                    "先にPCSX2へ接続してください。");
+            }
+
+            int pid = Pcsx2LiveSession.ProcessId;
+
+            if (_timer != null &&
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 57
+                    "先にPCSX2へ接続してください。");
+            }
+
+            int pid = Pcsx2LiveSession.ProcessId;
+
+            if (_timer != null &&
+                _timer.Enabled &&
+                _processId == pid)
+            {
+                SetStatus(
+                    "はやぶさの爪の自動監視は既に動作中です。");
+                return;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 61
+
+            if (_timer != null &&
+                _timer.Enabled &&
+                _processId == pid)
+            {
+                SetStatus(
+                    "はやぶさの爪の自動監視は既に動作中です。");
+                return;
+            }
+
+            if (_patchApplied &&
+                _originalInstruction.HasValue)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 74
+                TryRestorePatch();
+            }
+
+            _processId = pid;
+
+            uint currentInstruction =
+                ReadPine32(AttackPatchAddress);
+
+            uint savedOriginal;
+
+            if (currentInstruction == AttackPatchValue)
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 161
+
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId != _processId)
+            {
+                SetStatus(
+                    "PCSX2の接続状態が変化しました。復元を試みています。");
+
+                TryRestorePatch();
+
+                _timer.Stop();
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 162
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId != _processId)
+            {
+                SetStatus(
+                    "PCSX2の接続状態が変化しました。復元を試みています。");
+
+                TryRestorePatch();
+
+                _timer.Stop();
+                return;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 198
+                    _originalInstruction.Value == AttackPatchValue)
+                {
+                    _originalInstruction = currentInstruction;
+                    SaveState(_processId, currentInstruction);
+                }
+
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+LINE: 261
+
+                _patchApplied = false;
+                _originalInstruction = currentInstruction;
+                SaveState(_processId, currentInstruction);
+
+                SetStatus(
+                    "適用先の命令が外部から変更されました。状態を再取得しました。");
+
+                return;
+            }
+
+            SetStatus(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 20
+    private const uint ProcessVmRead = 0x0010;
+    private const uint ProcessQueryInformation = 0x0400;
+
+    private readonly int _processId;
+    private readonly Button _captureAButton = new Button();
+    private readonly Button _captureBButton = new Button();
+    private readonly Button _compareButton = new Button();
+    private readonly Label _status = new Label();
+    private readonly TextBox _output = new TextBox();
+
+    private Snapshot? _snapshotA;
+    private Snapshot? _snapshotB;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 35
+    private static extern IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr process,
+        IntPtr address,
+        byte[] buffer,
+        int size,
+        out IntPtr bytesRead);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 55
+        public DateTime CapturedAt { get; init; }
+    }
+
+    public ExtendedItemNameLiveSnapshotForm(int processId)
+    {
+        _processId = processId;
+
+        Text = "アイテム名表示・EE RAM差分診断";
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new Size(850, 580);
+        Size = new Size(1120, 780);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 57
+
+    public ExtendedItemNameLiveSnapshotForm(int processId)
+    {
+        _processId = processId;
+
+        Text = "アイテム名表示・EE RAM差分診断";
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new Size(850, 580);
+        Size = new Size(1120, 780);
+
+        var root = new TableLayoutPanel
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 122
+        _status.Dock = DockStyle.Fill;
+        _status.AutoSize = true;
+        _status.Padding = new Padding(4, 4, 4, 8);
+        _status.Text = "PCSX2 PID: " + _processId + "\r\nA・B未取得";
+
+        _output.Dock = DockStyle.Fill;
+        _output.Multiline = true;
+        _output.ReadOnly = true;
+        _output.ScrollBars = ScrollBars.Both;
+        _output.WordWrap = false;
+        _output.Font = new Font("Consolas", 9F);
+        _output.HideSelection = false;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 169
+        try
+        {
+            Snapshot captured = await Task.Run(
+                () => CaptureEeRam(_processId));
+
+            if (slotA)
+            {
+                _snapshotA = captured;
+            }
+
+            if (!slotA)
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 182
+            }
+
+            Append(slotName + "取得完了");
+            Append("PID: " + _processId);
+            Append("EE RAM Base: 0x" + captured.EeBase.ToString("X"));
+            Append("サイズ: " + captured.Data.Length.ToString("N0") + " bytes");
+            Append("取得時刻: " + captured.CapturedAt.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Append("メモリ書き込み: なし");
+
+            _status.Text =
+                "A: " + (_snapshotA == null ? "未取得" : "取得済み") +
+                "　|　B: " + (_snapshotB == null ? "未取得" : "取得済み");
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 213
+        SetBusy(false);
+    }
+
+    private static Snapshot CaptureEeRam(int processId)
+    {
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        if (eeBase <= 0)
+            throw new InvalidOperationException("EE RAM Baseが無効です。");
+
+        IntPtr process = OpenProcess(
+            ProcessVmRead | ProcessQueryInformation,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 215
+
+    private static Snapshot CaptureEeRam(int processId)
+    {
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        if (eeBase <= 0)
+            throw new InvalidOperationException("EE RAM Baseが無効です。");
+
+        IntPtr process = OpenProcess(
+            ProcessVmRead | ProcessQueryInformation,
+            false,
+            processId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 223
+        IntPtr process = OpenProcess(
+            ProcessVmRead | ProcessQueryInformation,
+            false,
+            processId);
+
+        if (process == IntPtr.Zero)
+        {
+            throw new Win32Exception(
+                Marshal.GetLastWin32Error(),
+                "PCSX2プロセスを読み取り用に開けません。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameLiveSnapshotForm.cs
+LINE: 327
+            var report = new StringBuilder();
+
+            report.AppendLine("トルネコいじりネクスト アイテム名表示・EE RAM差分診断");
+            report.AppendLine("PID: " + _processId);
+            report.AppendLine("EE RAM Base: 0x" + _snapshotA.EeBase.ToString("X"));
+            report.AppendLine("A取得: " + _snapshotA.CapturedAt.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            report.AppendLine("B取得: " + _snapshotB.CapturedAt.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            report.AppendLine("RAMサイズ: 0x" + EeRamSize.ToString("X"));
+            report.AppendLine("書き込み: なし");
+            report.AppendLine();
+
+            AppendKnownRegion(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 21
+        private const uint Item163IdPointerValue = 0x0010546C;
+        private const uint Item163ExtendedIdPointerValue = 0x00105452;
+
+        private readonly int _processId;
+        private readonly TextBox _output;
+        private readonly Button _scanButton;
+
+        private const uint ProcessVmRead = 0x0010;
+        private const uint ProcessQueryInformation = 0x0400;
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr OpenProcess(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 32
+        private static extern IntPtr OpenProcess(
+            uint dwDesiredAccess,
+            bool bInheritHandle,
+            int dwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool ReadProcessMemory(
+            IntPtr hProcess,
+            IntPtr lpBaseAddress,
+            [Out] byte[] lpBuffer,
+            int nSize,
+            out IntPtr lpNumberOfBytesRead);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 45
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool CloseHandle(IntPtr hObject);
+
+        public ExtendedItemNameMemoryDiagnosticsForm(int processId)
+        {
+            _processId = processId;
+
+            Text = "拡張名前メモリ診断";
+            StartPosition = FormStartPosition.CenterParent;
+            MinimumSize = new Size(760, 520);
+            Size = new Size(1000, 720);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 47
+
+        public ExtendedItemNameMemoryDiagnosticsForm(int processId)
+        {
+            _processId = processId;
+
+            Text = "拡張名前メモリ診断";
+            StartPosition = FormStartPosition.CenterParent;
+            MinimumSize = new Size(760, 520);
+            Size = new Size(1000, 720);
+
+            var root = new TableLayoutPanel
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 122
+            try
+            {
+                Append("診断開始");
+                Append("PID: " + _processId);
+
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_processId);
+
+                if (eeBase <= 0)
+                {
+                    throw new InvalidOperationException(
+                        "EE RAMのベースアドレスを取得できませんでした。");
+                }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 124
+                Append("診断開始");
+                Append("PID: " + _processId);
+
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_processId);
+
+                if (eeBase <= 0)
+                {
+                    throw new InvalidOperationException(
+                        "EE RAMのベースアドレスを取得できませんでした。");
+                }
+
+                Append(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryDiagnosticsForm.cs
+LINE: 139
+                process = OpenProcess(
+                    ProcessVmRead | ProcessQueryInformation,
+                    false,
+                    _processId);
+
+                if (process == IntPtr.Zero)
+                {
+                    throw new InvalidOperationException(
+                        "OpenProcess失敗 Win32Error=" +
+                        Marshal.GetLastWin32Error());
+                }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryWriter.cs
+LINE: 43
+    private static extern IntPtr OpenProcess(
+        uint desiredAccess,
+        bool inheritHandle,
+        int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr handle);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr process,
+        IntPtr address,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryWriter.cs
+LINE: 163
+    }
+
+    public static string Apply(
+        int processId,
+        string id,
+        string name)
+    {
+        if (processId <= 0)
+            throw new InvalidOperationException(
+                "PCSX2 v2.8.2が接続されていません。");
+
+        if (!string.Equals(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryWriter.cs
+LINE: 167
+        string id,
+        string name)
+    {
+        if (processId <= 0)
+            throw new InvalidOperationException(
+                "PCSX2 v2.8.2が接続されていません。");
+
+        if (!string.Equals(
+            id,
+            "item_164",
+            StringComparison.OrdinalIgnoreCase))
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryWriter.cs
+LINE: 183
+        byte[] replacement = CreateReplacement(name);
+
+        long eeBase =
+            Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        if (eeBase <= 0)
+            throw new InvalidOperationException(
+                "EE RAMの先頭アドレスが無効です。");
+
+        long idAddress = checked(eeBase + ItemIdOffset);
+        long nameAddress = checked(eeBase + ItemNameOffset);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryWriter.cs
+LINE: 195
+        IntPtr handle = OpenProcess(
+            ProcessAccess,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new Win32Exception(
+                Marshal.GetLastWin32Error(),
+                "PCSX2を読み書き用に開けませんでした。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameMemoryWriter.cs
+LINE: 205
+        }
+
+        string key =
+            processId.ToString() + ":" + eeBase.ToString("X");
+
+        Exception operationError = null;
+        string result = "";
+
+        try
+        {
+            byte[] currentId = ReadExact(
+                handle,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameRegistryForm.cs
+LINE: 31
+    private readonly Label _status = new Label();
+    private readonly List<OverrideEntry> _entries = new List<OverrideEntry>();
+    private readonly string _filePath;
+    private readonly int _processId;
+
+    private static readonly Encoding Cp932 = CreateCp932();
+
+    private static Encoding CreateCp932()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        return Encoding.GetEncoding(
+            932,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameRegistryForm.cs
+LINE: 44
+            DecoderFallback.ExceptionFallback);
+    }
+
+    public ExtendedItemNameRegistryForm(int processId)
+    {
+        _processId = processId;
+
+        Text = "拡張名前データベース（試験版）";
+        Width = 760;
+        Height = 560;
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new System.Drawing.Size(620, 420);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameRegistryForm.cs
+LINE: 46
+
+    public ExtendedItemNameRegistryForm(int processId)
+    {
+        _processId = processId;
+
+        Text = "拡張名前データベース（試験版）";
+        Width = 760;
+        Height = 560;
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new System.Drawing.Size(620, 420);
+
+        string directory = Path.Combine(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameRegistryForm.cs
+LINE: 388
+        try
+        {
+            string result = ExtendedItemNameMemoryWriter.Apply(
+                _processId,
+                id,
+                name);
+
+            _status.Text = result;
+
+            MessageBox.Show(
+                this,
+                result + "\r\n\r\nゲーム内で表示を確認してください。",
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 68
+    private static extern IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        IntPtr handle);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr process,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 138
+        if (_polling)
+            return;
+
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            SetStatus("自動監視中。PCSX2接続待ちです。");
+            return;
+        }
+
+        _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 139
+            return;
+
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            SetStatus("自動監視中。PCSX2接続待ちです。");
+            return;
+        }
+
+        _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 146
+        }
+
+        _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
+
+        try
+        {
+            await System.Threading.Tasks.Task.Run(
+                () => Evaluate(processId));
+        }
+        catch (Exception ex)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 151
+        try
+        {
+            await System.Threading.Tasks.Task.Run(
+                () => Evaluate(processId));
+        }
+        catch (Exception ex)
+        {
+            WriteDiagnostic(
+                "POLL ERROR: " + ex.ToString());
+
+            SetStatus("自動監視エラー: " + ex.Message);
+        }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 166
+        }
+    }
+
+    private static void Evaluate(int processId)
+    {
+        const uint ExpectedOriginalInstruction = 0x0C0B3934u;
+
+        uint rawWeaponValue =
+            ReadPine32(EquippedWeaponAddress);
+
+        uint equippedWeapon =
+            rawWeaponValue & 0xFFFFu;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 183
+            equippedWeapon == HayabusaWeaponValue;
+
+        bool hasState = TryLoadState(
+            out int savedProcessId,
+            out uint originalInstruction);
+
+        if (isHayabusaEquipped)
+        {
+            if (currentInstruction == AttackPatchValue)
+            {
+                if (hasState && savedProcessId == processId)
+                {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 190
+        {
+            if (currentInstruction == AttackPatchValue)
+            {
+                if (hasState && savedProcessId == processId)
+                {
+                    SetStatus("はやぶさの爪を検出：二回攻撃パッチ適用中です。");
+                    return;
+                }
+
+                WriteDiagnostic(
+                    "PATCH CONFLICT: パッチ命令は存在しますが、対応する復元情報がありません。" +
+                    " PID=" + processId +
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 198
+
+                WriteDiagnostic(
+                    "PATCH CONFLICT: パッチ命令は存在しますが、対応する復元情報がありません。" +
+                    " PID=" + processId +
+                    " Instruction=0x" + currentInstruction.ToString("X8"));
+
+                SetStatus("パッチ状態が不明です。安全のため書き込みを停止しました。");
+                return;
+            }
+
+            if (hasState && savedProcessId != processId)
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 205
+                return;
+            }
+
+            if (hasState && savedProcessId != processId)
+            {
+                if (currentInstruction != ExpectedOriginalInstruction)
+                {
+                    WriteDiagnostic(
+                        "STALE STATE CONFLICT" +
+                        " PID=" + processId +
+                        " SavedPID=" + savedProcessId +
+                        " Instruction=0x" + currentInstruction.ToString("X8"));
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 211
+                {
+                    WriteDiagnostic(
+                        "STALE STATE CONFLICT" +
+                        " PID=" + processId +
+                        " SavedPID=" + savedProcessId +
+                        " Instruction=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus("以前の復元情報と命令が一致しません。書き込みを停止しました。");
+                    return;
+                }
+
+                DeleteState();
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 212
+                    WriteDiagnostic(
+                        "STALE STATE CONFLICT" +
+                        " PID=" + processId +
+                        " SavedPID=" + savedProcessId +
+                        " Instruction=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus("以前の復元情報と命令が一致しません。書き込みを停止しました。");
+                    return;
+                }
+
+                DeleteState();
+                hasState = false;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 223
+                hasState = false;
+            }
+
+            if (hasState && savedProcessId == processId)
+            {
+                if (currentInstruction != originalInstruction)
+                {
+                    WriteDiagnostic(
+                        "ORIGINAL INSTRUCTION MISMATCH" +
+                        " PID=" + processId +
+                        " Expected=0x" + originalInstruction.ToString("X8") +
+                        " Actual=0x" + currentInstruction.ToString("X8"));
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 229
+                {
+                    WriteDiagnostic(
+                        "ORIGINAL INSTRUCTION MISMATCH" +
+                        " PID=" + processId +
+                        " Expected=0x" + originalInstruction.ToString("X8") +
+                        " Actual=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus("元の命令が予想と異なります。安全のため停止しました。");
+                    return;
+                }
+            }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 244
+                {
+                    WriteDiagnostic(
+                        "UNEXPECTED ORIGINAL INSTRUCTION" +
+                        " PID=" + processId +
+                        " Instruction=0x" + currentInstruction.ToString("X8"));
+
+                    SetStatus(
+                        "パッチ対象命令が想定外です: 0x" +
+                        currentInstruction.ToString("X8"));
+
+                    return;
+                }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 257
+                originalInstruction = currentInstruction;
+
+                SaveState(
+                    processId,
+                    originalInstruction);
+            }
+
+            try
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 279
+
+                WriteDiagnostic(
+                    "APPLY SUCCESS" +
+                    " PID=" + processId +
+                    " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                    " Original=0x" + originalInstruction.ToString("X8") +
+                    " Applied=0x" + verify.ToString("X8"));
+
+                SetStatus("はやぶさの爪を検出：二回攻撃パッチ適用済みです。");
+            }
+            catch
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 289
+            catch
+            {
+                TryRestoreAfterWriteFailure(
+                    processId,
+                    originalInstruction);
+
+                uint afterFailure =
+                    ReadPine32(AttackPatchAddress);
+
+                if (afterFailure == originalInstruction)
+                    DeleteState();
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 306
+
+        if (equippedWeapon == AmbiguousAfterRecruitmentWeaponValue &&
+            hasState &&
+            savedProcessId == processId &&
+            currentInstruction == AttackPatchValue)
+        {
+            WriteDiagnostic(
+                "HOLD AMBIGUOUS WEAPON" +
+                " PID=" + processId +
+                " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                " Patch=0x" + currentInstruction.ToString("X8") +
+                " Reason=Recruitment-related equipment read mismatch");
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 311
+        {
+            WriteDiagnostic(
+                "HOLD AMBIGUOUS WEAPON" +
+                " PID=" + processId +
+                " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                " Patch=0x" + currentInstruction.ToString("X8") +
+                " Reason=Recruitment-related equipment read mismatch");
+
+            SetStatus(
+                "勧誘後の装備IDが不確定です。誤解除防止のため二回攻撃を維持しています。");
+
+            return;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 328
+            return;
+        }
+
+        if (savedProcessId != processId)
+        {
+            SetStatus("別のPCSX2プロセスの復元情報があります。");
+            return;
+        }
+
+        if (currentInstruction == AttackPatchValue)
+        {
+            WritePine32(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 354
+
+            WriteDiagnostic(
+                "RESTORE SUCCESS" +
+                " PID=" + processId +
+                " WeaponID=0x" + equippedWeapon.ToString("X4") +
+                " Restored=0x" + verify.ToString("X8"));
+
+            SetStatus("はやぶさの爪を解除：元の攻撃命令へ復元しました。");
+            return;
+        }
+
+        if (currentInstruction == originalInstruction)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 368
+
+            WriteDiagnostic(
+                "RESTORE ALREADY ORIGINAL" +
+                " PID=" + processId +
+                " Instruction=0x" + currentInstruction.ToString("X8"));
+
+            SetStatus("はやぶさの爪は未装備です。元の命令を確認しました。");
+            return;
+        }
+
+        WriteDiagnostic(
+            "RESTORE CONFLICT" +
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 377
+
+        WriteDiagnostic(
+            "RESTORE CONFLICT" +
+            " PID=" + processId +
+            " ExpectedPatch=0x" + AttackPatchValue.ToString("X8") +
+            " ExpectedOriginal=0x" + originalInstruction.ToString("X8") +
+            " Actual=0x" + currentInstruction.ToString("X8"));
+
+        SetStatus("復元対象の命令が想定外です。安全のため復元を停止しました。");
+    }
+    private static void TryRestoreAfterWriteFailure(
+        int processId,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 385
+        SetStatus("復元対象の命令が想定外です。安全のため復元を停止しました。");
+    }
+    private static void TryRestoreAfterWriteFailure(
+        int processId,
+        uint originalInstruction)
+    {
+        try
+        {
+            if (Pcsx2LiveSession.ProcessId != processId)
+                return;
+
+            uint current =
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 390
+    {
+        try
+        {
+            if (Pcsx2LiveSession.ProcessId != processId)
+                return;
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 415
+        }
+    }
+
+    private static string ReadItemName(int processId)
+    {
+        IntPtr process = OpenProcess(
+            ProcessVmRead | ProcessQueryInformation,
+            false,
+            processId);
+
+        if (process == IntPtr.Zero)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 420
+        IntPtr process = OpenProcess(
+            ProcessVmRead | ProcessQueryInformation,
+            false,
+            processId);
+
+        if (process == IntPtr.Zero)
+        {
+            throw new IOException(
+                "アイテム名の読み取り用にPCSX2を開けません。" +
+                " Win32エラー: " +
+                Marshal.GetLastWin32Error());
+        }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 481
+        ActionAutoRestoreService.WriteShared32(address, value);
+    }
+    private static bool TryLoadState(
+        out int processId,
+        out uint originalInstruction)
+    {
+        processId = 0;
+        originalInstruction = 0;
+
+        if (!File.Exists(StatePath))
+            return false;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 484
+        out int processId,
+        out uint originalInstruction)
+    {
+        processId = 0;
+        originalInstruction = 0;
+
+        if (!File.Exists(StatePath))
+            return false;
+
+        string content =
+            File.ReadAllText(StatePath).Trim();
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 505
+            parts[0],
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out processId))
+        {
+            return false;
+        }
+
+        if (!uint.TryParse(
+            parts[1],
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 519
+            return false;
+        }
+
+        return processId > 0;
+    }
+
+    private static void SaveState(
+        int processId,
+        uint originalInstruction)
+    {
+        string directory =
+            Path.GetDirectoryName(StatePath)!;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 523
+    }
+
+    private static void SaveState(
+        int processId,
+        uint originalInstruction)
+    {
+        string directory =
+            Path.GetDirectoryName(StatePath)!;
+
+        Directory.CreateDirectory(directory);
+
+        string temporaryPath =
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 535
+            StatePath + ".tmp";
+
+        string content =
+            processId.ToString(
+                CultureInfo.InvariantCulture) +
+            "|" +
+            originalInstruction.ToString("X8");
+
+        File.WriteAllText(
+            temporaryPath,
+            content,
+            Encoding.UTF8);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 563
+    {
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0)
+            {
+                return;
+            }
+
+            int processId =
+                Pcsx2LiveSession.ProcessId;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 564
+        try
+        {
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0)
+            {
+                return;
+            }
+
+            int processId =
+                Pcsx2LiveSession.ProcessId;
+
+            bool hasState = TryLoadState(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 569
+                return;
+            }
+
+            int processId =
+                Pcsx2LiveSession.ProcessId;
+
+            bool hasState = TryLoadState(
+                out int savedProcessId,
+                out uint originalInstruction);
+
+            if (!hasState ||
+                savedProcessId != processId)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 570
+            }
+
+            int processId =
+                Pcsx2LiveSession.ProcessId;
+
+            bool hasState = TryLoadState(
+                out int savedProcessId,
+                out uint originalInstruction);
+
+            if (!hasState ||
+                savedProcessId != processId)
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 573
+                Pcsx2LiveSession.ProcessId;
+
+            bool hasState = TryLoadState(
+                out int savedProcessId,
+                out uint originalInstruction);
+
+            if (!hasState ||
+                savedProcessId != processId)
+            {
+                return;
+            }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+LINE: 577
+                out uint originalInstruction);
+
+            if (!hasState ||
+                savedProcessId != processId)
+            {
+                return;
+            }
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 49
+    private static extern IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr handle);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr process,
+        IntPtr address,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 97
+        if (_polling)
+            return;
+
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            SetStatus("勧誘修正値監視中。PCSX2接続待ちです。");
+            return;
+        }
+
+        _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 98
+            return;
+
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            SetStatus("勧誘修正値監視中。PCSX2接続待ちです。");
+            return;
+        }
+
+        _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 105
+        }
+
+        _polling = true;
+        int processId = Pcsx2LiveSession.ProcessId;
+
+        try
+        {
+            await System.Threading.Tasks.Task.Run(
+                () => Evaluate(processId));
+        }
+        catch (Exception ex)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 110
+        try
+        {
+            await System.Threading.Tasks.Task.Run(
+                () => Evaluate(processId));
+        }
+        catch (Exception ex)
+        {
+            SetStatus("勧誘修正値の自動変更エラー: " + ex.Message);
+        }
+        finally
+        {
+            _polling = false;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 122
+        }
+    }
+
+    private static void Evaluate(int processId)
+    {
+
+
+        uint equippedWeapon =
+            ReadPine32(EquippedWeaponAddress) & 0xFFFF;
+
+        bool isHayabusa =
+            equippedWeapon == HayabusaWeaponValue;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 139
+            (ushort)(currentWord & 0xFFFF);
+
+        bool hasState = TryLoadState(
+            out int savedProcessId,
+            out ushort originalValue);
+
+        if (hasState && savedProcessId != processId)
+        {
+            DeleteState();
+            hasState = false;
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 142
+            out int savedProcessId,
+            out ushort originalValue);
+
+        if (hasState && savedProcessId != processId)
+        {
+            DeleteState();
+            hasState = false;
+        }
+
+        if (isHayabusa)
+        {
+            if (!hasState)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 153
+            if (!hasState)
+            {
+                originalValue = OriginalRecruitValue;
+                SaveState(processId, originalValue);
+            }
+
+            if (currentValue != TargetRecruitValue)
+            {
+                uint newWord =
+                    (currentWord & 0xFFFF0000u) |
+                    TargetRecruitValue;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 231
+            unchecked((short)currentValue).ToString());
+    }
+
+    private static string ReadItemName(int processId)
+    {
+        IntPtr process = OpenProcess(
+            0x0010 | 0x0400,
+            false,
+            processId);
+
+        if (process == IntPtr.Zero)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 236
+        IntPtr process = OpenProcess(
+            0x0010 | 0x0400,
+            false,
+            processId);
+
+        if (process == IntPtr.Zero)
+        {
+            throw new IOException(
+                "PCSX2のアイテム名を読み取れません。" +
+                " Win32エラー: " +
+                Marshal.GetLastWin32Error());
+        }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 290
+        ActionAutoRestoreService.WriteShared32(address, value);
+    }
+    private static bool TryLoadState(
+        out int processId,
+        out ushort originalValue)
+    {
+        processId = 0;
+        originalValue = OriginalRecruitValue;
+
+        if (!File.Exists(StatePath))
+            return false;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 293
+        out int processId,
+        out ushort originalValue)
+    {
+        processId = 0;
+        originalValue = OriginalRecruitValue;
+
+        if (!File.Exists(StatePath))
+            return false;
+
+        string[] parts = File.ReadAllText(StatePath)
+            .Trim()
+            .Split('|');
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 310
+            parts[0],
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out processId))
+            return false;
+
+        if (!ushort.TryParse(
+            parts[1],
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture,
+            out originalValue))
+            return false;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 324
+    }
+
+    private static void SaveState(
+        int processId,
+        ushort originalValue)
+    {
+        string directory =
+            Path.GetDirectoryName(StatePath)!;
+
+        Directory.CreateDirectory(directory);
+
+        string temporaryPath = StatePath + ".tmp";
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 336
+
+        File.WriteAllText(
+            temporaryPath,
+            processId.ToString(CultureInfo.InvariantCulture) +
+            "|" +
+            originalValue.ToString("X4"));
+
+        File.Move(
+            temporaryPath,
+            StatePath,
+            true);
+    }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 358
+    {
+        try
+        {
+            if (Pcsx2LiveSession.IsConnected &&
+                Pcsx2LiveSession.ProcessId > 0)
+            {
+                int processId = Pcsx2LiveSession.ProcessId;
+
+                bool hasState = TryLoadState(
+                    out int savedProcessId,
+                    out ushort originalValue);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 359
+        try
+        {
+            if (Pcsx2LiveSession.IsConnected &&
+                Pcsx2LiveSession.ProcessId > 0)
+            {
+                int processId = Pcsx2LiveSession.ProcessId;
+
+                bool hasState = TryLoadState(
+                    out int savedProcessId,
+                    out ushort originalValue);
+
+                if (hasState && savedProcessId == processId)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 361
+            if (Pcsx2LiveSession.IsConnected &&
+                Pcsx2LiveSession.ProcessId > 0)
+            {
+                int processId = Pcsx2LiveSession.ProcessId;
+
+                bool hasState = TryLoadState(
+                    out int savedProcessId,
+                    out ushort originalValue);
+
+                if (hasState && savedProcessId == processId)
+                {
+                    uint currentWord =
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 364
+                int processId = Pcsx2LiveSession.ProcessId;
+
+                bool hasState = TryLoadState(
+                    out int savedProcessId,
+                    out ushort originalValue);
+
+                if (hasState && savedProcessId == processId)
+                {
+                    uint currentWord =
+                        ReadPine32(RecruitCorrectionAddress);
+
+                    uint restoredWord =
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+LINE: 367
+                    out int savedProcessId,
+                    out ushort originalValue);
+
+                if (hasState && savedProcessId == processId)
+                {
+                    uint currentWord =
+                        ReadPine32(RecruitCorrectionAddress);
+
+                    uint restoredWord =
+                        (currentWord & 0xFFFF0000u) |
+                        originalValue;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ItemDescriptionEditorForm.cs
+LINE: 445
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ItemDescriptionEditorForm.cs
+LINE: 602
+        );
+    }
+
+    long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_pid);
+
+    // エレファントクロウの一時コピーではなく、
+    // アイテムデータ一覧内の説明文を編集する
+    long targetOffset = candidate.Address;
+
+    if (candidate.Address == 0x01FFF1F0L)
+    {
+        targetOffset = 0x00107BC7L;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ItemDescriptionEditorForm.cs
+LINE: 771
+
+    return startReport;
+}
+private static byte[] ReadEeRam(Action<string> progress, int processId)
+    {
+        byte[] ram = new byte[EeRamSize];
+
+        progress("PCSX2のEE RAMアドレスを特定しています...");
+
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        if (eeBase <= 0)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ItemDescriptionEditorForm.cs
+LINE: 777
+
+        progress("PCSX2のEE RAMアドレスを特定しています...");
+
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        if (eeBase <= 0)
+            throw new InvalidOperationException(
+                "PCSX2のEE RAMアドレスを取得できませんでした。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ItemDescriptionEditorForm.cs
+LINE: 786
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2のプロセスメモリを開けません。");
+
+        try
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 735
+    private void ApplyLiveEdit()
+    {
+        if (_loadingSelection || _automaticLiveApply ||
+            !Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.MemoryLayout == null)
+            return;
+
+        _automaticLiveApply = true;
+        try
+        {
+            ApplySelected();
+        }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 987
+        _skillRange.Enabled = enabled && _skillDataReady;
+        // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
+        _enemyThrowItem.Enabled = enabled &&
+            (_skillDataReady || Pcsx2LiveSession.IsConnected);
+        _allyThrowItem1.Enabled = enabled && _skillDataReady;
+        _allyThrowItem2.Enabled = enabled && _skillDataReady;
+        _skillMessage.Enabled = enabled && _skillDataReady;
+        _applyButton.Enabled = enabled;
+        _actionChange.Enabled = _selectedMonsterId >= 0;
+    }
+
+    private void RefreshList()
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1085
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+            Pcsx2LiveSession.MemoryLayout != null)
+        {
+            try
+            {
+                var requested = new List<Tuple<int, int, string>>
+                {
+                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1086
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+            Pcsx2LiveSession.MemoryLayout != null)
+        {
+            try
+            {
+                var requested = new List<Tuple<int, int, string>>
+                {
+                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+                    Tuple.Create(recruitOffset, 2, "勧誘修正値"),
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1115
+                }
+
+                var liveData = Pcsx2BinApplier.ReadRanges(
+                    Pcsx2LiveSession.ProcessId,
+                    Pcsx2LiveSession.MemoryLayout,
+                    requested);
+
+                foreach (var item in liveData)
+                    Array.Copy(item.Item2, 0, _bin, item.Item1, item.Item2.Length);
+
+                _status.Text = MonsterNames[id] + " の現在値をPCSX2から読み込みました。";
+            }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1174
+        int enemyItemOffset = SkillRangeDataOffset + hspMonsterIndex * 20 + 18;
+        ushort enemyItemValue = BinFileService.ReadUInt16(_bin, enemyItemOffset);
+        bool canShowLiveEnemyItem =
+            Pcsx2LiveSession.IsConnected && Pcsx2LiveSession.MemoryLayout != null;
+        if (_skillDataReady || canShowLiveEnemyItem)
+        {
+            _enemyThrowItem.SelectedIndex =
+                enemyItemValue < _enemyThrowItem.Items.Count ? enemyItemValue : -1;
+        }
+
+        if (_skillDataReady)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1318
+
+        _onChanged?.Invoke();
+
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+            Pcsx2LiveSession.MemoryLayout != null)
+        {
+            try
+            {
+                var writes = new List<Tuple<int, byte[], string>>();
+
+                byte[] CopyRange(int start, int length)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1319
+        _onChanged?.Invoke();
+
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+            Pcsx2LiveSession.MemoryLayout != null)
+        {
+            try
+            {
+                var writes = new List<Tuple<int, byte[], string>>();
+
+                byte[] CopyRange(int start, int length)
+                {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1387
+                }
+
+                string resultText = Pcsx2BinApplier.ApplyRanges(
+                    Pcsx2LiveSession.ProcessId,
+                    Pcsx2LiveSession.MemoryLayout,
+                    writes);
+
+                _status.Text =
+                    MonsterNames[_selectedMonsterId] +
+                    " の変更をPCSX2へ反映しました。\r\n" +
+                    resultText;
+            }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE: 1413
+                }
+            }
+        }
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.MemoryLayout == null)
+        {
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " の変更をBIN作業データへ反映しました。\r\n" +
+                "PCSX2未接続のためゲームメモリには未適用です。";
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 229
+
+internal sealed class Pcsx2ScanResult
+{
+    public int ProcessId { get; set; }
+    public string ProcessName { get; set; } = "";
+    public long FirstSignatureAddress { get; set; }
+    public long SecondSignatureAddress { get; set; }
+    public long ScannedBytes { get; set; }
+    public string Message { get; set; } = "";
+}
+
+internal static class Pcsx2MemoryScanner
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 279
+    private static extern IntPtr OpenProcess(
+        uint dwDesiredAccess,
+        bool bInheritHandle,
+        int dwProcessId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 387
+}
+
+    // メモリ全域を検索せず、PCSX2プロセスを開くだけの接続処理。
+    public static IntPtr OpenConnection(int processId)
+    {
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 392
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2プロセスへの接続に失敗しました。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 413
+    }
+
+        public static Pcsx2ScanResult Scan(
+        int processId,
+        System.Action<string> report)
+    {
+        var result = new Pcsx2ScanResult();
+        result.ProcessId = processId;
+
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 417
+        System.Action<string> report)
+    {
+        var result = new Pcsx2ScanResult();
+        result.ProcessId = processId;
+
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 422
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2プロセスを開けませんでした。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 433
+
+        try
+        {
+            using (var process = System.Diagnostics.Process.GetProcessById(processId))
+            {
+                result.ProcessName = process.ProcessName;
+            }
+
+            bool isWow64 = false;
+            bool architectureKnown = IsWow64Process(handle, out isWow64);
+
+            ulong maximumAddress;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 812
+    }
+}
+
+internal static class Pcsx2MemoryLayoutBuilder
+{
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 822
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 879
+    // メインモジュールのPEエクスポートからEEmem変数を探し、
+    // EEメモリの実際のホストアドレスを取得する。
+    private static long ResolveEEmemBase(
+        int processId,
+        System.IntPtr handle)
+    {
+        using (var process =
+            System.Diagnostics.Process.GetProcessById(processId))
+        {
+            if (process.MainModule == null)
+                throw new System.InvalidOperationException(
+                    "PCSX2のメインモジュールを取得できません。");
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 883
+        System.IntPtr handle)
+    {
+        using (var process =
+            System.Diagnostics.Process.GetProcessById(processId))
+        {
+            if (process.MainModule == null)
+                throw new System.InvalidOperationException(
+                    "PCSX2のメインモジュールを取得できません。");
+
+            long moduleBase =
+                process.MainModule.BaseAddress.ToInt64();
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1021
+        }
+    }
+
+    public static long GetEEmemBase(int processId)
+    {
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1026
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2のメモリを開けません。");
+
+        try
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1035
+
+        try
+        {
+            return ResolveEEmemBase(processId, handle);
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
+    private static long AddOffset(long address, long offset)
+    {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1048
+    }
+
+    public static Pcsx2MemoryLayout Build(
+        int processId,
+        long signatureA,
+        long signatureB)
+    {
+        var layout = new Pcsx2MemoryLayout();
+
+        layout.SignatureA = signatureA;
+        layout.SignatureB = signatureB;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1060
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "ポインタ計算用にPCSX2を開けません。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1104
+// 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
+// EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
+long eeMemBaseForFixedAddresses =
+    ResolveEEmemBase(processId, handle);
+
+// PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
+// 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
+
+// 第2識別アドレスを基準にする領域
+map["var_150"] = AddOffset(b, 87592);
+map["var_152"] = AddOffset(b, 89224);
+map["var_154"] = AddOffset(b, 16);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1290
+    private static extern System.IntPtr OpenProcess(
+        uint access,
+        bool inherit,
+        int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(
+        System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1423
+    }
+
+    public static byte[] Capture(
+        int processId,
+        Pcsx2MemoryLayout layout)
+    {
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1432
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "BIN取得用にPCSX2を開けません。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1565
+// 接続とBIN読み込みを別々に管理する。
+// ============================================================
+
+internal static class Pcsx2LiveSession
+{
+    public static bool IsConnected { get; private set; }
+    public static bool VanillaDataLoaded { get; private set; }
+    public static int ProcessId { get; private set; }
+    public static byte[]? VanillaBin { get; private set; }
+    public static Pcsx2MemoryLayout? MemoryLayout { get; private set; }
+
+    public static event System.Action? StateChanged;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1567
+
+internal static class Pcsx2LiveSession
+{
+    public static bool IsConnected { get; private set; }
+    public static bool VanillaDataLoaded { get; private set; }
+    public static int ProcessId { get; private set; }
+    public static byte[]? VanillaBin { get; private set; }
+    public static Pcsx2MemoryLayout? MemoryLayout { get; private set; }
+
+    public static event System.Action? StateChanged;
+
+    public static void SetConnected(int processId)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1569
+{
+    public static bool IsConnected { get; private set; }
+    public static bool VanillaDataLoaded { get; private set; }
+    public static int ProcessId { get; private set; }
+    public static byte[]? VanillaBin { get; private set; }
+    public static Pcsx2MemoryLayout? MemoryLayout { get; private set; }
+
+    public static event System.Action? StateChanged;
+
+    public static void SetConnected(int processId)
+    {
+        IsConnected = true;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1575
+
+    public static event System.Action? StateChanged;
+
+    public static void SetConnected(int processId)
+    {
+        IsConnected = true;
+        ProcessId = processId;
+
+        // 新しい接続では新しい取得を待つ。
+        VanillaDataLoaded = false;
+        VanillaBin = null;
+        MemoryLayout = null;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1577
+
+    public static void SetConnected(int processId)
+    {
+        IsConnected = true;
+        ProcessId = processId;
+
+        // 新しい接続では新しい取得を待つ。
+        VanillaDataLoaded = false;
+        VanillaBin = null;
+        MemoryLayout = null;
+
+        StateChanged?.Invoke();
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1578
+    public static void SetConnected(int processId)
+    {
+        IsConnected = true;
+        ProcessId = processId;
+
+        // 新しい接続では新しい取得を待つ。
+        VanillaDataLoaded = false;
+        VanillaBin = null;
+        MemoryLayout = null;
+
+        StateChanged?.Invoke();
+    }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1608
+        MemoryLayout = layout;
+        StateChanged?.Invoke();
+    }
+    public static void SetDisconnected()
+    {
+        IsConnected = false;
+        ProcessId = 0;
+        MemoryLayout = null;
+
+        // 取得済みBINはメイン画面の編集バッファに残す。
+        StateChanged?.Invoke();
+    }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1610
+    }
+    public static void SetDisconnected()
+    {
+        IsConnected = false;
+        ProcessId = 0;
+        MemoryLayout = null;
+
+        // 取得済みBINはメイン画面の編集バッファに残す。
+        StateChanged?.Invoke();
+    }
+}
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1611
+    public static void SetDisconnected()
+    {
+        IsConnected = false;
+        ProcessId = 0;
+        MemoryLayout = null;
+
+        // 取得済みBINはメイン画面の編集バッファに残す。
+        StateChanged?.Invoke();
+    }
+}
+
+// =========================================================
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1633
+    private readonly System.Windows.Forms.TextBox logBox;
+    private readonly System.Windows.Forms.Label statusLabel;
+    private System.IntPtr _processHandle = System.IntPtr.Zero;
+    private int _connectedProcessId;
+
+    public Pcsx2ConnectionForm()
+    {
+        ShowInTaskbar = false;
+        Opacity = 0;
+        ShowInTaskbar = false;
+        Text = "PCSX2接続・メモリ基準アドレス検索";
+        Width = 760;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1757
+        {
+            Pcsx2MemoryScanner.CloseConnection(_processHandle);
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+        }
+
+        Pcsx2LiveSession.SetDisconnected();
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1760
+            _connectedProcessId = 0;
+        }
+
+        Pcsx2LiveSession.SetDisconnected();
+
+        base.OnFormClosed(e);
+    }
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1767
+
+    private async void ScanMemoryAndBuild()
+    {
+        if (_processHandle == System.IntPtr.Zero || _connectedProcessId <= 0)
+        {
+            Log("先にPCSX2へ接続してください。");
+            statusLabel.Text = "未接続";
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1774
+            return;
+        }
+
+        int processId = _connectedProcessId;
+
+        memoryScanButton.Enabled = false;
+        scanButton.Enabled = false;
+        refreshButton.Enabled = false;
+        statusLabel.Text = "メモリ検索中...";
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1783
+
+        Log("========================================");
+        Log("旧HSP互換シグネチャ検索を開始します。");
+        Log("接続済みPID: " + processId);
+        Log("この処理はメモリ全体を検索します。接続処理とは別です。");
+
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1790
+        {
+            var result = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryScanner.Scan(
+                    processId,
+                    message => Log(message)));
+
+            Log(result.Message);
+            Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
+
+            if (result.FirstSignatureAddress == 0 ||
+                result.SecondSignatureAddress == 0)
+            {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1812
+
+            var layout = await System.Threading.Tasks.Task.Run(
+                () => Pcsx2MemoryLayoutBuilder.Build(
+                    processId,
+                    result.FirstSignatureAddress,
+                    result.SecondSignatureAddress));
+
+            Log("旧HSP互換アドレス計算が完了しました。");
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1824
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            Log("バニラBINの取得に成功しました。");
+            Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
+            Log("バージョンマーカー: " +
+                vanillaBin[355056].ToString());
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1862
+        {
+            Log("既にPCSX2へ接続しています。");
+            statusLabel.Text =
+                "接続済み PID:" + _connectedProcessId;
+            return;
+        }
+
+        if (processList.SelectedIndex < 0)
+        {
+            RefreshProcesses();
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1893
+
+        if (!int.TryParse(
+            selected.Substring(marker + 4).Trim(),
+            out int processId))
+        {
+            Log("PIDの解析に失敗しました。");
+            statusLabel.Text = "接続失敗";
+            return;
+        }
+
+        refreshButton.Enabled = false;
+        scanButton.Enabled = false;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1910
+            Log("対象: " + selected);
+
+            _processHandle =
+                Pcsx2MemoryScanner.OpenConnection(processId);
+
+            _connectedProcessId = processId;
+            memoryScanButton.Enabled = true;
+
+            Log("PCSX2への接続に成功しました。");
+            Log("PID: " + processId);
+            Log("プロセスハンドルを保持しています。");
+            Log("全メモリ検索は実行していません。");
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1912
+            _processHandle =
+                Pcsx2MemoryScanner.OpenConnection(processId);
+
+            _connectedProcessId = processId;
+            memoryScanButton.Enabled = true;
+
+            Log("PCSX2への接続に成功しました。");
+            Log("PID: " + processId);
+            Log("プロセスハンドルを保持しています。");
+            Log("全メモリ検索は実行していません。");
+            Log("ポインタ計算も実行していません。");
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1916
+            memoryScanButton.Enabled = true;
+
+            Log("PCSX2への接続に成功しました。");
+            Log("PID: " + processId);
+            Log("プロセスハンドルを保持しています。");
+            Log("全メモリ検索は実行していません。");
+            Log("ポインタ計算も実行していません。");
+
+            statusLabel.Text =
+                "接続済み PID:" + processId;
+        }
+        catch (System.Exception ex)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1922
+            Log("ポインタ計算も実行していません。");
+
+            statusLabel.Text =
+                "接続済み PID:" + processId;
+        }
+        catch (System.Exception ex)
+        {
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+
+            Log("接続エラー: " + ex.Message);
+            statusLabel.Text = "接続に失敗しました。";
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1927
+        catch (System.Exception ex)
+        {
+            _processHandle = System.IntPtr.Zero;
+            _connectedProcessId = 0;
+
+            Log("接続エラー: " + ex.Message);
+            statusLabel.Text = "接続に失敗しました。";
+        }
+        finally
+        {
+            refreshButton.Enabled = true;
+            scanButton.Enabled = true;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 1983
+    };
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr read);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2298
+    }
+
+    public static string Apply(
+        int processId, Pcsx2MemoryLayout layout, byte[] bin)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (bin == null || bin.Length != BaseSize)
+            throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2300
+    public static string Apply(
+        int processId, Pcsx2MemoryLayout layout, byte[] bin)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (bin == null || bin.Length != BaseSize)
+            throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2301
+        int processId, Pcsx2MemoryLayout layout, byte[] bin)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (bin == null || bin.Length != BaseSize)
+            throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2371
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false, processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み可能ハンドルを取得できません。");
+
+        try
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2502
+        }
+    }
+    public static System.Collections.Generic.List<System.Tuple<int, byte[], string>> ReadRanges(
+        int processId,
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (ranges == null)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2506
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (ranges == null)
+            throw new System.ArgumentNullException(nameof(ranges));
+
+        var requested = new System.Collections.Generic.List<WriteBlock>();
+        var requestedOffsets = new System.Collections.Generic.List<int>();
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2507
+        System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+        if (ranges == null)
+            throw new System.ArgumentNullException(nameof(ranges));
+
+        var requested = new System.Collections.Generic.List<WriteBlock>();
+        var requestedOffsets = new System.Collections.Generic.List<int>();
+        foreach (var item in ranges)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2552
+            // BIN拡張内の位置と実メモリアドレスを対応させる。
+            if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
+            }
+            else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
+            }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2557
+            }
+            else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
+            }
+
+            requested.Add(new WriteBlock(item.Item3, targetAddress, new byte[item.Item2]));
+            requestedOffsets.Add(item.Item1);
+        }
+
+        var result = new System.Collections.Generic.List<System.Tuple<int, byte[], string>>();
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2572
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の読み取り用ハンドルを取得できません。");
+
+        try
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2605
+    }
+
+    public static string ApplyRanges(
+        int processId,
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, byte[], string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2609
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, byte[], string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        if (ranges == null)
+            throw new System.ArgumentNullException(nameof(ranges));
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2610
+        System.Collections.Generic.IEnumerable<System.Tuple<int, byte[], string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (layout == null)
+            throw new System.ArgumentNullException(nameof(layout));
+
+        if (ranges == null)
+            throw new System.ArgumentNullException(nameof(ranges));
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2669
+            // BIN拡張内の位置と実メモリアドレスを対応させる。
+            if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
+            }
+            else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
+            }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2674
+            }
+            else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
+            {
+                long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+                targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
+            }
+
+            blocks.Add(new WriteBlock(
+                item.Item3,
+                targetAddress,
+                (byte[])item.Item2.Clone()));
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2696
+            PROCESS_VM_READ | PROCESS_VM_WRITE |
+            PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の書き込み用ハンドルを取得できません。");
+
+        try
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2811
+    // EE RAMオフセットを使用し、事前検証・読み戻し・ロールバックを行う
+    // ========================================================
+    public static string ApplyPatches(
+        int processId,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2814
+        int processId,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2815
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+            if (patch == null || patch.Data == null || patch.Data.Length == 0)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2834
+
+        const long EeRamSize = 0x02000000L;
+
+        long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+        if (eeBase <= 0)
+            throw new System.InvalidOperationException(
+                "追加メモリ変更の適用に必要なEE RAM基準アドレスを取得できません。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+
+        foreach (var patch in source)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 2884
+            PROCESS_VM_OPERATION |
+            PROCESS_QUERY_INFORMATION,
+            false,
+            processId);
+
+        if (handle == System.IntPtr.Zero)
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "追加メモリ変更用のPCSX2ハンドルを取得できません。");
+
+        try
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 3550
+        }
+    }
+
+    private readonly int _processId;
+    private readonly long _eeBase;
+    private readonly ListBox _list = new ListBox();
+    private readonly Label _status = new Label();
+    private readonly TextBox _detail = new TextBox();
+    private readonly Button _scanButton = new Button();
+    private readonly Button _saveButton = new Button();
+    private readonly List<Entry> _entries = new List<Entry>();
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 3565
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr OpenProcess(
+        uint access, bool inherit, int processId);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(System.IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 3590
+        return System.Text.Encoding.GetEncoding(932);
+    }
+
+    public MonsterNameEditorForm(int processId)
+    {
+        _processId = processId;
+        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        Text = "モンスター名変更・名前データ確認";
+        StartPosition = FormStartPosition.CenterParent;
+        Width = 900;
+        Height = 700;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 3592
+
+    public MonsterNameEditorForm(int processId)
+    {
+        _processId = processId;
+        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        Text = "モンスター名変更・名前データ確認";
+        StartPosition = FormStartPosition.CenterParent;
+        Width = 900;
+        Height = 700;
+        MinimumSize = new Size(650, 450);
+        Font = new Font("Yu Gothic UI", 10);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 3593
+    public MonsterNameEditorForm(int processId)
+    {
+        _processId = processId;
+        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+        Text = "モンスター名変更・名前データ確認";
+        StartPosition = FormStartPosition.CenterParent;
+        Width = 900;
+        Height = 700;
+        MinimumSize = new Size(650, 450);
+        Font = new Font("Yu Gothic UI", 10);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 3688
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+            false,
+            _processId);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new System.ComponentModel.Win32Exception(
+                System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+                "PCSX2の読み取りハンドルを取得できません。");
+        }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4731
+        buttons.Controls.Add(UiFactory.Button(
+            "説明文を改造", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var descriptionForm = new ItemDescriptionEditorForm(
+                    Pcsx2LiveSession.ProcessId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4732
+            "説明文を改造", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var descriptionForm = new ItemDescriptionEditorForm(
+                    Pcsx2LiveSession.ProcessId);
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4739
+                }
+
+                using var descriptionForm = new ItemDescriptionEditorForm(
+                    Pcsx2LiveSession.ProcessId);
+
+                descriptionForm.ShowDialog(this);
+            }));
+
+        buttons.Controls.Add(UiFactory.Button(
+            "改造データを.Torneko4保存", (_, _) => SaveTorneko4()));
+        buttons.Controls.Add(UiFactory.Button(
+            "モンスターを編集", (_, _) =>
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4758
+buttons.Controls.Add(UiFactory.Button(
+            "モンスター名変更", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var nameForm = new MonsterNameEditor20261114(
+                    Pcsx2LiveSession.ProcessId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4759
+            "モンスター名変更", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var nameForm = new MonsterNameEditor20261114(
+                    Pcsx2LiveSession.ProcessId);
+                nameForm.ShowDialog(this);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4766
+                }
+
+                using var nameForm = new MonsterNameEditor20261114(
+                    Pcsx2LiveSession.ProcessId);
+                nameForm.ShowDialog(this);
+            }));
+
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前データベース（試験版）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4773
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前データベース（試験版）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var extendedNameForm = new ExtendedItemNameRegistryForm(
+                    Pcsx2LiveSession.ProcessId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4774
+            "拡張名前データベース（試験版）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var extendedNameForm = new ExtendedItemNameRegistryForm(
+                    Pcsx2LiveSession.ProcessId);
+                extendedNameForm.ShowDialog(this);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4781
+                }
+
+                using var extendedNameForm = new ExtendedItemNameRegistryForm(
+                    Pcsx2LiveSession.ProcessId);
+                extendedNameForm.ShowDialog(this);
+            }));
+        buttons.Controls.Add(UiFactory.Button(
+            "アイテム名表示・メモリ差分診断", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4787
+        buttons.Controls.Add(UiFactory.Button(
+            "アイテム名表示・メモリ差分診断", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var liveSnapshotForm = new ExtendedItemNameLiveSnapshotForm(
+                    Pcsx2LiveSession.ProcessId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4788
+            "アイテム名表示・メモリ差分診断", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var liveSnapshotForm = new ExtendedItemNameLiveSnapshotForm(
+                    Pcsx2LiveSession.ProcessId);
+                liveSnapshotForm.ShowDialog(this);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4795
+                }
+
+                using var liveSnapshotForm = new ExtendedItemNameLiveSnapshotForm(
+                    Pcsx2LiveSession.ProcessId);
+                liveSnapshotForm.ShowDialog(this);
+            }));
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前メモリ診断（読み取り専用）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4801
+        buttons.Controls.Add(UiFactory.Button(
+            "拡張名前メモリ診断（読み取り専用）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var diagnosticsForm = new ExtendedItemNameMemoryDiagnosticsForm(
+                    Pcsx2LiveSession.ProcessId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4802
+            "拡張名前メモリ診断（読み取り専用）", (_, _) =>
+            {
+                if (!Pcsx2LiveSession.IsConnected ||
+                    Pcsx2LiveSession.ProcessId <= 0)
+                {
+                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
+                    return;
+                }
+
+                using var diagnosticsForm = new ExtendedItemNameMemoryDiagnosticsForm(
+                    Pcsx2LiveSession.ProcessId);
+                diagnosticsForm.ShowDialog(this);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4809
+                }
+
+                using var diagnosticsForm = new ExtendedItemNameMemoryDiagnosticsForm(
+                    Pcsx2LiveSession.ProcessId);
+                diagnosticsForm.ShowDialog(this);
+            }));
+
+
+
+
+
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4902
+            }
+
+            // 最初に検出されたPCSX2を使用
+            int processId = processes[0].Id;
+
+            foreach (var process in processes)
+                process.Dispose();
+
+            processes.Clear();
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4910
+            processes.Clear();
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2DataStatus.Text =
+                "PCSX2プロセス確認中...";
+
+            // プロセスを開けることを確認
+            System.IntPtr testHandle = System.IntPtr.Zero;
+
+            try
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4921
+            try
+            {
+                testHandle =
+                    Pcsx2MemoryScanner.OpenConnection(processId);
+            }
+            finally
+            {
+                if (testHandle != System.IntPtr.Zero)
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4929
+                    Pcsx2MemoryScanner.CloseConnection(testHandle);
+            }
+
+            Pcsx2LiveSession.SetConnected(processId);
+
+            // 旧HSP互換シグネチャを検索
+            _pcsx2DataStatus.Text =
+                "旧HSP互換メモリ検索中...";
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4937
+
+            var scanResult =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryScanner.Scan(processId, null));
+
+            if (scanResult.FirstSignatureAddress == 0 ||
+                scanResult.SecondSignatureAddress == 0)
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換シグネチャを検出できませんでした。" +
+                    "\r\n" + scanResult.Message +
+                    "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4957
+            var layout =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2MemoryLayoutBuilder.Build(
+                        processId,
+                        scanResult.FirstSignatureAddress,
+                        scanResult.SecondSignatureAddress));
+
+            // 旧HSP互換BIN取得
+            _pcsx2DataStatus.Text =
+                "バニラBIN取得中...";
+
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4970
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 4983
+            Pcsx2LiveSession.SetVanillaData(vanillaBin);
+
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " + processId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5027
+            return;
+        }
+
+        if (Pcsx2LiveSession.IsConnected)
+        {
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " +
+                Pcsx2LiveSession.ProcessId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+        }
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5031
+        {
+            _pcsx2ConnectionStatus.Text =
+                "接続中！ PID: " +
+                Pcsx2LiveSession.ProcessId;
+
+            _pcsx2ConnectionStatus.ForeColor =
+                Color.DarkGreen;
+        }
+        else
+        {
+            _pcsx2ConnectionStatus.Text = "未接続";
+            _pcsx2ConnectionStatus.ForeColor =
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5140
+
+    private void OpenDungeonDataAndApply()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5141
+    private void OpenDungeonDataAndApply()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5301
+            return;
+        }
+
+        if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(this, "先にPCSX2へ接続してください。");
+            return;
+        }
+
+        Pcsx2MemoryLayout? layout = Pcsx2LiveSession.MemoryLayout;
+        if (layout == null)
+        {
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5326
+        try
+        {
+            string result = Pcsx2BinApplier.Apply(
+                Pcsx2LiveSession.ProcessId, layout, _bin);
+
+            // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+            var memoryPatches = Torneko4PatchStore.GetCopy();
+            string patchResult = Pcsx2BinApplier.ApplyPatches(
+                Pcsx2LiveSession.ProcessId,
+                memoryPatches);
+
+            result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE: 5331
+            // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+            var memoryPatches = Torneko4PatchStore.GetCopy();
+            string patchResult = Pcsx2BinApplier.ApplyPatches(
+                Pcsx2LiveSession.ProcessId,
+                memoryPatches);
+
+            result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
+
+            _status.Text = "改造ダンジョン適用済み";
+            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+
+            MessageBox.Show(
+
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\backup_ExtendedItemName_20261120_185809\ExtendedItemNameRegistryForm.cs
+LINE: 43
+            DecoderFallback.ExceptionFallback);
+    }
+
+    public ExtendedItemNameRegistryForm(int processId)
+    {
+        Text = "拡張名前データベース（試験版）";
+        Width = 760;
+        Height = 560;
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new System.Drawing.Size(620, 420);
+
+        string directory = Path.Combine(
+
+===== COMPLETE =====
