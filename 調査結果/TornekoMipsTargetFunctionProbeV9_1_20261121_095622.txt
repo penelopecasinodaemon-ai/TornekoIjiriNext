@@ -1,0 +1,350 @@
+﻿Torneko MIPS Target Function Probe V9.1
+Date: 2026-11-21 09:56:23
+PID: 6708
+EE Base: 0x1B919910000
+RAM Size: 0x02000000
+Target: EE+0x00088850
+Dump Range: 0x00088820 - 0x00088C40
+Access: READ ONLY
+
+===== TARGET FUNCTION DISASSEMBLY =====
+
+EE+0x00088820 RAW=0x000240B8 SPECIAL_0x38 rs=zero rt=v0 rd=t0 sh=2
+EE+0x00088824 RAW=0x0008403F SPECIAL_0x3F rs=zero rt=t0 rd=t0 sh=0
+EE+0x00088828 RAW=0x8FA50004 LW           rs=sp rt=a1 imm=4
+EE+0x0008882C RAW=0x00431024 AND          rs=v0 rt=v1 rd=v0 sh=0
+EE+0x00088830 RAW=0x35070001 ORI          rs=t0 rt=a3 imm=1
+EE+0x00088834 RAW=0x8FA60008 LW           rs=sp rt=a2 imm=8
+EE+0x00088838 RAW=0x0C0224EE JAL          target=0x000893B8 <== FUNCTION CALL
+EE+0x0008883C RAW=0x0102380A MOVZ         rs=t0 rt=v0 rd=a3 sh=0
+EE+0x00088840 RAW=0xDFBF0030 LD           rs=sp rt=ra imm=48
+EE+0x00088844 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088848 RAW=0x27BD0040 ADDIU        rs=sp rt=sp imm=64
+EE+0x0008884C RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088850 RAW=0x8C830000 LW           rs=a0 rt=v1 imm=0 <== TARGET ENTRY CANDIDATE
+EE+0x00088854 RAW=0x0000382D SPECIAL_0x2D rs=zero rt=zero rd=a3 sh=0
+EE+0x00088858 RAW=0x8C880004 LW           rs=a0 rt=t0 imm=4
+EE+0x0008885C RAW=0x2C620002 SLTIU        rs=v1 rt=v0 imm=2
+EE+0x00088860 RAW=0x10400005 BEQ          rs=v0 rt=zero target=0x00088878
+EE+0x00088864 RAW=0x8C85000C LW           rs=a0 rt=a1 imm=12
+EE+0x00088868 RAW=0x3C020010 LUI          rs=zero rt=v0 imm=16
+EE+0x0008886C RAW=0x240700FF ADDIU        rs=zero rt=a3 imm=255
+EE+0x00088870 RAW=0x10000026 BEQ          rs=zero rt=zero target=0x0008890C
+EE+0x00088874 RAW=0x00A22825 OR           rs=a1 rt=v0 rd=a1 sh=0
+EE+0x00088878 RAW=0x38620004 XORI         rs=v1 rt=v0 imm=4
+EE+0x0008887C RAW=0x10400014 BEQ          rs=v0 rt=zero target=0x000888D0
+EE+0x00088880 RAW=0x38620002 XORI         rs=v1 rt=v0 imm=2
+EE+0x00088884 RAW=0x14400003 BNE          rs=v0 rt=zero target=0x00088894
+EE+0x00088888 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x0008888C RAW=0x1000001F BEQ          rs=zero rt=zero target=0x0008890C
+EE+0x00088890 RAW=0x0000282D SPECIAL_0x2D rs=zero rt=zero rd=a1 sh=0
+EE+0x00088894 RAW=0x10A0001E BEQ          rs=a1 rt=zero target=0x00088910
+EE+0x00088898 RAW=0x3C03FF80 LUI          rs=zero rt=v1 imm=-128
+EE+0x0008889C RAW=0x8C830008 LW           rs=a0 rt=v1 imm=8
+EE+0x000888A0 RAW=0x2862FF82 SLTI         rs=v1 rt=v0 imm=-126
+EE+0x000888A4 RAW=0x10400007 BEQ          rs=v0 rt=zero target=0x000888C4
+EE+0x000888A8 RAW=0x2402FF82 ADDIU        rs=zero rt=v0 imm=-126
+EE+0x000888AC RAW=0x00431023 SUBU         rs=v0 rt=v1 rd=v0 sh=0
+EE+0x000888B0 RAW=0x2843001A SLTI         rs=v0 rt=v1 imm=26
+EE+0x000888B4 RAW=0x14600014 BNE          rs=v1 rt=zero target=0x00088908
+EE+0x000888B8 RAW=0x00452806 SRLV         rs=v0 rt=a1 rd=a1 sh=0
+EE+0x000888BC RAW=0x10000012 BEQ          rs=zero rt=zero target=0x00088908
+EE+0x000888C0 RAW=0x0000282D SPECIAL_0x2D rs=zero rt=zero rd=a1 sh=0
+EE+0x000888C4 RAW=0x28620080 SLTI         rs=v1 rt=v0 imm=128
+EE+0x000888C8 RAW=0x14400004 BNE          rs=v0 rt=zero target=0x000888DC
+EE+0x000888CC RAW=0x2467007F ADDIU        rs=v1 rt=a3 imm=127
+EE+0x000888D0 RAW=0x240700FF ADDIU        rs=zero rt=a3 imm=255
+EE+0x000888D4 RAW=0x1000000D BEQ          rs=zero rt=zero target=0x0008890C
+EE+0x000888D8 RAW=0x0000282D SPECIAL_0x2D rs=zero rt=zero rd=a1 sh=0
+EE+0x000888DC RAW=0x24020040 ADDIU        rs=zero rt=v0 imm=64
+EE+0x000888E0 RAW=0x30A3007F ANDI         rs=a1 rt=v1 imm=127
+EE+0x000888E4 RAW=0x54620004 BNEL         rs=v1 rt=v0 imm=4
+EE+0x000888E8 RAW=0x24A5003F ADDIU        rs=a1 rt=a1 imm=63
+EE+0x000888EC RAW=0x30A30080 ANDI         rs=a1 rt=v1 imm=128
+EE+0x000888F0 RAW=0x24A20040 ADDIU        rs=a1 rt=v0 imm=64
+EE+0x000888F4 RAW=0x0043280B MOVN         rs=v0 rt=v1 rd=a1 sh=0
+EE+0x000888F8 RAW=0x04A30004 UNKNOWN      rs=a1 rt=v1 imm=4
+EE+0x000888FC RAW=0x000529C2 SRL          rs=zero rt=a1 rd=a1 sh=7
+EE+0x00088900 RAW=0x00052842 SRL          rs=zero rt=a1 rd=a1 sh=1
+EE+0x00088904 RAW=0x24E70001 ADDIU        rs=a3 rt=a3 imm=1
+EE+0x00088908 RAW=0x000529C2 SRL          rs=zero rt=a1 rd=a1 sh=7
+EE+0x0008890C RAW=0x3C03FF80 LUI          rs=zero rt=v1 imm=-128
+EE+0x00088910 RAW=0x3C02007F LUI          rs=zero rt=v0 imm=127
+EE+0x00088914 RAW=0x00C33024 AND          rs=a2 rt=v1 rd=a2 sh=0
+EE+0x00088918 RAW=0x3442FFFF ORI          rs=v0 rt=v0 imm=-1
+EE+0x0008891C RAW=0x00A21024 AND          rs=a1 rt=v0 rd=v0 sh=0
+EE+0x00088920 RAW=0x3C03807F LUI          rs=zero rt=v1 imm=-32641
+EE+0x00088924 RAW=0x00C23025 OR           rs=a2 rt=v0 rd=a2 sh=0
+EE+0x00088928 RAW=0x3463FFFF ORI          rs=v1 rt=v1 imm=-1
+EE+0x0008892C RAW=0x30E400FF ANDI         rs=a3 rt=a0 imm=255
+EE+0x00088930 RAW=0x00C33024 AND          rs=a2 rt=v1 rd=a2 sh=0
+EE+0x00088934 RAW=0x000425C0 SLL          rs=zero rt=a0 rd=a0 sh=23
+EE+0x00088938 RAW=0x3C027FFF LUI          rs=zero rt=v0 imm=32767
+EE+0x0008893C RAW=0x00C43025 OR           rs=a2 rt=a0 rd=a2 sh=0
+EE+0x00088940 RAW=0x3442FFFF ORI          rs=v0 rt=v0 imm=-1
+EE+0x00088944 RAW=0x00081FC0 SLL          rs=zero rt=t0 rd=v1 sh=31
+EE+0x00088948 RAW=0x00C23024 AND          rs=a2 rt=v0 rd=a2 sh=0
+EE+0x0008894C RAW=0x00C33025 OR           rs=a2 rt=v1 rd=a2 sh=0
+EE+0x00088950 RAW=0x44860000 COP1         rs=a0 rt=a2 imm=0
+EE+0x00088954 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088958 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x0008895C RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088960 RAW=0x8C820000 LW           rs=a0 rt=v0 imm=0
+EE+0x00088964 RAW=0x3C03007F LUI          rs=zero rt=v1 imm=127
+EE+0x00088968 RAW=0x3463FFFF ORI          rs=v1 rt=v1 imm=-1
+EE+0x0008896C RAW=0x000227C2 SRL          rs=zero rt=v0 rd=a0 sh=31
+EE+0x00088970 RAW=0x000235C2 SRL          rs=zero rt=v0 rd=a2 sh=23
+EE+0x00088974 RAW=0x00431824 AND          rs=v0 rt=v1 rd=v1 sh=0
+EE+0x00088978 RAW=0x30C600FF ANDI         rs=a2 rt=a2 imm=255
+EE+0x0008897C RAW=0x14C00004 BNE          rs=a2 rt=zero target=0x00088990
+EE+0x00088980 RAW=0xACA40004 SW           rs=a1 rt=a0 imm=4
+EE+0x00088984 RAW=0x24020002 ADDIU        rs=zero rt=v0 imm=2
+EE+0x00088988 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x0008898C RAW=0xACA20000 SW           rs=a1 rt=v0 imm=0
+EE+0x00088990 RAW=0x240200FF ADDIU        rs=zero rt=v0 imm=255
+EE+0x00088994 RAW=0x14C2000E BNE          rs=a2 rt=v0 target=0x000889D0
+EE+0x00088998 RAW=0x3C024000 LUI          rs=zero rt=v0 imm=16384
+EE+0x0008899C RAW=0x14600004 BNE          rs=v1 rt=zero target=0x000889B0
+EE+0x000889A0 RAW=0x3C020010 LUI          rs=zero rt=v0 imm=16
+EE+0x000889A4 RAW=0x24020004 ADDIU        rs=zero rt=v0 imm=4
+EE+0x000889A8 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x000889AC RAW=0xACA20000 SW           rs=a1 rt=v0 imm=0
+EE+0x000889B0 RAW=0x00621024 AND          rs=v1 rt=v0 rd=v0 sh=0
+EE+0x000889B4 RAW=0x10400003 BEQ          rs=v0 rt=zero target=0x000889C4
+EE+0x000889B8 RAW=0x24020001 ADDIU        rs=zero rt=v0 imm=1
+EE+0x000889BC RAW=0x10000002 BEQ          rs=zero rt=zero target=0x000889C8
+EE+0x000889C0 RAW=0xACA20000 SW           rs=a1 rt=v0 imm=0
+EE+0x000889C4 RAW=0xACA00000 SW           rs=a1 rt=zero imm=0
+EE+0x000889C8 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x000889CC RAW=0xACA3000C SW           rs=a1 rt=v1 imm=12
+EE+0x000889D0 RAW=0x000319C0 SLL          rs=zero rt=v1 rd=v1 sh=7
+EE+0x000889D4 RAW=0x00621825 OR           rs=v1 rt=v0 rd=v1 sh=0
+EE+0x000889D8 RAW=0x24C4FF81 ADDIU        rs=a2 rt=a0 imm=-127
+EE+0x000889DC RAW=0x24020003 ADDIU        rs=zero rt=v0 imm=3
+EE+0x000889E0 RAW=0xACA3000C SW           rs=a1 rt=v1 imm=12
+EE+0x000889E4 RAW=0xACA40008 SW           rs=a1 rt=a0 imm=8
+EE+0x000889E8 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x000889EC RAW=0xACA20000 SW           rs=a1 rt=v0 imm=0
+EE+0x000889F0 RAW=0x0080482D SPECIAL_0x2D rs=a0 rt=zero rd=t1 sh=0
+EE+0x000889F4 RAW=0x8D240000 LW           rs=t1 rt=a0 imm=0
+EE+0x000889F8 RAW=0x2C820002 SLTIU        rs=a0 rt=v0 imm=2
+EE+0x000889FC RAW=0x50400003 BEQL         rs=v0 rt=zero imm=3
+EE+0x00088A00 RAW=0x8CA30000 LW           rs=a1 rt=v1 imm=0
+EE+0x00088A04 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088A08 RAW=0x0120102D SPECIAL_0x2D rs=t1 rt=zero rd=v0 sh=0
+EE+0x00088A0C RAW=0x2C620002 SLTIU        rs=v1 rt=v0 imm=2
+EE+0x00088A10 RAW=0x10400003 BEQ          rs=v0 rt=zero target=0x00088A20
+EE+0x00088A14 RAW=0x38820004 XORI         rs=a0 rt=v0 imm=4
+EE+0x00088A18 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088A1C RAW=0x00A0102D SPECIAL_0x2D rs=a1 rt=zero rd=v0 sh=0
+EE+0x00088A20 RAW=0x14400009 BNE          rs=v0 rt=zero target=0x00088A48
+EE+0x00088A24 RAW=0x38620004 XORI         rs=v1 rt=v0 imm=4
+EE+0x00088A28 RAW=0x1440FFF6 BNE          rs=v0 rt=zero target=0x00088A04
+EE+0x00088A2C RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088A30 RAW=0x8CA30004 LW           rs=a1 rt=v1 imm=4
+EE+0x00088A34 RAW=0x8D220004 LW           rs=t1 rt=v0 imm=4
+EE+0x00088A38 RAW=0x1043FFF2 BEQ          rs=v0 rt=v1 target=0x00088A04
+EE+0x00088A3C RAW=0x3C020009 LUI          rs=zero rt=v0 imm=9
+EE+0x00088A40 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088A44 RAW=0x2442D9D8 ADDIU        rs=v0 rt=v0 imm=-9768
+EE+0x00088A48 RAW=0x1040FFF3 BEQ          rs=v0 rt=zero target=0x00088A18
+EE+0x00088A4C RAW=0x38620002 XORI         rs=v1 rt=v0 imm=2
+EE+0x00088A50 RAW=0x14400011 BNE          rs=v0 rt=zero target=0x00088A98
+EE+0x00088A54 RAW=0x38820002 XORI         rs=a0 rt=v0 imm=2
+EE+0x00088A58 RAW=0x1440FFEA BNE          rs=v0 rt=zero target=0x00088A04
+EE+0x00088A5C RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088A60 RAW=0x69220007 LDL          rs=t1 rt=v0 imm=7
+EE+0x00088A64 RAW=0x6D220000 LDR          rs=t1 rt=v0 imm=0
+EE+0x00088A68 RAW=0x6923000F LDL          rs=t1 rt=v1 imm=15
+EE+0x00088A6C RAW=0x6D230008 LDR          rs=t1 rt=v1 imm=8
+EE+0x00088A70 RAW=0xB0C20007 SDL          rs=a2 rt=v0 imm=7
+EE+0x00088A74 RAW=0xB4C20000 SDR          rs=a2 rt=v0 imm=0
+EE+0x00088A78 RAW=0xB0C3000F SDL          rs=a2 rt=v1 imm=15
+EE+0x00088A7C RAW=0xB4C30008 SDR          rs=a2 rt=v1 imm=8
+EE+0x00088A80 RAW=0x8D230004 LW           rs=t1 rt=v1 imm=4
+EE+0x00088A84 RAW=0x00C0102D SPECIAL_0x2D rs=a2 rt=zero rd=v0 sh=0
+EE+0x00088A88 RAW=0x8CA40004 LW           rs=a1 rt=a0 imm=4
+EE+0x00088A8C RAW=0x00641824 AND          rs=v1 rt=a0 rd=v1 sh=0
+EE+0x00088A90 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088A94 RAW=0xACC30004 SW           rs=a2 rt=v1 imm=4
+EE+0x00088A98 RAW=0x1040FFDF BEQ          rs=v0 rt=zero target=0x00088A18
+EE+0x00088A9C RAW=0x2402FFFF ADDIU        rs=zero rt=v0 imm=-1
+EE+0x00088AA0 RAW=0x8D280008 LW           rs=t1 rt=t0 imm=8
+EE+0x00088AA4 RAW=0x8CA70008 LW           rs=a1 rt=a3 imm=8
+EE+0x00088AA8 RAW=0x8D2A000C LW           rs=t1 rt=t2 imm=12
+EE+0x00088AAC RAW=0x01071823 SUBU         rs=t0 rt=a3 rd=v1 sh=0
+EE+0x00088AB0 RAW=0x0043102A SLT          rs=v0 rt=v1 rd=v0 sh=0
+EE+0x00088AB4 RAW=0x00032023 SUBU         rs=zero rt=v1 rd=a0 sh=0
+EE+0x00088AB8 RAW=0x0082180A MOVZ         rs=a0 rt=v0 rd=v1 sh=0
+EE+0x00088ABC RAW=0x28630020 SLTI         rs=v1 rt=v1 imm=32
+EE+0x00088AC0 RAW=0x1060001C BEQ          rs=v1 rt=zero target=0x00088B34
+EE+0x00088AC4 RAW=0x8CAB000C LW           rs=a1 rt=t3 imm=12
+EE+0x00088AC8 RAW=0x8D240004 LW           rs=t1 rt=a0 imm=4
+EE+0x00088ACC RAW=0x00E8102A SLT          rs=a3 rt=t0 rd=v0 sh=0
+EE+0x00088AD0 RAW=0x1040000B BEQ          rs=v0 rt=zero target=0x00088B00
+EE+0x00088AD4 RAW=0x8CA50004 LW           rs=a1 rt=a1 imm=4
+EE+0x00088AD8 RAW=0x01073823 SUBU         rs=t0 rt=a3 rd=a3 sh=0
+EE+0x00088ADC RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088AE0 RAW=0x000B1842 SRL          rs=zero rt=t3 rd=v1 sh=1
+EE+0x00088AE4 RAW=0x31620001 ANDI         rs=t3 rt=v0 imm=1
+EE+0x00088AE8 RAW=0x24E7FFFF ADDIU        rs=a3 rt=a3 imm=-1
+EE+0x00088AEC RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088AF0 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088AF4 RAW=0x14E0FFFA BNE          rs=a3 rt=zero target=0x00088AE0
+EE+0x00088AF8 RAW=0x00435825 OR           rs=v0 rt=v1 rd=t3 sh=0
+EE+0x00088AFC RAW=0x0100382D SPECIAL_0x2D rs=t0 rt=zero rd=a3 sh=0
+EE+0x00088B00 RAW=0x0107102A SLT          rs=t0 rt=a3 rd=v0 sh=0
+EE+0x00088B04 RAW=0x10400014 BEQ          rs=v0 rt=zero target=0x00088B58
+EE+0x00088B08 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088B0C RAW=0x00E84023 SUBU         rs=a3 rt=t0 rd=t0 sh=0
+EE+0x00088B10 RAW=0x000A1842 SRL          rs=zero rt=t2 rd=v1 sh=1
+EE+0x00088B14 RAW=0x31420001 ANDI         rs=t2 rt=v0 imm=1
+EE+0x00088B18 RAW=0x2508FFFF ADDIU        rs=t0 rt=t0 imm=-1
+EE+0x00088B1C RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088B20 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088B24 RAW=0x1500FFFA BNE          rs=t0 rt=zero target=0x00088B10
+EE+0x00088B28 RAW=0x00435025 OR           rs=v0 rt=v1 rd=t2 sh=0
+EE+0x00088B2C RAW=0x1000000A BEQ          rs=zero rt=zero target=0x00088B58
+EE+0x00088B30 RAW=0x00E0402D SPECIAL_0x2D rs=a3 rt=zero rd=t0 sh=0
+EE+0x00088B34 RAW=0x00E8102A SLT          rs=a3 rt=t0 rd=v0 sh=0
+EE+0x00088B38 RAW=0x10400004 BEQ          rs=v0 rt=zero target=0x00088B4C
+EE+0x00088B3C RAW=0x8D240004 LW           rs=t1 rt=a0 imm=4
+EE+0x00088B40 RAW=0x0000582D SPECIAL_0x2D rs=zero rt=zero rd=t3 sh=0
+EE+0x00088B44 RAW=0x10000004 BEQ          rs=zero rt=zero target=0x00088B58
+EE+0x00088B48 RAW=0x8CA50004 LW           rs=a1 rt=a1 imm=4
+EE+0x00088B4C RAW=0x00E0402D SPECIAL_0x2D rs=a3 rt=zero rd=t0 sh=0
+EE+0x00088B50 RAW=0x8CA50004 LW           rs=a1 rt=a1 imm=4
+EE+0x00088B54 RAW=0x0000502D SPECIAL_0x2D rs=zero rt=zero rd=t2 sh=0
+EE+0x00088B58 RAW=0x10850022 BEQ          rs=a0 rt=a1 target=0x00088BE4
+EE+0x00088B5C RAW=0x014B1021 ADDU         rs=t2 rt=t3 rd=v0 sh=0
+EE+0x00088B60 RAW=0x14800002 BNE          rs=a0 rt=zero target=0x00088B6C
+EE+0x00088B64 RAW=0x016A1023 SUBU         rs=t3 rt=t2 rd=v0 sh=0
+EE+0x00088B68 RAW=0x014B1023 SUBU         rs=t2 rt=t3 rd=v0 sh=0
+EE+0x00088B6C RAW=0x04400005 UNKNOWN      rs=v0 rt=zero imm=5
+EE+0x00088B70 RAW=0x00021823 SUBU         rs=zero rt=v0 rd=v1 sh=0
+EE+0x00088B74 RAW=0xACC80008 SW           rs=a2 rt=t0 imm=8
+EE+0x00088B78 RAW=0xACC2000C SW           rs=a2 rt=v0 imm=12
+EE+0x00088B7C RAW=0x10000005 BEQ          rs=zero rt=zero target=0x00088B94
+EE+0x00088B80 RAW=0xACC00004 SW           rs=a2 rt=zero imm=4
+EE+0x00088B84 RAW=0xACC80008 SW           rs=a2 rt=t0 imm=8
+EE+0x00088B88 RAW=0x24020001 ADDIU        rs=zero rt=v0 imm=1
+EE+0x00088B8C RAW=0xACC3000C SW           rs=a2 rt=v1 imm=12
+EE+0x00088B90 RAW=0xACC20004 SW           rs=a2 rt=v0 imm=4
+EE+0x00088B94 RAW=0x8CC4000C LW           rs=a2 rt=a0 imm=12
+EE+0x00088B98 RAW=0x3C023FFF LUI          rs=zero rt=v0 imm=16383
+EE+0x00088B9C RAW=0x3442FFFE ORI          rs=v0 rt=v0 imm=-2
+EE+0x00088BA0 RAW=0x2483FFFF ADDIU        rs=a0 rt=v1 imm=-1
+EE+0x00088BA4 RAW=0x0043102B SLTU         rs=v0 rt=v1 rd=v0 sh=0
+EE+0x00088BA8 RAW=0x14400012 BNE          rs=v0 rt=zero target=0x00088BF4
+EE+0x00088BAC RAW=0x24020003 ADDIU        rs=zero rt=v0 imm=3
+EE+0x00088BB0 RAW=0x3C053FFF LUI          rs=zero rt=a1 imm=16383
+EE+0x00088BB4 RAW=0x34A5FFFE ORI          rs=a1 rt=a1 imm=-2
+EE+0x00088BB8 RAW=0x00041040 SLL          rs=zero rt=a0 rd=v0 sh=1
+EE+0x00088BBC RAW=0x8CC30008 LW           rs=a2 rt=v1 imm=8
+EE+0x00088BC0 RAW=0x0040202D SPECIAL_0x2D rs=v0 rt=zero rd=a0 sh=0
+EE+0x00088BC4 RAW=0xACC2000C SW           rs=a2 rt=v0 imm=12
+EE+0x00088BC8 RAW=0x2463FFFF ADDIU        rs=v1 rt=v1 imm=-1
+EE+0x00088BCC RAW=0x2482FFFF ADDIU        rs=a0 rt=v0 imm=-1
+EE+0x00088BD0 RAW=0x00A2102B SLTU         rs=a1 rt=v0 rd=v0 sh=0
+EE+0x00088BD4 RAW=0x1040FFF8 BEQ          rs=v0 rt=zero target=0x00088BB8
+EE+0x00088BD8 RAW=0xACC30008 SW           rs=a2 rt=v1 imm=8
+EE+0x00088BDC RAW=0x10000005 BEQ          rs=zero rt=zero target=0x00088BF4
+EE+0x00088BE0 RAW=0x24020003 ADDIU        rs=zero rt=v0 imm=3
+EE+0x00088BE4 RAW=0xACC40004 SW           rs=a2 rt=a0 imm=4
+EE+0x00088BE8 RAW=0xACC80008 SW           rs=a2 rt=t0 imm=8
+EE+0x00088BEC RAW=0xACC2000C SW           rs=a2 rt=v0 imm=12
+EE+0x00088BF0 RAW=0x24020003 ADDIU        rs=zero rt=v0 imm=3
+EE+0x00088BF4 RAW=0x8CC3000C LW           rs=a2 rt=v1 imm=12
+EE+0x00088BF8 RAW=0x04610008 UNKNOWN      rs=v1 rt=at imm=8
+EE+0x00088BFC RAW=0xACC20000 SW           rs=a2 rt=v0 imm=0
+EE+0x00088C00 RAW=0x8CC20008 LW           rs=a2 rt=v0 imm=8
+EE+0x00088C04 RAW=0x00032042 SRL          rs=zero rt=v1 rd=a0 sh=1
+EE+0x00088C08 RAW=0x30630001 ANDI         rs=v1 rt=v1 imm=1
+EE+0x00088C0C RAW=0x00641825 OR           rs=v1 rt=a0 rd=v1 sh=0
+EE+0x00088C10 RAW=0x24420001 ADDIU        rs=v0 rt=v0 imm=1
+EE+0x00088C14 RAW=0xACC3000C SW           rs=a2 rt=v1 imm=12
+EE+0x00088C18 RAW=0xACC20008 SW           rs=a2 rt=v0 imm=8
+EE+0x00088C1C RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0 <== JR RA
+EE+0x00088C20 RAW=0x00C0102D SPECIAL_0x2D rs=a2 rt=zero rd=v0 sh=0
+EE+0x00088C24 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0
+EE+0x00088C28 RAW=0x27BDFFA0 ADDIU        rs=sp rt=sp imm=-96
+EE+0x00088C2C RAW=0xFFB00040 SD           rs=sp rt=s0 imm=64
+EE+0x00088C30 RAW=0x27A40030 ADDIU        rs=sp rt=a0 imm=48
+EE+0x00088C34 RAW=0xFFBF0050 SD           rs=sp rt=ra imm=80
+EE+0x00088C38 RAW=0x03A0282D SPECIAL_0x2D rs=sp rt=zero rd=a1 sh=0
+EE+0x00088C3C RAW=0xE7AC0030 SWC1         rs=sp rt=t4 imm=48
+
+===== CALLER SITE CROSS CHECK =====
+
+CALLER EE+0x00088C68
+EE+0x00088C58 RAW=0x0200282D SPECIAL_0x2D rs=s0 rt=zero rd=a1 sh=0
+EE+0x00088C5C RAW=0x27A60020 ADDIU        rs=sp rt=a2 imm=32
+EE+0x00088C60 RAW=0x0C02227C JAL          target=0x000889F0
+EE+0x00088C64 RAW=0x03A0202D SPECIAL_0x2D rs=sp rt=zero rd=a0 sh=0
+EE+0x00088C68 RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x00088C6C RAW=0x0040202D SPECIAL_0x2D rs=v0 rt=zero rd=a0 sh=0 <== DELAY SLOT
+EE+0x00088C70 RAW=0xDFBF0050 LD           rs=sp rt=ra imm=80
+EE+0x00088C74 RAW=0xDFB00040 LD           rs=sp rt=s0 imm=64
+
+CALLER EE+0x00088CCC
+EE+0x00088CBC RAW=0x03A0202D SPECIAL_0x2D rs=sp rt=zero rd=a0 sh=0
+EE+0x00088CC0 RAW=0x38420001 XORI         rs=v0 rt=v0 imm=1
+EE+0x00088CC4 RAW=0x0C02227C JAL          target=0x000889F0
+EE+0x00088CC8 RAW=0xAFA20014 SW           rs=sp rt=v0 imm=20
+EE+0x00088CCC RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x00088CD0 RAW=0x0040202D SPECIAL_0x2D rs=v0 rt=zero rd=a0 sh=0 <== DELAY SLOT
+EE+0x00088CD4 RAW=0xDFBF0050 LD           rs=sp rt=ra imm=80
+EE+0x00088CD8 RAW=0xDFB00040 LD           rs=sp rt=s0 imm=64
+
+CALLER EE+0x00088EC4
+EE+0x00088EB4 RAW=0xAFA4002C SW           rs=sp rt=a0 imm=44
+EE+0x00088EB8 RAW=0x24020003 ADDIU        rs=zero rt=v0 imm=3
+EE+0x00088EBC RAW=0xAD220000 SW           rs=t1 rt=v0 imm=0
+EE+0x00088EC0 RAW=0x0140202D SPECIAL_0x2D rs=t2 rt=zero rd=a0 sh=0
+EE+0x00088EC4 RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x00088EC8 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0 <== DELAY SLOT
+EE+0x00088ECC RAW=0xDFBF0050 LD           rs=sp rt=ra imm=80
+EE+0x00088ED0 RAW=0xDFB00040 LD           rs=sp rt=s0 imm=64
+
+CALLER EE+0x00089020
+EE+0x00089010 RAW=0x24C60040 ADDIU        rs=a2 rt=a2 imm=64
+EE+0x00089014 RAW=0x0044300B MOVN         rs=v0 rt=a0 rd=a2 sh=0
+EE+0x00089018 RAW=0xACA6000C SW           rs=a1 rt=a2 imm=12
+EE+0x0008901C RAW=0x00A0202D SPECIAL_0x2D rs=a1 rt=zero rd=a0 sh=0
+EE+0x00089020 RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x00089024 RAW=0x00000000 SLL          rs=zero rt=zero rd=zero sh=0 <== DELAY SLOT
+EE+0x00089028 RAW=0xDFBF0040 LD           rs=sp rt=ra imm=64
+EE+0x0008902C RAW=0xDFB00030 LD           rs=sp rt=s0 imm=48
+
+CALLER EE+0x00089244
+EE+0x00089234 RAW=0x1040FFFA BEQ          rs=v0 rt=zero target=0x00089220
+EE+0x00089238 RAW=0x0060302D SPECIAL_0x2D rs=v1 rt=zero rd=a2 sh=0
+EE+0x0008923C RAW=0xAFA40008 SW           rs=sp rt=a0 imm=8
+EE+0x00089240 RAW=0xAFA3000C SW           rs=sp rt=v1 imm=12
+EE+0x00089244 RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x00089248 RAW=0x03A0202D SPECIAL_0x2D rs=sp rt=zero rd=a0 sh=0 <== DELAY SLOT
+EE+0x0008924C RAW=0xDFBF0010 LD           rs=sp rt=ra imm=16
+EE+0x00089250 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0
+
+CALLER EE+0x000893A4
+EE+0x00089394 RAW=0x03A0282D SPECIAL_0x2D rs=sp rt=zero rd=a1 sh=0
+EE+0x00089398 RAW=0x8FA20004 LW           rs=sp rt=v0 imm=4
+EE+0x0008939C RAW=0x03A0202D SPECIAL_0x2D rs=sp rt=zero rd=a0 sh=0
+EE+0x000893A0 RAW=0x2C420001 SLTIU        rs=v0 rt=v0 imm=1
+EE+0x000893A4 RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x000893A8 RAW=0xAFA20004 SW           rs=sp rt=v0 imm=4 <== DELAY SLOT
+EE+0x000893AC RAW=0xDFBF0020 LD           rs=sp rt=ra imm=32
+EE+0x000893B0 RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0
+
+CALLER EE+0x000893D0
+EE+0x000893C0 RAW=0xFFBF0010 SD           rs=sp rt=ra imm=16
+EE+0x000893C4 RAW=0x03A0202D SPECIAL_0x2D rs=sp rt=zero rd=a0 sh=0
+EE+0x000893C8 RAW=0xAFA50004 SW           rs=sp rt=a1 imm=4
+EE+0x000893CC RAW=0xAFA60008 SW           rs=sp rt=a2 imm=8
+EE+0x000893D0 RAW=0x0C022214 JAL          target=0x00088850 <== CALL
+EE+0x000893D4 RAW=0xAFA7000C SW           rs=sp rt=a3 imm=12 <== DELAY SLOT
+EE+0x000893D8 RAW=0xDFBF0010 LD           rs=sp rt=ra imm=16
+EE+0x000893DC RAW=0x03E00008 JR           rs=ra rt=zero rd=zero sh=0
+
+END OF PROBE
+No memory writes were performed.
