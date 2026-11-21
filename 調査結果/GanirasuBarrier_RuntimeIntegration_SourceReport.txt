@@ -1,0 +1,5398 @@
+GANIRASU BARRIER RUNTIME INTEGRATION SOURCE REPORT
+Date: 2026-11-22 08:20:23
+Root: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort
+
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs
+============================================================
+
+----- LINE 131 -----
+        (0xBF, "コロマージの魔法"),
+        (0xC0, "しかし誰に対しても効果が無かった(コロプリースト)"),
+        (0xC1, "失敗した(プチヒーロー)"),
+        (0xC3, "プチマージの魔法"),
+        (0xC4, "しかし誰に対しても効果が無かった(プチプリースト)"),
+        (0xC5, "50ダメージ(ヘルジャスティス)")
+    };
+
+    private static readonly PineClient SharedPine = new PineClient();
+    private static readonly object SharedPineAccessSync = new object();
+    private readonly PineClient _pine = SharedPine;
+    private readonly System.Threading.Timer _timer;
+
+    private readonly object _operationSync = new object();
+    private readonly object _stateSync = new object();
+
+    private Dictionary<int, ushort> _actions =
+        new Dictionary<int, ushort>();
+
+    private byte[]? _lastTable;
+    private uint _codeCaveAddress;
+
+----- LINE 132 -----
+        (0xC0, "しかし誰に対しても効果が無かった(コロプリースト)"),
+        (0xC1, "失敗した(プチヒーロー)"),
+        (0xC3, "プチマージの魔法"),
+        (0xC4, "しかし誰に対しても効果が無かった(プチプリースト)"),
+        (0xC5, "50ダメージ(ヘルジャスティス)")
+    };
+
+    private static readonly PineClient SharedPine = new PineClient();
+    private static readonly object SharedPineAccessSync = new object();
+    private readonly PineClient _pine = SharedPine;
+    private readonly System.Threading.Timer _timer;
+
+    private readonly object _operationSync = new object();
+    private readonly object _stateSync = new object();
+
+    private Dictionary<int, ushort> _actions =
+        new Dictionary<int, ushort>();
+
+    private byte[]? _lastTable;
+    private uint _codeCaveAddress;
+
+
+----- LINE 133 -----
+        (0xC1, "失敗した(プチヒーロー)"),
+        (0xC3, "プチマージの魔法"),
+        (0xC4, "しかし誰に対しても効果が無かった(プチプリースト)"),
+        (0xC5, "50ダメージ(ヘルジャスティス)")
+    };
+
+    private static readonly PineClient SharedPine = new PineClient();
+    private static readonly object SharedPineAccessSync = new object();
+    private readonly PineClient _pine = SharedPine;
+    private readonly System.Threading.Timer _timer;
+
+    private readonly object _operationSync = new object();
+    private readonly object _stateSync = new object();
+
+    private Dictionary<int, ushort> _actions =
+        new Dictionary<int, ushort>();
+
+    private byte[]? _lastTable;
+    private uint _codeCaveAddress;
+
+    private int _pollBusy;
+
+----- LINE 158 -----
+
+    internal ActionAutoRestoreService()
+    {
+        _timer = new System.Threading.Timer(Poll, null, 500, 500);
+    }
+
+    internal static uint ReadShared32(uint address)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+
+----- LINE 160 -----
+    {
+        _timer = new System.Threading.Timer(Poll, null, 500, 500);
+    }
+
+    internal static uint ReadShared32(uint address)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+
+----- LINE 163 -----
+
+    internal static uint ReadShared32(uint address)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+
+----- LINE 166 -----
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+----- LINE 172 -----
+            }
+
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            SharedPine.Write32(address, value);
+        }
+    }
+
+    private static bool IsLegacyPatch(uint instruction)
+
+----- LINE 174 -----
+            return SharedPine.Read32(address);
+        }
+    }
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            SharedPine.Write32(address, value);
+        }
+    }
+
+    private static bool IsLegacyPatch(uint instruction)
+    {
+        return (instruction & 0xFFFF0000u) == LegacyPatchBase;
+
+----- LINE 177 -----
+
+    internal static void WriteShared32(uint address, uint value)
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            SharedPine.Write32(address, value);
+        }
+    }
+
+    private static bool IsLegacyPatch(uint instruction)
+    {
+        return (instruction & 0xFFFF0000u) == LegacyPatchBase;
+    }
+
+    private static bool IsDispatcherCall(uint instruction)
+
+----- LINE 180 -----
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            SharedPine.Write32(address, value);
+        }
+    }
+
+    private static bool IsLegacyPatch(uint instruction)
+    {
+        return (instruction & 0xFFFF0000u) == LegacyPatchBase;
+    }
+
+    private static bool IsDispatcherCall(uint instruction)
+    {
+        if ((instruction >> 26) != 3u)
+            return false;
+
+----- LINE 241 -----
+
+        lock (_stateSync)
+            _actions = copy;
+
+        lock (_operationSync)
+        {
+            try
+            {
+                if (!_pine.TryConnect())
+                {
+                    message =
+                        "設定はアプリ内に保持しました。\n" +
+                        "PCSX2のPINE TCP 28011に接続できません。";
+                    return false;
+                }
+
+                uint status = _pine.GetStatus();
+
+                if (status != 0)
+                {
+                    message =
+
+----- LINE 245 -----
+        lock (_operationSync)
+        {
+            try
+            {
+                if (!_pine.TryConnect())
+                {
+                    message =
+                        "設定はアプリ内に保持しました。\n" +
+                        "PCSX2のPINE TCP 28011に接続できません。";
+                    return false;
+                }
+
+                uint status = _pine.GetStatus();
+
+                if (status != 0)
+                {
+                    message =
+                        "設定は保持しました。\n" +
+                        "PCSX2をゲーム実行状態にしてください。";
+                    return false;
+                }
+
+----- LINE 249 -----
+                if (!_pine.TryConnect())
+                {
+                    message =
+                        "設定はアプリ内に保持しました。\n" +
+                        "PCSX2のPINE TCP 28011に接続できません。";
+                    return false;
+                }
+
+                uint status = _pine.GetStatus();
+
+                if (status != 0)
+                {
+                    message =
+                        "設定は保持しました。\n" +
+                        "PCSX2をゲーム実行状態にしてください。";
+                    return false;
+                }
+
+                ApplyRuntime(copy);
+
+                if (copy.Count == 0)
+
+----- LINE 367 -----
+            0x00000000u,
+            0x01408821u,
+            0x0808F1D4u,
+            0x00000000u
+        };
+
+        for (int i = 0; i < expected.Length; i++)
+        {
+            if (_pine.Read32(address + (uint)(i * 4)) != expected[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    private uint FindCodeCave()
+    {
+        for (
+            uint candidate = CaveSearchStart;
+            candidate >= CaveSearchEnd;
+            candidate -= CaveSearchStep)
+
+----- LINE 385 -----
+            uint candidate = CaveSearchStart;
+            candidate >= CaveSearchEnd;
+            candidate -= CaveSearchStep)
+        {
+            bool free = true;
+
+            for (uint offset = 0; offset < CaveSize; offset += 4)
+            {
+                if (_pine.Read32(candidate + offset) != 0)
+                {
+                    free = false;
+                    break;
+                }
+            }
+
+            if (free)
+                return candidate;
+        }
+
+        throw new InvalidOperationException(
+            "EE RAMの指定範囲に512バイトの空き領域が見つかりません。\n" +
+
+----- LINE 439 -----
+            // j dgEnemyAttack
+            0x0808F1D4u,
+
+            // nop
+            0x00000000u
+        };
+
+        for (int i = 0; i < code.Length; i++)
+            _pine.Write32(address + (uint)(i * 4), code[i]);
+
+        if (!IsDispatcherCode(address))
+        {
+            throw new InvalidOperationException(
+                "MIPSディスパッチャーの書き込み検証に失敗しました。");
+        }
+    }
+
+    private void WriteActionTable(uint address, byte[] table)
+    {
+        for (int i = 0; i < table.Length; i += 4)
+        {
+
+----- LINE 458 -----
+        for (int i = 0; i < table.Length; i += 4)
+        {
+            uint value =
+                (uint)table[i] |
+                ((uint)table[i + 1] << 8) |
+                ((uint)table[i + 2] << 16) |
+                ((uint)table[i + 3] << 24);
+
+            _pine.Write32(address + (uint)i, value);
+        }
+
+        for (int i = 0; i < table.Length; i += 4)
+        {
+            uint expected =
+                (uint)table[i] |
+                ((uint)table[i + 1] << 8) |
+                ((uint)table[i + 2] << 16) |
+                ((uint)table[i + 3] << 24);
+
+            uint actual = _pine.Read32(address + (uint)i);
+
+
+----- LINE 469 -----
+        for (int i = 0; i < table.Length; i += 4)
+        {
+            uint expected =
+                (uint)table[i] |
+                ((uint)table[i + 1] << 8) |
+                ((uint)table[i + 2] << 16) |
+                ((uint)table[i + 3] << 24);
+
+            uint actual = _pine.Read32(address + (uint)i);
+
+            if (actual != expected)
+            {
+                throw new InvalidOperationException(
+                    "種族別特技テーブルの検証に失敗しました。位置: 0x" +
+                    (address + (uint)i).ToString("X8"));
+            }
+        }
+    }
+
+    private void RestoreCallInstruction()
+    {
+
+----- LINE 482 -----
+                    "種族別特技テーブルの検証に失敗しました。位置: 0x" +
+                    (address + (uint)i).ToString("X8"));
+            }
+        }
+    }
+
+    private void RestoreCallInstruction()
+    {
+        uint current = _pine.Read32(PatchAddress);
+
+        if (current == OriginalCallInstruction)
+            return;
+
+        if (!IsDispatcherCall(current))
+        {
+            throw new InvalidOperationException(
+                "呼び出し命令が想定外のため復元を中止しました: 0x" +
+                current.ToString("X8"));
+        }
+
+        _pine.Write32(PatchAddress, OriginalCallInstruction);
+
+----- LINE 494 -----
+
+        if (!IsDispatcherCall(current))
+        {
+            throw new InvalidOperationException(
+                "呼び出し命令が想定外のため復元を中止しました: 0x" +
+                current.ToString("X8"));
+        }
+
+        _pine.Write32(PatchAddress, OriginalCallInstruction);
+
+        uint verify = _pine.Read32(PatchAddress);
+
+        if (verify != OriginalCallInstruction)
+        {
+            throw new InvalidOperationException(
+                "元の呼び出し命令への復元に失敗しました。");
+        }
+    }
+
+    private void ApplyRuntime(Dictionary<int, ushort> actions)
+    {
+
+----- LINE 496 -----
+        {
+            throw new InvalidOperationException(
+                "呼び出し命令が想定外のため復元を中止しました: 0x" +
+                current.ToString("X8"));
+        }
+
+        _pine.Write32(PatchAddress, OriginalCallInstruction);
+
+        uint verify = _pine.Read32(PatchAddress);
+
+        if (verify != OriginalCallInstruction)
+        {
+            throw new InvalidOperationException(
+                "元の呼び出し命令への復元に失敗しました。");
+        }
+    }
+
+    private void ApplyRuntime(Dictionary<int, ushort> actions)
+    {
+        uint currentCall = _pine.Read32(PatchAddress);
+
+
+----- LINE 507 -----
+        {
+            throw new InvalidOperationException(
+                "元の呼び出し命令への復元に失敗しました。");
+        }
+    }
+
+    private void ApplyRuntime(Dictionary<int, ushort> actions)
+    {
+        uint currentCall = _pine.Read32(PatchAddress);
+
+        bool currentIsDispatcher = IsDispatcherCall(currentCall);
+
+        if (currentCall != OriginalCallInstruction &&
+            !currentIsDispatcher)
+        {
+            throw new InvalidOperationException(
+                "敵特技呼び出し命令が想定外です。\n" +
+                "現在値: 0x" + currentCall.ToString("X8"));
+        }
+
+        uint delayInstruction = _pine.Read32(DelaySlotAddress);
+
+----- LINE 519 -----
+        if (currentCall != OriginalCallInstruction &&
+            !currentIsDispatcher)
+        {
+            throw new InvalidOperationException(
+                "敵特技呼び出し命令が想定外です。\n" +
+                "現在値: 0x" + currentCall.ToString("X8"));
+        }
+
+        uint delayInstruction = _pine.Read32(DelaySlotAddress);
+
+        if (IsLegacyPatch(delayInstruction))
+        {
+            _pine.Write32(
+                DelaySlotAddress,
+                OriginalDelayInstruction);
+
+            delayInstruction = _pine.Read32(DelaySlotAddress);
+        }
+
+        if (delayInstruction != OriginalDelayInstruction)
+        {
+
+----- LINE 523 -----
+                "敵特技呼び出し命令が想定外です。\n" +
+                "現在値: 0x" + currentCall.ToString("X8"));
+        }
+
+        uint delayInstruction = _pine.Read32(DelaySlotAddress);
+
+        if (IsLegacyPatch(delayInstruction))
+        {
+            _pine.Write32(
+                DelaySlotAddress,
+                OriginalDelayInstruction);
+
+            delayInstruction = _pine.Read32(DelaySlotAddress);
+        }
+
+        if (delayInstruction != OriginalDelayInstruction)
+        {
+            throw new InvalidOperationException(
+                "遅延スロットが想定外です。\n" +
+                "現在値: 0x" + delayInstruction.ToString("X8"));
+        }
+
+----- LINE 527 -----
+        uint delayInstruction = _pine.Read32(DelaySlotAddress);
+
+        if (IsLegacyPatch(delayInstruction))
+        {
+            _pine.Write32(
+                DelaySlotAddress,
+                OriginalDelayInstruction);
+
+            delayInstruction = _pine.Read32(DelaySlotAddress);
+        }
+
+        if (delayInstruction != OriginalDelayInstruction)
+        {
+            throw new InvalidOperationException(
+                "遅延スロットが想定外です。\n" +
+                "現在値: 0x" + delayInstruction.ToString("X8"));
+        }
+
+        if (currentIsDispatcher)
+        {
+            uint detectedCave = DecodeDispatcherAddress(currentCall);
+
+----- LINE 589 -----
+        if (newCave || !TablesEqual(_lastTable, table))
+        {
+            WriteActionTable(tableAddress, table);
+            _lastTable = (byte[])table.Clone();
+        }
+
+        uint newCall = EncodeJal(_codeCaveAddress);
+
+        _pine.Write32(PatchAddress, newCall);
+
+        uint verifyCall = _pine.Read32(PatchAddress);
+
+        if (verifyCall != newCall)
+        {
+            throw new InvalidOperationException(
+                "ディスパッチャー呼び出し命令の検証に失敗しました。\n" +
+                "書き込み値: 0x" + newCall.ToString("X8") +
+                "\n読み戻し値: 0x" + verifyCall.ToString("X8"));
+        }
+    }
+
+
+----- LINE 591 -----
+            WriteActionTable(tableAddress, table);
+            _lastTable = (byte[])table.Clone();
+        }
+
+        uint newCall = EncodeJal(_codeCaveAddress);
+
+        _pine.Write32(PatchAddress, newCall);
+
+        uint verifyCall = _pine.Read32(PatchAddress);
+
+        if (verifyCall != newCall)
+        {
+            throw new InvalidOperationException(
+                "ディスパッチャー呼び出し命令の検証に失敗しました。\n" +
+                "書き込み値: 0x" + newCall.ToString("X8") +
+                "\n読み戻し値: 0x" + verifyCall.ToString("X8"));
+        }
+    }
+
+    private void Poll(object? state)
+    {
+
+----- LINE 625 -----
+                if (snapshot.Count == 0)
+                {
+                    RaiseStatus(
+                        "種族別特技設定なし：元の命令を維持しています。");
+                }
+
+                if (snapshot.Count > 0)
+                {
+                    bool connected = _pine.TryConnect();
+
+                    if (!connected)
+                    {
+                        RaiseStatus(
+                            "PINE未接続：PCSX2のTCP 28011を確認してください。");
+                    }
+
+                    if (connected)
+                    {
+                        uint status = _pine.GetStatus();
+
+                        if (status == 0)
+
+----- LINE 630 -----
+
+                if (snapshot.Count > 0)
+                {
+                    bool connected = _pine.TryConnect();
+
+                    if (!connected)
+                    {
+                        RaiseStatus(
+                            "PINE未接続：PCSX2のTCP 28011を確認してください。");
+                    }
+
+                    if (connected)
+                    {
+                        uint status = _pine.GetStatus();
+
+                        if (status == 0)
+                        {
+                            ApplyRuntime(snapshot);
+                            RaiseStatus(
+                                "種族別特技ディスパッチャー適用中：" +
+                                snapshot.Count + "種類");
+
+----- LINE 635 -----
+                    if (!connected)
+                    {
+                        RaiseStatus(
+                            "PINE未接続：PCSX2のTCP 28011を確認してください。");
+                    }
+
+                    if (connected)
+                    {
+                        uint status = _pine.GetStatus();
+
+                        if (status == 0)
+                        {
+                            ApplyRuntime(snapshot);
+                            RaiseStatus(
+                                "種族別特技ディスパッチャー適用中：" +
+                                snapshot.Count + "種類");
+                        }
+
+                        if (status == 1)
+                        {
+                            RaiseStatus(
+
+----- LINE 700 -----
+
+        _disposed = true;
+        _timer.Dispose();
+
+        lock (_operationSync)
+        {
+            try
+            {
+                if (_pine.TryConnect() && _pine.GetStatus() == 0)
+                    RestoreCallInstruction();
+            }
+            catch
+            {
+            }
+
+        }
+    }
+    private sealed class PineClient : IDisposable
+    {
+        private const int Port = 28011;
+
+
+----- LINE 709 -----
+                    RestoreCallInstruction();
+            }
+            catch
+            {
+            }
+
+        }
+    }
+    private sealed class PineClient : IDisposable
+    {
+        private const int Port = 28011;
+
+        private readonly object _sync = new object();
+
+        private TcpClient? _client;
+        private NetworkStream? _stream;
+
+        internal bool TryConnect()
+        {
+            lock (_sync)
+            {
+
+----- LINE 711 -----
+            catch
+            {
+            }
+
+        }
+    }
+    private sealed class PineClient : IDisposable
+    {
+        private const int Port = 28011;
+
+        private readonly object _sync = new object();
+
+        private TcpClient? _client;
+        private NetworkStream? _stream;
+
+        internal bool TryConnect()
+        {
+            lock (_sync)
+            {
+                if (_client != null && _stream != null && _client.Connected)
+                    return true;
+
+----- LINE 794 -----
+        private byte[] Request(
+            byte opcode,
+            byte[] args,
+            int expectedPayloadLength)
+        {
+            lock (_sync)
+            {
+                if (_stream == null || _client == null || !_client.Connected)
+                    throw new InvalidOperationException("PINE接続がありません。");
+
+                byte[] body = new byte[1 + args.Length];
+                body[0] = opcode;
+
+                Array.Copy(args, 0, body, 1, args.Length);
+
+                byte[] packet = new byte[4 + body.Length];
+
+                WriteUInt32(packet, 0, (uint)packet.Length);
+                Array.Copy(body, 0, packet, 4, body.Length);
+
+                try
+
+----- LINE 815 -----
+                {
+                    _stream.Write(packet, 0, packet.Length);
+
+                    byte[] header = ReadExactly(_stream, 4);
+                    uint responseLength = BitConverter.ToUInt32(header, 0);
+
+                    if (responseLength < 5 || responseLength > 1024)
+                        throw new InvalidOperationException(
+                            "PINE応答サイズが不正です: " + responseLength);
+
+                    byte[] response =
+                        ReadExactly(_stream, checked((int)responseLength - 4));
+
+                    if (response[0] != 0)
+                        throw new InvalidOperationException(
+                            "PCSX2 PINEが要求を拒否しました。");
+
+                    int actualPayloadLength = response.Length - 1;
+
+                    if (actualPayloadLength != expectedPayloadLength)
+                        throw new InvalidOperationException(
+
+----- LINE 822 -----
+                        throw new InvalidOperationException(
+                            "PINE応答サイズが不正です: " + responseLength);
+
+                    byte[] response =
+                        ReadExactly(_stream, checked((int)responseLength - 4));
+
+                    if (response[0] != 0)
+                        throw new InvalidOperationException(
+                            "PCSX2 PINEが要求を拒否しました。");
+
+                    int actualPayloadLength = response.Length - 1;
+
+                    if (actualPayloadLength != expectedPayloadLength)
+                        throw new InvalidOperationException(
+                            "PINE応答長が一致しません。");
+
+                    byte[] payload = new byte[actualPayloadLength];
+
+                    if (actualPayloadLength > 0)
+                        Array.Copy(response, 1, payload, 0, actualPayloadLength);
+
+
+----- LINE 828 -----
+                    if (response[0] != 0)
+                        throw new InvalidOperationException(
+                            "PCSX2 PINEが要求を拒否しました。");
+
+                    int actualPayloadLength = response.Length - 1;
+
+                    if (actualPayloadLength != expectedPayloadLength)
+                        throw new InvalidOperationException(
+                            "PINE応答長が一致しません。");
+
+                    byte[] payload = new byte[actualPayloadLength];
+
+                    if (actualPayloadLength > 0)
+                        Array.Copy(response, 1, payload, 0, actualPayloadLength);
+
+                    return payload;
+                }
+                catch
+                {
+                    DisconnectCore();
+                    throw;
+
+----- LINE 856 -----
+            int offset = 0;
+
+            while (offset < length)
+            {
+                int read = stream.Read(data, offset, length - offset);
+
+                if (read <= 0)
+                    throw new InvalidOperationException(
+                        "PINE接続が途中で切断されました。");
+
+                offset += read;
+            }
+
+            return data;
+        }
+
+        private static void WriteUInt32(
+            byte[] data,
+            int offset,
+            uint value)
+        {
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ArbitraryBinaryEditorForm.cs
+============================================================
+
+----- LINE 15 -----
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal sealed class ArbitraryBinaryEditorForm : Form
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+    private const int PageSize = 4096;
+
+    private byte[]? _data;
+    private byte[]? _original;
+    private uint _pageStart;
+    private bool _busy;
+
+    private readonly DataGridView _grid;
+    private readonly Label _status;
+    private readonly TextBox _addressBox;
+    private readonly Button _loadButton;
+
+----- LINE 16 -----
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal sealed class ArbitraryBinaryEditorForm : Form
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+    private const int PageSize = 4096;
+
+    private byte[]? _data;
+    private byte[]? _original;
+    private uint _pageStart;
+    private bool _busy;
+
+    private readonly DataGridView _grid;
+    private readonly Label _status;
+    private readonly TextBox _addressBox;
+    private readonly Button _loadButton;
+    private readonly Button _refreshButton;
+
+----- LINE 35 -----
+    private readonly Button _loadButton;
+    private readonly Button _refreshButton;
+    private readonly Button _previousButton;
+    private readonly Button _nextButton;
+    private readonly Button _writeButton;
+
+    public ArbitraryBinaryEditorForm()
+    {
+        Text = "任意バイナリ編集 - PCSX2 PINE";
+        StartPosition = FormStartPosition.CenterParent;
+        Width = 1200;
+        Height = 780;
+        MinimumSize = new Size(950, 600);
+        Font = new Font("Yu Gothic UI", 9);
+
+        var root = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            Padding = new Padding(8)
+
+----- LINE 195 -----
+        _grid.CellValidating += ValidateCell;
+        _grid.CellEndEdit += CommitCell;
+
+        _status = new Label
+        {
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft,
+            BorderStyle = BorderStyle.FixedSingle,
+            Text = "PCSX2のゲームを起動し、PINEを有効にしてください。"
+        };
+
+        root.Controls.Add(toolbar, 0, 0);
+        root.Controls.Add(_grid, 0, 1);
+        root.Controls.Add(_status, 0, 2);
+        Controls.Add(root);
+
+        UpdateNavigation();
+    }
+
+    private static bool TryParseAddress(
+        string input, out uint address, out string explanation)
+
+----- LINE 301 -----
+
+        SetBusy(true);
+        _status.Text =
+            "PCSX2から読み込み中: 0x" + pageStart.ToString("X8");
+
+        try
+        {
+            byte[] bytes = await Task.Run(
+                () => PineClient.ReadMemory(pageStart, PageSize));
+
+            _pageStart = pageStart;
+            _data = bytes;
+            _original = (byte[])bytes.Clone();
+
+            DisplayPage();
+
+            // 指定されたアドレスの行・列へ自動移動する
+            uint targetOffset = requestedAddress - pageStart;
+            int targetRow = (int)(targetOffset / 16);
+            int targetCol = (int)(targetOffset % 16);
+
+
+----- LINE 343 -----
+                " / 4096 bytes" + detail;
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "読み込み失敗";
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "PINE読み込みエラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+        finally
+        {
+            SetBusy(false);
+            UpdateNavigation();
+        }
+    }
+
+    private void DisplayPage()
+    {
+
+----- LINE 509 -----
+
+        SetBusy(true);
+        _status.Text = "PCSX2へ書き込み中...";
+
+        try
+        {
+            await Task.Run(() =>
+            {
+                PineClient.WriteChangedBytes(
+                    address, dataToWrite, originalToCompare);
+
+                byte[] verify =
+                    PineClient.ReadMemory(address, PageSize);
+
+                for (int i = 0; i < PageSize; i++)
+                {
+                    if (verify[i] != dataToWrite[i])
+                    {
+                        throw new IOException(
+                            "書き込み後の読み戻し値が一致しません。\r\n" +
+                            "アドレス: 0x" +
+
+----- LINE 513 -----
+        try
+        {
+            await Task.Run(() =>
+            {
+                PineClient.WriteChangedBytes(
+                    address, dataToWrite, originalToCompare);
+
+                byte[] verify =
+                    PineClient.ReadMemory(address, PageSize);
+
+                for (int i = 0; i < PageSize; i++)
+                {
+                    if (verify[i] != dataToWrite[i])
+                    {
+                        throw new IOException(
+                            "書き込み後の読み戻し値が一致しません。\r\n" +
+                            "アドレス: 0x" +
+                            (address + (uint)i).ToString("X8") +
+                            "\r\n期待値: " + dataToWrite[i].ToString("X2") +
+                            "\r\n実際の値: " + verify[i].ToString("X2"));
+                    }
+
+----- LINE 549 -----
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "書き込みまたは検証に失敗しました。";
+            MessageBox.Show(
+                this,
+                ex.Message,
+                "PINE書き込みエラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
+            // 書き込み結果が不明な場合も、現在のメモリを再取得する。
+            try
+            {
+                byte[] latest = await Task.Run(
+                    () => PineClient.ReadMemory(address, PageSize));
+                _data = latest;
+                _original = (byte[])latest.Clone();
+                DisplayPage();
+                _status.Text = "現在のメモリを再取得しました。";
+
+----- LINE 557 -----
+                "PINE書き込みエラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
+            // 書き込み結果が不明な場合も、現在のメモリを再取得する。
+            try
+            {
+                byte[] latest = await Task.Run(
+                    () => PineClient.ReadMemory(address, PageSize));
+                _data = latest;
+                _original = (byte[])latest.Clone();
+                DisplayPage();
+                _status.Text = "現在のメモリを再取得しました。";
+            }
+            catch
+            {
+                _status.Text = "再取得にも失敗しました。PCSX2の接続を確認してください。";
+            }
+        }
+        finally
+        {
+
+----- LINE 622 -----
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        base.OnFormClosing(e);
+    }
+
+    private static class PineClient
+    {
+        private const byte MsgRead8 = 0;
+        private const byte MsgWrite8 = 4;
+
+        public static byte[] ReadMemory(uint address, int length)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            if ((ulong)address + (ulong)length > 0x100000000UL)
+                throw new ArgumentOutOfRangeException(nameof(address));
+
+
+----- LINE 660 -----
+
+                offset += 5;
+            }
+
+            byte[] body = SendRequest(request, 5 + length);
+
+            if (body[0] != 0)
+                throw new IOException(
+                    "PINEがメモリ読み込みを拒否しました。");
+
+            byte[] result = new byte[length];
+            Buffer.BlockCopy(body, 1, result, 0, length);
+
+            return result;
+        }
+
+        public static void WriteChangedBytes(
+            uint address, byte[] data, byte[] original)
+        {
+            if (data.Length != original.Length)
+                throw new ArgumentException("比較データのサイズが一致しません。");
+
+----- LINE 710 -----
+                request[offset + 5] = data[index];
+                offset += 6;
+            }
+
+            byte[] body = SendRequest(request, 5);
+
+            if (body[0] != 0)
+                throw new IOException(
+                    "PINEがメモリ書き込みを拒否しました。");
+        }
+
+        private static byte[] SendRequest(
+            byte[] request, int expectedResponseLength)
+        {
+            using var client = new TcpClient();
+
+            client.ReceiveTimeout = 10000;
+            client.SendTimeout = 10000;
+
+            try
+            {
+
+----- LINE 723 -----
+        {
+            using var client = new TcpClient();
+
+            client.ReceiveTimeout = 10000;
+            client.SendTimeout = 10000;
+
+            try
+            {
+                client.Connect(PineHost, PinePort);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(
+                    "PCSX2のPINEへ接続できません。\r\n" +
+                    "接続先: " + PineHost + ":" + PinePort +
+                    "\r\nPCSX2でPINEが有効になっているか確認してください。",
+                    ex);
+            }
+
+            using NetworkStream stream = client.GetStream();
+
+
+----- LINE 728 -----
+
+            try
+            {
+                client.Connect(PineHost, PinePort);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(
+                    "PCSX2のPINEへ接続できません。\r\n" +
+                    "接続先: " + PineHost + ":" + PinePort +
+                    "\r\nPCSX2でPINEが有効になっているか確認してください。",
+                    ex);
+            }
+
+            using NetworkStream stream = client.GetStream();
+
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+
+            byte[] header = ReadExact(stream, 4);
+
+
+----- LINE 729 -----
+            try
+            {
+                client.Connect(PineHost, PinePort);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(
+                    "PCSX2のPINEへ接続できません。\r\n" +
+                    "接続先: " + PineHost + ":" + PinePort +
+                    "\r\nPCSX2でPINEが有効になっているか確認してください。",
+                    ex);
+            }
+
+            using NetworkStream stream = client.GetStream();
+
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+
+            byte[] header = ReadExact(stream, 4);
+
+            int responseLength =
+
+----- LINE 730 -----
+            {
+                client.Connect(PineHost, PinePort);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(
+                    "PCSX2のPINEへ接続できません。\r\n" +
+                    "接続先: " + PineHost + ":" + PinePort +
+                    "\r\nPCSX2でPINEが有効になっているか確認してください。",
+                    ex);
+            }
+
+            using NetworkStream stream = client.GetStream();
+
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+
+            byte[] header = ReadExact(stream, 4);
+
+            int responseLength =
+                BinaryPrimitives.ReadInt32LittleEndian(header);
+
+----- LINE 747 -----
+            byte[] header = ReadExact(stream, 4);
+
+            int responseLength =
+                BinaryPrimitives.ReadInt32LittleEndian(header);
+
+            if (responseLength != expectedResponseLength)
+            {
+                throw new IOException(
+                    "PINE応答サイズが一致しません。\r\n" +
+                    "期待値: " + expectedResponseLength +
+                    "\r\n実際: " + responseLength);
+            }
+
+            if (responseLength < 5)
+                throw new IOException("PINE応答が短すぎます。");
+
+            return ReadExact(stream, responseLength - 4);
+        }
+
+        private static byte[] ReadExact(
+            NetworkStream stream, int length)
+
+----- LINE 753 -----
+            {
+                throw new IOException(
+                    "PINE応答サイズが一致しません。\r\n" +
+                    "期待値: " + expectedResponseLength +
+                    "\r\n実際: " + responseLength);
+            }
+
+            if (responseLength < 5)
+                throw new IOException("PINE応答が短すぎます。");
+
+            return ReadExact(stream, responseLength - 4);
+        }
+
+        private static byte[] ReadExact(
+            NetworkStream stream, int length)
+        {
+            byte[] buffer = new byte[length];
+            int received = 0;
+
+            while (received < length)
+            {
+
+----- LINE 771 -----
+
+            while (received < length)
+            {
+                int count = stream.Read(
+                    buffer, received, length - received);
+
+                if (count <= 0)
+                    throw new EndOfStreamException(
+                        "PINEからの応答が途中で切断されました。");
+
+                received += count;
+            }
+
+            return buffer;
+        }
+    }
+}
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\DungeonCommonSettingsForm.cs
+============================================================
+
+----- LINE 14 -----
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal sealed class DungeonCommonSettingsForm : Form
+{
+    private const string Host = "127.0.0.1";
+    private const int Port = 28011;
+
+    private const uint SpawnInstructionAddress = 0x0022FE04;
+
+
+    private const long RuntimeDescriptionOffset = 0x01FFF1F0L;
+    private const long ItemTableDescriptionOffset = 0x00107BC7L;
+
+    private const int OriginalDescriptionLength = 114;
+
+    private NumericUpDown _turns;
+    private Label _current;
+    private Label _status;
+
+----- LINE 297 -----
+        {
+            int received = stream.Read(
+                result,
+                offset,
+                count - offset);
+
+            if (received <= 0)
+                throw new IOException(
+                    "PINE接続が途中で切断されました。");
+
+            offset += received;
+        }
+
+        return result;
+    }
+
+    private static void AppendPineDiagnostic(string message)
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "pine-communication.log");
+
+----- LINE 305 -----
+                    "PINE接続が途中で切断されました。");
+
+            offset += received;
+        }
+
+        return result;
+    }
+
+    private static void AppendPineDiagnostic(string message)
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "pine-communication.log");
+            string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " " + message + Environment.NewLine;
+            File.AppendAllText(path, line);
+        }
+        catch
+        {
+        }
+    }
+    private static byte[] SendPineCommand(byte[] command)
+
+----- LINE 309 -----
+
+        return result;
+    }
+
+    private static void AppendPineDiagnostic(string message)
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "pine-communication.log");
+            string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " " + message + Environment.NewLine;
+            File.AppendAllText(path, line);
+        }
+        catch
+        {
+        }
+    }
+    private static byte[] SendPineCommand(byte[] command)
+    {
+        byte[] request = new byte[4 + command.Length];
+
+        WriteUInt32(request, 0, (uint)request.Length);
+
+----- LINE 317 -----
+            string path = Path.Combine(AppContext.BaseDirectory, "pine-communication.log");
+            string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " " + message + Environment.NewLine;
+            File.AppendAllText(path, line);
+        }
+        catch
+        {
+        }
+    }
+    private static byte[] SendPineCommand(byte[] command)
+    {
+        byte[] request = new byte[4 + command.Length];
+
+        WriteUInt32(request, 0, (uint)request.Length);
+        Buffer.BlockCopy(command, 0, request, 4, command.Length);
+
+        AppendPineDiagnostic("開始 Command=" + BitConverter.ToString(command));
+        AppendPineDiagnostic("Request=" + BitConverter.ToString(request));
+
+        using var client = new TcpClient(System.Net.Sockets.AddressFamily.InterNetwork);
+        client.ReceiveTimeout = 4000;
+        client.SendTimeout = 4000;
+
+----- LINE 324 -----
+    }
+    private static byte[] SendPineCommand(byte[] command)
+    {
+        byte[] request = new byte[4 + command.Length];
+
+        WriteUInt32(request, 0, (uint)request.Length);
+        Buffer.BlockCopy(command, 0, request, 4, command.Length);
+
+        AppendPineDiagnostic("開始 Command=" + BitConverter.ToString(command));
+        AppendPineDiagnostic("Request=" + BitConverter.ToString(request));
+
+        using var client = new TcpClient(System.Net.Sockets.AddressFamily.InterNetwork);
+        client.ReceiveTimeout = 4000;
+        client.SendTimeout = 4000;
+
+        try
+        {
+            AppendPineDiagnostic("Connect開始 Host=" + Host + " Port=" + Port);
+            client.Connect(System.Net.IPAddress.Parse(Host), Port);
+            AppendPineDiagnostic("Connect成功 Local=" + client.Client.LocalEndPoint + " Remote=" + client.Client.RemoteEndPoint);
+
+
+----- LINE 325 -----
+    private static byte[] SendPineCommand(byte[] command)
+    {
+        byte[] request = new byte[4 + command.Length];
+
+        WriteUInt32(request, 0, (uint)request.Length);
+        Buffer.BlockCopy(command, 0, request, 4, command.Length);
+
+        AppendPineDiagnostic("開始 Command=" + BitConverter.ToString(command));
+        AppendPineDiagnostic("Request=" + BitConverter.ToString(request));
+
+        using var client = new TcpClient(System.Net.Sockets.AddressFamily.InterNetwork);
+        client.ReceiveTimeout = 4000;
+        client.SendTimeout = 4000;
+
+        try
+        {
+            AppendPineDiagnostic("Connect開始 Host=" + Host + " Port=" + Port);
+            client.Connect(System.Net.IPAddress.Parse(Host), Port);
+            AppendPineDiagnostic("Connect成功 Local=" + client.Client.LocalEndPoint + " Remote=" + client.Client.RemoteEndPoint);
+
+            using NetworkStream stream = client.GetStream();
+
+----- LINE 333 -----
+        AppendPineDiagnostic("Request=" + BitConverter.ToString(request));
+
+        using var client = new TcpClient(System.Net.Sockets.AddressFamily.InterNetwork);
+        client.ReceiveTimeout = 4000;
+        client.SendTimeout = 4000;
+
+        try
+        {
+            AppendPineDiagnostic("Connect開始 Host=" + Host + " Port=" + Port);
+            client.Connect(System.Net.IPAddress.Parse(Host), Port);
+            AppendPineDiagnostic("Connect成功 Local=" + client.Client.LocalEndPoint + " Remote=" + client.Client.RemoteEndPoint);
+
+            using NetworkStream stream = client.GetStream();
+            stream.WriteTimeout = 4000;
+            stream.ReadTimeout = 4000;
+
+            AppendPineDiagnostic("Write開始");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
+
+
+----- LINE 335 -----
+        using var client = new TcpClient(System.Net.Sockets.AddressFamily.InterNetwork);
+        client.ReceiveTimeout = 4000;
+        client.SendTimeout = 4000;
+
+        try
+        {
+            AppendPineDiagnostic("Connect開始 Host=" + Host + " Port=" + Port);
+            client.Connect(System.Net.IPAddress.Parse(Host), Port);
+            AppendPineDiagnostic("Connect成功 Local=" + client.Client.LocalEndPoint + " Remote=" + client.Client.RemoteEndPoint);
+
+            using NetworkStream stream = client.GetStream();
+            stream.WriteTimeout = 4000;
+            stream.ReadTimeout = 4000;
+
+            AppendPineDiagnostic("Write開始");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
+
+            byte[] header;
+            try
+
+----- LINE 341 -----
+            AppendPineDiagnostic("Connect開始 Host=" + Host + " Port=" + Port);
+            client.Connect(System.Net.IPAddress.Parse(Host), Port);
+            AppendPineDiagnostic("Connect成功 Local=" + client.Client.LocalEndPoint + " Remote=" + client.Client.RemoteEndPoint);
+
+            using NetworkStream stream = client.GetStream();
+            stream.WriteTimeout = 4000;
+            stream.ReadTimeout = 4000;
+
+            AppendPineDiagnostic("Write開始");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
+
+            byte[] header;
+            try
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+
+----- LINE 344 -----
+
+            using NetworkStream stream = client.GetStream();
+            stream.WriteTimeout = 4000;
+            stream.ReadTimeout = 4000;
+
+            AppendPineDiagnostic("Write開始");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
+
+            byte[] header;
+            try
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+
+----- LINE 349 -----
+            AppendPineDiagnostic("Write開始");
+            stream.Write(request, 0, request.Length);
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
+
+            byte[] header;
+            try
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+
+----- LINE 351 -----
+            stream.Flush();
+            AppendPineDiagnostic("Write完了");
+
+            byte[] header;
+            try
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+----- LINE 355 -----
+            try
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+
+----- LINE 356 -----
+            {
+                AppendPineDiagnostic("応答ヘッダー受信開始 必要バイト数=4");
+                header = ReadExact(stream, 4);
+                AppendPineDiagnostic("応答ヘッダー受信成功 Header=" + BitConverter.ToString(header));
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+            return response;
+
+----- LINE 360 -----
+            }
+            catch (Exception ex)
+            {
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            AppendPineDiagnostic("通信処理例外 " + ex.ToString());
+
+----- LINE 363 -----
+                AppendPineDiagnostic("応答ヘッダー受信失敗 " + ex.ToString());
+                throw new IOException("PINE応答ヘッダーの受信に失敗しました。送信=" + BitConverter.ToString(request), ex);
+            }
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            AppendPineDiagnostic("通信処理例外 " + ex.ToString());
+            throw;
+        }
+    }
+
+----- LINE 366 -----
+
+            uint responseLength = ReadUInt32(header, 0);
+            AppendPineDiagnostic("ResponseLength=" + responseLength);
+
+            if (responseLength < 5 || responseLength > 1024)
+                throw new IOException("PINE応答サイズが不正です: " + responseLength);
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            AppendPineDiagnostic("通信処理例外 " + ex.ToString());
+            throw;
+        }
+    }
+
+
+    private static uint ReadUInt32(
+
+----- LINE 372 -----
+
+            byte[] response = ReadExact(stream, (int)responseLength - 4);
+            AppendPineDiagnostic("応答データ受信成功 Response=" + BitConverter.ToString(response));
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            AppendPineDiagnostic("通信処理例外 " + ex.ToString());
+            throw;
+        }
+    }
+
+
+    private static uint ReadUInt32(
+        byte[] data,
+        int offset)
+    {
+        return (uint)(
+            data[offset] |
+            (data[offset + 1] << 8) |
+
+----- LINE 406 -----
+    }
+
+    private static uint ReadInstruction()
+    {
+        byte[] command = new byte[5];
+        command[0] = 2;
+        WriteUInt32(command, 1, SpawnInstructionAddress);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+            throw new IOException(
+                "Read32応答サイズが一致しません。実際: " +
+                response.Length);
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Read32が失敗しました。ステータス: " +
+                response[0].ToString("X2"));
+
+        return ReadUInt32(response, 1);
+
+----- LINE 415 -----
+
+        if (response.Length != 5)
+            throw new IOException(
+                "Read32応答サイズが一致しません。実際: " +
+                response.Length);
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Read32が失敗しました。ステータス: " +
+                response[0].ToString("X2"));
+
+        return ReadUInt32(response, 1);
+    }
+
+    private static void WriteInstruction(uint instruction)
+    {
+        byte[] command = new byte[9];
+        command[0] = 6;
+        WriteUInt32(command, 1, SpawnInstructionAddress);
+        WriteUInt32(command, 5, instruction);
+
+
+----- LINE 428 -----
+
+    private static void WriteInstruction(uint instruction)
+    {
+        byte[] command = new byte[9];
+        command[0] = 6;
+        WriteUInt32(command, 1, SpawnInstructionAddress);
+        WriteUInt32(command, 5, instruction);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+            throw new IOException(
+                "Write32応答サイズが一致しません。実際: " +
+                response.Length);
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Write32が失敗しました。ステータス: " +
+                response[0].ToString("X2"));
+    }
+
+
+----- LINE 437 -----
+
+        if (response.Length != 1)
+            throw new IOException(
+                "Write32応答サイズが一致しません。実際: " +
+                response.Length);
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Write32が失敗しました。ステータス: " +
+                response[0].ToString("X2"));
+    }
+
+    private static bool TryGetSpawnInterval(
+        uint instruction,
+        out int turns)
+    {
+        if ((instruction & 0xFFFF0000u) != 0x24020000u)
+        {
+            turns = 0;
+            return false;
+        }
+
+----- LINE 792 -----
+        {
+            throw new IOException(
+                "命令キャッシュの更新に失敗しました。" +
+                "\r\nアドレス: 0x" + address.ToString("X") +
+                "\r\nWin32エラー: " + Marshal.GetLastWin32Error());
+        }
+    }
+
+    private static uint ReadPineWord(uint address)
+    {
+        byte[] command = new byte[5];
+        command[0] = 2;
+        WriteUInt32(command, 1, address);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+            throw new IOException("PINE Read32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+
+----- LINE 798 -----
+    }
+
+    private static uint ReadPineWord(uint address)
+    {
+        byte[] command = new byte[5];
+        command[0] = 2;
+        WriteUInt32(command, 1, address);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+            throw new IOException("PINE Read32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Read32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+
+        return ReadUInt32(response, 1);
+    }
+
+----- LINE 801 -----
+    {
+        byte[] command = new byte[5];
+        command[0] = 2;
+        WriteUInt32(command, 1, address);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+            throw new IOException("PINE Read32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Read32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+
+        return ReadUInt32(response, 1);
+    }
+
+    private static void WritePineWord(uint address, uint value)
+    {
+
+----- LINE 805 -----
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+            throw new IOException("PINE Read32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Read32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+
+        return ReadUInt32(response, 1);
+    }
+
+    private static void WritePineWord(uint address, uint value)
+    {
+        byte[] command = new byte[9];
+        command[0] = 6;
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+----- LINE 812 -----
+            throw new IOException(
+                "PINE Read32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+
+        return ReadUInt32(response, 1);
+    }
+
+    private static void WritePineWord(uint address, uint value)
+    {
+        byte[] command = new byte[9];
+        command[0] = 6;
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+            throw new IOException("PINE Write32応答サイズが不正です。");
+
+        if (response[0] != 0)
+
+----- LINE 819 -----
+
+    private static void WritePineWord(uint address, uint value)
+    {
+        byte[] command = new byte[9];
+        command[0] = 6;
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+            throw new IOException("PINE Write32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Write32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+    }
+
+    private static void WritePineMemory(long address, byte[] data)
+
+----- LINE 822 -----
+        byte[] command = new byte[9];
+        command[0] = 6;
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+            throw new IOException("PINE Write32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Write32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+    }
+
+    private static void WritePineMemory(long address, byte[] data)
+    {
+        const long EeRamSize = 0x02000000L;
+
+
+----- LINE 826 -----
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+            throw new IOException("PINE Write32応答サイズが不正です。");
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Write32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+    }
+
+    private static void WritePineMemory(long address, byte[] data)
+    {
+        const long EeRamSize = 0x02000000L;
+
+        if (address < 0 || data == null || data.Length == 0)
+            throw new InvalidOperationException("PINE書き込み先またはデータが不正です。");
+
+        long endAddress = checked(address + data.Length);
+
+----- LINE 831 -----
+
+        if (response[0] != 0)
+            throw new IOException(
+                "PINE Write32失敗。アドレス: 0x" +
+                address.ToString("X8") +
+                " / ステータス: " + response[0].ToString("X2"));
+    }
+
+    private static void WritePineMemory(long address, byte[] data)
+    {
+        const long EeRamSize = 0x02000000L;
+
+        if (address < 0 || data == null || data.Length == 0)
+            throw new InvalidOperationException("PINE書き込み先またはデータが不正です。");
+
+        long endAddress = checked(address + data.Length);
+
+        if (endAddress > EeRamSize)
+            throw new InvalidOperationException("PINE書き込み範囲がEE RAMを超えています。");
+
+        long firstWord = address & ~3L;
+
+----- LINE 836 -----
+                " / ステータス: " + response[0].ToString("X2"));
+    }
+
+    private static void WritePineMemory(long address, byte[] data)
+    {
+        const long EeRamSize = 0x02000000L;
+
+        if (address < 0 || data == null || data.Length == 0)
+            throw new InvalidOperationException("PINE書き込み先またはデータが不正です。");
+
+        long endAddress = checked(address + data.Length);
+
+        if (endAddress > EeRamSize)
+            throw new InvalidOperationException("PINE書き込み範囲がEE RAMを超えています。");
+
+        long firstWord = address & ~3L;
+        long lastWord = (endAddress - 1) & ~3L;
+
+        for (long wordAddress = firstWord;
+             wordAddress <= lastWord;
+             wordAddress += 4)
+
+----- LINE 841 -----
+        const long EeRamSize = 0x02000000L;
+
+        if (address < 0 || data == null || data.Length == 0)
+            throw new InvalidOperationException("PINE書き込み先またはデータが不正です。");
+
+        long endAddress = checked(address + data.Length);
+
+        if (endAddress > EeRamSize)
+            throw new InvalidOperationException("PINE書き込み範囲がEE RAMを超えています。");
+
+        long firstWord = address & ~3L;
+        long lastWord = (endAddress - 1) & ~3L;
+
+        for (long wordAddress = firstWord;
+             wordAddress <= lastWord;
+             wordAddress += 4)
+        {
+            uint originalWord = ReadPineWord(checked((uint)wordAddress));
+            byte[] word = BitConverter.GetBytes(originalWord);
+
+            for (int byteIndex = 0; byteIndex < 4; byteIndex++)
+
+----- LINE 850 -----
+
+        long firstWord = address & ~3L;
+        long lastWord = (endAddress - 1) & ~3L;
+
+        for (long wordAddress = firstWord;
+             wordAddress <= lastWord;
+             wordAddress += 4)
+        {
+            uint originalWord = ReadPineWord(checked((uint)wordAddress));
+            byte[] word = BitConverter.GetBytes(originalWord);
+
+            for (int byteIndex = 0; byteIndex < 4; byteIndex++)
+            {
+                long currentAddress = wordAddress + byteIndex;
+
+                if (currentAddress >= address && currentAddress < endAddress)
+                {
+                    int sourceIndex = checked((int)(currentAddress - address));
+                    word[byteIndex] = data[sourceIndex];
+                }
+            }
+
+----- LINE 865 -----
+                if (currentAddress >= address && currentAddress < endAddress)
+                {
+                    int sourceIndex = checked((int)(currentAddress - address));
+                    word[byteIndex] = data[sourceIndex];
+                }
+            }
+
+            uint newWord = BitConverter.ToUInt32(word, 0);
+            WritePineWord(checked((uint)wordAddress), newWord);
+
+            uint verifyWord = ReadPineWord(checked((uint)wordAddress));
+
+            if (verifyWord != newWord)
+                throw new IOException(
+                    "PINE書き込み後の検証に失敗しました。" +
+                    "\r\nアドレス: 0x" + wordAddress.ToString("X8") +
+                    "\r\n期待値: 0x" + newWord.ToString("X8") +
+                    "\r\n実際: 0x" + verifyWord.ToString("X8"));
+        }
+    }
+
+
+----- LINE 867 -----
+                    int sourceIndex = checked((int)(currentAddress - address));
+                    word[byteIndex] = data[sourceIndex];
+                }
+            }
+
+            uint newWord = BitConverter.ToUInt32(word, 0);
+            WritePineWord(checked((uint)wordAddress), newWord);
+
+            uint verifyWord = ReadPineWord(checked((uint)wordAddress));
+
+            if (verifyWord != newWord)
+                throw new IOException(
+                    "PINE書き込み後の検証に失敗しました。" +
+                    "\r\nアドレス: 0x" + wordAddress.ToString("X8") +
+                    "\r\n期待値: 0x" + newWord.ToString("X8") +
+                    "\r\n実際: 0x" + verifyWord.ToString("X8"));
+        }
+    }
+
+    private static byte[] MakeNullTerminated(
+        string value)
+
+----- LINE 871 -----
+
+            uint newWord = BitConverter.ToUInt32(word, 0);
+            WritePineWord(checked((uint)wordAddress), newWord);
+
+            uint verifyWord = ReadPineWord(checked((uint)wordAddress));
+
+            if (verifyWord != newWord)
+                throw new IOException(
+                    "PINE書き込み後の検証に失敗しました。" +
+                    "\r\nアドレス: 0x" + wordAddress.ToString("X8") +
+                    "\r\n期待値: 0x" + newWord.ToString("X8") +
+                    "\r\n実際: 0x" + verifyWord.ToString("X8"));
+        }
+    }
+
+    private static byte[] MakeNullTerminated(
+        string value)
+    {
+        byte[] text = Cp932.GetBytes(value);
+        byte[] result = new byte[text.Length + 1];
+
+
+----- LINE 1385 -----
+                if (!System.Linq.Enumerable.SequenceEqual(current, change.OldData))
+                    throw new IOException(
+                        change.Name + "の書き込み直前照合に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+            }
+
+            foreach (MemoryChange change in changes)
+            {
+                WritePineMemory(checked(change.Address - eeBase), change.NewData);
+                completed.Add(change);
+
+                byte[] verify = ReadMemory(
+                    process,
+                    change.Address,
+                    change.NewData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(verify, change.NewData))
+                    throw new IOException(
+                        change.Name + "の読み戻し検証に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+            }
+
+----- LINE 1400 -----
+
+                if (!System.Linq.Enumerable.SequenceEqual(verify, change.NewData))
+                    throw new IOException(
+                        change.Name + "の読み戻し検証に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+            }
+
+
+            Torneko4PatchStore.Register(
+                patchPrefix + "・アイテム名",
+                nameOffset,
+                nameData);
+            Torneko4PatchStore.Register(
+                patchPrefix + "・説明文",
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+                0x002C8F18L,
+                new byte[4]);
+
+----- LINE 1404 -----
+                        "アドレス: 0x" + change.Address.ToString("X"));
+            }
+
+
+            Torneko4PatchStore.Register(
+                patchPrefix + "・アイテム名",
+                nameOffset,
+                nameData);
+            Torneko4PatchStore.Register(
+                patchPrefix + "・説明文",
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+                0x002C8F18L,
+                new byte[4]);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F04",
+                0x002C8F04L,
+
+----- LINE 1409 -----
+                patchPrefix + "・アイテム名",
+                nameOffset,
+                nameData);
+            Torneko4PatchStore.Register(
+                patchPrefix + "・説明文",
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+                0x002C8F18L,
+                new byte[4]);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F04",
+                0x002C8F04L,
+                new byte[4]);
+
+            _itemStatus.Text =
+                itemLabel + "の改造が完了しました。変更箇所 " +
+                changes.Count.ToString() + "か所の読み戻し検証に成功しました。";
+
+----- LINE 1414 -----
+                staticDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F18",
+                0x002C8F18L,
+                new byte[4]);
+
+            Torneko4PatchStore.Register(
+                "鈍足解除・A02C8F04",
+                0x002C8F04L,
+                new byte[4]);
+
+            _itemStatus.Text =
+                itemLabel + "の改造が完了しました。変更箇所 " +
+                changes.Count.ToString() + "か所の読み戻し検証に成功しました。";
+
+            MessageBox.Show(
+                this,
+                itemLabel + "の改造が完了しました。\r\n\r\n" +
+                "アイテム名: " + newName + "\r\n" +
+
+----- LINE 1447 -----
+            var rollbackReport = new StringBuilder();
+
+            for (int i = completed.Count - 1; i >= 0; i--)
+            {
+                MemoryChange change = completed[i];
+
+                try
+                {
+                    WritePineMemory(checked(change.Address - eeBase), change.OldData);
+
+                    byte[] restored = ReadMemory(
+                        process,
+                        change.Address,
+                        change.OldData.Length);
+
+                    bool success = System.Linq.Enumerable.SequenceEqual(
+                        restored,
+                        change.OldData);
+
+                    rollbackReport.AppendLine(
+                        change.Name + ": " + (success ? "復元成功" : "復元確認失敗"));
+
+----- LINE 1596 -----
+                false,
+                Pcsx2LiveSession.ProcessId);
+
+            if (process == IntPtr.Zero)
+                throw new IOException(
+                    "PCSX2プロセスを開けません。\r\nWin32エラー: " +
+                    Marshal.GetLastWin32Error());
+
+            // PINEの状態確認コマンドは使用しない。
+            // 既存のWindowsプロセスメモリ読み取りでEE RAMを取得する。
+            byte[] ram = ReadMemory(
+                process,
+                eeBase,
+                EeRamSize);
+
+            // ------------------------------------------------
+            // Verify original resource IDs
+            // ------------------------------------------------
+
+            byte[] expectedDescriptionId =
+                MakeNullTerminated("item_164_e");
+
+----- LINE 2015 -----
+                        "アドレス: 0x" + change.Address.ToString("X"));
+                }
+            }
+
+            // ------------------------------------------------
+            // Register persistent patches
+            // ------------------------------------------------
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文レコード",
+                DescriptionRecordOffset,
+                descriptionRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前レコード",
+                NameRecordOffset,
+                nameRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文索引",
+                DescriptionIndexOffset,
+
+----- LINE 2020 -----
+            // Register persistent patches
+            // ------------------------------------------------
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文レコード",
+                DescriptionRecordOffset,
+                descriptionRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前レコード",
+                NameRecordOffset,
+                nameRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文索引",
+                DescriptionIndexOffset,
+                BitConverter.GetBytes((uint)DescriptionRecordOffset));
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前索引",
+                NameIndexOffset,
+
+----- LINE 2025 -----
+                DescriptionRecordOffset,
+                descriptionRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前レコード",
+                NameRecordOffset,
+                nameRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文索引",
+                DescriptionIndexOffset,
+                BitConverter.GetBytes((uint)DescriptionRecordOffset));
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前索引",
+                NameIndexOffset,
+                BitConverter.GetBytes((uint)NameRecordOffset));
+
+            foreach (int priceOffset in priceRecordOffsets)
+            {
+                Torneko4PatchStore.Register(
+
+----- LINE 2030 -----
+                NameRecordOffset,
+                nameRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文索引",
+                DescriptionIndexOffset,
+                BitConverter.GetBytes((uint)DescriptionRecordOffset));
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前索引",
+                NameIndexOffset,
+                BitConverter.GetBytes((uint)NameRecordOffset));
+
+            foreach (int priceOffset in priceRecordOffsets)
+            {
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・買値15000G",
+                    priceOffset,
+                    newBuyPriceData);
+
+                Torneko4PatchStore.Register(
+
+----- LINE 2037 -----
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前索引",
+                NameIndexOffset,
+                BitConverter.GetBytes((uint)NameRecordOffset));
+
+            foreach (int priceOffset in priceRecordOffsets)
+            {
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・買値15000G",
+                    priceOffset,
+                    newBuyPriceData);
+
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・売値7500G",
+                    priceOffset + 3,
+                    newSellPriceData);
+            }
+
+            _itemStatus.Text =
+                "スライムの指輪への変更が完了しました。";
+
+----- LINE 2042 -----
+
+            foreach (int priceOffset in priceRecordOffsets)
+            {
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・買値15000G",
+                    priceOffset,
+                    newBuyPriceData);
+
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・売値7500G",
+                    priceOffset + 3,
+                    newSellPriceData);
+            }
+
+            _itemStatus.Text =
+                "スライムの指輪への変更が完了しました。";
+
+            MessageBox.Show(
+                this,
+                "スライムの指輪への変更が完了しました！\r\n\r\n" +
+                "アイテム名: " + newName + "\r\n\r\n" +
+
+----- LINE 2312 -----
+                    throw new IOException(
+                        change.Name + "の読み戻し検証に失敗しました。\r\n" +
+                        "アドレス: 0x" +
+                        change.Address.ToString("X"));
+                }
+            }
+
+            // 説明文2か所とアイテム名をEE RAM相対アドレスで登録する。
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・アイテム説明文",
+                ItemTableDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+                descriptionData);
+
+            // 武器名もEE RAM相対アドレスとして保存する。
+            Torneko4PatchStore.Register(
+                "はやぶさ設定・アイテム名",
+
+----- LINE 2317 -----
+            }
+
+            // 説明文2か所とアイテム名をEE RAM相対アドレスで登録する。
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・アイテム説明文",
+                ItemTableDescriptionOffset,
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+                descriptionData);
+
+            // 武器名もEE RAM相対アドレスとして保存する。
+            Torneko4PatchStore.Register(
+                "はやぶさ設定・アイテム名",
+                nameOffset,
+                nameData);
+
+            _itemStatus.Text =
+                "変更完了。3か所すべての読み戻し検証に成功しました。";
+
+----- LINE 2323 -----
+                descriptionData);
+
+            Torneko4PatchStore.Register(
+                "はやぶさの爪・実行時説明文",
+                RuntimeDescriptionOffset,
+                descriptionData);
+
+            // 武器名もEE RAM相対アドレスとして保存する。
+            Torneko4PatchStore.Register(
+                "はやぶさ設定・アイテム名",
+                nameOffset,
+                nameData);
+
+            _itemStatus.Text =
+                "変更完了。3か所すべての読み戻し検証に成功しました。";
+            HayabusaDoubleAttackMonitor.Start(_itemStatus);
+
+            MessageBox.Show(
+                this,
+                "はやぶさの爪への変更が完了しました！\r\n\r\n" +
+                "アイテム名: 0x" +
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\EquippedWeaponIdScannerForm.cs
+============================================================
+
+----- LINE 12 -----
+using System.Net.Sockets;
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal static class HayabusaDoubleAttackMonitor
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
+    private const uint AttackPatchAddress = 0x0020B264;
+    private const uint AttackPatchValue = 0x24020001;
+
+    private static System.Windows.Forms.Timer? _timer;
+    private static Label? _statusLabel;
+
+    private static int _processId;
+
+----- LINE 13 -----
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal static class HayabusaDoubleAttackMonitor
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
+    private const uint AttackPatchAddress = 0x0020B264;
+    private const uint AttackPatchValue = 0x24020001;
+
+    private static System.Windows.Forms.Timer? _timer;
+    private static Label? _statusLabel;
+
+    private static int _processId;
+    private static uint? _originalInstruction;
+
+----- LINE 77 -----
+                _originalInstruction.HasValue)
+            {
+                TryRestorePatch();
+            }
+
+            _processId = pid;
+
+            uint currentInstruction =
+                ReadPine32(AttackPatchAddress);
+
+            uint savedOriginal;
+
+            if (currentInstruction == AttackPatchValue)
+            {
+                if (!TryLoadState(pid, out savedOriginal))
+                {
+                    throw new InvalidOperationException(
+                        "二回攻撃コードが既に存在しますが、" +
+                        "元の命令を保存した記録がありません。\r\n" +
+                        "安全のため自動監視を開始しません。");
+                }
+
+----- LINE 174 -----
+
+                TryRestorePatch();
+
+                _timer.Stop();
+                return;
+            }
+
+            uint weaponValue =
+                ReadPine32(EquippedWeaponAddress) & 0xFFFF;
+
+            uint currentInstruction =
+                ReadPine32(AttackPatchAddress);
+
+            bool isHayabusa =
+                weaponValue == HayabusaWeaponValue;
+
+            if (isHayabusa)
+            {
+                if (currentInstruction == AttackPatchValue)
+                {
+                    _patchApplied = true;
+
+----- LINE 177 -----
+                _timer.Stop();
+                return;
+            }
+
+            uint weaponValue =
+                ReadPine32(EquippedWeaponAddress) & 0xFFFF;
+
+            uint currentInstruction =
+                ReadPine32(AttackPatchAddress);
+
+            bool isHayabusa =
+                weaponValue == HayabusaWeaponValue;
+
+            if (isHayabusa)
+            {
+                if (currentInstruction == AttackPatchValue)
+                {
+                    _patchApplied = true;
+
+                    SetStatus(
+                        "はやぶさの爪を検出。二回攻撃は有効です。");
+
+----- LINE 201 -----
+
+                if (!_originalInstruction.HasValue ||
+                    _originalInstruction.Value == AttackPatchValue)
+                {
+                    _originalInstruction = currentInstruction;
+                    SaveState(_processId, currentInstruction);
+                }
+
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verification != AttackPatchValue)
+                {
+                    throw new IOException(
+                        "二回攻撃コードの読み戻し検証に失敗しました。\r\n" +
+                        "実際値: 0x" +
+                        verification.ToString("X8"));
+
+----- LINE 206 -----
+                    SaveState(_processId, currentInstruction);
+                }
+
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verification != AttackPatchValue)
+                {
+                    throw new IOException(
+                        "二回攻撃コードの読み戻し検証に失敗しました。\r\n" +
+                        "実際値: 0x" +
+                        verification.ToString("X8"));
+                }
+
+                _patchApplied = true;
+
+                SetStatus(
+
+----- LINE 234 -----
+                if (currentInstruction == AttackPatchValue)
+                {
+                    if (!_originalInstruction.HasValue)
+                    {
+                        throw new InvalidOperationException(
+                            "復元する元の命令がありません。");
+                    }
+
+                    WritePine32(
+                        AttackPatchAddress,
+                        _originalInstruction.Value);
+
+                    uint verification =
+                        ReadPine32(AttackPatchAddress);
+
+                    if (verification != _originalInstruction.Value)
+                    {
+                        throw new IOException(
+                            "元の命令への復元に失敗しました。\r\n" +
+                            "期待値: 0x" +
+                            _originalInstruction.Value.ToString("X8") +
+
+----- LINE 239 -----
+                            "復元する元の命令がありません。");
+                    }
+
+                    WritePine32(
+                        AttackPatchAddress,
+                        _originalInstruction.Value);
+
+                    uint verification =
+                        ReadPine32(AttackPatchAddress);
+
+                    if (verification != _originalInstruction.Value)
+                    {
+                        throw new IOException(
+                            "元の命令への復元に失敗しました。\r\n" +
+                            "期待値: 0x" +
+                            _originalInstruction.Value.ToString("X8") +
+                            "\r\n実際値: 0x" +
+                            verification.ToString("X8"));
+                    }
+
+                    _patchApplied = false;
+
+----- LINE 298 -----
+            int received = stream.Read(
+                result,
+                offset,
+                count - offset);
+
+            if (received <= 0)
+            {
+                throw new IOException(
+                    "PINE接続が途中で切断されました。");
+            }
+
+            offset += received;
+        }
+
+        return result;
+    }
+
+    private static uint ReadUInt32(
+        byte[] data,
+        int offset)
+    {
+
+----- LINE 329 -----
+        uint value)
+    {
+        data[offset] = (byte)value;
+        data[offset + 1] = (byte)(value >> 8);
+        data[offset + 2] = (byte)(value >> 16);
+        data[offset + 3] = (byte)(value >> 24);
+    }
+
+    private static byte[] SendPineCommand(byte[] command)
+    {
+        byte[] request = new byte[4 + command.Length];
+
+        WriteUInt32(request, 0, (uint)request.Length);
+
+        Buffer.BlockCopy(
+            command,
+            0,
+            request,
+            4,
+            command.Length);
+
+
+----- LINE 346 -----
+            request,
+            4,
+            command.Length);
+
+        using var client = new TcpClient();
+
+        client.ReceiveTimeout = 4000;
+        client.SendTimeout = 4000;
+        client.Connect(PineHost, PinePort);
+
+        using NetworkStream stream = client.GetStream();
+
+        stream.Write(request, 0, request.Length);
+        stream.Flush();
+
+        byte[] header = ReadExact(stream, 4);
+        uint responseLength = ReadUInt32(header, 0);
+
+        if (responseLength < 5 ||
+            responseLength > 1024)
+        {
+
+----- LINE 360 -----
+
+        byte[] header = ReadExact(stream, 4);
+        uint responseLength = ReadUInt32(header, 0);
+
+        if (responseLength < 5 ||
+            responseLength > 1024)
+        {
+            throw new IOException(
+                "PINE応答サイズが不正です: " +
+                responseLength);
+        }
+
+        return ReadExact(
+            stream,
+            (int)responseLength - 4);
+    }
+
+    private static uint ReadPine32(uint address)
+    {
+        byte[] command = new byte[5];
+
+
+----- LINE 369 -----
+                responseLength);
+        }
+
+        return ReadExact(
+            stream,
+            (int)responseLength - 4);
+    }
+
+    private static uint ReadPine32(uint address)
+    {
+        byte[] command = new byte[5];
+
+        command[0] = 2;
+        WriteUInt32(command, 1, address);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+        {
+            throw new IOException(
+                "PINE Read32応答サイズが一致しません。");
+
+----- LINE 376 -----
+
+    private static uint ReadPine32(uint address)
+    {
+        byte[] command = new byte[5];
+
+        command[0] = 2;
+        WriteUInt32(command, 1, address);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+        {
+            throw new IOException(
+                "PINE Read32応答サイズが一致しません。");
+        }
+
+        if (response[0] != 0)
+        {
+            throw new IOException(
+                "PINE Read32失敗。ステータス: " +
+                response[0].ToString("X2"));
+
+----- LINE 381 -----
+        command[0] = 2;
+        WriteUInt32(command, 1, address);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 5)
+        {
+            throw new IOException(
+                "PINE Read32応答サイズが一致しません。");
+        }
+
+        if (response[0] != 0)
+        {
+            throw new IOException(
+                "PINE Read32失敗。ステータス: " +
+                response[0].ToString("X2"));
+        }
+
+        return ReadUInt32(response, 1);
+    }
+
+
+----- LINE 387 -----
+        {
+            throw new IOException(
+                "PINE Read32応答サイズが一致しません。");
+        }
+
+        if (response[0] != 0)
+        {
+            throw new IOException(
+                "PINE Read32失敗。ステータス: " +
+                response[0].ToString("X2"));
+        }
+
+        return ReadUInt32(response, 1);
+    }
+
+    private static void WritePine32(
+        uint address,
+        uint value)
+    {
+        byte[] command = new byte[9];
+
+
+----- LINE 394 -----
+            throw new IOException(
+                "PINE Read32失敗。ステータス: " +
+                response[0].ToString("X2"));
+        }
+
+        return ReadUInt32(response, 1);
+    }
+
+    private static void WritePine32(
+        uint address,
+        uint value)
+    {
+        byte[] command = new byte[9];
+
+        command[0] = 6;
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+
+----- LINE 404 -----
+        uint value)
+    {
+        byte[] command = new byte[9];
+
+        command[0] = 6;
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+        {
+            throw new IOException(
+                "PINE Write32応答サイズが一致しません。");
+        }
+
+        if (response[0] != 0)
+        {
+            throw new IOException(
+                "PINE Write32失敗。ステータス: " +
+                response[0].ToString("X2"));
+
+----- LINE 409 -----
+        WriteUInt32(command, 1, address);
+        WriteUInt32(command, 5, value);
+
+        byte[] response = SendPineCommand(command);
+
+        if (response.Length != 1)
+        {
+            throw new IOException(
+                "PINE Write32応答サイズが一致しません。");
+        }
+
+        if (response[0] != 0)
+        {
+            throw new IOException(
+                "PINE Write32失敗。ステータス: " +
+                response[0].ToString("X2"));
+        }
+    }
+
+    private static void SaveState(
+        int pid,
+
+----- LINE 415 -----
+        {
+            throw new IOException(
+                "PINE Write32応答サイズが一致しません。");
+        }
+
+        if (response[0] != 0)
+        {
+            throw new IOException(
+                "PINE Write32失敗。ステータス: " +
+                response[0].ToString("X2"));
+        }
+    }
+
+    private static void SaveState(
+        int pid,
+        uint original)
+    {
+        string directory = Path.GetDirectoryName(StatePath)!;
+
+        Directory.CreateDirectory(directory);
+
+
+----- LINE 488 -----
+    private static bool TryRestorePatch()
+    {
+        try
+        {
+            if (!_originalInstruction.HasValue)
+                return false;
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    _originalInstruction.Value);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verification != _originalInstruction.Value)
+                {
+
+----- LINE 492 -----
+            if (!_originalInstruction.HasValue)
+                return false;
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    _originalInstruction.Value);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verification != _originalInstruction.Value)
+                {
+                    throw new IOException(
+                        "復元後の読み戻し値が一致しません。");
+                }
+            }
+
+----- LINE 497 -----
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    _originalInstruction.Value);
+
+                uint verification =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verification != _originalInstruction.Value)
+                {
+                    throw new IOException(
+                        "復元後の読み戻し値が一致しません。");
+                }
+            }
+
+            _patchApplied = false;
+
+            if (File.Exists(StatePath))
+                File.Delete(StatePath);
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ExtendedItemNameRegistryForm.cs
+============================================================
+
+----- LINE 165 -----
+        _entries.Clear();
+
+        if (File.Exists(_filePath))
+        {
+            try
+            {
+                string json = File.ReadAllText(_filePath, Encoding.UTF8);
+                List<OverrideEntry>? loaded =
+                    JsonSerializer.Deserialize<List<OverrideEntry>>(json);
+
+                if (loaded != null)
+                {
+                    foreach (OverrideEntry entry in loaded)
+                    {
+                        if (string.IsNullOrWhiteSpace(entry.Id))
+                            continue;
+
+                        if (string.IsNullOrWhiteSpace(entry.Name))
+                            continue;
+
+                        if (_entries.Any(x => string.Equals(
+
+----- LINE 419 -----
+        }
+    }
+
+    private void SaveEntries()
+    {
+        string directory = Path.GetDirectoryName(_filePath)!;
+        Directory.CreateDirectory(directory);
+
+        string json = JsonSerializer.Serialize(
+            _entries.OrderBy(
+                x => x.Id,
+                StringComparer.OrdinalIgnoreCase),
+            new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+        string temporaryPath = _filePath + ".tmp";
+        File.WriteAllText(
+            temporaryPath,
+            json,
+
+----- LINE 423 -----
+    {
+        string directory = Path.GetDirectoryName(_filePath)!;
+        Directory.CreateDirectory(directory);
+
+        string json = JsonSerializer.Serialize(
+            _entries.OrderBy(
+                x => x.Id,
+                StringComparer.OrdinalIgnoreCase),
+            new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+        string temporaryPath = _filePath + ".tmp";
+        File.WriteAllText(
+            temporaryPath,
+            json,
+            new UTF8Encoding(false));
+
+        File.Move(temporaryPath, _filePath, true);
+    }
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaDoubleAttackMonitor.cs
+============================================================
+
+----- LINE 14 -----
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal static class HayabusaDoubleAttackMonitor
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+
+    // はやぶさの爪のアイテム名が格納されているアドレス
+    private const long ItemNameAddress = 0x1B322C27C42L;
+    private const string ExpectedItemName = "ﾊﾔぶｻﾉ爪";
+
+    // 装備中武器ID
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
+    // モンスター勧誘後に装備表示と食い違った武器ID。
+    // この値だけでは装備解除と判定しない。
+
+----- LINE 15 -----
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal static class HayabusaDoubleAttackMonitor
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+
+    // はやぶさの爪のアイテム名が格納されているアドレス
+    private const long ItemNameAddress = 0x1B322C27C42L;
+    private const string ExpectedItemName = "ﾊﾔぶｻﾉ爪";
+
+    // 装備中武器ID
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
+    // モンスター勧誘後に装備表示と食い違った武器ID。
+    // この値だけでは装備解除と判定しない。
+    private const uint AmbiguousAfterRecruitmentWeaponValue = 0x0000516C;
+
+----- LINE 171 -----
+        }
+    }
+
+    private static void Evaluate(int processId)
+    {
+        const uint ExpectedOriginalInstruction = 0x0C0B3934u;
+
+        uint rawWeaponValue =
+            ReadPine32(EquippedWeaponAddress);
+
+        uint equippedWeapon =
+            rawWeaponValue & 0xFFFFu;
+
+        uint currentInstruction =
+            ReadPine32(AttackPatchAddress);
+
+        bool isHayabusaEquipped =
+            equippedWeapon == HayabusaWeaponValue;
+
+        bool hasState = TryLoadState(
+            out int savedProcessId,
+
+----- LINE 177 -----
+
+        uint rawWeaponValue =
+            ReadPine32(EquippedWeaponAddress);
+
+        uint equippedWeapon =
+            rawWeaponValue & 0xFFFFu;
+
+        uint currentInstruction =
+            ReadPine32(AttackPatchAddress);
+
+        bool isHayabusaEquipped =
+            equippedWeapon == HayabusaWeaponValue;
+
+        bool hasState = TryLoadState(
+            out int savedProcessId,
+            out uint originalInstruction);
+
+        if (isHayabusaEquipped)
+        {
+            if (currentInstruction == AttackPatchValue)
+            {
+
+----- LINE 263 -----
+
+                SaveState(
+                    processId,
+                    originalInstruction);
+            }
+
+            try
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify != AttackPatchValue)
+                {
+                    throw new InvalidOperationException(
+                        "二回攻撃パッチの書き込み検証に失敗しました。" +
+                        " 読み戻し値: 0x" + verify.ToString("X8"));
+                }
+
+----- LINE 268 -----
+
+            try
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    AttackPatchValue);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify != AttackPatchValue)
+                {
+                    throw new InvalidOperationException(
+                        "二回攻撃パッチの書き込み検証に失敗しました。" +
+                        " 読み戻し値: 0x" + verify.ToString("X8"));
+                }
+
+                WriteDiagnostic(
+                    "APPLY SUCCESS" +
+                    " PID=" + processId +
+                    " WeaponID=0x" + equippedWeapon.ToString("X4") +
+
+----- LINE 293 -----
+            }
+            catch
+            {
+                TryRestoreAfterWriteFailure(
+                    processId,
+                    originalInstruction);
+
+                uint afterFailure =
+                    ReadPine32(AttackPatchAddress);
+
+                if (afterFailure == originalInstruction)
+                    DeleteState();
+
+                throw;
+            }
+
+            return;
+        }
+
+        if (equippedWeapon == AmbiguousAfterRecruitmentWeaponValue &&
+            hasState &&
+
+----- LINE 336 -----
+        if (savedProcessId != processId)
+        {
+            SetStatus("別のPCSX2プロセスの復元情報があります。");
+            return;
+        }
+
+        if (currentInstruction == AttackPatchValue)
+        {
+            WritePine32(
+                AttackPatchAddress,
+                originalInstruction);
+
+            uint verify =
+                ReadPine32(AttackPatchAddress);
+
+            if (verify != originalInstruction)
+            {
+                throw new InvalidOperationException(
+                    "二回攻撃パッチの復元に失敗しました。" +
+                    " 読み戻し値: 0x" + verify.ToString("X8"));
+            }
+
+----- LINE 341 -----
+
+        if (currentInstruction == AttackPatchValue)
+        {
+            WritePine32(
+                AttackPatchAddress,
+                originalInstruction);
+
+            uint verify =
+                ReadPine32(AttackPatchAddress);
+
+            if (verify != originalInstruction)
+            {
+                throw new InvalidOperationException(
+                    "二回攻撃パッチの復元に失敗しました。" +
+                    " 読み戻し値: 0x" + verify.ToString("X8"));
+            }
+
+            DeleteState();
+
+            WriteDiagnostic(
+                "RESTORE SUCCESS" +
+
+----- LINE 394 -----
+        uint originalInstruction)
+    {
+        try
+        {
+            if (Pcsx2LiveSession.ProcessId != processId)
+                return;
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+
+----- LINE 398 -----
+            if (Pcsx2LiveSession.ProcessId != processId)
+                return;
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+            }
+        }
+        catch
+        {
+
+----- LINE 403 -----
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+            }
+        }
+        catch
+        {
+            // 復元できなかった場合は状態ファイルを残す。
+        }
+    }
+
+    private static string ReadItemName(int processId)
+
+----- LINE 471 -----
+                length);
+        }
+        finally
+        {
+            CloseHandle(process);
+        }
+    }
+
+    private static uint ReadPine32(uint address)
+    {
+        return ActionAutoRestoreService.ReadShared32(address);
+    }
+
+    private static void WritePine32(uint address, uint value)
+    {
+        ActionAutoRestoreService.WriteShared32(address, value);
+    }
+    private static bool TryLoadState(
+        out int processId,
+        out uint originalInstruction)
+    {
+
+----- LINE 476 -----
+        }
+    }
+
+    private static uint ReadPine32(uint address)
+    {
+        return ActionAutoRestoreService.ReadShared32(address);
+    }
+
+    private static void WritePine32(uint address, uint value)
+    {
+        ActionAutoRestoreService.WriteShared32(address, value);
+    }
+    private static bool TryLoadState(
+        out int processId,
+        out uint originalInstruction)
+    {
+        processId = 0;
+        originalInstruction = 0;
+
+        if (!File.Exists(StatePath))
+            return false;
+
+----- LINE 583 -----
+
+            if (!hasState ||
+                savedProcessId != processId)
+            {
+                return;
+            }
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+
+----- LINE 587 -----
+                return;
+            }
+
+            uint current =
+                ReadPine32(AttackPatchAddress);
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+            }
+        }
+        catch (Exception ex)
+        {
+
+----- LINE 592 -----
+
+            if (current == AttackPatchValue)
+            {
+                WritePine32(
+                    AttackPatchAddress,
+                    originalInstruction);
+
+                uint verify =
+                    ReadPine32(AttackPatchAddress);
+
+                if (verify == originalInstruction)
+                    DeleteState();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(
+                "[はやぶさの爪] 終了時の復元に失敗: " +
+                ex.Message);
+        }
+    }
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\HayabusaRecruitCorrectionMonitor.cs
+============================================================
+
+----- LINE 14 -----
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal static class HayabusaRecruitCorrectionMonitor
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+
+    private const long ItemNameAddress = 0x1B322C27C42L;
+    private const string ExpectedItemName = "ﾊﾔぶｻﾉ爪";
+
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
+    private const uint RecruitCorrectionAddress = 0x008F39C4;
+
+    // -9999 = 0xD8F1
+    private const ushort OriginalRecruitValue = 0xD8F1;
+
+----- LINE 15 -----
+using System.Text;
+using System.Windows.Forms;
+
+namespace TornekoIjiriPort;
+
+internal static class HayabusaRecruitCorrectionMonitor
+{
+    private const string PineHost = "127.0.0.1";
+    private const int PinePort = 28011;
+
+    private const long ItemNameAddress = 0x1B322C27C42L;
+    private const string ExpectedItemName = "ﾊﾔぶｻﾉ爪";
+
+    private const uint EquippedWeaponAddress = 0x006A54A4;
+    private const uint HayabusaWeaponValue = 0x0000DFD8;
+
+    private const uint RecruitCorrectionAddress = 0x008F39C4;
+
+    // -9999 = 0xD8F1
+    private const ushort OriginalRecruitValue = 0xD8F1;
+
+
+----- LINE 127 -----
+        }
+    }
+
+    private static void Evaluate(int processId)
+    {
+
+
+        uint equippedWeapon =
+            ReadPine32(EquippedWeaponAddress) & 0xFFFF;
+
+        bool isHayabusa =
+            equippedWeapon == HayabusaWeaponValue;
+
+        uint currentWord =
+            ReadPine32(RecruitCorrectionAddress);
+
+        ushort currentValue =
+            (ushort)(currentWord & 0xFFFF);
+
+        bool hasState = TryLoadState(
+            out int savedProcessId,
+
+----- LINE 133 -----
+
+        uint equippedWeapon =
+            ReadPine32(EquippedWeaponAddress) & 0xFFFF;
+
+        bool isHayabusa =
+            equippedWeapon == HayabusaWeaponValue;
+
+        uint currentWord =
+            ReadPine32(RecruitCorrectionAddress);
+
+        ushort currentValue =
+            (ushort)(currentWord & 0xFFFF);
+
+        bool hasState = TryLoadState(
+            out int savedProcessId,
+            out ushort originalValue);
+
+        if (hasState && savedProcessId != processId)
+        {
+            DeleteState();
+            hasState = false;
+
+----- LINE 162 -----
+            }
+
+            if (currentValue != TargetRecruitValue)
+            {
+                uint newWord =
+                    (currentWord & 0xFFFF0000u) |
+                    TargetRecruitValue;
+
+                WritePine32(
+                    RecruitCorrectionAddress,
+                    newWord);
+
+                uint verification =
+                    ReadPine32(RecruitCorrectionAddress);
+
+                ushort verifiedValue =
+                    (ushort)(verification & 0xFFFF);
+
+                if (verifiedValue != TargetRecruitValue)
+                {
+                    throw new IOException(
+
+----- LINE 167 -----
+                    (currentWord & 0xFFFF0000u) |
+                    TargetRecruitValue;
+
+                WritePine32(
+                    RecruitCorrectionAddress,
+                    newWord);
+
+                uint verification =
+                    ReadPine32(RecruitCorrectionAddress);
+
+                ushort verifiedValue =
+                    (ushort)(verification & 0xFFFF);
+
+                if (verifiedValue != TargetRecruitValue)
+                {
+                    throw new IOException(
+                        "勧誘修正値の書き込み検証に失敗しました。" +
+                        " 読み戻し値: " +
+                        verifiedValue.ToString());
+                }
+
+
+----- LINE 198 -----
+        if (hasState)
+        {
+            if (currentValue != originalValue)
+            {
+                uint restoredWord =
+                    (currentWord & 0xFFFF0000u) |
+                    originalValue;
+
+                WritePine32(
+                    RecruitCorrectionAddress,
+                    restoredWord);
+
+                uint verification =
+                    ReadPine32(RecruitCorrectionAddress);
+
+                ushort verifiedValue =
+                    (ushort)(verification & 0xFFFF);
+
+                if (verifiedValue != originalValue)
+                {
+                    throw new IOException(
+
+----- LINE 203 -----
+                    (currentWord & 0xFFFF0000u) |
+                    originalValue;
+
+                WritePine32(
+                    RecruitCorrectionAddress,
+                    restoredWord);
+
+                uint verification =
+                    ReadPine32(RecruitCorrectionAddress);
+
+                ushort verifiedValue =
+                    (ushort)(verification & 0xFFFF);
+
+                if (verifiedValue != originalValue)
+                {
+                    throw new IOException(
+                        "勧誘修正値の復元に失敗しました。" +
+                        " 読み戻し値: " +
+                        verifiedValue.ToString());
+                }
+            }
+
+----- LINE 280 -----
+            return Cp932.GetString(buffer, 0, length);
+        }
+        finally
+        {
+            CloseHandle(process);
+        }
+    }
+
+    private static uint ReadPine32(uint address)
+    {
+        return ActionAutoRestoreService.ReadShared32(address);
+    }
+
+    private static void WritePine32(uint address, uint value)
+    {
+        ActionAutoRestoreService.WriteShared32(address, value);
+    }
+    private static bool TryLoadState(
+        out int processId,
+        out ushort originalValue)
+    {
+
+----- LINE 285 -----
+        }
+    }
+
+    private static uint ReadPine32(uint address)
+    {
+        return ActionAutoRestoreService.ReadShared32(address);
+    }
+
+    private static void WritePine32(uint address, uint value)
+    {
+        ActionAutoRestoreService.WriteShared32(address, value);
+    }
+    private static bool TryLoadState(
+        out int processId,
+        out ushort originalValue)
+    {
+        processId = 0;
+        originalValue = OriginalRecruitValue;
+
+        if (!File.Exists(StatePath))
+            return false;
+
+----- LINE 370 -----
+
+                bool hasState = TryLoadState(
+                    out int savedProcessId,
+                    out ushort originalValue);
+
+                if (hasState && savedProcessId == processId)
+                {
+                    uint currentWord =
+                        ReadPine32(RecruitCorrectionAddress);
+
+                    uint restoredWord =
+                        (currentWord & 0xFFFF0000u) |
+                        originalValue;
+
+                    WritePine32(
+                        RecruitCorrectionAddress,
+                        restoredWord);
+
+                    DeleteState();
+                }
+            }
+
+----- LINE 376 -----
+                {
+                    uint currentWord =
+                        ReadPine32(RecruitCorrectionAddress);
+
+                    uint restoredWord =
+                        (currentWord & 0xFFFF0000u) |
+                        originalValue;
+
+                    WritePine32(
+                        RecruitCorrectionAddress,
+                        restoredWord);
+
+                    DeleteState();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(
+                "[勧誘修正値] 終了時の復元エラー: " +
+                ex.Message);
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ItemDescriptionEditorForm.cs
+============================================================
+
+----- LINE 59 -----
+            EncoderFallback.ExceptionFallback,
+            DecoderFallback.ExceptionFallback);
+    }
+
+    public ItemDescriptionEditorForm(int pid)
+    {
+        _pid = pid;
+
+        Text = "説明文を改造 - PINE高速日本語検索";
+        Width = 1150;
+        Height = 760;
+        StartPosition = FormStartPosition.CenterParent;
+
+        BuildUI();
+        _list.DoubleClick += (s, e) => EditSelectedCandidate();
+    }
+
+    private void BuildUI()
+    {
+        var root = new TableLayoutPanel
+        {
+
+----- LINE 165 -----
+        _detail.Dock = DockStyle.Fill;
+        _detail.Multiline = true;
+        _detail.ReadOnly = true;
+        _detail.ScrollBars = ScrollBars.Both;
+        _detail.WordWrap = false;
+        _detail.Font = new Font("Consolas", 10);
+
+        _status.Dock = DockStyle.Fill;
+        _status.Text = "PCSX2を起動し、PINEを有効にしてください。";
+        _status.AutoSize = false;
+
+        root.Controls.Add(top, 0, 0);
+        root.Controls.Add(filterPanel, 0, 1);
+        root.Controls.Add(_list, 0, 2);
+
+        var bottom = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2
+        };
+
+----- LINE 429 -----
+
+        while (offset < length)
+        {
+            int received = stream.Read(
+                result, offset, length - offset);
+
+            if (received <= 0)
+                throw new EndOfStreamException(
+                    "PINEからの応答が途中で切断されました。");
+
+            offset += received;
+        }
+
+        return result;
+    }
+
+        private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll", SetLastError = true)]
+
+----- LINE 721 -----
+                System.Linq.Enumerable.SequenceEqual(
+                    buffer,
+                    readAfter2000
+                );
+
+            // 2秒後も維持されている場合だけTorneko4保存対象に登録する。
+            if (match2000)
+            {
+                Torneko4PatchStore.Register(
+                    "アイテム説明文編集",
+                    targetOffset,
+                    buffer);
+            }
+
+            finalReport =
+                "連続書き込み実験が終了しました。\r\n\r\n" +
+                "書き込み成功回数: " + successCount + "\r\n" +
+                "書き込み失敗回数: " + failureCount + "\r\n\r\n" +
+                "書き込み停止0.5秒後: " +
+                (match500 ? "変更後のデータを維持" : "変更後のデータではありません") +
+                "\r\n" +
+
+----- LINE 1082 -----
+        }
+        catch (Exception ex)
+        {
+            _status.Text = "検索エラー: " + ex.Message;
+
+            MessageBox.Show(
+                this,
+                ex.ToString(),
+                "PINE検索エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+        finally
+        {
+            _scanning = false;
+
+            if (!IsDisposed)
+                _scanButton.Enabled = true;
+        }
+    }
+
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+============================================================
+
+----- LINE 320 -----
+    private readonly CheckBox[] _skillChecks = CreateChecks(SkillFamilyNames);
+    private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
+    private readonly ComboBox _dropItem = CreateChoice(MonsterSkillData.DropItemChoices);
+    private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _skillRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
+    private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
+    private readonly ComboBox _actionChange = CreateActionChoice();
+    private readonly CheckBox _ganirasuBarrier = new CheckBox
+    {
+        Text = "ガニラスバリアを所持する",
+        AutoSize = true,
+        Dock = DockStyle.Fill
+    };
+    private readonly Label _actionMonitorStatus = new Label();
+    private readonly ActionAutoRestoreService _actionRestore;
+    private readonly bool _ownsActionRestore;
+
+    private static readonly string[] SkillRangeNames =
+    {
+        "なし",
+
+----- LINE 483 -----
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
+        fieldGrid.Controls.Add(_ganirasuBarrier, 0, 14);
+        fieldGrid.SetColumnSpan(_ganirasuBarrier, 2);
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+        fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
+        fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
+        fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
+        fieldGrid.Controls.Add(CreateField("経験値", _experience), 1, 1);
+        fieldGrid.Controls.Add(CreateField("最大レベル", _maxLevel), 0, 2);
+        fieldGrid.Controls.Add(CreateField("成長タイプ", _growthType), 1, 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("系統", _systemChecks), 0, 3);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("特技系統", _skillChecks), 0, 4);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+
+----- LINE 484 -----
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
+        fieldGrid.Controls.Add(_ganirasuBarrier, 0, 14);
+        fieldGrid.SetColumnSpan(_ganirasuBarrier, 2);
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+        fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
+        fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
+        fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
+        fieldGrid.Controls.Add(CreateField("経験値", _experience), 1, 1);
+        fieldGrid.Controls.Add(CreateField("最大レベル", _maxLevel), 0, 2);
+        fieldGrid.Controls.Add(CreateField("成長タイプ", _growthType), 1, 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("系統", _systemChecks), 0, 3);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("特技系統", _skillChecks), 0, 4);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateField("移動速度", _moveSpeed), 0, 5);
+
+----- LINE 562 -----
+            WrapContents = false
+        };
+
+        _applyButton.Text = "再適用";
+        _applyButton.Width = 130;
+        _applyButton.Height = 36;
+        _applyButton.Click += (_, _) => ApplySelected();
+
+        _ganirasuBarrier.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            Torneko4GanirasuBarrierStore.Set(
+                _selectedMonsterId,
+                _ganirasuBarrier.Checked);
+
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " のガニラスバリア設定を更新しました。";
+        };
+
+----- LINE 567 -----
+        _applyButton.Height = 36;
+        _applyButton.Click += (_, _) => ApplySelected();
+
+        _ganirasuBarrier.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            Torneko4GanirasuBarrierStore.Set(
+                _selectedMonsterId,
+                _ganirasuBarrier.Checked);
+
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " のガニラスバリア設定を更新しました。";
+        };
+
+        var reloadButton = new Button
+        {
+            Text = "再読込",
+            Width = 130,
+
+----- LINE 569 -----
+
+        _ganirasuBarrier.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            Torneko4GanirasuBarrierStore.Set(
+                _selectedMonsterId,
+                _ganirasuBarrier.Checked);
+
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " のガニラスバリア設定を更新しました。";
+        };
+
+        var reloadButton = new Button
+        {
+            Text = "再読込",
+            Width = 130,
+            Height = 36
+        };
+
+----- LINE 622 -----
+        };
+        infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+        infoPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+        infoPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        _actionMonitorStatus.Dock = DockStyle.Fill;
+        _actionMonitorStatus.AutoEllipsis = true;
+        _actionMonitorStatus.ForeColor = Color.DarkSlateBlue;
+        _actionMonitorStatus.Text = "PCSX2のPINE接続を確認しています（TCP 28011）。";
+
+        var copyInfoButton = new Button
+        {
+            Text = "診断コピー",
+            Dock = DockStyle.Fill
+        };
+        copyInfoButton.Click += (_, _) =>
+        {
+            if (!string.IsNullOrEmpty(_selectedInfo.Text))
+            {
+                Clipboard.SetText(_selectedInfo.Text);
+                MessageBox.Show(this, "診断情報を全文コピーしました。", "コピー完了");
+
+----- LINE 1016 -----
+        // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
+        _enemyThrowItem.Enabled = enabled &&
+            (_skillDataReady || Pcsx2LiveSession.IsConnected);
+        _allyThrowItem1.Enabled = enabled && _skillDataReady;
+        _allyThrowItem2.Enabled = enabled && _skillDataReady;
+        _skillMessage.Enabled = enabled && _skillDataReady;
+        _applyButton.Enabled = enabled;
+        _actionChange.Enabled = _selectedMonsterId >= 0;
+        _ganirasuBarrier.Enabled = enabled && _selectedMonsterId >= 0;
+    }
+
+    private void RefreshList()
+    {
+        string query = _search.Text.Trim();
+
+        _list.BeginUpdate();
+        _list.Items.Clear();
+        _visibleIds.Clear();
+
+        for (int i = 0; i < MonsterNames.Length; i++)
+        {
+
+----- LINE 1075 -----
+            SetEditorEnabled(false);
+            return;
+        }
+
+        int id = _visibleIds[index];
+        _selectedMonsterId = id;
+        _loadingSelection = true;
+
+        _ganirasuBarrier.Checked =
+            Torneko4GanirasuBarrierStore.Get(id);
+
+        // まず未選択状態に戻し、このモンスター専用の設定があれば復元する。
+        _actionChange.SelectedIndex = 0;
+
+        if (Torneko4ActionStore.TryGet(id, out ushort savedActionId))
+        {
+            int savedIndex = Array.FindIndex(
+                ActionAutoRestoreService.ActionChoices,
+                x => x.Id == savedActionId);
+
+            if (savedIndex >= 0)
+
+----- LINE 1076 -----
+            return;
+        }
+
+        int id = _visibleIds[index];
+        _selectedMonsterId = id;
+        _loadingSelection = true;
+
+        _ganirasuBarrier.Checked =
+            Torneko4GanirasuBarrierStore.Get(id);
+
+        // まず未選択状態に戻し、このモンスター専用の設定があれば復元する。
+        _actionChange.SelectedIndex = 0;
+
+        if (Torneko4ActionStore.TryGet(id, out ushort savedActionId))
+        {
+            int savedIndex = Array.FindIndex(
+                ActionAutoRestoreService.ActionChoices,
+                x => x.Id == savedActionId);
+
+            if (savedIndex >= 0)
+                _actionChange.SelectedIndex = savedIndex + 1;
+
+----- LINE 1141 -----
+                    requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
+                }
+                else
+                {
+                    // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
+                    requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
+                }
+
+                var liveData = Pcsx2BinApplier.ReadRanges(
+                    Pcsx2LiveSession.ProcessId,
+                    Pcsx2LiveSession.MemoryLayout,
+                    requested);
+
+                foreach (var item in liveData)
+                    Array.Copy(item.Item2, 0, _bin, item.Item1, item.Item2.Length);
+
+                _status.Text = MonsterNames[id] + " の現在値をPCSX2から読み込みました。";
+            }
+            catch (Exception ex)
+            {
+                _status.Text = "PCSX2ライブ読み込み失敗。直前の作業データを表示します。 " + ex.Message;
+
+----- LINE 1413 -----
+                {
+                    // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
+                    writes.Add(Tuple.Create(
+                        enemyItemOffset,
+                        CopyRange(enemyItemOffset, 2),
+                        "var_411 敵投擲アイテム"));
+                }
+
+                string resultText = Pcsx2BinApplier.ApplyRanges(
+                    Pcsx2LiveSession.ProcessId,
+                    Pcsx2LiveSession.MemoryLayout,
+                    writes);
+
+                _status.Text =
+                    MonsterNames[_selectedMonsterId] +
+                    " の変更をPCSX2へ反映しました。\r\n" +
+                    resultText;
+            }
+            catch (Exception ex)
+            {
+                _status.Text =
+
+----- LINE 1504 -----
+            index >= ActionAutoRestoreService.ActionChoices.Length)
+        {
+            _status.Text = "特技の選択内容が不正です。";
+            return;
+        }
+
+        var action = ActionAutoRestoreService.ActionChoices[index];
+
+        // PINEへの適用が失敗しても、選択した設定自体は保持する。
+        Torneko4ActionStore.Set(_selectedMonsterId, action.Id);
+
+        if (_actionRestore.TryApply(Torneko4ActionStore.GetCopy(), out string message))
+        {
+            _status.Text = message;
+        }
+        else
+        {
+            _status.Text = "特技変更エラー：" + message;
+            MessageBox.Show(this, message, "特技変更エラー",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+============================================================
+
+----- LINE 1941 -----
+        {
+            refreshButton.Enabled = true;
+            scanButton.Enabled = true;
+        }
+    }
+}
+
+
+internal static class Pcsx2BinApplier
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_VM_WRITE = 0x0020;
+    private const uint PROCESS_VM_OPERATION = 0x0008;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+
+    private sealed class WriteBlock
+    {
+
+----- LINE 2810 -----
+        {
+            CloseHandle(handle);
+        }
+    }
+    // ========================================================
+    // Torneko4追加メモリパッチ適用
+    // EE RAMオフセットを使用し、事前検証・読み戻し・ロールバックを行う
+    // ========================================================
+    public static string ApplyPatches(
+        int processId,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+
+----- LINE 2812 -----
+        }
+    }
+    // ========================================================
+    // Torneko4追加メモリパッチ適用
+    // EE RAMオフセットを使用し、事前検証・読み戻し・ロールバックを行う
+    // ========================================================
+    public static string ApplyPatches(
+        int processId,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+            if (patch == null || patch.Data == null || patch.Data.Length == 0)
+                throw new System.InvalidOperationException("追加メモリ変更データが不正です。");
+
+----- LINE 2820 -----
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+        if (patches == null)
+            return "追加メモリ変更: 0件";
+
+        var source = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+        foreach (var patch in patches)
+        {
+            if (patch == null || patch.Data == null || patch.Data.Length == 0)
+                throw new System.InvalidOperationException("追加メモリ変更データが不正です。");
+
+            source.Add(patch.Clone());
+        }
+
+        if (source.Count == 0)
+            return "追加メモリ変更: 0件";
+
+        const long EeRamSize = 0x02000000L;
+
+----- LINE 3026 -----
+    public const int VersionMarkerOffset = 355056;
+    public const int ExtensionStartOffset = 355072;
+
+    public static byte[] Load(string path)
+    {
+        if (!File.Exists(path))
+            throw new FileNotFoundException("BINファイルが見つかりません。", path);
+
+        byte[] data = File.ReadAllBytes(path);
+
+        if (data.Length < ExpectedSize)
+        {
+            throw new InvalidDataException(
+                $"BINサイズが不正です。\r\n" +
+                $"必要サイズ: {ExpectedSize:N0} bytes\r\n" +
+                $"実際のサイズ: {data.Length:N0} bytes");
+        }
+
+        return data;
+    }
+
+
+----- LINE 3067 -----
+
+            File.Copy(fullPath, backupPath, false);
+        }
+
+        string tempPath = fullPath + ".tmp";
+
+        try
+        {
+            File.WriteAllBytes(tempPath, data);
+
+            if (File.Exists(fullPath))
+                File.Move(tempPath, fullPath, true);
+            else
+                File.Move(tempPath, fullPath);
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+                File.Delete(tempPath);
+        }
+    }
+
+----- LINE 3289 -----
+    public static AppSettings Load()
+    {
+        try
+        {
+            if (!File.Exists(SettingsPath))
+                return new AppSettings();
+
+            string json = File.ReadAllText(SettingsPath);
+            return JsonSerializer.Deserialize<AppSettings>(json)
+                ?? new AppSettings();
+        }
+        catch
+        {
+            return new AppSettings();
+        }
+    }
+
+    public void Save()
+    {
+        string directory = Path.GetDirectoryName(SettingsPath)!;
+        Directory.CreateDirectory(directory);
+
+----- LINE 3303 -----
+        }
+    }
+
+    public void Save()
+    {
+        string directory = Path.GetDirectoryName(SettingsPath)!;
+        Directory.CreateDirectory(directory);
+
+        string json = JsonSerializer.Serialize(
+            this,
+            new JsonSerializerOptions { WriteIndented = true });
+
+        File.WriteAllText(SettingsPath, json, Encoding.UTF8);
+    }
+}
+
+// ============================================================
+// 共通UI
+// ============================================================
+internal static class UiFactory
+{
+
+----- LINE 3305 -----
+
+    public void Save()
+    {
+        string directory = Path.GetDirectoryName(SettingsPath)!;
+        Directory.CreateDirectory(directory);
+
+        string json = JsonSerializer.Serialize(
+            this,
+            new JsonSerializerOptions { WriteIndented = true });
+
+        File.WriteAllText(SettingsPath, json, Encoding.UTF8);
+    }
+}
+
+// ============================================================
+// 共通UI
+// ============================================================
+internal static class UiFactory
+{
+    public static Button Button(string text, EventHandler click)
+    {
+
+----- LINE 4026 -----
+                ex.ToString(),
+                "一覧保存エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+}
+
+internal sealed class Torneko4MemoryPatch
+{
+    public string Name { get; }
+    public long Address { get; }
+    public byte[] Data { get; }
+
+    public Torneko4MemoryPatch(string name, long address, byte[] data)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("変更名が空です。");
+
+        if (data == null || data.Length == 0)
+            throw new ArgumentException("変更データが空です。");
+
+----- LINE 4032 -----
+}
+
+internal sealed class Torneko4MemoryPatch
+{
+    public string Name { get; }
+    public long Address { get; }
+    public byte[] Data { get; }
+
+    public Torneko4MemoryPatch(string name, long address, byte[] data)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("変更名が空です。");
+
+        if (data == null || data.Length == 0)
+            throw new ArgumentException("変更データが空です。");
+
+        Name = name;
+        Address = address;
+        Data = (byte[])data.Clone();
+    }
+
+
+----- LINE 4045 -----
+        if (data == null || data.Length == 0)
+            throw new ArgumentException("変更データが空です。");
+
+        Name = name;
+        Address = address;
+        Data = (byte[])data.Clone();
+    }
+
+    public Torneko4MemoryPatch Clone()
+    {
+        return new Torneko4MemoryPatch(Name, Address, Data);
+    }
+}
+
+internal static class Torneko4PatchStore
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+
+----- LINE 4047 -----
+
+        Name = name;
+        Address = address;
+        Data = (byte[])data.Clone();
+    }
+
+    public Torneko4MemoryPatch Clone()
+    {
+        return new Torneko4MemoryPatch(Name, Address, Data);
+    }
+}
+
+internal static class Torneko4PatchStore
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+
+----- LINE 4051 -----
+    }
+
+    public Torneko4MemoryPatch Clone()
+    {
+        return new Torneko4MemoryPatch(Name, Address, Data);
+    }
+}
+
+internal static class Torneko4PatchStore
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+        var patch = new Torneko4MemoryPatch(name, address, data);
+
+        lock (Sync)
+        {
+
+----- LINE 4055 -----
+        return new Torneko4MemoryPatch(Name, Address, Data);
+    }
+}
+
+internal static class Torneko4PatchStore
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+        var patch = new Torneko4MemoryPatch(name, address, data);
+
+        lock (Sync)
+        {
+            int index = Patches.FindIndex(
+                x => x.Address == address && x.Name == name);
+
+            if (index >= 0)
+
+----- LINE 4056 -----
+    }
+}
+
+internal static class Torneko4PatchStore
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+        var patch = new Torneko4MemoryPatch(name, address, data);
+
+        lock (Sync)
+        {
+            int index = Patches.FindIndex(
+                x => x.Address == address && x.Name == name);
+
+            if (index >= 0)
+                Patches[index] = patch;
+
+----- LINE 4060 -----
+{
+    private static readonly object Sync = new object();
+
+    private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+        var patch = new Torneko4MemoryPatch(name, address, data);
+
+        lock (Sync)
+        {
+            int index = Patches.FindIndex(
+                x => x.Address == address && x.Name == name);
+
+            if (index >= 0)
+                Patches[index] = patch;
+            else
+                Patches.Add(patch);
+        }
+    }
+
+----- LINE 4074 -----
+
+            if (index >= 0)
+                Patches[index] = patch;
+            else
+                Patches.Add(patch);
+        }
+    }
+
+    public static System.Collections.Generic.List<Torneko4MemoryPatch> GetCopy()
+    {
+        lock (Sync)
+        {
+            return Patches.ConvertAll(x => x.Clone());
+        }
+    }
+
+    public static void ReplaceAll(
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        lock (Sync)
+        {
+
+----- LINE 4083 -----
+    {
+        lock (Sync)
+        {
+            return Patches.ConvertAll(x => x.Clone());
+        }
+    }
+
+    public static void ReplaceAll(
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        lock (Sync)
+        {
+            Patches.Clear();
+
+            if (patches == null)
+                return;
+
+            foreach (var patch in patches)
+            {
+                if (patch != null)
+                    Patches.Add(patch.Clone());
+
+----- LINE 4114 -----
+    }
+}
+
+internal sealed class Torneko4Package
+{
+    public TornekoBinPreservationSnapshot Snapshot { get; }
+    public byte[] EditedBase { get; }
+    public string OriginalSourcePath { get; }
+    public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+    public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
+
+    public Torneko4Package(
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        string originalSourcePath,
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null)
+    {
+        Snapshot = snapshot;
+        EditedBase = (byte[])editedBase.Clone();
+        OriginalSourcePath = originalSourcePath ?? "";
+
+----- LINE 4121 -----
+    public string OriginalSourcePath { get; }
+    public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+    public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
+
+    public Torneko4Package(
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        string originalSourcePath,
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null)
+    {
+        Snapshot = snapshot;
+        EditedBase = (byte[])editedBase.Clone();
+        OriginalSourcePath = originalSourcePath ?? "";
+
+        Patches = patches == null
+            ? new System.Collections.Generic.List<Torneko4MemoryPatch>()
+            : patches.ConvertAll(x => x.Clone());
+
+        MonsterActions = monsterActions == null
+            ? new System.Collections.Generic.Dictionary<int, ushort>()
+
+----- LINE 4129 -----
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null)
+    {
+        Snapshot = snapshot;
+        EditedBase = (byte[])editedBase.Clone();
+        OriginalSourcePath = originalSourcePath ?? "";
+
+        Patches = patches == null
+            ? new System.Collections.Generic.List<Torneko4MemoryPatch>()
+            : patches.ConvertAll(x => x.Clone());
+
+        MonsterActions = monsterActions == null
+            ? new System.Collections.Generic.Dictionary<int, ushort>()
+            : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
+    }
+}
+
+internal static class Torneko4FileService
+{
+    private static readonly byte[] Magic =
+        System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
+
+----- LINE 4138 -----
+            : patches.ConvertAll(x => x.Clone());
+
+        MonsterActions = monsterActions == null
+            ? new System.Collections.Generic.Dictionary<int, ushort>()
+            : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
+    }
+}
+
+internal static class Torneko4FileService
+{
+    private static readonly byte[] Magic =
+        System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
+
+    private const int FormatVersion = 4;
+    private const int BaseSize = 524288;
+    private const int MaximumOriginalSize = 64 * 1024 * 1024;
+
+    // ファイル全体の実用上の安全上限。基本領域の容量制限ではない。
+    private const long MaximumPackageSize = 1024L * 1024L * 1024L;
+
+    private const int MaximumPatchCount = 100000;
+
+----- LINE 4159 -----
+    private const int MaximumPatchSize = 64 * 1024 * 1024;
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase)
+    {
+        Save(path, snapshot, editedBase,
+            new System.Collections.Generic.List<Torneko4MemoryPatch>(),
+            null);
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        Save(path, snapshot, editedBase, patches, null);
+    }
+
+
+----- LINE 4167 -----
+            new System.Collections.Generic.List<Torneko4MemoryPatch>(),
+            null);
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        Save(path, snapshot, editedBase, patches, null);
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions,
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
+    {
+
+----- LINE 4176 -----
+    {
+        Save(path, snapshot, editedBase, patches, null);
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions,
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
+    {
+        if (snapshot == null)
+            throw new ArgumentNullException(nameof(snapshot));
+
+        if (editedBase == null || editedBase.Length != BaseSize)
+            throw new InvalidDataException(
+                "編集済み基本領域のサイズが不正です。");
+
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("保存先が指定されていません。");
+
+----- LINE 4178 -----
+    }
+
+    public static void Save(
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions,
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
+    {
+        if (snapshot == null)
+            throw new ArgumentNullException(nameof(snapshot));
+
+        if (editedBase == null || editedBase.Length != BaseSize)
+            throw new InvalidDataException(
+                "編集済み基本領域のサイズが不正です。");
+
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("保存先が指定されていません。");
+
+        byte[] original = snapshot.GetCopy();
+
+----- LINE 4215 -----
+            throw new InvalidDataException(
+                "元データの整合性が確認できません。");
+        }
+
+        string editedHash =
+            TornekoBinPreservation.ComputeSha256(editedBase);
+
+        var patchList =
+            new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+        if (patches != null)
+        {
+            foreach (var patch in patches)
+            {
+                if (patch == null)
+                    continue;
+
+                if (patch.Data == null ||
+                    patch.Data.Length == 0 ||
+                    patch.Data.Length > MaximumPatchSize)
+                {
+
+----- LINE 4475 -----
+            actualEditedHash,
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidDataException(
+                "編集データのSHA256が一致しません。");
+        }
+
+        var patchList =
+            new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+        // バージョン1は従来どおり追加領域なし。
+        if (version >= 2)
+        {
+            int patchCount = reader.ReadInt32();
+
+            if (patchCount < 0 || patchCount > MaximumPatchCount)
+                throw new InvalidDataException(
+                    "追加変更の件数が不正です。");
+
+            long totalPatchBytes = 0;
+
+
+----- LINE 4529 -----
+                    actualPatchHash,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidDataException(
+                        "追加変更データのSHA256が一致しません: " + name);
+                }
+
+                patchList.Add(
+                    new Torneko4MemoryPatch(name, address, data));
+            }
+        }
+
+        var monsterActions =
+            new System.Collections.Generic.Dictionary<int, ushort>();
+
+        // バージョン3で追加されたモンスター別特技設定。
+        if (version >= 3)
+        {
+            int actionCount = reader.ReadInt32();
+
+            if (actionCount < 0 || actionCount > 199)
+
+----- LINE 5112 -----
+            OverwritePrompt = true
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            Torneko4FileService.Save(
+                dialog.FileName,
+                _binSnapshot,
+                _bin,
+                Torneko4PatchStore.GetCopy(),
+                Torneko4ActionStore.GetCopy());
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            MessageBox.Show(
+                this,
+                "改造データを.Torneko4形式で保存しました。\r\n\r\n" +
+
+----- LINE 5116 -----
+            return;
+
+        try
+        {
+            Torneko4FileService.Save(
+                dialog.FileName,
+                _binSnapshot,
+                _bin,
+                Torneko4PatchStore.GetCopy(),
+                Torneko4ActionStore.GetCopy());
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            MessageBox.Show(
+                this,
+                "改造データを.Torneko4形式で保存しました。\r\n\r\n" +
+                "基本領域: " + _bin.Length.ToString("N0") + " bytes\r\n" +
+                "追加メモリ変更: " + Torneko4PatchStore.GetCopy().Count.ToString("N0") + " 件\r\n" +
+                "元データ・編集データ・追加変更のSHA256検証: 成功\r\n" +
+                "保存先:\r\n" + dialog.FileName,
+
+----- LINE 5126 -----
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            MessageBox.Show(
+                this,
+                "改造データを.Torneko4形式で保存しました。\r\n\r\n" +
+                "基本領域: " + _bin.Length.ToString("N0") + " bytes\r\n" +
+                "追加メモリ変更: " + Torneko4PatchStore.GetCopy().Count.ToString("N0") + " 件\r\n" +
+                "元データ・編集データ・追加変更のSHA256検証: 成功\r\n" +
+                "保存先:\r\n" + dialog.FileName,
+                "Torneko4保存完了",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            UiFactory.Error(this, ex);
+        }
+    }
+
+
+----- LINE 5189 -----
+            bool loaded = false;
+
+            if (string.Equals(
+                extension,
+                ".Torneko4",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Torneko4Package package =
+                    Torneko4FileService.Load(dialog.FileName);
+
+                _binSnapshot = package.Snapshot;
+                _bin = (byte[])package.EditedBase.Clone();
+                Torneko4PatchStore.ReplaceAll(package.Patches);
+                Torneko4ActionStore.ReplaceAll(package.MonsterActions);
+                loaded = true;
+            }
+
+            if (string.Equals(
+                extension,
+                ".bin",
+                StringComparison.OrdinalIgnoreCase))
+
+----- LINE 5193 -----
+                ".Torneko4",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Torneko4Package package =
+                    Torneko4FileService.Load(dialog.FileName);
+
+                _binSnapshot = package.Snapshot;
+                _bin = (byte[])package.EditedBase.Clone();
+                Torneko4PatchStore.ReplaceAll(package.Patches);
+                Torneko4ActionStore.ReplaceAll(package.MonsterActions);
+                loaded = true;
+            }
+
+            if (string.Equals(
+                extension,
+                ".bin",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                TornekoBinPreservationSnapshot snapshot =
+                    TornekoBinPreservation.Load(dialog.FileName);
+
+
+----- LINE 5215 -----
+                    TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+
+                if (loadedBase.Length != 524288)
+                    throw new InvalidDataException(
+                        "BINの基本領域が524288 bytesではありません。");
+
+                _binSnapshot = snapshot;
+                _bin = loadedBase;
+                Torneko4PatchStore.Clear();
+                Torneko4ActionStore.Clear();
+                loaded = true;
+            }
+
+            if (!loaded)
+                throw new InvalidDataException(
+                    "対応していないファイル形式です。");
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            _status.Text =
+
+----- LINE 5231 -----
+
+            _binPath = dialog.FileName;
+            UpdateStatus();
+
+            _status.Text =
+                "改造データ読み込み完了。PCSX2への適用確認中...";
+
+            // 種族別特技設定をアプリ常駐サービスへ渡す。
+            // PINE未接続の場合も設定は保持され、サービスが再試行する。
+            _actionRestore.TryApply(
+                Torneko4ActionStore.GetCopy(),
+                out string actionApplyMessage);
+
+            _pcsx2DataStatus.Text = actionApplyMessage;
+
+            // 読み込み直後に既存の安全検証付き適用処理へ進む。
+            ApplyBinToPcsx2();
+        }
+        catch (Exception ex)
+        {
+            UiFactory.Error(this, ex);
+
+----- LINE 5326 -----
+            "先にPCSX2でゲームを一時停止してください。適用中はPCSX2やゲームを終了しないでください。メモリへの書き込みを実行します。\\r\\n\\r\\n続行しますか？",
+            "改造ダンジョン適用確認",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning) != DialogResult.Yes)
+            return;
+
+        try
+        {
+            string result = Pcsx2BinApplier.Apply(
+                Pcsx2LiveSession.ProcessId, layout, _bin);
+
+            // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+            var memoryPatches = Torneko4PatchStore.GetCopy();
+            string patchResult = Pcsx2BinApplier.ApplyPatches(
+                Pcsx2LiveSession.ProcessId,
+                memoryPatches);
+
+            result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
+
+            _status.Text = "改造ダンジョン適用済み";
+            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+
+----- LINE 5330 -----
+            return;
+
+        try
+        {
+            string result = Pcsx2BinApplier.Apply(
+                Pcsx2LiveSession.ProcessId, layout, _bin);
+
+            // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+            var memoryPatches = Torneko4PatchStore.GetCopy();
+            string patchResult = Pcsx2BinApplier.ApplyPatches(
+                Pcsx2LiveSession.ProcessId,
+                memoryPatches);
+
+            result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
+
+            _status.Text = "改造ダンジョン適用済み";
+            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+
+            MessageBox.Show(
+                this,
+                "BINデータの適用処理が完了しました。\\r\\n\\r\\n" + result +
+
+----- LINE 5331 -----
+
+        try
+        {
+            string result = Pcsx2BinApplier.Apply(
+                Pcsx2LiveSession.ProcessId, layout, _bin);
+
+            // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+            var memoryPatches = Torneko4PatchStore.GetCopy();
+            string patchResult = Pcsx2BinApplier.ApplyPatches(
+                Pcsx2LiveSession.ProcessId,
+                memoryPatches);
+
+            result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
+
+            _status.Text = "改造ダンジョン適用済み";
+            _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+
+            MessageBox.Show(
+                this,
+                "BINデータの適用処理が完了しました。\\r\\n\\r\\n" + result +
+                "\\r\\n\\r\\nゲーム内でダンジョンに入れるか確認してください。",
+
+----- LINE 6715 -----
+        if (string.IsNullOrWhiteSpace(path))
+            throw new System.ArgumentException("ファイルパスが空です。");
+
+        if (!System.IO.File.Exists(path))
+            throw new System.IO.FileNotFoundException(
+                "BINファイルが見つかりません。",
+                path);
+
+        byte[] data = System.IO.File.ReadAllBytes(path);
+
+        return new TornekoBinPreservationSnapshot(
+            data,
+            System.IO.Path.GetFullPath(path));
+    }
+
+    public static string ComputeSha256(byte[] data)
+    {
+        if (data == null)
+            throw new System.ArgumentNullException("data");
+
+        using (var sha = System.Security.Cryptography.SHA256.Create())
+
+----- LINE 6843 -----
+            System.IO.Path.GetDirectoryName(fullPath);
+
+        if (!System.IO.Directory.Exists(directory))
+            System.IO.Directory.CreateDirectory(directory);
+
+        byte[] output = snapshot.GetCopy();
+
+        // 元ファイルには触れず、指定先に完全なコピーを作成する。
+        System.IO.File.WriteAllBytes(fullPath, output);
+
+        byte[] check = System.IO.File.ReadAllBytes(fullPath);
+
+        if (check.Length != snapshot.OriginalLength)
+            throw new System.IO.IOException(
+                "保存後のファイルサイズが一致しません。");
+
+        string actualHash = ComputeSha256(check);
+
+        if (!string.Equals(
+            actualHash,
+            snapshot.OriginalSha256,
+
+----- LINE 6845 -----
+        if (!System.IO.Directory.Exists(directory))
+            System.IO.Directory.CreateDirectory(directory);
+
+        byte[] output = snapshot.GetCopy();
+
+        // 元ファイルには触れず、指定先に完全なコピーを作成する。
+        System.IO.File.WriteAllBytes(fullPath, output);
+
+        byte[] check = System.IO.File.ReadAllBytes(fullPath);
+
+        if (check.Length != snapshot.OriginalLength)
+            throw new System.IO.IOException(
+                "保存後のファイルサイズが一致しません。");
+
+        string actualHash = ComputeSha256(check);
+
+        if (!string.Equals(
+            actualHash,
+            snapshot.OriginalSha256,
+            System.StringComparison.OrdinalIgnoreCase))
+        {
+
+----- LINE 6960 -----
+            BaseRegionSize);
+
+        string directory =
+            System.IO.Path.GetDirectoryName(fullDestination);
+
+        if (!System.IO.Directory.Exists(directory))
+            System.IO.Directory.CreateDirectory(directory);
+
+        System.IO.File.WriteAllBytes(fullDestination, output);
+
+        // 保存結果を読み直して検査する。
+        byte[] check =
+            System.IO.File.ReadAllBytes(fullDestination);
+
+        if (check.Length != original.Length)
+            throw new System.IO.IOException(
+                "保存後のファイルサイズが元BINと一致しません。");
+
+        for (int i = 0; i < BaseRegionSize; i++)
+        {
+            if (check[i] != editedBaseRegion[i])
+
+----- LINE 6964 -----
+
+        if (!System.IO.Directory.Exists(directory))
+            System.IO.Directory.CreateDirectory(directory);
+
+        System.IO.File.WriteAllBytes(fullDestination, output);
+
+        // 保存結果を読み直して検査する。
+        byte[] check =
+            System.IO.File.ReadAllBytes(fullDestination);
+
+        if (check.Length != original.Length)
+            throw new System.IO.IOException(
+                "保存後のファイルサイズが元BINと一致しません。");
+
+        for (int i = 0; i < BaseRegionSize; i++)
+        {
+            if (check[i] != editedBaseRegion[i])
+                throw new System.IO.IOException(
+                    "基本領域の保存検査に失敗しました。位置: " + i);
+        }
+
+
+============================================================
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Torneko4GanirasuBarrierStore.cs
+============================================================
+
+----- LINE 4 -----
+using System;
+using System.Collections.Generic;
+
+internal static class Torneko4GanirasuBarrierStore
+{
+    private static readonly object Sync = new object();
+    private static bool[] Values = CreateDefaults();
+
+    private static bool[] CreateDefaults()
+    {
+        bool[] result = new bool[199];
+
+        int[] enabledIds =
+        {
+            196, 186, 197, 22, 187,
+            113, 114, 115, 126, 127
