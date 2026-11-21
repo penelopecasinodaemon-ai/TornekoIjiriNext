@@ -1,0 +1,3697 @@
+﻿GANIRASU BARRIER SOURCE INSPECTION
+Date: 2026-11-22 07:48:04
+Source files were read only. No source files were modified.
+
+============================================================
+MONSTER CREATOR FORM
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\MonsterCreatorForm.cs
+LINE COUNT: 1492
+============================================================
+    1: using System;
+    2: using System.Collections.Generic;
+    3: using System.Drawing;
+    4: using System.Linq;
+    5: using System.Net;
+    6: using System.Net.Sockets;
+    7: using System.Text;
+    8: using System.Windows.Forms;
+    9: 
+   10: namespace TornekoIjiriPort;
+   11: 
+   12: internal sealed class MonsterCreatorForm : Form
+   13: {
+   14:     private static readonly string[] MonsterNames = @"
+   15: スモールグール
+   16: ベロベロ
+   17: はぐれメタル
+   18: イエティ
+   19: ビッグスロース
+   20: マドハンド
+   21: ブラッドハンド
+   22: はねせんにん
+   23: ハエまどう
+   24: リリパット
+   25: アローインプ
+   26: どくやずきん
+   27: ドッグスナイパー
+   28: ゴーレム
+   29: ストーンマン
+   30: ゴールドマン
+   31: ホイミスライム
+   32: ベホマスライム
+   33: しびれくらげ
+   34: スライム
+   35: スライムベス
+   36: メタルスライム
+   37: ？鎧モンスター
+   38: オニオーン
+   39: たまねぎマン
+   40: エビルポット
+   41: ようがんまじん
+   42: ひょうがまじん
+   43: ゆうれい
+   44: しにがみ
+   45: シャーマン
+   46: ゾンビマスター
+   47: おおめだま
+   48: スペクテット
+   49: トロル
+   50: トロルボンバー
+   51: トロルキング
+   52: くさった死体
+   53: リビングデッド
+   54: グール
+   55: どくどくゾンビ
+   56: ドラゴン
+   57: キースドラゴン
+   58: ダースドラゴン
+   59: がいこつけんし
+   60: しりょうのきし
+   61: かげのきし
+   62: シルバーデビル
+   63: バズズ
+   64: デビルロード
+   65: 笑いぶくろ
+   66: おばけキノコ
+   67: マタンゴ
+   68: マージマタンゴ
+   69: まどうし
+   70: だいまどう
+   71: ベビーサタン
+   72: ミニデーモン
+   73: つかいま
+   74: ミステリドール
+   75: いしにんぎょう
+   76: おどる宝石
+   77: どろにんぎょう
+   78: パペットマン
+   79: ミミック
+   80: ひとくいばこ
+   81: バーサーカー
+   82: ドラキー
+   83: タホドラキー
+   84: ドラキーマ
+   85: シャドー
+   86: あやしいかげ
+   87: ？姿ｽﾗｲﾑ(フレイム)
+   88: ？姿ｽﾗｲﾑ(ブﾘザｰド)
+   89: ダンスキャロット
+   90: マンドラゴラ
+   91: テンツク
+   92: スーパーテンツク
+   93: ラストテンツク
+   94: いたずらもぐら
+   95: キラースコップ
+   96: キラーマシン
+   97: メタルハンター
+   98: きめんどうし
+   99: げんじゅつし
+  100: ドルイド
+  101: あくましんかん
+  102: じごくのつかい
+  103: うごくせきぞう
+  104: だいまじん
+  105: ばくだん岩
+  106: メガザルロック
+  107: ？マネマネ(CG無ﾊﾝｸﾞ)
+  108: さつじんき
+  109: エリミネーター
+  110: デスストーカー
+  111: ももんじゃ
+  112: メイジももんじゃ
+  113: おおナメクジ
+  114: ミイラおとこ
+  115: マミー
+  116: キメラ
+  117: スターキメラ
+  118: メイジキメラ
+  119: さまようよろい
+  120: キラーアーマー
+  121: じごくのよろい
+  122: ギガンテス
+  123: アトラス
+  124: アークデーモン
+  125: ベリアル
+  126: おおきづち
+  127: ブラウニー
+  128: ガニラス
+  129: じごくのハサミ
+  130: ぐんたいガニ
+  131: ゴースト
+  132: メトロゴースト
+  133: ヘルゴースト
+  134: アイアンアント
+  135: ぐんたいアリ
+  136: ラリホーアント
+  137: きとうし
+  138: ようじゅつし
+  139: ファーラット
+  140: ケダモン
+  141: アイアンタートル
+  142: ランドアーマー
+  143: ガーゴイル
+  144: モシャスナイト
+  145: シャドーナイト
+  146: ゴールデンスライム
+  147: スライムエンペラー
+  148: プラチナキング
+  149: バブルスライム
+  150: ？ダークアーマー
+  151: ？姿ﾆｾﾄﾙ(ポポロ)
+  152: ロサ
+  153: イネス
+  154: ちゅうまじゅう
+  155: ストローマウス
+  156: あめふらし
+  157: はりせんもぐら
+  158: サンダーラット
+  159: プラズママウス
+  160: ドラゴスライム
+  161: スライムブレス
+  162: ドラゴメタル
+  163: バブリン
+  164: プヨンターゲット
+  165: ポムポムボム
+  166: リビングハンマー
+  167: キラースター
+  168: デビルアンカー
+  169: さそりかまきり
+  170: キラーマンティス
+  171: メダパニシックル
+  172: タマゴロン
+  173: ワンダーエッグ
+  174: スカイフロッグ
+  175: ファイヤーケロッグ
+  176: デーモントード
+  177: キングスライム
+  178: スライムベホマズン
+  179: メタルキング
+  180: レノファイター
+  181: グレイトホーン
+  182: ？ボルンガ(ｸﾞﾚﾎ)
+  183: フライングデビル
+  184: ランガー
+  185: どぐう戦士
+  186: キラープラスター
+  187: こうてつまじん
+  188: エビルエスターク
+  189: デスマシーン
+  190: つのうしがい
+  191: しびれマイマイ
+  192: あんこくつむり
+  193: ベビーニュート
+  194: ドラゴンキッズ
+  195: メラリザード
+  196: おばけヒトデ
+  197: マージスター
+  198: タップペンギー
+  199: 岩とびあくま
+  200: グレイトマーマン
+  201: ？ジｬスティス別ver
+  202: ジャスティス兄
+  203: コロヒーロー
+  204: コロファイター
+  205: コロマージ
+  206: コロプリースト
+  207: プチヒーロー
+  208: プチファイター
+  209: プチマージ
+  210: プチプリースト
+  211: ヘルジャスティス
+  212: ？鎧ﾓﾝｽﾀｰ別ver
+  213: ニセトル
+  214: ".Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+  215: 
+  216:     private const int MonsterRecordSize = 24;
+  217:     private const int MonsterRecordCount = 199;
+  218:     private const int RecruitModifierDataOffset = 365123;
+  219:     private const int RecoveryConstantDataOffset = 364595;
+  220:     private const int LegacyModifierArraySize = 512;
+  221:     private const int SkillVersionOffset = 355056;
+  222:     private const int SkillRangeDataOffset = 382206;
+  223:     private const int SkillAllyItemDataOffset = 386212;
+  224:     private static readonly string[] SkillMessageNames =
+  225: {
+  226:     "アルテマソード",
+  227:     "ギガデイン",
+  228:     "持っている武器を思いきり投げつけた",
+  229:     "なぎはらい",
+  230:     "ムーンサルト",
+  231:     "仲間を吐こうとした",
+  232:     "強い光を出した",
+  233:     "なめまわした",
+  234:     "はげしく攻撃",
+  235:     "剣にちからをこめた",
+  236:     "○○を振った！",
+  237:     "○○を振った！2",
+  238:     "吹き飛ばすほどの攻撃",
+  239:     "マホトーン",
+  240:     "口をふさいだ",
+  241:     "口をふさいできた",
+  242:     "思いっきり斧を振った",
+  243:     "メガザル",
+  244:     "○○を振った！3",
+  245:     "○○を振った！4",
+  246:     "バシルーラ",
+  247:     "ハラヘリ攻撃",
+  248:     "さそう踊り",
+  249:     "不思議な踊り",
+  250:     "催眠",
+  251:     "ラリホー",
+  252:     "毒胞子攻撃",
+  253:     "アイテム弾き",
+  254:     "アイテム弾き2",
+  255:     "装備弾き",
+  256:     "炎ブレス",
+  257:     "くさった液",
+  258:     "アストロン",
+  259:     "にらみつけた",
+  260:     "凍える息",
+  261:     "仲間を呼んだ！",
+  262:     "マダンテ",
+  263:     "しびれ攻撃",
+  264:     "ベホマ",
+  265:     "ホイミ",
+  266:     "変な呪文",
+  267: };
+  268:     private const int SkillMessageCount = 41;
+  269:     private const int SkillExtensionRequiredEnd = 404356;
+  270:     private const uint EeAddressMask = 0x1FFFFFFF;
+  271:     private const uint EeMemoryBaseAddress = 0x00180000;
+  272:     private const uint SkillMessagePointerBase = 0x209126D0;
+  273: 
+  274:     private readonly byte[]? _bin;
+  275:     private readonly Action? _onChanged;
+  276:     private readonly TextBox _search = new TextBox();
+  277:     private readonly ListBox _list = new ListBox();
+  278:     private readonly Label _count = new Label();
+  279:     private readonly Label _selectedTitle = new Label();
+  280:     private readonly TextBox _selectedInfo = new TextBox();
+  281:     private readonly Label _status = new Label();
+  282:     private readonly NumericUpDown _hp = CreateNumber(ushort.MaxValue);
+  283:     private readonly NumericUpDown _attack = CreateNumber(ushort.MaxValue);
+  284:     private readonly NumericUpDown _defense = CreateNumber(ushort.MaxValue);
+  285:     private readonly NumericUpDown _experience = CreateNumber(ushort.MaxValue);
+  286:     private readonly NumericUpDown _maxLevel = CreateNumber(byte.MaxValue);
+  287:     private static readonly string[] GrowthTypeNames =
+  288:     {
+  289:         "トルネコ", "ポポロ", "イネス", "ロサ", "万能晩成", "攻撃特殊",
+  290:         "防御晩成", "防御早熟", "攻撃晩成", "攻撃早熟", "守備特殊", "普通早熟"
+  291:     };
+  292: 
+  293:     private static readonly string[] MoveSpeedNames =
+  294:     {
+  295:         "鈍足", "等速", "倍速一回攻撃", "倍速二回攻撃",
+  296:         "未使用4", "未使用5", "未使用6", "未使用7", "未使用8"
+  297:     };
+  298: 
+  299:     private static readonly string[] SystemFamilyNames =
+  300:     {
+  301:         "悪魔", "人形", "爆弾", "炎", "飛行", "スライム", "水", "ゾンビ"
+  302:     };
+  303: 
+  304:     private static readonly string[] SkillFamilyNames =
+  305:     {
+  306:         "魔法", "技", "剣", "影", "杖"
+  307:     };
+  308: 
+  309:     private readonly ComboBox _growthType = CreateChoice(GrowthTypeNames);
+  310:     private readonly ComboBox _moveSpeed = CreateChoice(MoveSpeedNames);
+  311:     private readonly CheckBox[] _systemChecks = CreateChecks(SystemFamilyNames);
+  312:     private readonly CheckBox[] _skillChecks = CreateChecks(SkillFamilyNames);
+  313:     private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
+  314:     private readonly ComboBox _dropItem = CreateChoice(MonsterSkillData.DropItemChoices);
+  315:     private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
+  316:     private readonly NumericUpDown _skillRate = CreateNumber(byte.MaxValue);
+  317:     private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
+  318:     private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
+  319:     private readonly ComboBox _actionChange = CreateActionChoice();
+  320:     private readonly Label _actionMonitorStatus = new Label();
+  321:     private readonly ActionAutoRestoreService _actionRestore;
+  322:     private readonly bool _ownsActionRestore;
+  323: 
+  324:     private static readonly string[] SkillRangeNames =
+  325:     {
+  326:         "なし",
+  327:         "隣接",
+  328:         "直線投げ",
+  329:         "暗闇から直線投げ",
+  330:         "一マス以内投げ",
+  331:         "直線＋仲間振り",
+  332:         "部屋内",
+  333:         "フロア内"
+  334:     };
+  335: 
+  336:     private readonly ComboBox _skillRange = CreateChoice(SkillRangeNames);
+  337:     private readonly ComboBox _enemyThrowItem = CreateChoice(MonsterSkillData.ThrowItemChoices);
+  338:     private readonly ComboBox _allyThrowItem1 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+  339:     private readonly ComboBox _allyThrowItem2 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+  340:     private readonly ComboBox _skillMessage = CreateChoice(new[] { "特技メッセージ無し" });
+  341:     private bool _skillDataReady;
+  342:     private readonly Button _applyButton = new Button();
+  343:     private readonly List<int> _visibleIds = new List<int>();
+  344: 
+  345:     private int _recordTableOffset = -1;
+  346:     private int _selectedMonsterId = -1;
+  347:     private int _loadedRecruitModifier;
+  348:     private int _loadedRecoveryConstant;
+  349:     private bool _dataReady;
+  350:     private bool _loadingSelection;
+  351:     private bool _automaticLiveApply;
+  352: 
+  353:     public MonsterCreatorForm() : this(null, null, null)
+  354:     {
+  355:     }
+  356: 
+  357:     public MonsterCreatorForm(byte[]? bin, Action? onChanged)
+  358:         : this(bin, onChanged, null)
+  359:     {
+  360:     }
+  361: 
+  362:     public MonsterCreatorForm(
+  363:         byte[]? bin,
+  364:         Action? onChanged,
+  365:         ActionAutoRestoreService? actionRestore)
+  366:     {
+  367:         _actionRestore = actionRestore ??
+  368:             new ActionAutoRestoreService();
+  369: 
+  370:         _ownsActionRestore = actionRestore == null;
+  371: 
+  372:         _bin = bin;
+  373:         _onChanged = onChanged;
+  374:         _recruitModifier.Minimum = short.MinValue;
+  375:         _recruitModifier.Maximum = short.MaxValue;
+  376: 
+  377:         Text = "モンスタークリエイター";
+  378:         StartPosition = FormStartPosition.CenterParent;
+  379:         Width = 1050;
+  380:         Height = 650;
+  381:         MinimumSize = new Size(850, 560);
+  382:         Font = new Font("Yu Gothic UI", 10);
+  383: 
+  384:         var root = new TableLayoutPanel
+  385:         {
+  386:             Dock = DockStyle.Fill,
+  387:             ColumnCount = 2,
+  388:             RowCount = 1,
+  389:             Padding = new Padding(12)
+  390:         };
+  391:         root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 350));
+  392:         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+  393: 
+  394:         var left = new TableLayoutPanel
+  395:         {
+  396:             Dock = DockStyle.Fill,
+  397:             ColumnCount = 1,
+  398:             RowCount = 3
+  399:         };
+  400:         left.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+  401:         left.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+  402:         left.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+  403: 
+  404:         var searchLabel = new Label
+  405:         {
+  406:             Text = "モンスター名・番号で検索",
+  407:             Dock = DockStyle.Fill,
+  408:             TextAlign = ContentAlignment.MiddleLeft
+  409:         };
+  410: 
+  411:         _search.Dock = DockStyle.Fill;
+  412:         _search.PlaceholderText = "例：ドラゴン / 042";
+  413:         _search.TextChanged += (_, _) => RefreshList();
+  414: 
+  415:         _list.Dock = DockStyle.Fill;
+  416:         _list.IntegralHeight = false;
+  417:         _list.Font = new Font("Yu Gothic UI", 10);
+  418:         _list.SelectedIndexChanged += (_, _) => UpdateSelection();
+  419: 
+  420:         left.Controls.Add(searchLabel, 0, 0);
+  421:         left.Controls.Add(_search, 0, 1);
+  422:         left.Controls.Add(_list, 0, 2);
+  423: 
+  424:         var right = new TableLayoutPanel
+  425:         {
+  426:             Dock = DockStyle.Fill,
+  427:             ColumnCount = 1,
+  428:             RowCount = 5,
+  429:             Padding = new Padding(20, 8, 8, 8)
+  430:         };
+  431:         right.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+  432:         right.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+  433:         right.RowStyles.Add(new RowStyle(SizeType.Absolute, 82));
+  434:         right.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+  435:         right.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+  436: 
+  437:         _count.Dock = DockStyle.Fill;
+  438:         _count.TextAlign = ContentAlignment.MiddleLeft;
+  439:         _count.Font = new Font("Yu Gothic UI", 10, FontStyle.Bold);
+  440: 
+  441:         _selectedTitle.Dock = DockStyle.Fill;
+  442:         _selectedTitle.TextAlign = ContentAlignment.MiddleLeft;
+  443:         _selectedTitle.Font = new Font("Yu Gothic UI", 18, FontStyle.Bold);
+  444: 
+  445:         _selectedInfo.Dock = DockStyle.Fill;
+  446:         _selectedInfo.Multiline = true;
+  447:         _selectedInfo.ReadOnly = true;
+  448:         _selectedInfo.ScrollBars = ScrollBars.Vertical;
+  449:         _selectedInfo.WordWrap = true;
+  450:         _selectedInfo.Font = new Font("Yu Gothic UI", 9);
+  451: 
+  452:         var fieldGrid = new TableLayoutPanel
+  453:         {
+  454:             Dock = DockStyle.Top,
+  455:             ColumnCount = 2,
+  456:             RowCount = 14,
+  457:             AutoSize = true,
+  458:             Padding = new Padding(0, 8, 0, 8)
+  459:         };
+  460:         fieldGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+  461:         fieldGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+  462:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  463:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  464:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  465:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+  466:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
+  467:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  468:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  469:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  470:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  471:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  472: 
+  473:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  474:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  475:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+  476:         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
+  477:         fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
+  478:         fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
+  479:         fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
+  480:         fieldGrid.Controls.Add(CreateField("経験値", _experience), 1, 1);
+  481:         fieldGrid.Controls.Add(CreateField("最大レベル", _maxLevel), 0, 2);
+  482:         fieldGrid.Controls.Add(CreateField("成長タイプ", _growthType), 1, 2);
+  483:         fieldGrid.Controls.Add(CreateCheckGroup("系統", _systemChecks), 0, 3);
+  484:         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+  485:         fieldGrid.Controls.Add(CreateCheckGroup("特技系統", _skillChecks), 0, 4);
+  486:         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+  487:         fieldGrid.Controls.Add(CreateField("移動速度", _moveSpeed), 0, 5);
+  488:         fieldGrid.Controls.Add(CreateField("ドロップ率（%）", _dropRate), 1, 5);
+  489:         fieldGrid.Controls.Add(CreateField("ドロップアイテム（名前選択）", _dropItem), 0, 6);
+  490:         fieldGrid.Controls.Add(CreateField("スポーン時睡眠率（%）", _sleepRate), 1, 6);
+  491:         fieldGrid.Controls.Add(CreateField("特技使用範囲", _skillRange), 0, 7);
+  492:         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+  493:         fieldGrid.Controls.Add(CreateField("敵に投げるアイテム", _enemyThrowItem), 0, 8);
+  494:         fieldGrid.Controls.Add(CreateField("味方に投げるアイテム 1", _allyThrowItem1), 1, 8);
+  495:         fieldGrid.Controls.Add(CreateField("味方に投げるアイテム 2", _allyThrowItem2), 0, 9);
+  496:         fieldGrid.Controls.Add(CreateField("特技メッセージ", _skillMessage), 0, 10);
+  497:         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+  498:         fieldGrid.Controls.Add(CreateField("勧誘修正値", _recruitModifier), 0, 11);
+  499:         fieldGrid.Controls.Add(CreateField("回復定数", _recoveryConstant), 1, 11);
+  500:         fieldGrid.Controls.Add(CreateField("特技使用率（Aのみ）", _skillRate), 0, 12);
+  501:         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+  502:         var actionChangePanel = new Panel
+  503:         {
+  504:             Dock = DockStyle.Fill,
+  505:             Padding = new Padding(0)
+  506:         };
+  507:         _actionChange.Dock = DockStyle.Fill;
+  508:         actionChangePanel.Controls.Add(_actionChange);
+  509: 
+  510:         fieldGrid.Controls.Add(CreateField("特技変更", actionChangePanel), 0, 13);
+  511:         fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+  512: 
+  513:         var explanation = new Label
+  514:         {
+  515:             Dock = DockStyle.Top,
+  516:             AutoSize = true,
+  517:             ForeColor = Color.DimGray,
+  518:             Text =
+  519:                 "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
+  520:                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
+  521:                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
+  522:                 "特技使用率(+22)はAのみを書き込みます。+23のBは変更しません。\r\n" +
+  523:                 "勧誘修正値・回復定数は旧HSPの独立配列（各256件）を編集します。\r\n" +
+  524:                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
+  525:                 "PCSX2接続中は、モンスター選択時にゲーム内の現在値を読み込みます。数値や選択肢を変更すると、その場でゲームメモリへ即時反映します。\r\n" +
+  526:                 "未接続時はBIN作業データを編集し、「再適用」で反映できます。"
+  527:         };
+  528: 
+  529:         var content = new Panel
+  530:         {
+  531:             Dock = DockStyle.Fill,
+  532:             AutoScroll = true
+  533:         };
+  534:         content.Controls.Add(explanation);
+  535:         content.Controls.Add(fieldGrid);
+  536: 
+  537:         _status.Dock = DockStyle.Fill;
+  538:         _status.TextAlign = ContentAlignment.MiddleLeft;
+  539:         _status.ForeColor = Color.DarkSlateBlue;
+  540: 
+  541:         var buttons = new FlowLayoutPanel
+  542:         {
+  543:             Dock = DockStyle.Fill,
+  544:             FlowDirection = FlowDirection.LeftToRight,
+  545:             WrapContents = false
+  546:         };
+  547: 
+  548:         _applyButton.Text = "再適用";
+  549:         _applyButton.Width = 130;
+  550:         _applyButton.Height = 36;
+  551:         _applyButton.Click += (_, _) => ApplySelected();
+  552: 
+  553:         var reloadButton = new Button
+  554:         {
+  555:             Text = "再読込",
+  556:             Width = 130,
+  557:             Height = 36
+  558:         };
+  559:         reloadButton.Click += (_, _) => UpdateSelection();
+  560: 
+  561:         var closeButton = new Button
+  562:         {
+  563:             Text = "閉じる",
+  564:             Width = 100,
+  565:             Height = 36
+  566:         };
+  567:         closeButton.Click += (_, _) => Close();
+  568: 
+  569: buttons.Controls.Add(_applyButton);
+  570:         buttons.Controls.Add(reloadButton);
+  571:         buttons.Controls.Add(closeButton);
+  572: 
+  573:         var bottom = new TableLayoutPanel
+  574:         {
+  575:             Dock = DockStyle.Fill,
+  576:             ColumnCount = 1,
+  577:             RowCount = 2
+  578:         };
+  579:         bottom.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+  580:         bottom.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
+  581:         bottom.Controls.Add(_status, 0, 0);
+  582:         bottom.Controls.Add(buttons, 0, 1);
+  583: 
+  584:         right.Controls.Add(_count, 0, 0);
+  585:         right.Controls.Add(_selectedTitle, 0, 1);
+  586:         var infoPanel = new TableLayoutPanel
+  587:         {
+  588:             Dock = DockStyle.Fill,
+  589:             ColumnCount = 2,
+  590:             RowCount = 2
+  591:         };
+  592:         infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+  593:         infoPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+  594:         infoPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+  595:         infoPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+  596:         _actionMonitorStatus.Dock = DockStyle.Fill;
+  597:         _actionMonitorStatus.AutoEllipsis = true;
+  598:         _actionMonitorStatus.ForeColor = Color.DarkSlateBlue;
+  599:         _actionMonitorStatus.Text = "PCSX2のPINE接続を確認しています（TCP 28011）。";
+  600: 
+  601:         var copyInfoButton = new Button
+  602:         {
+  603:             Text = "診断コピー",
+  604:             Dock = DockStyle.Fill
+  605:         };
+  606:         copyInfoButton.Click += (_, _) =>
+  607:         {
+  608:             if (!string.IsNullOrEmpty(_selectedInfo.Text))
+  609:             {
+  610:                 Clipboard.SetText(_selectedInfo.Text);
+  611:                 MessageBox.Show(this, "診断情報を全文コピーしました。", "コピー完了");
+  612:             }
+  613:         };
+  614: 
+  615:         infoPanel.Controls.Add(_actionMonitorStatus, 0, 0);
+  616:         infoPanel.SetColumnSpan(_actionMonitorStatus, 2);
+  617:         infoPanel.Controls.Add(_selectedInfo, 0, 1);
+  618:         infoPanel.Controls.Add(copyInfoButton, 1, 1);
+  619:         right.Controls.Add(infoPanel, 0, 2);
+  620:         right.Controls.Add(content, 0, 3);
+  621:         right.Controls.Add(bottom, 0, 4);
+  622: 
+  623:         root.Controls.Add(left, 0, 0);
+  624:         root.Controls.Add(right, 1, 0);
+  625:         Controls.Add(root);
+  626: 
+  627:         _dataReady = TryResolveRecordTable(_bin, out _recordTableOffset, out string reason);
+  628:         _skillDataReady = TryResolveSkillExtension(_bin);
+  629: 
+  630:         if (_skillDataReady && _bin != null)
+  631:         {
+  632:             _skillMessage.Items.Clear();
+  633:             _skillMessage.Items.AddRange(ReadSkillMessageChoices(_bin));
+  634:         }
+  635:         _applyButton.Enabled = _dataReady;
+  636: 
+  637:         if (_dataReady)
+  638:         {
+  639:             _status.Text =
+  640:                 "BIN読込済み：基本レコード位置 0x" +
+  641:                 _recordTableOffset.ToString("X") +
+  642:                 " ／ 199件・24 bytes";
+  643:             if (!_skillDataReady)
+  644:                 _status.Text += " ／ 特技設定はバージョン5拡張データ未検出";
+  645:             else
+  646:                 _status.Text += " ／ 特技設定データ読込済み";
+  647:         }
+  648:         else
+  649:         {
+  650:             _status.Text = reason;
+  651:             SetEditorEnabled(false);
+  652:         }
+  653: 
+  654:         BindLiveEditEvents();
+  655:         RefreshList();
+  656:         Action<string> actionStatusHandler = message =>
+  657:         {
+  658:             if (IsHandleCreated && !IsDisposed)
+  659:             {
+  660:                 try
+  661:                 {
+  662:                     BeginInvoke(
+  663:                         (Action)(() => _actionMonitorStatus.Text = message));
+  664:                 }
+  665:                 catch
+  666:                 {
+  667:                 }
+  668:             }
+  669:         };
+  670: 
+  671:         _actionRestore.StatusChanged += actionStatusHandler;
+  672: 
+  673:         FormClosed += (_, _) =>
+  674:         {
+  675:             _actionRestore.StatusChanged -= actionStatusHandler;
+  676: 
+  677:             // MainFormから注入されたサービスは破棄しない。
+  678:             if (_ownsActionRestore)
+  679:                 _actionRestore.Dispose();
+  680:         };
+  681:         // 画面ハンドル生成後に保存済み種族別特技設定を再適用する。
+  682:         // コンストラクター中のイベント通知取りこぼしを防止する。
+  683:         Shown += (_, _) =>
+  684:         {
+  685:             var savedActions = Torneko4ActionStore.GetCopy();
+  686: 
+  687:             if (savedActions.Count == 0)
+  688:             {
+  689:                 _actionMonitorStatus.Text =
+  690:                     "種族別特技設定なし：元の命令を維持しています。";
+  691:                 return;
+  692:             }
+  693: 
+  694:             if (!_actionRestore.TryApply(
+  695:                 savedActions,
+  696:                 out string applyMessage))
+  697:             {
+  698:                 _actionMonitorStatus.Text =
+  699:                     "保存済み種族別特技の再適用に失敗: " +
+  700:                     applyMessage;
+  701:             }
+  702:         };
+  703:     }
+  704: 
+  705:     private void BindLiveEditEvents()
+  706:     {
+  707:         _hp.ValueChanged += (_, _) => ApplyLiveEdit();
+  708:         _attack.ValueChanged += (_, _) => ApplyLiveEdit();
+  709:         _defense.ValueChanged += (_, _) => ApplyLiveEdit();
+  710:         _experience.ValueChanged += (_, _) => ApplyLiveEdit();
+  711:         _maxLevel.ValueChanged += (_, _) => ApplyLiveEdit();
+  712:         _growthType.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  713:         _moveSpeed.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  714:         foreach (var check in _systemChecks)
+  715:             check.CheckedChanged += (_, _) => ApplyLiveEdit();
+  716:         foreach (var check in _skillChecks)
+  717:             check.CheckedChanged += (_, _) => ApplyLiveEdit();
+  718:         _dropRate.ValueChanged += (_, _) => ApplyLiveEdit();
+  719:         _dropItem.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  720:         _sleepRate.ValueChanged += (_, _) => ApplyLiveEdit();
+  721:         _skillRate.ValueChanged += (_, _) => ApplyLiveEdit();
+  722:         _recruitModifier.ValueChanged += (_, _) => ApplyLiveEdit();
+  723:         _recoveryConstant.ValueChanged += (_, _) => ApplyLiveEdit();
+  724:         _skillRange.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  725:         _enemyThrowItem.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  726:         _allyThrowItem1.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  727:         _allyThrowItem2.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  728:         _skillMessage.SelectedIndexChanged += (_, _) => ApplyLiveEdit();
+  729:         _actionChange.SelectedIndexChanged += (_, _) => ApplySelectedActionChange();
+  730:     }
+  731: 
+  732:     private void ApplyLiveEdit()
+  733:     {
+  734:         if (_loadingSelection || _automaticLiveApply ||
+  735:             !Pcsx2LiveSession.IsConnected ||
+  736:             Pcsx2LiveSession.MemoryLayout == null)
+  737:             return;
+  738: 
+  739:         _automaticLiveApply = true;
+  740:         try
+  741:         {
+  742:             ApplySelected();
+  743:         }
+  744:         finally
+  745:         {
+  746:             _automaticLiveApply = false;
+  747:         }
+  748:     }
+  749: 
+  750:     private static NumericUpDown CreateNumber(decimal maximum)
+  751:     {
+  752:         return new NumericUpDown
+  753:         {
+  754:             Minimum = 0,
+  755:             Maximum = maximum,
+  756:             DecimalPlaces = 0,
+  757:             ThousandsSeparator = true,
+  758:             Width = 135,
+  759:             Dock = DockStyle.Fill
+  760:         };
+  761:     }
+  762: 
+  763:     private static ComboBox CreateChoice(string[] items)
+  764:     {
+  765:         var combo = new ComboBox
+  766:         {
+  767:             Dock = DockStyle.Fill,
+  768:             DropDownStyle = ComboBoxStyle.DropDownList,
+  769:             IntegralHeight = true
+  770:         };
+  771:         combo.Items.AddRange(items);
+  772:         return combo;
+  773:     }
+  774: 
+  775:     private static CheckBox[] CreateChecks(string[] names)
+  776:     {
+  777:         var checks = new CheckBox[names.Length];
+  778:         for (int i = 0; i < names.Length; i++)
+  779:         {
+  780:             checks[i] = new CheckBox
+  781:             {
+  782:                 Text = names[i],
+  783:                 AutoSize = true,
+  784:                 Margin = new Padding(3, 4, 8, 2)
+  785:             };
+  786:         }
+  787:         return checks;
+  788:     }
+  789: 
+  790:     private static Control CreateCheckGroup(string title, CheckBox[] checks)
+  791:     {
+  792:         var panel = new TableLayoutPanel
+  793:         {
+  794:             Dock = DockStyle.Fill,
+  795:             ColumnCount = 1,
+  796:             RowCount = 2,
+  797:             Padding = new Padding(4, 2, 4, 2)
+  798:         };
+  799:         panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+  800:         panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+  801: 
+  802:         var label = new Label
+  803:         {
+  804:             Text = title,
+  805:             Dock = DockStyle.Fill,
+  806:             TextAlign = ContentAlignment.MiddleLeft
+  807:         };
+  808:         var flow = new FlowLayoutPanel
+  809:         {
+  810:             Dock = DockStyle.Fill,
+  811:             AutoScroll = true,
+  812:             WrapContents = true,
+  813:             FlowDirection = FlowDirection.LeftToRight
+  814:         };
+  815:         foreach (var check in checks)
+  816:             flow.Controls.Add(check);
+  817: 
+  818:         panel.Controls.Add(label, 0, 0);
+  819:         panel.Controls.Add(flow, 0, 1);
+  820:         return panel;
+  821:     }
+  822: 
+  823:     private static Control CreateField(string title, Control input)
+  824:     {
+  825:         var panel = new TableLayoutPanel
+  826:         {
+  827:             Dock = DockStyle.Fill,
+  828:             ColumnCount = 1,
+  829:             RowCount = 2,
+  830:             Padding = new Padding(4, 2, 12, 2)
+  831:         };
+  832:         panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+  833:         panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+  834: 
+  835:         var label = new Label
+  836:         {
+  837:             Text = title,
+  838:             Dock = DockStyle.Fill,
+  839:             TextAlign = ContentAlignment.MiddleLeft
+  840:         };
+  841: 
+  842:         panel.Controls.Add(label, 0, 0);
+  843:         panel.Controls.Add(input, 0, 1);
+  844:         return panel;
+  845:     }
+  846: 
+  847:     private static bool TryResolveRecordTable(
+  848:         byte[]? bin,
+  849:         out int tableOffset,
+  850:         out string reason)
+  851:     {
+  852:         tableOffset = -1;
+  853:         reason = "BINファイルを読み込むと基本能力値を編集できます。";
+  854: 
+  855:         if (bin == null)
+  856:             return false;
+  857: 
+  858:         if (bin.Length < BinFileService.ExpectedSize)
+  859:         {
+  860:             reason = "BINサイズが524,288 bytes未満のため編集できません。";
+  861:             return false;
+  862:         }
+  863: 
+  864:         // 旧HSP label_073:
+  865:         // var_142 = peek(var_134, 3)
+  866:         // var_143 = var_142 * 0x01000000
+  867:         // var_149 = DWORD(var_134 + 16) + var_143
+  868:         uint rawPointer = BinFileService.ReadUInt32(bin, 16);
+  869:         uint correction = (uint)bin[3] << 24;
+  870:         uint pointer = unchecked(rawPointer + correction);
+  871: 
+  872:         // 旧版のEEアドレス 0x20180000 を物理RAM側へ正規化。
+  873:         uint physicalAddress = pointer & EeAddressMask;
+  874: 
+  875:         if (physicalAddress < EeMemoryBaseAddress)
+  876:         {
+  877:             reason = "モンスターデータへのポインタが不正です。BINの種類を確認してください。";
+  878:             return false;
+  879:         }
+  880: 
+  881:         long offset = (long)physicalAddress - EeMemoryBaseAddress;
+  882: 
+  883:         // モンスターIDとBINレコードの対応を1レコード分補正
+  884: 
+  885:         offset += MonsterRecordSize;
+  886:         long requiredEnd = offset + (long)MonsterRecordCount * MonsterRecordSize;
+  887: 
+  888:         if (offset < 0 || requiredEnd > bin.Length)
+  889:         {
+  890:             reason =
+  891:                 "モンスターデータ領域がBIN内にありません。\r\n" +
+  892:                 "推定位置：0x" + offset.ToString("X") +
+  893:                 " ／ 必要長：" + (MonsterRecordCount * MonsterRecordSize) + " bytes";
+  894:             return false;
+  895:         }
+  896: 
+  897:         tableOffset = checked((int)offset);
+  898:         reason = "";
+  899:         return true;
+  900:     }
+  901: 
+  902:     private static string[] ReadSkillMessageChoices(byte[] bin)
+  903:     {
+  904:         var choices = new List<string>(SkillMessageCount + 1);
+  905:         choices.Add("特技メッセージ無し");
+  906: 
+  907:         for (int i = 0; i < SkillMessageCount; i++)
+  908:         {
+  909:             string label = "メッセージ " + (i + 1).ToString("D3");
+  910:             if (i < SkillMessageNames.Length)
+  911:             {
+  912:                 label = SkillMessageNames[i];
+  913:             }
+  914:             choices.Add(label);
+  915:         }
+  916: 
+  917:         return choices.ToArray();
+  918:     }
+  919: 
+  920:     private static int ResolveSkillMessageIndex(uint pointer)
+  921:     {
+  922:         if (pointer == 0)
+  923:             return 0;
+  924: 
+  925:         for (int i = 0; i < SkillMessageCount; i++)
+  926:         {
+  927:             uint expected = SkillMessagePointerBase + (uint)i * 16;
+  928:             if (pointer == expected)
+  929:                 return i + 1;
+  930:         }
+  931: 
+  932:         return -1;
+  933:     }
+  934: 
+  935:     private static uint ReadUInt32LE(byte[] data, int offset)
+  936:     {
+  937:         BinFileService.CheckRange(data, offset, 4);
+  938:         return (uint)data[offset]
+  939:             | ((uint)data[offset + 1] << 8)
+  940:             | ((uint)data[offset + 2] << 16)
+  941:             | ((uint)data[offset + 3] << 24);
+  942:     }
+  943: 
+  944:     private static void WriteUInt32LE(byte[] data, int offset, uint value)
+  945:     {
+  946:         BinFileService.CheckRange(data, offset, 4);
+  947:         data[offset] = (byte)value;
+  948:         data[offset + 1] = (byte)(value >> 8);
+  949:         data[offset + 2] = (byte)(value >> 16);
+  950:         data[offset + 3] = (byte)(value >> 24);
+  951:     }
+  952: 
+  953:     private static bool TryResolveSkillExtension(byte[]? bin)
+  954:     {
+  955:         if (bin == null)
+  956:             return false;
+  957: 
+  958:         if (bin.Length < SkillExtensionRequiredEnd)
+  959:             return false;
+  960: 
+  961:         // 旧HSPの保存処理では、355056 byte に拡張バージョン5を記録する。
+  962:         return bin[SkillVersionOffset] == 5;
+  963:     }
+  964: 
+  965:     private void SetEditorEnabled(bool enabled)
+  966:     {
+  967:         _hp.Enabled = enabled;
+  968:         _attack.Enabled = enabled;
+  969:         _defense.Enabled = enabled;
+  970:         _experience.Enabled = enabled;
+  971:         _maxLevel.Enabled = enabled;
+  972:         _growthType.Enabled = enabled;
+  973:         _moveSpeed.Enabled = enabled;
+  974:         foreach (var check in _systemChecks) check.Enabled = enabled;
+  975:         foreach (var check in _skillChecks) check.Enabled = enabled;
+  976:         _dropRate.Enabled = enabled;
+  977:         _dropItem.Enabled = enabled;
+  978:         _sleepRate.Enabled = enabled;
+  979:         _skillRate.Enabled = enabled;
+  980:         bool modifierDataAvailable = _bin != null &&
+  981:             _bin.Length >= RecruitModifierDataOffset + LegacyModifierArraySize;
+  982:         _recruitModifier.Enabled = enabled && modifierDataAvailable;
+  983:         _recoveryConstant.Enabled = enabled && modifierDataAvailable;
+  984:         _skillRange.Enabled = enabled && _skillDataReady;
+  985:         // var_411 は拡張BINの有無に関係なく、接続中ならPCSX2から直接読み書きする。
+  986:         _enemyThrowItem.Enabled = enabled &&
+  987:             (_skillDataReady || Pcsx2LiveSession.IsConnected);
+  988:         _allyThrowItem1.Enabled = enabled && _skillDataReady;
+  989:         _allyThrowItem2.Enabled = enabled && _skillDataReady;
+  990:         _skillMessage.Enabled = enabled && _skillDataReady;
+  991:         _applyButton.Enabled = enabled;
+  992:         _actionChange.Enabled = _selectedMonsterId >= 0;
+  993:     }
+  994: 
+  995:     private void RefreshList()
+  996:     {
+  997:         string query = _search.Text.Trim();
+  998: 
+  999:         _list.BeginUpdate();
+ 1000:         _list.Items.Clear();
+ 1001:         _visibleIds.Clear();
+ 1002: 
+ 1003:         for (int i = 0; i < MonsterNames.Length; i++)
+ 1004:         {
+ 1005:             string id = i.ToString("D3");
+ 1006:             string name = MonsterNames[i];
+ 1007: 
+ 1008:             bool matches =
+ 1009:                 query.Length == 0 ||
+ 1010:                 name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
+ 1011:                 id.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
+ 1012:                 i.ToString().IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
+ 1013: 
+ 1014:             if (matches)
+ 1015:             {
+ 1016:                 _visibleIds.Add(i);
+ 1017:                 _list.Items.Add(id + "  " + name);
+ 1018:             }
+ 1019:         }
+ 1020: 
+ 1021:         _list.EndUpdate();
+ 1022: 
+ 1023:         _count.Text =
+ 1024:             "登録モンスター：" + MonsterNames.Length +
+ 1025:             "種類　／　検索結果：" + _visibleIds.Count + "種類";
+ 1026: 
+ 1027:         if (_list.Items.Count > 0)
+ 1028:             _list.SelectedIndex = 0;
+ 1029: 
+ 1030:         UpdateSelection();
+ 1031:     }
+ 1032: 
+ 1033:     private void UpdateSelection()
+ 1034:     {
+ 1035:         int index = _list.SelectedIndex;
+ 1036: 
+ 1037:         if (index < 0 || index >= _visibleIds.Count)
+ 1038:         {
+ 1039:             _selectedMonsterId = -1;
+ 1040:             _loadingSelection = false;
+ 1041:             _selectedTitle.Text = "モンスター未選択";
+ 1042:             _selectedInfo.Text = "検索条件に一致するモンスターを選択してください。";
+ 1043:             SetEditorEnabled(false);
+ 1044:             return;
+ 1045:         }
+ 1046: 
+ 1047:         int id = _visibleIds[index];
+ 1048:         _selectedMonsterId = id;
+ 1049:         _loadingSelection = true;
+ 1050: 
+ 1051:         // まず未選択状態に戻し、このモンスター専用の設定があれば復元する。
+ 1052:         _actionChange.SelectedIndex = 0;
+ 1053: 
+ 1054:         if (Torneko4ActionStore.TryGet(id, out ushort savedActionId))
+ 1055:         {
+ 1056:             int savedIndex = Array.FindIndex(
+ 1057:                 ActionAutoRestoreService.ActionChoices,
+ 1058:                 x => x.Id == savedActionId);
+ 1059: 
+ 1060:             if (savedIndex >= 0)
+ 1061:                 _actionChange.SelectedIndex = savedIndex + 1;
+ 1062:         }
+ 1063: 
+ 1064:         _selectedTitle.Text = MonsterNames[id];
+ 1065: 
+ 1066:         if (!_dataReady || _bin == null)
+ 1067:         {
+ 1068:             _selectedInfo.Text =
+ 1069:                 "モンスター番号：" + id.ToString("D3") +
+ 1070:                 "\r\n一覧登録名：" + MonsterNames[id] +
+ 1071:                 "\r\n\r\n" + _status.Text;
+ 1072:             SetEditorEnabled(false);
+ 1073:             _loadingSelection = false;
+ 1074:             return;
+ 1075:         }
+ 1076: 
+ 1077:         int offset = checked(_recordTableOffset + id * MonsterRecordSize);
+ 1078:         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+ 1079: 
+ 1080:         // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+ 1081:         int hspMonsterIndex = id + 1;
+ 1082:         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+ 1083:         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+ 1084: 
+ 1085:         if (Pcsx2LiveSession.IsConnected &&
+ 1086:             Pcsx2LiveSession.ProcessId > 0 &&
+ 1087:             Pcsx2LiveSession.MemoryLayout != null)
+ 1088:         {
+ 1089:             try
+ 1090:             {
+ 1091:                 var requested = new List<Tuple<int, int, string>>
+ 1092:                 {
+ 1093:                     Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+ 1094:                     Tuple.Create(recruitOffset, 2, "勧誘修正値"),
+ 1095:                     Tuple.Create(recoveryOffset, 2, "回復定数")
+ 1096:                 };
+ 1097:                 // HSPは回復配列の先頭2 bytesで配列全体の有効/未初期化を判定する。
+ 1098:                 if (hspMonsterIndex != 0)
+ 1099:                     requested.Add(Tuple.Create(RecoveryConstantDataOffset, 2, "回復定数配列識別"));
+ 1100: 
+ 1101:                 int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+ 1102:                 int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+ 1103:                 if (_skillDataReady)
+ 1104:                 {
+ 1105:                     requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
+ 1106:                     requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
+ 1107:                 }
+ 1108:                 else
+ 1109:                 {
+ 1110:                     // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
+ 1111:                     requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
+ 1112:                 }
+ 1113: 
+ 1114:                 var liveData = Pcsx2BinApplier.ReadRanges(
+ 1115:                     Pcsx2LiveSession.ProcessId,
+ 1116:                     Pcsx2LiveSession.MemoryLayout,
+ 1117:                     requested);
+ 1118: 
+ 1119:                 foreach (var item in liveData)
+ 1120:                     Array.Copy(item.Item2, 0, _bin, item.Item1, item.Item2.Length);
+ 1121: 
+ 1122:                 _status.Text = MonsterNames[id] + " の現在値をPCSX2から読み込みました。";
+ 1123:             }
+ 1124:             catch (Exception ex)
+ 1125:             {
+ 1126:                 _status.Text = "PCSX2ライブ読み込み失敗。直前の作業データを表示します。 " + ex.Message;
+ 1127:             }
+ 1128:         }
+ 1129: 
+ 1130:         _hp.Value = BinFileService.ReadUInt16(_bin, offset);
+ 1131:         _attack.Value = BinFileService.ReadUInt16(_bin, offset + 2);
+ 1132:         _defense.Value = BinFileService.ReadUInt16(_bin, offset + 4);
+ 1133:         _maxLevel.Value = _bin[offset + 11];
+ 1134:         _experience.Value = BinFileService.ReadUInt16(_bin, offset + 12);
+ 1135:         byte systemFlags = _bin[offset + 6];
+ 1136:         byte skillFlags = _bin[offset + 7];
+ 1137:         for (int i = 0; i < _systemChecks.Length; i++)
+ 1138:             _systemChecks[i].Checked = (systemFlags & (1 << i)) != 0;
+ 1139:         for (int i = 0; i < _skillChecks.Length; i++)
+ 1140:             _skillChecks[i].Checked = (skillFlags & (1 << i)) != 0;
+ 1141: 
+ 1142:         int growthValue = _bin[offset + 20];
+ 1143:         _growthType.SelectedIndex = growthValue < _growthType.Items.Count ? growthValue : -1;
+ 1144:         int speedValue = _bin[offset + 9];
+ 1145:         _moveSpeed.SelectedIndex = speedValue < _moveSpeed.Items.Count ? speedValue : -1;
+ 1146:         _dropRate.Value = _bin[offset + 10];
+ 1147:         ushort dropItemValue = BinFileService.ReadUInt16(_bin, offset + 16);
+ 1148:         _dropItem.SelectedIndex = dropItemValue < _dropItem.Items.Count ? dropItemValue : -1;
+ 1149:         _sleepRate.Value = _bin[offset + 18];
+ 1150:         _skillRate.Value = _bin[offset + 22];
+ 1151: 
+ 1152:         // HSPのvar_166（回復）とvar_168（勧誘）は512 bytesずつの独立配列。
+ 1153:         // var_166先頭が0x5555なら未初期化扱いなので、表示値は0にする。
+ 1154:         bool modifierArraysMissing =
+ 1155:             _bin[RecoveryConstantDataOffset] == 0x55 &&
+ 1156:             _bin[RecoveryConstantDataOffset + 1] == 0x55;
+ 1157:         int recruitValue = modifierArraysMissing
+ 1158:             ? 0
+ 1159:             : unchecked((short)BinFileService.ReadUInt16(_bin, recruitOffset));
+ 1160:         int recoveryValue = modifierArraysMissing
+ 1161:             ? 0
+ 1162:             : BinFileService.ReadUInt16(_bin, recoveryOffset);
+ 1163:         _recruitModifier.Value = recruitValue;
+ 1164:         _recoveryConstant.Value = recoveryValue;
+ 1165:         _loadedRecruitModifier = recruitValue;
+ 1166:         _loadedRecoveryConstant = recoveryValue;
+ 1167: 
+ 1168:         string skillDebug = "";
+ 1169: 
+ 1170:         // var_411 は常にレコード+18。特技拡張BINがなくてもライブ読込値を表示する。
+ 1171:         int enemyItemOffset = SkillRangeDataOffset + hspMonsterIndex * 20 + 18;
+ 1172:         ushort enemyItemValue = BinFileService.ReadUInt16(_bin, enemyItemOffset);
+ 1173:         bool canShowLiveEnemyItem =
+ 1174:             Pcsx2LiveSession.IsConnected && Pcsx2LiveSession.MemoryLayout != null;
+ 1175:         if (_skillDataReady || canShowLiveEnemyItem)
+ 1176:         {
+ 1177:             _enemyThrowItem.SelectedIndex =
+ 1178:                 enemyItemValue < _enemyThrowItem.Items.Count ? enemyItemValue : -1;
+ 1179:         }
+ 1180: 
+ 1181:         if (_skillDataReady)
+ 1182:         {
+ 1183:             int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+ 1184:             int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+ 1185: 
+ 1186:             ushort rangeValue = BinFileService.ReadUInt16(_bin, rangeOffset + 6);
+ 1187:             uint messagePointer = ReadUInt32LE(_bin, rangeOffset + 10);
+ 1188:             ushort allyItemValue1 = BinFileService.ReadUInt16(_bin, allyOffset);
+ 1189:             ushort allyItemValue2 = BinFileService.ReadUInt16(_bin, allyOffset + 2);
+ 1190:             skillDebug =
+ 1191:                 "\r\n--- 特技データ診断 ---" +
+ 1192:                 "\r\nモンスターID：" + id +
+ 1193:                 "\r\n範囲位置：" + rangeOffset +
+ 1194:                 " / 生値：" + rangeValue +
+ 1195:                 "\r\nvar_411 敵投擲位置：" + enemyItemOffset +
+ 1196:                 " / 生値：" + enemyItemValue +
+ 1197:                 "\r\n味方投擲位置：" + allyOffset +
+ 1198:                 " / 生値：" + allyItemValue1 +
+ 1199:                 "\r\n味方投擲2位置：" + (allyOffset + 2) +
+ 1200:                 " / 生値：" + allyItemValue2;
+ 1201: 
+ 1202:             _skillRange.SelectedIndex = rangeValue < _skillRange.Items.Count ? rangeValue : -1;
+ 1203:             _skillMessage.SelectedIndex = ResolveSkillMessageIndex(messagePointer);
+ 1204:             _allyThrowItem1.SelectedIndex = allyItemValue1 < _allyThrowItem1.Items.Count ? allyItemValue1 : -1;
+ 1205:             _allyThrowItem2.SelectedIndex = allyItemValue2 < _allyThrowItem2.Items.Count ? allyItemValue2 : -1;
+ 1206:         }
+ 1207: 
+ 1208:         _selectedInfo.Text =
+ 1209:             "モンスター番号：" + id.ToString("D3") +
+ 1210:             "　／　BINレコード位置：0x" + offset.ToString("X") +
+ 1211:             "\r\nレコード長：24 bytes　／　未解析領域は変更しません。" +
+ 1212:             skillDebug;
+ 1213: 
+ 1214:         _loadingSelection = false;
+ 1215:         SetEditorEnabled(true);
+ 1216:     }
+ 1217: 
+ 1218:     private void ApplySelected()
+ 1219:     {
+ 1220:         if (!_dataReady || _bin == null || _selectedMonsterId < 0)
+ 1221:             return;
+ 1222: 
+ 1223:         int offset = checked(
+ 1224:             _recordTableOffset + _selectedMonsterId * MonsterRecordSize);
+ 1225: 
+ 1226:         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+ 1227: 
+ 1228:         BinFileService.WriteUInt16(_bin, offset, (ushort)_hp.Value);
+ 1229:         BinFileService.WriteUInt16(_bin, offset + 2, (ushort)_attack.Value);
+ 1230:         BinFileService.WriteUInt16(_bin, offset + 4, (ushort)_defense.Value);
+ 1231:         _bin[offset + 11] = (byte)_maxLevel.Value;
+ 1232:         BinFileService.WriteUInt16(_bin, offset + 12, (ushort)_experience.Value);
+ 1233:         byte systemFlags = 0;
+ 1234:         for (int i = 0; i < _systemChecks.Length; i++)
+ 1235:             if (_systemChecks[i].Checked) systemFlags |= (byte)(1 << i);
+ 1236:         byte skillFlags = 0;
+ 1237:         for (int i = 0; i < _skillChecks.Length; i++)
+ 1238:             if (_skillChecks[i].Checked) skillFlags |= (byte)(1 << i);
+ 1239:         _bin[offset + 6] = systemFlags;
+ 1240:         _bin[offset + 7] = skillFlags;
+ 1241:         if (_moveSpeed.SelectedIndex >= 0)
+ 1242:             _bin[offset + 9] = (byte)_moveSpeed.SelectedIndex;
+ 1243:         _bin[offset + 10] = (byte)_dropRate.Value;
+ 1244:         if (_dropItem.SelectedIndex >= 0)
+ 1245:             BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.SelectedIndex);
+ 1246:         _bin[offset + 18] = (byte)_sleepRate.Value;
+ 1247:         _bin[offset + 22] = (byte)_skillRate.Value;
+ 1248: 
+ 1249:         // HSP var_407 の先頭空行を含むIDに合わせる。
+ 1250:         int hspMonsterIndex = _selectedMonsterId + 1;
+ 1251:         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+ 1252:         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+ 1253:         int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+ 1254:         int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+ 1255:         int enemyItemOffset = rangeOffset + 18;
+ 1256: 
+ 1257:         // var_411 の編集値をBIN作業データへ常時保持する。
+ 1258:         BinFileService.CheckRange(_bin, enemyItemOffset, 2);
+ 1259:         if (_enemyThrowItem.SelectedIndex >= 0)
+ 1260:         {
+ 1261:             BinFileService.WriteUInt16(
+ 1262:                 _bin, enemyItemOffset, (ushort)_enemyThrowItem.SelectedIndex);
+ 1263:         }
+ 1264: 
+ 1265:         if (_skillDataReady)
+ 1266:         {
+ 1267:             uint messagePointer = 0;
+ 1268:             if (_skillMessage.SelectedIndex > 0)
+ 1269:                 messagePointer = SkillMessagePointerBase + (uint)(_skillMessage.SelectedIndex - 1) * 16;
+ 1270: 
+ 1271:             WriteUInt32LE(_bin, rangeOffset + 10, messagePointer);
+ 1272:             WriteUInt32LE(_bin, rangeOffset + 14, messagePointer);
+ 1273: 
+ 1274:             if (_skillRange.SelectedIndex >= 0)
+ 1275:                 BinFileService.WriteUInt16(_bin, rangeOffset + 6, (ushort)_skillRange.SelectedIndex);
+ 1276: 
+ 1277:             if (_enemyThrowItem.SelectedIndex >= 0)
+ 1278:                 BinFileService.WriteUInt16(_bin, rangeOffset + 18, (ushort)_enemyThrowItem.SelectedIndex);
+ 1279: 
+ 1280:             if (_allyThrowItem1.SelectedIndex >= 0)
+ 1281:                 BinFileService.WriteUInt16(_bin, allyOffset, (ushort)_allyThrowItem1.SelectedIndex);
+ 1282: 
+ 1283:             if (_allyThrowItem2.SelectedIndex >= 0)
+ 1284:                 BinFileService.WriteUInt16(_bin, allyOffset + 2, (ushort)_allyThrowItem2.SelectedIndex);
+ 1285:         }
+ 1286:         if (_growthType.SelectedIndex >= 0)
+ 1287:             _bin[offset + 20] = (byte)_growthType.SelectedIndex;
+ 1288: 
+ 1289:         bool modifierArraysMissing =
+ 1290:             _bin[RecoveryConstantDataOffset] == 0x55 &&
+ 1291:             _bin[RecoveryConstantDataOffset + 1] == 0x55;
+ 1292:         int recruitValueToWrite = decimal.ToInt32(_recruitModifier.Value);
+ 1293:         int recoveryValueToWrite = decimal.ToInt32(_recoveryConstant.Value);
+ 1294:         bool recruitChanged = recruitValueToWrite != _loadedRecruitModifier;
+ 1295:         bool recoveryChanged = recoveryValueToWrite != _loadedRecoveryConstant;
+ 1296:         bool modifierChanged = recruitChanged || recoveryChanged;
+ 1297: 
+ 1298:         if (modifierChanged)
+ 1299:         {
+ 1300:             // 0x5555の未初期化配列だけをゼロ初期化し、既存配列は保持する。
+ 1301:             if (modifierArraysMissing)
+ 1302:             {
+ 1303:                 Array.Clear(_bin, RecoveryConstantDataOffset, LegacyModifierArraySize);
+ 1304:                 Array.Clear(_bin, RecruitModifierDataOffset, LegacyModifierArraySize);
+ 1305:             }
+ 1306: 
+ 1307:             BinFileService.WriteUInt16(
+ 1308:                 _bin, recruitOffset, unchecked((ushort)(short)recruitValueToWrite));
+ 1309:             BinFileService.WriteUInt16(
+ 1310:                 _bin, recoveryOffset, (ushort)recoveryValueToWrite);
+ 1311: 
+ 1312:             _loadedRecruitModifier = recruitValueToWrite;
+ 1313:             _loadedRecoveryConstant = recoveryValueToWrite;
+ 1314:         }
+ 1315: 
+ 1316:         _onChanged?.Invoke();
+ 1317: 
+ 1318:         if (Pcsx2LiveSession.IsConnected &&
+ 1319:             Pcsx2LiveSession.ProcessId > 0 &&
+ 1320:             Pcsx2LiveSession.MemoryLayout != null)
+ 1321:         {
+ 1322:             try
+ 1323:             {
+ 1324:                 var writes = new List<Tuple<int, byte[], string>>();
+ 1325: 
+ 1326:                 byte[] CopyRange(int start, int length)
+ 1327:                 {
+ 1328:                     BinFileService.CheckRange(_bin, start, length);
+ 1329:                     byte[] result = new byte[length];
+ 1330:                     Array.Copy(_bin, start, result, 0, length);
+ 1331:                     return result;
+ 1332:                 }
+ 1333: 
+ 1334:                 writes.Add(Tuple.Create(
+ 1335:                     offset,
+ 1336:                     CopyRange(offset, MonsterRecordSize - 1),
+ 1337:                     "モンスターレコード"));
+ 1338: 
+ 1339:                 if (modifierChanged)
+ 1340:                 {
+ 1341:                     if (modifierArraysMissing)
+ 1342:                     {
+ 1343:                         writes.Add(Tuple.Create(
+ 1344:                             RecoveryConstantDataOffset,
+ 1345:                             CopyRange(RecoveryConstantDataOffset, LegacyModifierArraySize),
+ 1346:                             "回復定数配列（初期化）"));
+ 1347:                         writes.Add(Tuple.Create(
+ 1348:                             RecruitModifierDataOffset,
+ 1349:                             CopyRange(RecruitModifierDataOffset, LegacyModifierArraySize),
+ 1350:                             "勧誘修正値配列（初期化）"));
+ 1351:                     }
+ 1352:                     else
+ 1353:                     {
+ 1354:                         writes.Add(Tuple.Create(
+ 1355:                             recruitOffset,
+ 1356:                             CopyRange(recruitOffset, 2),
+ 1357:                             "勧誘修正値"));
+ 1358:                         writes.Add(Tuple.Create(
+ 1359:                             recoveryOffset,
+ 1360:                             CopyRange(recoveryOffset, 2),
+ 1361:                             "回復定数"));
+ 1362:                     }
+ 1363:                 }
+ 1364: 
+ 1365:                 if (_skillDataReady)
+ 1366:                 {
+ 1367:                     writes.Add(Tuple.Create(
+ 1368:                         rangeOffset,
+ 1369:                         CopyRange(rangeOffset, 20),
+ 1370:                         "特技範囲データ"));
+ 1371: 
+ 1372:                     writes.Add(Tuple.Create(
+ 1373:                         allyOffset,
+ 1374:                         CopyRange(allyOffset, 8),
+ 1375:                         "仲間投げアイテムデータ"));
+ 1376:                 }
+ 1377:                 else
+ 1378:                 {
+ 1379:                     // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
+ 1380:                     writes.Add(Tuple.Create(
+ 1381:                         enemyItemOffset,
+ 1382:                         CopyRange(enemyItemOffset, 2),
+ 1383:                         "var_411 敵投擲アイテム"));
+ 1384:                 }
+ 1385: 
+ 1386:                 string resultText = Pcsx2BinApplier.ApplyRanges(
+ 1387:                     Pcsx2LiveSession.ProcessId,
+ 1388:                     Pcsx2LiveSession.MemoryLayout,
+ 1389:                     writes);
+ 1390: 
+ 1391:                 _status.Text =
+ 1392:                     MonsterNames[_selectedMonsterId] +
+ 1393:                     " の変更をPCSX2へ反映しました。\r\n" +
+ 1394:                     resultText;
+ 1395:             }
+ 1396:             catch (Exception ex)
+ 1397:             {
+ 1398:                 _status.Text =
+ 1399:                     "BIN作業データは更新済みですが、PCSX2への反映に失敗しました。\r\n" +
+ 1400:                     ex.Message;
+ 1401: 
+ 1402:                 if (!_automaticLiveApply)
+ 1403:                 {
+ 1404:                     MessageBox.Show(
+ 1405:                         this,
+ 1406:                         ex.ToString(),
+ 1407:                         "PCSX2反映エラー",
+ 1408:                         MessageBoxButtons.OK,
+ 1409:                         MessageBoxIcon.Error);
+ 1410:                 }
+ 1411:             }
+ 1412:         }
+ 1413:         if (!Pcsx2LiveSession.IsConnected ||
+ 1414:             Pcsx2LiveSession.MemoryLayout == null)
+ 1415:         {
+ 1416:             _status.Text =
+ 1417:                 MonsterNames[_selectedMonsterId] +
+ 1418:                 " の変更をBIN作業データへ反映しました。\r\n" +
+ 1419:                 "PCSX2未接続のためゲームメモリには未適用です。";
+ 1420:         }
+ 1421: 
+ 1422:         _selectedInfo.Text =
+ 1423:             "モンスター番号：" + _selectedMonsterId.ToString("D3") +
+ 1424:             "　／　BINレコード位置：0x" + offset.ToString("X") +
+ 1425:             "\r\nHP・攻撃力・防御力・最大レベル・経験値を更新しました。";    }
+ 1426: 
+ 1427:     private static ComboBox CreateActionChoice()
+ 1428:     {
+ 1429:         var combo = new ComboBox
+ 1430:         {
+ 1431:             Dock = DockStyle.Fill,
+ 1432:             DropDownStyle = ComboBoxStyle.DropDownList,
+ 1433:             IntegralHeight = true
+ 1434:         };
+ 1435:         combo.Items.Add("（特技を選択）");
+ 1436:         foreach (var action in ActionAutoRestoreService.ActionChoices)
+ 1437:             combo.Items.Add("0x" + action.Id.ToString("X2") + "  " + action.Name);
+ 1438:         combo.SelectedIndex = 0;
+ 1439:         return combo;
+ 1440:     }
+ 1441: 
+ 1442:     private void ApplySelectedActionChange()
+ 1443:     {
+ 1444:         if (_loadingSelection)
+ 1445:             return;
+ 1446: 
+ 1447:         if (_selectedMonsterId < 0)
+ 1448:             return;
+ 1449: 
+ 1450:         // プレースホルダーを選んだ場合は、そのモンスターの設定を解除する。
+ 1451:         if (_actionChange.SelectedIndex == 0)
+ 1452:         {
+ 1453:             Torneko4ActionStore.Remove(_selectedMonsterId);
+ 1454: 
+ 1455:             _actionRestore.TryApply(
+ 1456:                 Torneko4ActionStore.GetCopy(),
+ 1457:                 out string clearMessage);
+ 1458: 
+ 1459:             _status.Text =
+ 1460:                 "このモンスターの特技変更設定を解除しました。\r\n" +
+ 1461:                 clearMessage;
+ 1462: 
+ 1463:             return;
+ 1464:         }
+ 1465: 
+ 1466:         int index = _actionChange.SelectedIndex - 1;
+ 1467: 
+ 1468:         if (index < 0 ||
+ 1469:             index >= ActionAutoRestoreService.ActionChoices.Length)
+ 1470:         {
+ 1471:             _status.Text = "特技の選択内容が不正です。";
+ 1472:             return;
+ 1473:         }
+ 1474: 
+ 1475:         var action = ActionAutoRestoreService.ActionChoices[index];
+ 1476: 
+ 1477:         // PINEへの適用が失敗しても、選択した設定自体は保持する。
+ 1478:         Torneko4ActionStore.Set(_selectedMonsterId, action.Id);
+ 1479: 
+ 1480:         if (_actionRestore.TryApply(Torneko4ActionStore.GetCopy(), out string message))
+ 1481:         {
+ 1482:             _status.Text = message;
+ 1483:         }
+ 1484:         else
+ 1485:         {
+ 1486:             _status.Text = "特技変更エラー：" + message;
+ 1487:             MessageBox.Show(this, message, "特技変更エラー",
+ 1488:                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
+ 1489:         }
+ 1490:     }
+ 1491: }
+ 1492: 
+
+============================================================
+TORNEKO4 PACKAGE AND SAVE LOAD
+FILE: C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\Program.cs
+LINE COUNT: 9007
+============================================================
+
+--- L346 - L415 ---
+  346:     }
+  347: 
+  348:     public static System.Collections.Generic.List<System.Diagnostics.Process> FindProcesses()
+  349: {
+  350:     var result = new System.Collections.Generic.List<System.Diagnostics.Process>();
+  351:     foreach (var process in System.Diagnostics.Process.GetProcesses())
+  352:     {
+  353:         try
+  354:         {
+  355:             if (process.ProcessName.IndexOf("pcsx2", System.StringComparison.OrdinalIgnoreCase) < 0)
+  356:             {
+  357:                 process.Dispose();
+  358:                 continue;
+  359:             }
+  360:             var module = process.MainModule;
+  361:             if (module == null)
+  362:             {
+  363:                 process.Dispose();
+  364:                 continue;
+  365:             }
+  366:             var versionInfo = module.FileVersionInfo;
+  367:             string productVersion = versionInfo.ProductVersion ?? string.Empty;
+  368:             string fileVersion = versionInfo.FileVersion ?? string.Empty;
+  369:             string versionText = productVersion + " " + fileVersion;
+  370:             bool isExact282 = System.Text.RegularExpressions.Regex.IsMatch(versionText, @"(?<![0-9])2\.8\.2(?![0-9])");
+  371:             if (!isExact282)
+  372:             {
+  373:                 process.Dispose();
+  374:                 continue;
+  375:             }
+  376:             result.Add(process);
+  377:         }
+  378:         catch
+  379:         {
+  380:             try { process.Dispose(); } catch { }
+  381:         }
+  382:     }
+  383:     return result;
+  384: }
+  385: 
+  386:     // メモリ全域を検索せず、PCSX2プロセスを開くだけの接続処理。
+  387:     public static IntPtr OpenConnection(int processId)
+  388:     {
+  389:         IntPtr handle = OpenProcess(
+  390:             PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+  391:             false,
+  392:             processId);
+  393: 
+  394:         if (handle == IntPtr.Zero)
+  395:         {
+  396:             throw new System.ComponentModel.Win32Exception(
+  397:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+  398:                 "PCSX2プロセスへの接続に失敗しました。");
+  399:         }
+  400: 
+  401:         return handle;
+  402:     }
+  403: 
+  404:     public static void CloseConnection(IntPtr handle)
+  405:     {
+  406:         if (handle != IntPtr.Zero)
+  407:         {
+  408:             CloseHandle(handle);
+  409:         }
+  410:     }
+  411: 
+  412:         public static Pcsx2ScanResult Scan(
+  413:         int processId,
+  414:         System.Action<string> report)
+  415:     {
+
+--- L1259 - L1324 ---
+ 1259:     (538156288L - 538443776L);
+ 1260: map["var_256_size"] = 112;
+ 1261: 
+ 1262: return layout;
+ 1263:         }
+ 1264:         finally
+ 1265:         {
+ 1266:             CloseHandle(handle);
+ 1267:         }
+ 1268:     }
+ 1269: }
+ 1270: 
+ 1271: // =========================================================
+ 1272: // PCSX2メモリから旧HSP互換BINを構築する。
+ 1273: // 読み取り専用。ゲームメモリへの書き込みは行わない。
+ 1274: // =========================================================
+ 1275: 
+ 1276: internal static class Pcsx2VanillaBinReader
+ 1277: {
+ 1278:     private const int BaseSize = 524288;
+ 1279:     private const int VersionOffset = 355056;
+ 1280:     private const int ExtensionOffset = 355072;
+ 1281: 
+ 1282:     private const uint PROCESS_VM_READ = 0x0010;
+ 1283:     private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+ 1284: 
+ 1285:     [System.Runtime.InteropServices.DllImport(
+ 1286:         "kernel32.dll", SetLastError = true)]
+ 1287:     private static extern System.IntPtr OpenProcess(
+ 1288:         uint access,
+ 1289:         bool inherit,
+ 1290:         int processId);
+ 1291: 
+ 1292:     [System.Runtime.InteropServices.DllImport(
+ 1293:         "kernel32.dll", SetLastError = true)]
+ 1294:     private static extern bool CloseHandle(
+ 1295:         System.IntPtr handle);
+ 1296: 
+ 1297:     [System.Runtime.InteropServices.DllImport(
+ 1298:         "kernel32.dll", SetLastError = true)]
+ 1299:     private static extern bool ReadProcessMemory(
+ 1300:         System.IntPtr process,
+ 1301:         System.IntPtr address,
+ 1302:         byte[] buffer,
+ 1303:         System.UIntPtr size,
+ 1304:         out System.UIntPtr read);
+ 1305: 
+ 1306:     private static byte[] Read(
+ 1307:         System.IntPtr handle,
+ 1308:         long address,
+ 1309:         int length)
+ 1310:     {
+ 1311:         if (handle == System.IntPtr.Zero)
+ 1312:             throw new System.ArgumentException("PCSX2プロセスハンドルが無効です。");
+ 1313: 
+ 1314:         if (address <= 0)
+ 1315:             throw new System.ArgumentOutOfRangeException(nameof(address));
+ 1316: 
+ 1317:         if (length < 0 || length > 64 * 1024 * 1024)
+ 1318:             throw new System.ArgumentOutOfRangeException(nameof(length));
+ 1319: 
+ 1320:         byte[] buffer = new byte[length];
+ 1321:         System.UIntPtr read;
+ 1322: 
+ 1323:         bool ok = ReadProcessMemory(
+ 1324:             handle,
+
+--- L1432 - L1497 ---
+ 1432:             processId);
+ 1433: 
+ 1434:         if (handle == System.IntPtr.Zero)
+ 1435:         {
+ 1436:             throw new System.ComponentModel.Win32Exception(
+ 1437:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+ 1438:                 "BIN取得用にPCSX2を開けません。");
+ 1439:         }
+ 1440: 
+ 1441:         try
+ 1442:         {
+ 1443:             // 旧HSP:
+ 1444:             // ReadProcessMemory var_130, var_134,
+ 1445:             // varptr(var_226), 524288, var_145
+ 1446:             byte[] bin = Read(
+ 1447:                 handle,
+ 1448:                 layout.SignatureA,
+ 1449:                 BaseSize);
+ 1450: 
+ 1451:             // 旧HSP版のBIN出力はバージョン5として構築する。
+ 1452:             bin[VersionOffset] = 5;
+ 1453: 
+ 1454:             int destination = ExtensionOffset;
+ 1455: 
+ 1456:             // 旧HSP label_155 の読み込み順序を維持。
+ 1457:             Append(handle, bin, ref destination,
+ 1458:                 Address(layout, "var_150"),
+ 1459:                 Size(layout, "var_151_size"));
+ 1460: 
+ 1461:             Append(handle, bin, ref destination,
+ 1462:                 Address(layout, "var_152"),
+ 1463:                 Size(layout, "var_153_size"));
+ 1464: 
+ 1465:             Append(handle, bin, ref destination,
+ 1466:                 Address(layout, "var_154"),
+ 1467:                 Size(layout, "var_155_size"));
+ 1468: 
+ 1469:             Append(handle, bin, ref destination,
+ 1470:                 Address(layout, "var_156"),
+ 1471:                 Size(layout, "var_157_size"));
+ 1472: 
+ 1473:             Append(handle, bin, ref destination,
+ 1474:                 Address(layout, "var_158"),
+ 1475:                 Size(layout, "var_159_size"));
+ 1476: 
+ 1477:             Append(handle, bin, ref destination,
+ 1478:                 Address(layout, "var_160"),
+ 1479:                 Size(layout, "var_161_size"));
+ 1480: 
+ 1481:             Append(handle, bin, ref destination,
+ 1482:                 Address(layout, "var_162"),
+ 1483:                 Size(layout, "var_163_size"));
+ 1484: 
+ 1485:             Append(handle, bin, ref destination,
+ 1486:                 Address(layout, "var_164"),
+ 1487:                 Size(layout, "var_165_size"));
+ 1488: 
+ 1489:             long diagnosticVar166 = Address(layout, "var_166");
+ 1490: long diagnosticVar168 = Address(layout, "var_168");
+ 1491: if (diagnosticVar166 < 0x100000000L)
+ 1492: {
+ 1493:     throw new System.InvalidOperationException(
+ 1494:         "【EEmem診断】var_166のアドレスが64bitプロセスのホストメモリ範囲ではありません。" +
+ 1495:         "\r\nSignatureA=0x" + layout.SignatureA.ToString("X") +
+ 1496:         "\r\nSignatureB=0x" + layout.SignatureB.ToString("X") +
+ 1497:         "\r\nCorrection=0x" + layout.Correction.ToString("X8") +
+
+--- L1924 - L1989 ---
+ 1924:         catch (System.Exception ex)
+ 1925:         {
+ 1926:             _processHandle = System.IntPtr.Zero;
+ 1927:             _connectedProcessId = 0;
+ 1928: 
+ 1929:             Log("接続エラー: " + ex.Message);
+ 1930:             statusLabel.Text = "接続に失敗しました。";
+ 1931:         }
+ 1932:         finally
+ 1933:         {
+ 1934:             refreshButton.Enabled = true;
+ 1935:             scanButton.Enabled = true;
+ 1936:         }
+ 1937:     }
+ 1938: }
+ 1939: 
+ 1940: 
+ 1941: internal static class Pcsx2BinApplier
+ 1942: {
+ 1943:     private const int BaseSize = 524288;
+ 1944:     private const int VersionOffset = 355056;
+ 1945:     private const int ExtensionOffset = 355072;
+ 1946: 
+ 1947:     private const uint PROCESS_VM_READ = 0x0010;
+ 1948:     private const uint PROCESS_VM_WRITE = 0x0020;
+ 1949:     private const uint PROCESS_VM_OPERATION = 0x0008;
+ 1950:     private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+ 1951: 
+ 1952:     private sealed class WriteBlock
+ 1953:     {
+ 1954:         public string Name { get; }
+ 1955:         public long Address { get; }
+ 1956:         public byte[] Data { get; }
+ 1957:         public byte[] Original { get; set; } = System.Array.Empty<byte>();
+ 1958: 
+ 1959:         public WriteBlock(string name, long address, byte[] data)
+ 1960:         {
+ 1961:             Name = name;
+ 1962:             Address = address;
+ 1963:             Data = data;
+ 1964:         }
+ 1965:     }
+ 1966: 
+ 1967:     private static readonly byte[] SignatureA =
+ 1968:     {
+ 1969:         0x20, 0x00, 0x18, 0x00, 0xA0,
+ 1970:         0x00, 0x18, 0x00, 0x20, 0x01,
+ 1971:         0x18, 0x00, 0xC0, 0x10, 0x18
+ 1972:     };
+ 1973: 
+ 1974:     private static readonly byte[] SignatureB =
+ 1975:     {
+ 1976:         0x69, 0x74, 0x65, 0x6D,
+ 1977:         0x5F, 0x65, 0x71, 0x75,
+ 1978:         0x69, 0x70, 0x6F, 0x66,
+ 1979:         0x66, 0x00, 0x00, 0x00
+ 1980:     };
+ 1981: 
+ 1982:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1983:     private static extern System.IntPtr OpenProcess(uint access, bool inherit, int processId);
+ 1984: 
+ 1985:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1986:     private static extern bool CloseHandle(System.IntPtr handle);
+ 1987: 
+ 1988:     [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+ 1989:     private static extern bool ReadProcessMemory(
+
+--- L2290 - L2401 ---
+ 2290: 
+ 2291:     private static void SkipFlag(byte[] bin, ref int cursor)
+ 2292:     {
+ 2293:         CheckBinRange(bin, cursor, 1);
+ 2294:         cursor = checked(cursor + 17);
+ 2295:     }
+ 2296: 
+ 2297:     public static string Apply(
+ 2298:         int processId, Pcsx2MemoryLayout layout, byte[] bin)
+ 2299:     {
+ 2300:         if (processId <= 0)
+ 2301:             throw new System.ArgumentOutOfRangeException(nameof(processId));
+ 2302:         if (layout == null)
+ 2303:             throw new System.ArgumentNullException(nameof(layout));
+ 2304:         if (bin == null || bin.Length != BaseSize)
+ 2305:             throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+ 2306: 
+ 2307:         var blocks = new System.Collections.Generic.List<WriteBlock>();
+ 2308:         blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+ 2309: 
+ 2310:         int version = bin[VersionOffset];
+ 2311:         int cursor = ExtensionOffset;
+ 2312:         int var166MarkerOffset = -1;
+ 2313:         byte var166Marker0 = 0;
+ 2314:         byte var166Marker1 = 0;
+ 2315:         bool var166Var168Included = false;
+ 2316:         // 旧HSP label_153: バージョン85以外は追加領域を順番に適用。
+ 2317:         if (version != 85)
+ 2318:         {
+ 2319:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_150", "var_151_size");
+ 2320:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_152", "var_153_size");
+ 2321:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_154", "var_155_size");
+ 2322:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_156", "var_157_size");
+ 2323:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_158", "var_159_size");
+ 2324:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_160", "var_161_size");
+ 2325:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_162", "var_163_size");
+ 2326:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_164", "var_165_size");
+ 2327: 
+ 2328:             var166MarkerOffset = cursor;
+ 2329:             CheckBinRange(bin, cursor, 2);
+ 2330:             var166Marker0 = bin[cursor];
+ 2331:             var166Marker1 = bin[cursor + 1];
+ 2332:             var166Var168Included = var166Marker0 != 85 && var166Marker1 != 85;
+ 2333:             if (var166Var168Included)
+ 2334:             {
+ 2335:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_166", "var_167_size");
+ 2336:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_168", "var_169_size");
+ 2337:             }
+ 2338: 
+ 2339:             if (version >= 2)
+ 2340:             {
+ 2341:                 SkipFlag(bin, ref cursor);
+ 2342:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_170", "var_171_size");
+ 2343:             }
+ 2344: 
+ 2345:             if (version >= 3)
+ 2346:             {
+ 2347:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_220", "var_221_constant");
+ 2348:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_222", "var_223_size");
+ 2349:             }
+ 2350: 
+ 2351:             if (version >= 4)
+ 2352:             {
+ 2353:                 SkipFlag(bin, ref cursor);
+ 2354:             }
+ 2355: 
+ 2356:             if (version >= 5)
+ 2357:             {
+ 2358:                 AddBlock(blocks, bin, ref cursor,
+ 2359:                     GetAddress(layout, "var_644") - 6,
+ 2360:                     GetSize(layout, "var_761_size"), "var_644-6");
+ 2361:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
+ 2362:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
+ 2363:             }
+ 2364:         }
+ 2365: 
+ 2366:         if (cursor > bin.Length)
+ 2367:             throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+ 2368: 
+ 2369:         System.IntPtr handle = OpenProcess(
+ 2370:             PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+ 2371:             false, processId);
+ 2372: 
+ 2373:         if (handle == System.IntPtr.Zero)
+ 2374:             throw new System.ComponentModel.Win32Exception(
+ 2375:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
+ 2376:                 "PCSX2の書き込み可能ハンドルを取得できません。");
+ 2377: 
+ 2378:         try
+ 2379:         {
+ 2380:             // 書き込み直前に識別パターンがまだ存在することを確認。
+ 2381:             byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+ 2382:             byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+ 2383: 
+ 2384:             if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+ 2385:                 !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+ 2386:                 throw new System.InvalidOperationException(
+ 2387:                     "PCSX2の識別パターンが変化しています。誤ったメモリへの適用を防ぐため中止しました。");
+ 2388: 
+ 2389:             // 全領域を検証する。var_164は読み取り専用でも一時保護変更で適用する。
+ 2390:             var skippedBlocks = new System.Collections.Generic.List<string>();
+ 2391: 
+ 2392:             foreach (WriteBlock block in blocks)
+ 2393:             {
+ 2394:                 ValidateAccessibleRange(handle, block);
+ 2395:             }
+ 2396: 
+ 2397:             // ブロック同士の重複を禁止する。
+ 2398:             for (int i = 0; i < blocks.Count; i++)
+ 2399:             {
+ 2400:                 ulong firstStart = unchecked((ulong)blocks[i].Address);
+ 2401:                 ulong firstEnd = checked(firstStart + (ulong)blocks[i].Data.Length);
+
+--- L2465 - L2530 ---
+ 2465:             int totalBytes = 0;
+ 2466:             foreach (WriteBlock block in blocks)
+ 2467:                 totalBytes = checked(totalBytes + block.Data.Length);
+ 2468: 
+ 2469:             WriteBlock var166DiagnosticBlock = blocks.Find(x => x.Name == "var_166");
+ 2470:             WriteBlock var168DiagnosticBlock = blocks.Find(x => x.Name == "var_168");
+ 2471:             string var166Diagnostic = var166DiagnosticBlock == null
+ 2472:                 ? "var_166: 未登録（判定マーカーで除外）"
+ 2473:                 : "var_166: Address=0x" + var166DiagnosticBlock.Address.ToString("X") +
+ 2474:                     " / Length=" + var166DiagnosticBlock.Data.Length +
+ 2475:                     " / BIN先頭32byte=" + System.BitConverter.ToString(var166DiagnosticBlock.Data, 0, 32);
+ 2476:             string var168Diagnostic = var168DiagnosticBlock == null
+ 2477:                 ? "var_168: 未登録（判定マーカーで除外）"
+ 2478:                 : "var_168: Address=0x" + var168DiagnosticBlock.Address.ToString("X") +
+ 2479:                     " / Length=" + var168DiagnosticBlock.Data.Length +
+ 2480:                     " / BIN先頭32byte=" + System.BitConverter.ToString(var168DiagnosticBlock.Data, 0, 32);
+ 2481: 
+ 2482:             string skippedText = skippedBlocks.Count == 0                ? "なし"
+ 2483:                 : string.Join(", ", skippedBlocks);
+ 2484: 
+ 2485:             return "BINバージョン: " + version +
+ 2486:                 "\r\n書き込み領域数: " + blocks.Count +
+ 2487:                 "\r\n書き込み総量: " + totalBytes.ToString("N0") + " bytes" +
+ 2488:                 "\r\n未適用領域: " + skippedText +
+ 2489:                 "\r\n--- モンスター名領域診断 ---" +
+ 2490:                 "\r\n判定位置: BIN+" + var166MarkerOffset +
+ 2491:                 " / マーカー=" + var166Marker0.ToString("X2") + " " + var166Marker1.ToString("X2") +
+ 2492:                 " / 2領域適用判定=" + (var166Var168Included ? "適用" : "除外") +
+ 2493:                 "\r\n" + var166Diagnostic +
+ 2494:                 "\r\n" + var168Diagnostic;
+ 2495:         }
+ 2496:         finally
+ 2497:         {
+ 2498:             CloseHandle(handle);
+ 2499:         }
+ 2500:     }
+ 2501:     public static System.Collections.Generic.List<System.Tuple<int, byte[], string>> ReadRanges(
+ 2502:         int processId,
+ 2503:         Pcsx2MemoryLayout layout,
+ 2504:         System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
+ 2505:     {
+ 2506:         if (processId <= 0)
+ 2507:             throw new System.ArgumentOutOfRangeException(nameof(processId));
+ 2508:         if (layout == null)
+ 2509:             throw new System.ArgumentNullException(nameof(layout));
+ 2510:         if (ranges == null)
+ 2511:             throw new System.ArgumentNullException(nameof(ranges));
+ 2512: 
+ 2513:         var requested = new System.Collections.Generic.List<WriteBlock>();
+ 2514:         var requestedOffsets = new System.Collections.Generic.List<int>();
+ 2515:         foreach (var item in ranges)
+ 2516:         {
+ 2517:             if (item == null || item.Item2 <= 0 ||
+ 2518:                 item.Item1 < 0 || item.Item1 > BaseSize - item.Item2)
+ 2519:                 throw new System.InvalidOperationException("PCSX2読み込み範囲が不正です。");
+ 2520: 
+ 2521:             long targetAddress = checked(layout.SignatureA + item.Item1);
+ 2522:             bool isSkillRange =
+ 2523:                 item.Item1 >= 382206 &&
+ 2524:                 item.Item1 + item.Item2 <= 382206 + 199 * 20;
+ 2525: 
+ 2526:             if (isSkillRange)
+ 2527:             {
+ 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
+ 2529:                     skillAddress <= 6)
+ 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
+
+--- L2998 - L3084 ---
+ 2998: 
+ 2999: internal static class Program
+ 3000: {
+ 3001:     [STAThread]
+ 3002:     private static void Main()
+ 3003:     {
+ 3004:         ApplicationConfiguration.Initialize();
+ 3005:         HayabusaDoubleAttackMonitor.Start();
+ 3006:         HayabusaRecruitCorrectionMonitor.Start();
+ 3007:         var mainForm = new MainForm();
+ 3008:         Application.Run(mainForm);
+ 3009:     }
+ 3010: }
+ 3011: 
+ 3012: // ============================================================
+ 3013: // BINファイル共通処理
+ 3014: // ============================================================
+ 3015: internal static class BinFileService
+ 3016: {
+ 3017:     public const int ExpectedSize = 524288;
+ 3018:     public const int VersionMarkerOffset = 355056;
+ 3019:     public const int ExtensionStartOffset = 355072;
+ 3020: 
+ 3021:     public static byte[] Load(string path)
+ 3022:     {
+ 3023:         if (!File.Exists(path))
+ 3024:             throw new FileNotFoundException("BINファイルが見つかりません。", path);
+ 3025: 
+ 3026:         byte[] data = File.ReadAllBytes(path);
+ 3027: 
+ 3028:         if (data.Length < ExpectedSize)
+ 3029:         {
+ 3030:             throw new InvalidDataException(
+ 3031:                 $"BINサイズが不正です。\r\n" +
+ 3032:                 $"必要サイズ: {ExpectedSize:N0} bytes\r\n" +
+ 3033:                 $"実際のサイズ: {data.Length:N0} bytes");
+ 3034:         }
+ 3035: 
+ 3036:         return data;
+ 3037:     }
+ 3038: 
+ 3039:     public static void Save(string path, byte[] data, bool overwrite)
+ 3040:     {
+ 3041:         if (data.Length < ExpectedSize)
+ 3042:             throw new InvalidDataException("保存データのサイズが524288バイトではありません。");
+ 3043: 
+ 3044:         string fullPath = Path.GetFullPath(path);
+ 3045:         string? directory = Path.GetDirectoryName(fullPath);
+ 3046: 
+ 3047:         if (string.IsNullOrWhiteSpace(directory))
+ 3048:             throw new InvalidOperationException("保存先フォルダを取得できません。");
+ 3049: 
+ 3050:         Directory.CreateDirectory(directory);
+ 3051: 
+ 3052:         if (File.Exists(fullPath))
+ 3053:         {
+ 3054:             if (!overwrite)
+ 3055:                 throw new IOException("保存先ファイルが既に存在します。");
+ 3056: 
+ 3057:             string backupPath = fullPath + "." +
+ 3058:                 DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".bak";
+ 3059: 
+ 3060:             File.Copy(fullPath, backupPath, false);
+ 3061:         }
+ 3062: 
+ 3063:         string tempPath = fullPath + ".tmp";
+ 3064: 
+ 3065:         try
+ 3066:         {
+ 3067:             File.WriteAllBytes(tempPath, data);
+ 3068: 
+ 3069:             if (File.Exists(fullPath))
+ 3070:                 File.Move(tempPath, fullPath, true);
+ 3071:             else
+ 3072:                 File.Move(tempPath, fullPath);
+ 3073:         }
+ 3074:         finally
+ 3075:         {
+ 3076:             if (File.Exists(tempPath))
+ 3077:                 File.Delete(tempPath);
+ 3078:         }
+ 3079:     }
+ 3080: 
+ 3081:     public static ushort ReadUInt16(byte[] data, int offset)
+ 3082:     {
+ 3083:         CheckRange(data, offset, 2);
+ 3084:         return BitConverter.ToUInt16(data, offset);
+
+--- L3217 - L3343 ---
+ 3217:     public byte[] Data { get; }
+ 3218: 
+ 3219:     public MonsterRecord(byte[] source)
+ 3220:     {
+ 3221:         if (source.Length != RecordSize)
+ 3222:             throw new ArgumentException("モンスターレコードは24バイト必要です。");
+ 3223: 
+ 3224:         Data = (byte[])source.Clone();
+ 3225:     }
+ 3226: }
+ 3227: 
+ 3228: // ============================================================
+ 3229: // INI移行基盤
+ 3230: // ============================================================
+ 3231: internal sealed class LegacyIniSettings
+ 3232: {
+ 3233:     public bool ShowAdventureTurns { get; set; }
+ 3234:     public string MemoryFilePath { get; set; } = "";
+ 3235:     public string RankingDisplayName { get; set; } = "";
+ 3236: 
+ 3237:     public static LegacyIniSettings Load(string path)
+ 3238:     {
+ 3239:         var result = new LegacyIniSettings();
+ 3240: 
+ 3241:         if (!File.Exists(path))
+ 3242:             return result;
+ 3243: 
+ 3244:         Encoding.RegisterProvider(
+ 3245:             System.Text.CodePagesEncodingProvider.Instance);
+ 3246: 
+ 3247:         string[] lines = File.ReadAllLines(
+ 3248:             path, Encoding.GetEncoding(932));
+ 3249: 
+ 3250:         // 旧INIの25項目を基準に読み込む。
+ 3251:         // 削除対象のパッチ・重複アイテム階層設定は移行しない。
+ 3252:         if (lines.Length > 19)
+ 3253:             result.ShowAdventureTurns =
+ 3254:                 lines[19].Trim() == "1";
+ 3255: 
+ 3256:         if (lines.Length > 23)
+ 3257:             result.MemoryFilePath = lines[23].Trim();
+ 3258: 
+ 3259:         if (lines.Length > 24)
+ 3260:             result.RankingDisplayName = lines[24].Trim();
+ 3261: 
+ 3262:         return result;
+ 3263:     }
+ 3264: }
+ 3265: 
+ 3266: // ============================================================
+ 3267: // アプリ独自設定
+ 3268: // ============================================================
+ 3269: internal sealed class AppSettings
+ 3270: {
+ 3271:     public int MonsterSpawnCycle { get; set; } = 30;
+ 3272:     public bool ShowAdventureTurns { get; set; }
+ 3273: 
+ 3274:     private static string SettingsPath =>
+ 3275:         Path.Combine(
+ 3276:             Environment.GetFolderPath(
+ 3277:                 Environment.SpecialFolder.LocalApplicationData),
+ 3278:             "TornekoIjiriPort",
+ 3279:             "settings.json");
+ 3280: 
+ 3281:     public static AppSettings Load()
+ 3282:     {
+ 3283:         try
+ 3284:         {
+ 3285:             if (!File.Exists(SettingsPath))
+ 3286:                 return new AppSettings();
+ 3287: 
+ 3288:             string json = File.ReadAllText(SettingsPath);
+ 3289:             return JsonSerializer.Deserialize<AppSettings>(json)
+ 3290:                 ?? new AppSettings();
+ 3291:         }
+ 3292:         catch
+ 3293:         {
+ 3294:             return new AppSettings();
+ 3295:         }
+ 3296:     }
+ 3297: 
+ 3298:     public void Save()
+ 3299:     {
+ 3300:         string directory = Path.GetDirectoryName(SettingsPath)!;
+ 3301:         Directory.CreateDirectory(directory);
+ 3302: 
+ 3303:         string json = JsonSerializer.Serialize(
+ 3304:             this,
+ 3305:             new JsonSerializerOptions { WriteIndented = true });
+ 3306: 
+ 3307:         File.WriteAllText(SettingsPath, json, Encoding.UTF8);
+ 3308:     }
+ 3309: }
+ 3310: 
+ 3311: // ============================================================
+ 3312: // 共通UI
+ 3313: // ============================================================
+ 3314: internal static class UiFactory
+ 3315: {
+ 3316:     public static Button Button(string text, EventHandler click)
+ 3317:     {
+ 3318:         var button = new Button
+ 3319:         {
+ 3320:             Text = text,
+ 3321:             Width = 210,
+ 3322:             Height = 42,
+ 3323:             Margin = new Padding(8),
+ 3324:             Font = new Font("Yu Gothic UI", 10)
+ 3325:         };
+ 3326: 
+ 3327:         button.Click += click;
+ 3328:         return button;
+ 3329:     }
+ 3330: 
+ 3331:     public static Label Label(string text)
+ 3332:     {
+ 3333:         return new Label
+ 3334:         {
+ 3335:             Text = text,
+ 3336:             AutoSize = true,
+ 3337:             Font = new Font("Yu Gothic UI", 10),
+ 3338:             Margin = new Padding(8)
+ 3339:         };
+ 3340:     }
+ 3341: 
+ 3342:     public static void Error(IWin32Window owner, Exception ex)
+ 3343:     {
+
+--- L4031 - L4660 ---
+ 4031: 
+ 4032:     public Torneko4MemoryPatch(string name, long address, byte[] data)
+ 4033:     {
+ 4034:         if (string.IsNullOrWhiteSpace(name))
+ 4035:             throw new ArgumentException("変更名が空です。");
+ 4036: 
+ 4037:         if (data == null || data.Length == 0)
+ 4038:             throw new ArgumentException("変更データが空です。");
+ 4039: 
+ 4040:         Name = name;
+ 4041:         Address = address;
+ 4042:         Data = (byte[])data.Clone();
+ 4043:     }
+ 4044: 
+ 4045:     public Torneko4MemoryPatch Clone()
+ 4046:     {
+ 4047:         return new Torneko4MemoryPatch(Name, Address, Data);
+ 4048:     }
+ 4049: }
+ 4050: 
+ 4051: internal static class Torneko4PatchStore
+ 4052: {
+ 4053:     private static readonly object Sync = new object();
+ 4054: 
+ 4055:     private static readonly System.Collections.Generic.List<Torneko4MemoryPatch>
+ 4056:         Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+ 4057: 
+ 4058:     public static void Register(string name, long address, byte[] data)
+ 4059:     {
+ 4060:         var patch = new Torneko4MemoryPatch(name, address, data);
+ 4061: 
+ 4062:         lock (Sync)
+ 4063:         {
+ 4064:             int index = Patches.FindIndex(
+ 4065:                 x => x.Address == address && x.Name == name);
+ 4066: 
+ 4067:             if (index >= 0)
+ 4068:                 Patches[index] = patch;
+ 4069:             else
+ 4070:                 Patches.Add(patch);
+ 4071:         }
+ 4072:     }
+ 4073: 
+ 4074:     public static System.Collections.Generic.List<Torneko4MemoryPatch> GetCopy()
+ 4075:     {
+ 4076:         lock (Sync)
+ 4077:         {
+ 4078:             return Patches.ConvertAll(x => x.Clone());
+ 4079:         }
+ 4080:     }
+ 4081: 
+ 4082:     public static void ReplaceAll(
+ 4083:         System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+ 4084:     {
+ 4085:         lock (Sync)
+ 4086:         {
+ 4087:             Patches.Clear();
+ 4088: 
+ 4089:             if (patches == null)
+ 4090:                 return;
+ 4091: 
+ 4092:             foreach (var patch in patches)
+ 4093:             {
+ 4094:                 if (patch != null)
+ 4095:                     Patches.Add(patch.Clone());
+ 4096:             }
+ 4097:         }
+ 4098:     }
+ 4099: 
+ 4100:     public static void Clear()
+ 4101:     {
+ 4102:         lock (Sync)
+ 4103:         {
+ 4104:             Patches.Clear();
+ 4105:         }
+ 4106:     }
+ 4107: }
+ 4108: 
+ 4109: internal sealed class Torneko4Package
+ 4110: {
+ 4111:     public TornekoBinPreservationSnapshot Snapshot { get; }
+ 4112:     public byte[] EditedBase { get; }
+ 4113:     public string OriginalSourcePath { get; }
+ 4114:     public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+ 4115:     public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
+ 4116: 
+ 4117:     public Torneko4Package(
+ 4118:         TornekoBinPreservationSnapshot snapshot,
+ 4119:         byte[] editedBase,
+ 4120:         string originalSourcePath,
+ 4121:         System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+ 4122:         System.Collections.Generic.Dictionary<int, ushort> monsterActions = null)
+ 4123:     {
+ 4124:         Snapshot = snapshot;
+ 4125:         EditedBase = (byte[])editedBase.Clone();
+ 4126:         OriginalSourcePath = originalSourcePath ?? "";
+ 4127: 
+ 4128:         Patches = patches == null
+ 4129:             ? new System.Collections.Generic.List<Torneko4MemoryPatch>()
+ 4130:             : patches.ConvertAll(x => x.Clone());
+ 4131: 
+ 4132:         MonsterActions = monsterActions == null
+ 4133:             ? new System.Collections.Generic.Dictionary<int, ushort>()
+ 4134:             : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
+ 4135:     }
+ 4136: }
+ 4137: 
+ 4138: internal static class Torneko4FileService
+ 4139: {
+ 4140:     private static readonly byte[] Magic =
+ 4141:         System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
+ 4142: 
+ 4143:     private const int FormatVersion = 3;
+ 4144:     private const int BaseSize = 524288;
+ 4145:     private const int MaximumOriginalSize = 64 * 1024 * 1024;
+ 4146: 
+ 4147:     // ファイル全体の実用上の安全上限。基本領域の容量制限ではない。
+ 4148:     private const long MaximumPackageSize = 1024L * 1024L * 1024L;
+ 4149: 
+ 4150:     private const int MaximumPatchCount = 100000;
+ 4151:     private const int MaximumPatchSize = 64 * 1024 * 1024;
+ 4152: 
+ 4153:     public static void Save(
+ 4154:         string path,
+ 4155:         TornekoBinPreservationSnapshot snapshot,
+ 4156:         byte[] editedBase)
+ 4157:     {
+ 4158:         Save(path, snapshot, editedBase,
+ 4159:             new System.Collections.Generic.List<Torneko4MemoryPatch>(),
+ 4160:             null);
+ 4161:     }
+ 4162: 
+ 4163:     public static void Save(
+ 4164:         string path,
+ 4165:         TornekoBinPreservationSnapshot snapshot,
+ 4166:         byte[] editedBase,
+ 4167:         System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+ 4168:     {
+ 4169:         Save(path, snapshot, editedBase, patches, null);
+ 4170:     }
+ 4171: 
+ 4172:     public static void Save(
+ 4173:         string path,
+ 4174:         TornekoBinPreservationSnapshot snapshot,
+ 4175:         byte[] editedBase,
+ 4176:         System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+ 4177:         System.Collections.Generic.IDictionary<int, ushort> monsterActions)
+ 4178:     {
+ 4179:         if (snapshot == null)
+ 4180:             throw new ArgumentNullException(nameof(snapshot));
+ 4181: 
+ 4182:         if (editedBase == null || editedBase.Length != BaseSize)
+ 4183:             throw new InvalidDataException(
+ 4184:                 "編集済み基本領域のサイズが不正です。");
+ 4185: 
+ 4186:         if (string.IsNullOrWhiteSpace(path))
+ 4187:             throw new ArgumentException("保存先が指定されていません。");
+ 4188: 
+ 4189:         byte[] original = snapshot.GetCopy();
+ 4190: 
+ 4191:         if (original.Length < BaseSize ||
+ 4192:             original.Length > MaximumOriginalSize)
+ 4193:         {
+ 4194:             throw new InvalidDataException(
+ 4195:                 "元データのサイズが保存可能範囲外です。");
+ 4196:         }
+ 4197: 
+ 4198:         string originalHash =
+ 4199:             TornekoBinPreservation.ComputeSha256(original);
+ 4200: 
+ 4201:         if (!string.Equals(
+ 4202:             originalHash,
+ 4203:             snapshot.OriginalSha256,
+ 4204:             StringComparison.OrdinalIgnoreCase))
+ 4205:         {
+ 4206:             throw new InvalidDataException(
+ 4207:                 "元データの整合性が確認できません。");
+ 4208:         }
+ 4209: 
+ 4210:         string editedHash =
+ 4211:             TornekoBinPreservation.ComputeSha256(editedBase);
+ 4212: 
+ 4213:         var patchList =
+ 4214:             new System.Collections.Generic.List<Torneko4MemoryPatch>();
+ 4215: 
+ 4216:         if (patches != null)
+ 4217:         {
+ 4218:             foreach (var patch in patches)
+ 4219:             {
+ 4220:                 if (patch == null)
+ 4221:                     continue;
+ 4222: 
+ 4223:                 if (patch.Data == null ||
+ 4224:                     patch.Data.Length == 0 ||
+ 4225:                     patch.Data.Length > MaximumPatchSize)
+ 4226:                 {
+ 4227:                     throw new InvalidDataException(
+ 4228:                         "追加変更データのサイズが不正です。");
+ 4229:                 }
+ 4230: 
+ 4231:                 patchList.Add(patch.Clone());
+ 4232: 
+ 4233:                 if (patchList.Count > MaximumPatchCount)
+ 4234:                     throw new InvalidDataException(
+ 4235:                         "追加変更の登録数が上限を超えています。");
+ 4236:             }
+ 4237:         }
+ 4238: 
+ 4239:         var actionList =
+ 4240:             new System.Collections.Generic.SortedDictionary<int, ushort>();
+ 4241: 
+ 4242:         if (monsterActions != null)
+ 4243:         {
+ 4244:             foreach (var pair in monsterActions)
+ 4245:             {
+ 4246:                 if (pair.Key < 0 || pair.Key >= 199)
+ 4247:                     throw new InvalidDataException(
+ 4248:                         "モンスター番号が不正です: " + pair.Key);
+ 4249: 
+ 4250:                 if (pair.Value > 0xFF)
+ 4251:                     throw new InvalidDataException(
+ 4252:                         "特技IDが不正です: " + pair.Value);
+ 4253: 
+ 4254:                 actionList[pair.Key] = pair.Value;
+ 4255:             }
+ 4256:         }
+ 4257: 
+ 4258:         if (actionList.Count > 199)
+ 4259:             throw new InvalidDataException(
+ 4260:                 "モンスター別特技設定数が上限を超えています。");
+ 4261: 
+ 4262:         string fullPath = Path.GetFullPath(path);
+ 4263:         string directory = Path.GetDirectoryName(fullPath);
+ 4264: 
+ 4265:         if (string.IsNullOrWhiteSpace(directory))
+ 4266:             throw new InvalidOperationException("保存先フォルダが不正です。");
+ 4267: 
+ 4268:         Directory.CreateDirectory(directory);
+ 4269: 
+ 4270:         string tempPath =
+ 4271:             fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+ 4272: 
+ 4273:         try
+ 4274:         {
+ 4275:             using (var stream = new FileStream(
+ 4276:                 tempPath,
+ 4277:                 FileMode.CreateNew,
+ 4278:                 FileAccess.Write,
+ 4279:                 FileShare.None))
+ 4280:             using (var writer = new BinaryWriter(
+ 4281:                 stream,
+ 4282:                 System.Text.Encoding.UTF8,
+ 4283:                 true))
+ 4284:             {
+ 4285:                 writer.Write(Magic);
+ 4286:                 writer.Write(FormatVersion);
+ 4287:                 writer.Write(original.Length);
+ 4288:                 writer.Write(editedBase.Length);
+ 4289:                 writer.Write(snapshot.SourcePath ?? "");
+ 4290:                 writer.Write(originalHash);
+ 4291:                 writer.Write(editedHash);
+ 4292: 
+ 4293:                 writer.Write(original);
+ 4294:                 writer.Write(editedBase);
+ 4295: 
+ 4296:                 // バージョン2追加領域
+ 4297:                 writer.Write(patchList.Count);
+ 4298: 
+ 4299:                 foreach (var patch in patchList)
+ 4300:                 {
+ 4301:                     writer.Write(patch.Name);
+ 4302:                     writer.Write(patch.Address);
+ 4303:                     writer.Write(patch.Data.Length);
+ 4304:                     writer.Write(
+ 4305:                         TornekoBinPreservation.ComputeSha256(patch.Data));
+ 4306:                     writer.Write(patch.Data);
+ 4307:                 }
+ 4308: 
+ 4309:                 // バージョン3追加領域：モンスター別特技設定
+ 4310:                 writer.Write(actionList.Count);
+ 4311: 
+ 4312:                 foreach (var pair in actionList)
+ 4313:                 {
+ 4314:                     writer.Write(pair.Key);
+ 4315:                     writer.Write(pair.Value);
+ 4316:                 }
+ 4317: 
+ 4318:                 writer.Flush();
+ 4319:                 stream.Flush(true);
+ 4320:             }
+ 4321: 
+ 4322:             var writtenInfo = new FileInfo(tempPath);
+ 4323: 
+ 4324:             if (writtenInfo.Length > MaximumPackageSize)
+ 4325:                 throw new InvalidDataException(
+ 4326:                     "保存ファイルが安全上限を超えています。");
+ 4327: 
+ 4328:             Torneko4Package check = Load(tempPath);
+ 4329: 
+ 4330:             if (!System.Linq.Enumerable.SequenceEqual(
+ 4331:                 check.EditedBase, editedBase))
+ 4332:             {
+ 4333:                 throw new IOException(
+ 4334:                     "保存後の基本領域検証に失敗しました。");
+ 4335:             }
+ 4336: 
+ 4337:             if (check.Patches.Count != patchList.Count)
+ 4338:                 throw new IOException(
+ 4339:                     "保存後の追加変更数検証に失敗しました。");
+ 4340: 
+ 4341:             if (check.MonsterActions.Count != actionList.Count)
+ 4342:                 throw new IOException(
+ 4343:                     "保存後のモンスター別特技設定数検証に失敗しました。");
+ 4344: 
+ 4345:             foreach (var pair in actionList)
+ 4346:             {
+ 4347:                 if (!check.MonsterActions.TryGetValue(pair.Key, out ushort savedId) ||
+ 4348:                     savedId != pair.Value)
+ 4349:                 {
+ 4350:                     throw new IOException(
+ 4351:                         "保存後のモンスター別特技設定検証に失敗しました。番号: " +
+ 4352:                         pair.Key);
+ 4353:                 }
+ 4354:             }
+ 4355: 
+ 4356:             for (int i = 0; i < patchList.Count; i++)
+ 4357:             {
+ 4358:                 var a = patchList[i];
+ 4359:                 var b = check.Patches[i];
+ 4360: 
+ 4361:                 if (a.Address != b.Address ||
+ 4362:                     a.Name != b.Name ||
+ 4363:                     !System.Linq.Enumerable.SequenceEqual(a.Data, b.Data))
+ 4364:                 {
+ 4365:                     throw new IOException(
+ 4366:                         "保存後の追加変更データ検証に失敗しました。");
+ 4367:                 }
+ 4368:             }
+ 4369:             File.Move(tempPath, fullPath, true);
+ 4370:         }
+ 4371:         finally
+ 4372:         {
+ 4373:             if (File.Exists(tempPath))
+ 4374:                 File.Delete(tempPath);
+ 4375:         }
+ 4376:     }
+ 4377: 
+ 4378:     public static Torneko4Package Load(string path)
+ 4379:     {
+ 4380:         if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+ 4381:             throw new FileNotFoundException(
+ 4382:                 "Torneko4ファイルが見つかりません。",
+ 4383:                 path);
+ 4384: 
+ 4385:         FileInfo info = new FileInfo(path);
+ 4386: 
+ 4387:         if (info.Length < 100 ||
+ 4388:             info.Length > MaximumPackageSize)
+ 4389:         {
+ 4390:             throw new InvalidDataException(
+ 4391:                 "Torneko4ファイルのサイズが不正です。");
+ 4392:         }
+ 4393: 
+ 4394:         using var stream = new FileStream(
+ 4395:             path,
+ 4396:             FileMode.Open,
+ 4397:             FileAccess.Read,
+ 4398:             FileShare.Read);
+ 4399: 
+ 4400:         using var reader = new BinaryReader(
+ 4401:             stream,
+ 4402:             System.Text.Encoding.UTF8,
+ 4403:             true);
+ 4404: 
+ 4405:         byte[] magic = reader.ReadBytes(8);
+ 4406: 
+ 4407:         if (!System.Linq.Enumerable.SequenceEqual(magic, Magic))
+ 4408:             throw new InvalidDataException(
+ 4409:                 "Torneko4識別ヘッダーが一致しません。");
+ 4410: 
+ 4411:         int version = reader.ReadInt32();
+ 4412: 
+ 4413:         if (version != 1 && version != 2 && version != FormatVersion)
+ 4414:             throw new InvalidDataException(
+ 4415:                 "未対応のTorneko4バージョンです: " + version);
+ 4416: 
+ 4417:         int originalLength = reader.ReadInt32();
+ 4418:         int editedLength = reader.ReadInt32();
+ 4419: 
+ 4420:         if (originalLength < BaseSize ||
+ 4421:             originalLength > MaximumOriginalSize ||
+ 4422:             editedLength != BaseSize)
+ 4423:         {
+ 4424:             throw new InvalidDataException(
+ 4425:                 "Torneko4内の基本データサイズが不正です。");
+ 4426:         }
+ 4427: 
+ 4428:         string originalSourcePath = reader.ReadString();
+ 4429:         string expectedOriginalHash = reader.ReadString();
+ 4430:         string expectedEditedHash = reader.ReadString();
+ 4431: 
+ 4432:         if (expectedOriginalHash.Length != 64 ||
+ 4433:             expectedEditedHash.Length != 64)
+ 4434:         {
+ 4435:             throw new InvalidDataException(
+ 4436:                 "Torneko4のハッシュ情報が不正です。");
+ 4437:         }
+ 4438: 
+ 4439:         byte[] original = reader.ReadBytes(originalLength);
+ 4440:         byte[] editedBase = reader.ReadBytes(editedLength);
+ 4441: 
+ 4442:         if (original.Length != originalLength ||
+ 4443:             editedBase.Length != editedLength)
+ 4444:         {
+ 4445:             throw new InvalidDataException(
+ 4446:                 "Torneko4のデータが途中で切れています。");
+ 4447:         }
+ 4448: 
+ 4449:         string actualOriginalHash =
+ 4450:             TornekoBinPreservation.ComputeSha256(original);
+ 4451: 
+ 4452:         string actualEditedHash =
+ 4453:             TornekoBinPreservation.ComputeSha256(editedBase);
+ 4454: 
+ 4455:         if (!string.Equals(
+ 4456:             expectedOriginalHash,
+ 4457:             actualOriginalHash,
+ 4458:             StringComparison.OrdinalIgnoreCase))
+ 4459:         {
+ 4460:             throw new InvalidDataException(
+ 4461:                 "元データのSHA256が一致しません。");
+ 4462:         }
+ 4463: 
+ 4464:         if (!string.Equals(
+ 4465:             expectedEditedHash,
+ 4466:             actualEditedHash,
+ 4467:             StringComparison.OrdinalIgnoreCase))
+ 4468:         {
+ 4469:             throw new InvalidDataException(
+ 4470:                 "編集データのSHA256が一致しません。");
+ 4471:         }
+ 4472: 
+ 4473:         var patchList =
+ 4474:             new System.Collections.Generic.List<Torneko4MemoryPatch>();
+ 4475: 
+ 4476:         // バージョン1は従来どおり追加領域なし。
+ 4477:         if (version >= 2)
+ 4478:         {
+ 4479:             int patchCount = reader.ReadInt32();
+ 4480: 
+ 4481:             if (patchCount < 0 || patchCount > MaximumPatchCount)
+ 4482:                 throw new InvalidDataException(
+ 4483:                     "追加変更の件数が不正です。");
+ 4484: 
+ 4485:             long totalPatchBytes = 0;
+ 4486: 
+ 4487:             for (int i = 0; i < patchCount; i++)
+ 4488:             {
+ 4489:                 string name = reader.ReadString();
+ 4490:                 long address = reader.ReadInt64();
+ 4491:                 int dataLength = reader.ReadInt32();
+ 4492:                 string expectedPatchHash = reader.ReadString();
+ 4493: 
+ 4494:                 if (string.IsNullOrWhiteSpace(name) ||
+ 4495:                     dataLength <= 0 ||
+ 4496:                     dataLength > MaximumPatchSize ||
+ 4497:                     expectedPatchHash.Length != 64)
+ 4498:                 {
+ 4499:                     throw new InvalidDataException(
+ 4500:                         "追加変更の情報が不正です。");
+ 4501:                 }
+ 4502: 
+ 4503:                 totalPatchBytes += dataLength;
+ 4504: 
+ 4505:                 if (totalPatchBytes > MaximumPackageSize)
+ 4506:                     throw new InvalidDataException(
+ 4507:                         "追加変更データが上限を超えています。");
+ 4508: 
+ 4509:                 byte[] data = reader.ReadBytes(dataLength);
+ 4510: 
+ 4511:                 if (data.Length != dataLength)
+ 4512:                     throw new InvalidDataException(
+ 4513:                         "追加変更データが途中で切れています。");
+ 4514: 
+ 4515:                 string actualPatchHash =
+ 4516:                     TornekoBinPreservation.ComputeSha256(data);
+ 4517: 
+ 4518:                 if (!string.Equals(
+ 4519:                     expectedPatchHash,
+ 4520:                     actualPatchHash,
+ 4521:                     StringComparison.OrdinalIgnoreCase))
+ 4522:                 {
+ 4523:                     throw new InvalidDataException(
+ 4524:                         "追加変更データのSHA256が一致しません: " + name);
+ 4525:                 }
+ 4526: 
+ 4527:                 patchList.Add(
+ 4528:                     new Torneko4MemoryPatch(name, address, data));
+ 4529:             }
+ 4530:         }
+ 4531: 
+ 4532:         var monsterActions =
+ 4533:             new System.Collections.Generic.Dictionary<int, ushort>();
+ 4534: 
+ 4535:         // バージョン3で追加されたモンスター別特技設定。
+ 4536:         if (version >= 3)
+ 4537:         {
+ 4538:             int actionCount = reader.ReadInt32();
+ 4539: 
+ 4540:             if (actionCount < 0 || actionCount > 199)
+ 4541:                 throw new InvalidDataException(
+ 4542:                     "モンスター別特技設定の件数が不正です。");
+ 4543: 
+ 4544:             for (int i = 0; i < actionCount; i++)
+ 4545:             {
+ 4546:                 int monsterId = reader.ReadInt32();
+ 4547:                 ushort actionId = reader.ReadUInt16();
+ 4548: 
+ 4549:                 if (monsterId < 0 || monsterId >= 199)
+ 4550:                     throw new InvalidDataException(
+ 4551:                         "モンスター番号が不正です: " + monsterId);
+ 4552: 
+ 4553:                 if (actionId > 0xFF)
+ 4554:                     throw new InvalidDataException(
+ 4555:                         "特技IDが不正です: " + actionId);
+ 4556: 
+ 4557:                 if (monsterActions.ContainsKey(monsterId))
+ 4558:                     throw new InvalidDataException(
+ 4559:                         "モンスター別特技設定が重複しています: " + monsterId);
+ 4560: 
+ 4561:                 monsterActions.Add(monsterId, actionId);
+ 4562:             }
+ 4563:         }
+ 4564: 
+ 4565:         if (stream.Position != stream.Length)
+ 4566:             throw new InvalidDataException(
+ 4567:                 "Torneko4の末尾に不明なデータがあります。");
+ 4568: 
+ 4569:         string embeddedPath = Path.Combine(
+ 4570:             Path.GetTempPath(),
+ 4571:             "Torneko4Embedded_" +
+ 4572:             Guid.NewGuid().ToString("N") +
+ 4573:             ".bin");
+ 4574: 
+ 4575:         var snapshot = new TornekoBinPreservationSnapshot(
+ 4576:             original,
+ 4577:             embeddedPath);
+ 4578: 
+ 4579:         return new Torneko4Package(
+ 4580:             snapshot,
+ 4581:             editedBase,
+ 4582:             originalSourcePath,
+ 4583:             patchList,
+ 4584:             monsterActions);
+ 4585:     }
+ 4586: }
+ 4587: 
+ 4588: internal sealed class MainForm : Form
+ 4589: {
+ 4590:     private byte[]? _bin;
+ 4591:     private TornekoBinPreservationSnapshot? _binSnapshot;
+ 4592:     private string? _binPath;
+ 4593:     private readonly Label _status;
+ 4594:     private readonly AppSettings _settings;
+ 4595:     private readonly ActionAutoRestoreService _actionRestore =
+ 4596:         new ActionAutoRestoreService();
+ 4597: 
+ 4598:     private readonly Label _pcsx2ConnectionStatus =
+ 4599:         new Label();
+ 4600: 
+ 4601:     private readonly Label _pcsx2DataStatus =
+ 4602:         new Label();
+ 4603: 
+ 4604:     private bool _pcsx2Connecting;
+ 4605: 
+ 4606:     public MainForm()
+ 4607:     {
+ 4608:         Text = "トルネコいじりネクストv2.1";
+ 4609:         StartPosition = FormStartPosition.CenterScreen;
+ 4610:         Width = 1050;
+ 4611:         Height = 760;
+ 4612:         MinimumSize = new Size(850, 600);
+ 4613:         Font = new Font("Yu Gothic UI", 10);
+ 4614: 
+ 4615:         _settings = AppSettings.Load();
+ 4616: 
+ 4617:         var root = new TableLayoutPanel
+ 4618:         {
+ 4619:             Dock = DockStyle.Fill,
+ 4620:             ColumnCount = 1,
+ 4621:             RowCount = 4,
+ 4622:             Padding = new Padding(12)
+ 4623:         };
+ 4624: 
+ 4625:         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+ 4626:         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
+ 4627:         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+ 4628:         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+ 4629: 
+ 4630:         // メインメニュー最上部の独立PCSX2接続パネル。
+ 4631:         var pcsx2Panel = new Panel
+ 4632:         {
+ 4633:             Dock = DockStyle.Fill,
+ 4634:             BorderStyle = BorderStyle.FixedSingle,
+ 4635:             BackColor = Color.FromArgb(245, 248, 252)
+ 4636:         };
+ 4637: 
+ 4638:         var pcsx2Title = new Label
+ 4639:         {
+ 4640:             Text = "PCSX2 接続",
+ 4641:             Font = new Font("Yu Gothic UI", 13, FontStyle.Bold),
+ 4642:             AutoSize = true,
+ 4643:             Location = new Point(10, 5)
+ 4644:         };
+ 4645: 
+ 4646:         var pcsx2Button = new Button
+ 4647:         {
+ 4648:             Text = "PCSX2に接続",
+ 4649:             Width = 170,
+ 4650:             Height = 42,
+ 4651:             Location = new Point(12, 32),
+ 4652:             Font = new Font("Yu Gothic UI", 10, FontStyle.Bold)
+ 4653:         };
+ 4654: 
+ 4655:         pcsx2Button.Click += (_, _) => OpenPcsx2Connection();
+ 4656:         var loadDungeonButton = new Button
+ 4657:         {
+ 4658:             Text = "改造データ読み込み・即時適用",
+ 4659:             Width = 270,
+ 4660:             Height = 42,
+
+--- L5091 - L5374 ---
+ 5091:                 MessageBoxButtons.OK,
+ 5092:                 MessageBoxIcon.Warning);
+ 5093:             return;
+ 5094:         }
+ 5095: 
+ 5096:         using var dialog = new SaveFileDialog
+ 5097:         {
+ 5098:             Title = "トルネコいじりネクスト改造データを保存",
+ 5099:             Filter = "トルネコいじりネクスト (*.Torneko4)|*.Torneko4",
+ 5100:             DefaultExt = "Torneko4",
+ 5101:             AddExtension = true,
+ 5102:             FileName = "改造ダンジョン.Torneko4",
+ 5103:             OverwritePrompt = true
+ 5104:         };
+ 5105: 
+ 5106:         if (dialog.ShowDialog(this) != DialogResult.OK)
+ 5107:             return;
+ 5108: 
+ 5109:         try
+ 5110:         {
+ 5111:             Torneko4FileService.Save(
+ 5112:                 dialog.FileName,
+ 5113:                 _binSnapshot,
+ 5114:                 _bin,
+ 5115:                 Torneko4PatchStore.GetCopy(),
+ 5116:                 Torneko4ActionStore.GetCopy());
+ 5117: 
+ 5118:             _binPath = dialog.FileName;
+ 5119:             UpdateStatus();
+ 5120: 
+ 5121:             MessageBox.Show(
+ 5122:                 this,
+ 5123:                 "改造データを.Torneko4形式で保存しました。\r\n\r\n" +
+ 5124:                 "基本領域: " + _bin.Length.ToString("N0") + " bytes\r\n" +
+ 5125:                 "追加メモリ変更: " + Torneko4PatchStore.GetCopy().Count.ToString("N0") + " 件\r\n" +
+ 5126:                 "元データ・編集データ・追加変更のSHA256検証: 成功\r\n" +
+ 5127:                 "保存先:\r\n" + dialog.FileName,
+ 5128:                 "Torneko4保存完了",
+ 5129:                 MessageBoxButtons.OK,
+ 5130:                 MessageBoxIcon.Information);
+ 5131:         }
+ 5132:         catch (Exception ex)
+ 5133:         {
+ 5134:             UiFactory.Error(this, ex);
+ 5135:         }
+ 5136:     }
+ 5137: 
+ 5138:     private void OpenDungeonDataAndApply()
+ 5139:     {
+ 5140:         if (!Pcsx2LiveSession.IsConnected ||
+ 5141:             Pcsx2LiveSession.ProcessId <= 0)
+ 5142:         {
+ 5143:             MessageBox.Show(
+ 5144:                 this,
+ 5145:                 "先にPCSX2へ接続してください。",
+ 5146:                 "PCSX2未接続",
+ 5147:                 MessageBoxButtons.OK,
+ 5148:                 MessageBoxIcon.Warning);
+ 5149:             return;
+ 5150:         }
+ 5151: 
+ 5152:         if (Pcsx2LiveSession.MemoryLayout == null)
+ 5153:         {
+ 5154:             MessageBox.Show(
+ 5155:                 this,
+ 5156:                 "メモリアドレスが未確定です。PCSX2への接続とメモリ検索を完了してください。",
+ 5157:                 "メモリ未確定",
+ 5158:                 MessageBoxButtons.OK,
+ 5159:                 MessageBoxIcon.Warning);
+ 5160:             return;
+ 5161:         }
+ 5162: 
+ 5163:         using var dialog = new OpenFileDialog
+ 5164:         {
+ 5165:             Title = "読み込んでPCSX2へ適用する改造データを選択",
+ 5166:             Filter =
+ 5167:                 "ネクスト改造データ (*.Torneko4)|*.Torneko4|" +
+ 5168:                 "旧BINファイル (*.bin)|*.bin",
+ 5169:             CheckFileExists = true
+ 5170:         };
+ 5171: 
+ 5172:         if (dialog.ShowDialog(this) != DialogResult.OK)
+ 5173:             return;
+ 5174: 
+ 5175:         try
+ 5176:         {
+ 5177:             string extension =
+ 5178:                 Path.GetExtension(dialog.FileName);
+ 5179: 
+ 5180:             bool loaded = false;
+ 5181: 
+ 5182:             if (string.Equals(
+ 5183:                 extension,
+ 5184:                 ".Torneko4",
+ 5185:                 StringComparison.OrdinalIgnoreCase))
+ 5186:             {
+ 5187:                 Torneko4Package package =
+ 5188:                     Torneko4FileService.Load(dialog.FileName);
+ 5189: 
+ 5190:                 _binSnapshot = package.Snapshot;
+ 5191:                 _bin = (byte[])package.EditedBase.Clone();
+ 5192:                 Torneko4PatchStore.ReplaceAll(package.Patches);
+ 5193:                 Torneko4ActionStore.ReplaceAll(package.MonsterActions);
+ 5194:                 loaded = true;
+ 5195:             }
+ 5196: 
+ 5197:             if (string.Equals(
+ 5198:                 extension,
+ 5199:                 ".bin",
+ 5200:                 StringComparison.OrdinalIgnoreCase))
+ 5201:             {
+ 5202:                 TornekoBinPreservationSnapshot snapshot =
+ 5203:                     TornekoBinPreservation.Load(dialog.FileName);
+ 5204: 
+ 5205:                 byte[] loadedBase =
+ 5206:                     TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+ 5207: 
+ 5208:                 if (loadedBase.Length != 524288)
+ 5209:                     throw new InvalidDataException(
+ 5210:                         "BINの基本領域が524288 bytesではありません。");
+ 5211: 
+ 5212:                 _binSnapshot = snapshot;
+ 5213:                 _bin = loadedBase;
+ 5214:                 Torneko4PatchStore.Clear();
+ 5215:                 Torneko4ActionStore.Clear();
+ 5216:                 loaded = true;
+ 5217:             }
+ 5218: 
+ 5219:             if (!loaded)
+ 5220:                 throw new InvalidDataException(
+ 5221:                     "対応していないファイル形式です。");
+ 5222: 
+ 5223:             _binPath = dialog.FileName;
+ 5224:             UpdateStatus();
+ 5225: 
+ 5226:             _status.Text =
+ 5227:                 "改造データ読み込み完了。PCSX2への適用確認中...";
+ 5228: 
+ 5229:             // 種族別特技設定をアプリ常駐サービスへ渡す。
+ 5230:             // PINE未接続の場合も設定は保持され、サービスが再試行する。
+ 5231:             _actionRestore.TryApply(
+ 5232:                 Torneko4ActionStore.GetCopy(),
+ 5233:                 out string actionApplyMessage);
+ 5234: 
+ 5235:             _pcsx2DataStatus.Text = actionApplyMessage;
+ 5236: 
+ 5237:             // 読み込み直後に既存の安全検証付き適用処理へ進む。
+ 5238:             ApplyBinToPcsx2();
+ 5239:         }
+ 5240:         catch (Exception ex)
+ 5241:         {
+ 5242:             UiFactory.Error(this, ex);
+ 5243:         }
+ 5244:     }
+ 5245:     private void OpenBin()
+ 5246:     {
+ 5247:         using var dialog = new OpenFileDialog
+ 5248:         {
+ 5249:             Title = "適用する改造ダンジョンのBINファイルを選択",
+ 5250:             Filter = "BINファイル (*.bin)|*.bin|すべてのファイル (*.*)|*.*"
+ 5251:         };
+ 5252: 
+ 5253:         if (dialog.ShowDialog(this) != DialogResult.OK)
+ 5254:             return;
+ 5255: 
+ 5256:         try
+ 5257:         {
+ 5258:             // ファイル全体を保持する。
+ 5259:             TornekoBinPreservationSnapshot snapshot =
+ 5260:                 TornekoBinPreservation.Load(dialog.FileName);
+ 5261: 
+ 5262:             // 編集対象は先頭524288 bytesのみ。
+ 5263:             byte[] loaded =
+ 5264:                 TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+ 5265: 
+ 5266:             if (loaded.Length != BinFileService.ExpectedSize)
+ 5267:             {
+ 5268:                 throw new InvalidDataException(
+ 5269:                     "基本領域のサイズが想定と一致しません。");
+ 5270:             }
+ 5271: 
+ 5272:             _binSnapshot = snapshot;
+ 5273:             _bin = loaded;
+ 5274:             _binPath = dialog.FileName;
+ 5275: 
+ 5276:             UpdateStatus();
+ 5277: 
+ 5278:             MessageBox.Show(
+ 5279:                 this,
+ 5280:                 "BINファイル全体を読み込みました。\r\n" +
+ 5281:                 $"基本領域: {loaded.Length:N0} bytes\r\n" +
+ 5282:                 $"拡張領域: {snapshot.GetCopy().Length - loaded.Length:N0} bytes",
+ 5283:                 "読み込み完了",
+ 5284:                 MessageBoxButtons.OK,
+ 5285:                 MessageBoxIcon.Information);
+ 5286:         }
+ 5287:         catch (Exception ex)
+ 5288:         {
+ 5289:             UiFactory.Error(this, ex);
+ 5290:         }
+ 5291:     }
+ 5292: 
+ 5293:         private void ApplyBinToPcsx2()
+ 5294:     {
+ 5295:         if (_bin == null || _bin.Length != 524288)
+ 5296:         {
+ 5297:             MessageBox.Show(this, "先に改造ダンジョンのBINデータを読み込んでください。");
+ 5298:             return;
+ 5299:         }
+ 5300: 
+ 5301:         if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0)
+ 5302:         {
+ 5303:             MessageBox.Show(this, "先にPCSX2へ接続してください。");
+ 5304:             return;
+ 5305:         }
+ 5306: 
+ 5307:         Pcsx2MemoryLayout? layout = Pcsx2LiveSession.MemoryLayout;
+ 5308:         if (layout == null)
+ 5309:         {
+ 5310:             MessageBox.Show(this, "メモリアドレスが未確定です。PCSX2への接続とメモリ検索を完了してください。");
+ 5311:             return;
+ 5312:         }
+ 5313: 
+ 5314:         if (MessageBox.Show(
+ 5315:             this,
+ 5316:             "読み込んだBINの書き込み予定領域を検証します。\\r\\n" +
+ 5317:             "先にPCSX2でゲームを一時停止してください。適用中はPCSX2やゲームを終了しないでください。メモリへの書き込みを実行します。\\r\\n\\r\\n続行しますか？",
+ 5318:             "改造ダンジョン適用確認",
+ 5319:             MessageBoxButtons.YesNo,
+ 5320:             MessageBoxIcon.Warning) != DialogResult.Yes)
+ 5321:             return;
+ 5322: 
+ 5323:         try
+ 5324:         {
+ 5325:             string result = Pcsx2BinApplier.Apply(
+ 5326:                 Pcsx2LiveSession.ProcessId, layout, _bin);
+ 5327: 
+ 5328:             // 基本領域の適用が成功した後で追加メモリ変更を適用する。
+ 5329:             var memoryPatches = Torneko4PatchStore.GetCopy();
+ 5330:             string patchResult = Pcsx2BinApplier.ApplyPatches(
+ 5331:                 Pcsx2LiveSession.ProcessId,
+ 5332:                 memoryPatches);
+ 5333: 
+ 5334:             result += "\r\n\r\n--- 追加メモリ変更 ---\r\n" + patchResult;
+ 5335: 
+ 5336:             _status.Text = "改造ダンジョン適用済み";
+ 5337:             _pcsx2DataStatus.Text = "改造ダンジョン適用済み";
+ 5338: 
+ 5339:             MessageBox.Show(
+ 5340:                 this,
+ 5341:                 "BINデータの適用処理が完了しました。\\r\\n\\r\\n" + result +
+ 5342:                 "\\r\\n\\r\\nゲーム内でダンジョンに入れるか確認してください。",
+ 5343:                 "BIN適用完了",
+ 5344:                 MessageBoxButtons.OK,
+ 5345:                 MessageBoxIcon.Information);
+ 5346:         }
+ 5347:         catch (Exception ex)
+ 5348:         {
+ 5349:             UiFactory.Error(this, ex);
+ 5350:         }
+ 5351:     }
+ 5352: 
+ 5353:     private void SaveBin()
+ 5354:     {
+ 5355:         if (_bin == null ||
+ 5356:             _binSnapshot == null ||
+ 5357:             string.IsNullOrWhiteSpace(_binPath))
+ 5358:         {
+ 5359:             MessageBox.Show(this, "先にBINファイルを開いてください。");
+ 5360:             return;
+ 5361:         }
+ 5362: 
+ 5363:         if (MessageBox.Show(
+ 5364:             this,
+ 5365:             "現在のBINファイルを上書き保存します。\r\n" +
+ 5366:             "拡張領域は元の内容を維持します。\r\n" +
+ 5367:             "保存前に元ファイルのバックアップを作成します。\r\n\r\n" +
+ 5368:             "続行しますか？",
+ 5369:             "上書き確認",
+ 5370:             MessageBoxButtons.YesNo,
+ 5371:             MessageBoxIcon.Warning) != DialogResult.Yes)
+ 5372:             return;
+ 5373: 
+ 5374:         string? tempPath = null;
+
+--- L5381 - L5458 ---
+ 5381:             string backupPath =
+ 5382:                 fullPath + ".backup_" +
+ 5383:                 DateTime.Now.ToString("yyyyMMdd_HHmmss");
+ 5384: 
+ 5385:             tempPath = Path.Combine(
+ 5386:                 directory,
+ 5387:                 Path.GetFileName(fullPath) + "." +
+ 5388:                 Guid.NewGuid().ToString("N") + ".tmp");
+ 5389: 
+ 5390:             // 元BINを先にバックアップする。
+ 5391:             File.Copy(fullPath, backupPath, false);
+ 5392: 
+ 5393:             // 元BINとは別の一時ファイルに編集結果を保存する。
+ 5394:             TornekoBinEditPreserver.SaveEditedBaseCopy(
+ 5395:                 _binSnapshot,
+ 5396:                 _bin,
+ 5397:                 tempPath);
+ 5398: 
+ 5399:             // 一時ファイルの存在とサイズを確認する。
+ 5400:             TornekoBinPreservationSnapshot tempSnapshot =
+ 5401:                 TornekoBinPreservation.Load(tempPath);
+ 5402: 
+ 5403:             if (tempSnapshot.OriginalLength != _binSnapshot.OriginalLength)
+ 5404:                 throw new InvalidDataException(
+ 5405:                     "一時保存ファイルのサイズが元BINと一致しません。");
+ 5406: 
+ 5407:             // 同一フォルダ内で置換する。
+ 5408:             // 失敗した場合、元BINは置き換えられない。
+ 5409:             File.Replace(tempPath, fullPath, null);
+ 5410:             tempPath = null;
+ 5411: 
+ 5412:             // 保存後のファイルを新しい基準にする。
+ 5413:             _binSnapshot = TornekoBinPreservation.Load(fullPath);
+ 5414:             _binPath = fullPath;
+ 5415: 
+ 5416:             UpdateStatus();
+ 5417: 
+ 5418:             MessageBox.Show(
+ 5419:                 this,
+ 5420:                 "保存しました。\r\n" +
+ 5421:                 "拡張領域は元の内容を維持しています。\r\n\r\n" +
+ 5422:                 "バックアップ:\r\n" + backupPath,
+ 5423:                 "保存完了",
+ 5424:                 MessageBoxButtons.OK,
+ 5425:                 MessageBoxIcon.Information);
+ 5426:         }
+ 5427:         catch (Exception ex)
+ 5428:         {
+ 5429:             UiFactory.Error(this, ex);
+ 5430:         }
+ 5431:         finally
+ 5432:         {
+ 5433:             if (tempPath != null && File.Exists(tempPath))
+ 5434:             {
+ 5435:                 try
+ 5436:                 {
+ 5437:                     File.Delete(tempPath);
+ 5438:                 }
+ 5439:                 catch
+ 5440:                 {
+ 5441:                     // 一時ファイル削除失敗は元BINの保全を優先する。
+ 5442:                 }
+ 5443:             }
+ 5444:         }
+ 5445:     }    private void SaveBinAs()
+ 5446:     {
+ 5447:         if (_bin == null || _binSnapshot == null)
+ 5448:         {
+ 5449:             MessageBox.Show(this, "先にBINファイルを開いてください。");
+ 5450:             return;
+ 5451:         }
+ 5452: 
+ 5453:         using var dialog = new SaveFileDialog
+ 5454:         {
+ 5455:             Title = "BINファイルを別名で保存",
+ 5456:             Filter = "BINファイル (*.bin)|*.bin",
+ 5457:             FileName = "edited.bin",
+ 5458:             OverwritePrompt = true
+
+--- L5463 - L5528 ---
+ 5463: 
+ 5464:         try
+ 5465:         {
+ 5466:             string destination = Path.GetFullPath(dialog.FileName);
+ 5467: 
+ 5468:             if (File.Exists(destination))
+ 5469:             {
+ 5470:                 string backupPath =
+ 5471:                     destination + ".backup_" +
+ 5472:                     DateTime.Now.ToString("yyyyMMdd_HHmmss");
+ 5473: 
+ 5474:                 File.Copy(destination, backupPath, false);
+ 5475:             }
+ 5476: 
+ 5477:             TornekoBinEditPreserver.SaveEditedBaseCopy(
+ 5478:                 _binSnapshot,
+ 5479:                 _bin,
+ 5480:                 destination);
+ 5481: 
+ 5482:             TornekoBinPreservationSnapshot newSnapshot =
+ 5483:                 TornekoBinPreservation.Load(destination);
+ 5484: 
+ 5485:             _binPath = destination;
+ 5486:             _binSnapshot = newSnapshot;
+ 5487: 
+ 5488:             UpdateStatus();
+ 5489: 
+ 5490:             MessageBox.Show(
+ 5491:                 this,
+ 5492:                 "別名保存しました。\r\n" +
+ 5493:                 "拡張領域も保持されています。",
+ 5494:                 "保存完了",
+ 5495:                 MessageBoxButtons.OK,
+ 5496:                 MessageBoxIcon.Information);
+ 5497:         }
+ 5498:         catch (Exception ex)
+ 5499:         {
+ 5500:             UiFactory.Error(this, ex);
+ 5501:         }
+ 5502:     }
+ 5503: 
+ 5504:     private void OpenFloorEditor()
+ 5505:     {
+ 5506:         if (_bin == null)
+ 5507:         {
+ 5508:             MessageBox.Show(this, "先にBINファイルを開いてください。");
+ 5509:             return;
+ 5510:         }
+ 5511: 
+ 5512:         using var form = new FloorEditorForm(_bin);
+ 5513:         form.ShowDialog(this);
+ 5514:         UpdateStatus();
+ 5515:     }
+ 5516: 
+ 5517:     private void OpenSpawnEditor()
+ 5518:     {
+ 5519:         if (_bin == null)
+ 5520:         {
+ 5521:             MessageBox.Show(this, "先にBINファイルを開いてください。");
+ 5522:             return;
+ 5523:         }
+ 5524: 
+ 5525:         using var form = new SpawnTableEditorForm(_bin);
+ 5526:         form.ShowDialog(this);
+ 5527:         UpdateStatus();
+ 5528:     }
+
+--- L5540 - L5612 ---
+ 5540: 
+ 5541:         form.ShowDialog(this);
+ 5542:         UpdateStatus();
+ 5543:     }
+ 5544: 
+ 5545:     private void OpenSettings()
+ 5546:     {
+ 5547:         using var form = new CommonSettingsForm(_settings);
+ 5548:         form.ShowDialog(this);
+ 5549:         UpdateStatus();
+ 5550:     }
+ 5551: 
+ 5552:     private void ShowBinInfo()
+ 5553:     {
+ 5554:         if (_bin == null)
+ 5555:         {
+ 5556:             MessageBox.Show(this, "BINファイル未読み込みです。");
+ 5557:             return;
+ 5558:         }
+ 5559: 
+ 5560:         int version = _bin[BinFileService.VersionMarkerOffset];
+ 5561: 
+ 5562:         MessageBox.Show(
+ 5563:             this,
+ 5564:             $"ファイル: {_binPath}\r\n" +
+ 5565:             $"サイズ: {_bin.Length:N0} bytes\r\n" +
+ 5566:             $"バージョンマーカー位置: {BinFileService.VersionMarkerOffset}\r\n" +
+ 5567:             $"バージョン値: {version}\r\n" +
+ 5568:             $"拡張データ開始: {BinFileService.ExtensionStartOffset}",
+ 5569:             "BIN情報");
+ 5570:     }
+ 5571: 
+ 5572:     private void UpdateStatus()
+ 5573:     {
+ 5574:         if (_bin == null)
+ 5575:         {
+ 5576:             _status.Text = "BINファイル未読み込み";
+ 5577:             return;
+ 5578:         }
+ 5579: 
+ 5580:         if (string.IsNullOrWhiteSpace(_binPath))
+ 5581:         {
+ 5582:             _status.Text =
+ 5583:                 "PCSX2取得バニラBIN　|　" +
+ 5584:                 _bin.Length.ToString("N0") +
+ 5585:                 " bytes　|　メモリ上の編集データ";
+ 5586:         }
+ 5587:         else
+ 5588:         {
+ 5589:             _status.Text =
+ 5590:                 $"読み込み中: {_binPath}　|　{_bin.Length:N0} bytes";
+ 5591:         }
+ 5592:     }
+ 5593: }
+ 5594: 
+ 5595: // ============================================================
+ 5596: // フロアデータ編集画面
+ 5597: // ============================================================
+ 5598: internal sealed class FloorEditorForm : Form
+ 5599: {
+ 5600:     private readonly byte[] _bin;
+ 5601:     private readonly NumericUpDown _floorNumber;
+ 5602:     private readonly DataGridView _grid;
+ 5603:     private byte[]? _working;
+ 5604: 
+ 5605:     public FloorEditorForm(byte[] bin)
+ 5606:     {
+ 5607:         _bin = bin;
+ 5608: 
+ 5609:         Text = "フロアデータ編集";
+ 5610:         StartPosition = FormStartPosition.CenterParent;
+ 5611:         Width = 900;
+ 5612:         Height = 700;
+
+--- L6119 - L6184 ---
+ 6119:             Margin = new Padding(8, 18, 8, 18)
+ 6120:         };
+ 6121: 
+ 6122:         layout.Controls.Add(note, 0, 2);
+ 6123:         layout.SetColumnSpan(note, 2);
+ 6124: 
+ 6125:         var save = new Button
+ 6126:         {
+ 6127:             Text = "設定を保存",
+ 6128:             Height = 40,
+ 6129:             Dock = DockStyle.Fill
+ 6130:         };
+ 6131: 
+ 6132:         save.Click += (_, _) =>
+ 6133:         {
+ 6134:             _settings.MonsterSpawnCycle = (int)_spawnCycle.Value;
+ 6135:             _settings.ShowAdventureTurns = _showTurns.Checked;
+ 6136: 
+ 6137:             try
+ 6138:             {
+ 6139:                 _settings.Save();
+ 6140:                 MessageBox.Show(this, "設定を保存しました。");
+ 6141:                 Close();
+ 6142:             }
+ 6143:             catch (Exception ex)
+ 6144:             {
+ 6145:                 UiFactory.Error(this, ex);
+ 6146:             }
+ 6147:         };
+ 6148: 
+ 6149:         layout.Controls.Add(save, 0, 3);
+ 6150:         layout.SetColumnSpan(save, 2);
+ 6151: 
+ 6152:         Controls.Add(layout);
+ 6153:     }
+ 6154: }
+ 6155: 
+ 6156: internal static class TornekoDataBufferLocator
+ 6157: {
+ 6158:     public static byte[] Find(object root)
+ 6159:     {
+ 6160:         if (root == null) return null;
+ 6161: 
+ 6162:         var flags =
+ 6163:             System.Reflection.BindingFlags.Instance |
+ 6164:             System.Reflection.BindingFlags.Public |
+ 6165:             System.Reflection.BindingFlags.NonPublic;
+ 6166: 
+ 6167:         var visited = new System.Collections.Generic.HashSet<object>(
+ 6168:             new ReferenceComparer());
+ 6169: 
+ 6170:         return FindInternal(root, flags, visited, 0);
+ 6171:     }
+ 6172: 
+ 6173:     private static byte[] FindInternal(
+ 6174:         object obj,
+ 6175:         System.Reflection.BindingFlags flags,
+ 6176:         System.Collections.Generic.HashSet<object> visited,
+ 6177:         int depth)
+ 6178:     {
+ 6179:         if (obj == null || depth > 2) return null;
+ 6180:         if (!visited.Add(obj)) return null;
+ 6181: 
+ 6182:         if (obj is byte[] direct && direct.Length >= 524288)
+ 6183:             return direct;
+ 6184: 
+
+--- L6469 - L6534 ---
+ 6469: 
+ 6470:                         previousCumulative = cumulative;
+ 6471:                     }
+ 6472:                 }
+ 6473: 
+ 6474:                 status.Text =
+ 6475:                     "読み込み完了。実データ位置: " +
+ 6476:                     actualOffset.ToString() +
+ 6477:                     " / 表示件数: " + grid.Rows.Count.ToString();
+ 6478:             }
+ 6479:             catch (System.Exception ex)
+ 6480:             {
+ 6481:                 grid.Rows.Clear();
+ 6482:                 status.Text = "読み込みエラー";
+ 6483:                 System.Windows.Forms.MessageBox.Show(
+ 6484:                     ex.Message,
+ 6485:                     title);
+ 6486:             }
+ 6487:         };
+ 6488: 
+ 6489:         reload.Click += (sender, e) => load();
+ 6490: 
+ 6491:         grid.CellEndEdit += (sender, e) =>
+ 6492:         {
+ 6493:             try
+ 6494:             {
+ 6495:                 if (e.RowIndex < 0 || e.ColumnIndex <= 0)
+ 6496:                     return;
+ 6497: 
+ 6498:                 int baseOffset = ParseOffset(offsetBox.Text);
+ 6499:                 int pos;
+ 6500: 
+ 6501:                 if (kind == EditorKind.Bytes)
+ 6502:                 {
+ 6503:                     pos = checked(baseOffset + e.RowIndex);
+ 6504: 
+ 6505:                     byte value = ParseByte(
+ 6506:                         System.Convert.ToString(
+ 6507:                             grid.Rows[e.RowIndex].Cells[1].Value));
+ 6508: 
+ 6509:                     _data[pos] = value;
+ 6510:                 }
+ 6511:                 else if (kind == EditorKind.Traps)
+ 6512:                 {
+ 6513:                     pos = checked(baseOffset + 60 + e.RowIndex * 2);
+ 6514: 
+ 6515:                     ushort value = ParseU16(
+ 6516:                         System.Convert.ToString(
+ 6517:                             grid.Rows[e.RowIndex].Cells[1].Value));
+ 6518: 
+ 6519:                     WriteU16(pos, value);
+ 6520:                 }
+ 6521:                 else
+ 6522:                 {
+ 6523:                     pos = checked(baseOffset + e.RowIndex * 6);
+ 6524: 
+ 6525:                     ushort id = ParseU16(
+ 6526:                         System.Convert.ToString(
+ 6527:                             grid.Rows[e.RowIndex].Cells[1].Value));
+ 6528: 
+ 6529:                     ushort cumulative = ParseU16(
+ 6530:                         System.Convert.ToString(
+ 6531:                             grid.Rows[e.RowIndex].Cells[2].Value));
+ 6532: 
+ 6533:                     ushort quantity = ParseU16(
+ 6534:                         System.Convert.ToString(
+
+--- L6548 - L6617 ---
+ 6548:                                 grid.Rows[i].Cells[2].Value));
+ 6549: 
+ 6550:                         int difference = current - previousCumulative;
+ 6551: 
+ 6552:                         grid.Rows[i].Cells[4].Value =
+ 6553:                             (difference / 10.0).ToString("0.0") + "%";
+ 6554: 
+ 6555:                         previousCumulative = current;
+ 6556:                     }
+ 6557:                 }
+ 6558: 
+ 6559:                 status.Text =
+ 6560:                     "変更反映済み。BIN編集バッファへ書き込みました。";
+ 6561:             }
+ 6562:             catch (System.Exception ex)
+ 6563:             {
+ 6564:                 status.Text = "入力値エラー";
+ 6565:                 System.Windows.Forms.MessageBox.Show(
+ 6566:                     ex.Message,
+ 6567:                     "データ編集");
+ 6568:                 load();
+ 6569:             }
+ 6570:         };
+ 6571: 
+ 6572:         load();
+ 6573:     }
+ 6574: 
+ 6575:     private static readonly string[] TrapNames =
+ 6576:     {
+ 6577:         "転石", "サビ", "装外", "泥罠", "召喚",
+ 6578:         "落穴", "バネ", "鉄球", "回転", "睡眠",
+ 6579:         "鈍足", "封印", "毒矢", "地雷", "大雷",
+ 6580:         "弱化", "落石", "木矢", "鉄矢", "モン化"
+ 6581:     };
+ 6582: 
+ 6583:     private int ParseOffset(string value)
+ 6584:     {
+ 6585:         value = (value ?? "").Trim();
+ 6586: 
+ 6587:         if (value.StartsWith("0x", System.StringComparison.OrdinalIgnoreCase))
+ 6588:         {
+ 6589:             return System.Convert.ToInt32(
+ 6590:                 value.Substring(2),
+ 6591:                 16);
+ 6592:         }
+ 6593: 
+ 6594:         return System.Int32.Parse(
+ 6595:             value,
+ 6596:             System.Globalization.NumberStyles.Integer);
+ 6597:     }
+ 6598: 
+ 6599:     private static byte ParseByte(string value)
+ 6600:     {
+ 6601:         ushort number = ParseU16(value);
+ 6602: 
+ 6603:         if (number > 255)
+ 6604:             throw new System.ArgumentOutOfRangeException(
+ 6605:                 "byteの値は0～255で入力してください。");
+ 6606: 
+ 6607:         return (byte)number;
+ 6608:     }
+ 6609: 
+ 6610:     private static ushort ParseU16(string value)
+ 6611:     {
+ 6612:         value = (value ?? "").Trim();
+ 6613: 
+ 6614:         if (value.StartsWith("0x", System.StringComparison.OrdinalIgnoreCase))
+ 6615:         {
+ 6616:             return System.Convert.ToUInt16(
+ 6617:                 value.Substring(2),
+
+--- L6658 - L6748 ---
+ 6658:     internal TornekoBinPreservationSnapshot(
+ 6659:         byte[] data,
+ 6660:         string sourcePath)
+ 6661:     {
+ 6662:         Data = (byte[])data.Clone();
+ 6663:         SourcePath = sourcePath;
+ 6664:         OriginalLength = data.Length;
+ 6665:         OriginalSha256 =
+ 6666:             TornekoBinPreservation.ComputeSha256(data);
+ 6667:     }
+ 6668: 
+ 6669:     public byte[] GetCopy()
+ 6670:     {
+ 6671:         return (byte[])Data.Clone();
+ 6672:     }
+ 6673: }
+ 6674: 
+ 6675: public static class TornekoBinPreservation
+ 6676: {
+ 6677:     public const int LegacyBaseRegionSize = 524288;
+ 6678:     public const int VersionMarkerOffset = 355056;
+ 6679:     public const int ExtensionStartOffset = 355072;
+ 6680: 
+ 6681:     public static TornekoBinPreservationSnapshot CreateInMemorySnapshot(
+ 6682:         byte[] data)
+ 6683:     {
+ 6684:         if (data == null)
+ 6685:             throw new System.ArgumentNullException(nameof(data));
+ 6686: 
+ 6687:         if (data.Length != LegacyBaseRegionSize)
+ 6688:             throw new System.ArgumentException(
+ 6689:                 "メモリBINは524288 bytesである必要があります。");
+ 6690: 
+ 6691:         // 保存時の元ファイル判定用の仮想パス。
+ 6692:         // このパスにファイルを作成することはない。
+ 6693:         string virtualPath =
+ 6694:             System.IO.Path.Combine(
+ 6695:                 System.IO.Path.GetTempPath(),
+ 6696:                 "PCSX2_VanillaMemory.bin");
+ 6697: 
+ 6698:         return new TornekoBinPreservationSnapshot(
+ 6699:             data,
+ 6700:             virtualPath);
+ 6701:     }
+ 6702: 
+ 6703:     public static TornekoBinPreservationSnapshot Load(
+ 6704:         string path)
+ 6705:     {
+ 6706:         if (string.IsNullOrWhiteSpace(path))
+ 6707:             throw new System.ArgumentException("ファイルパスが空です。");
+ 6708: 
+ 6709:         if (!System.IO.File.Exists(path))
+ 6710:             throw new System.IO.FileNotFoundException(
+ 6711:                 "BINファイルが見つかりません。",
+ 6712:                 path);
+ 6713: 
+ 6714:         byte[] data = System.IO.File.ReadAllBytes(path);
+ 6715: 
+ 6716:         return new TornekoBinPreservationSnapshot(
+ 6717:             data,
+ 6718:             System.IO.Path.GetFullPath(path));
+ 6719:     }
+ 6720: 
+ 6721:     public static string ComputeSha256(byte[] data)
+ 6722:     {
+ 6723:         if (data == null)
+ 6724:             throw new System.ArgumentNullException("data");
+ 6725: 
+ 6726:         using (var sha = System.Security.Cryptography.SHA256.Create())
+ 6727:         {
+ 6728:             byte[] hash = sha.ComputeHash(data);
+ 6729:             return System.BitConverter.ToString(hash)
+ 6730:                 .Replace("-", "");
+ 6731:         }
+ 6732:     }
+ 6733: 
+ 6734:     private static string GetHex(
+ 6735:         byte[] data,
+ 6736:         int offset,
+ 6737:         int count)
+ 6738:     {
+ 6739:         if (offset < 0 || count < 0 ||
+ 6740:             offset > data.Length ||
+ 6741:             count > data.Length - offset)
+ 6742:         {
+ 6743:             return "(範囲外)";
+ 6744:         }
+ 6745: 
+ 6746:         if (count == 0)
+ 6747:             return "(データなし)";
+ 6748: 
+
+--- L6774 - L6843 ---
+ 6774:         sb.AppendLine(
+ 6775:             "524288 bytes基本領域: " +
+ 6776:             (data.Length >= LegacyBaseRegionSize
+ 6777:                 ? "存在"
+ 6778:                 : "サイズ不足"));
+ 6779: 
+ 6780:         sb.AppendLine(
+ 6781:             "基本領域サイズとの差: " +
+ 6782:             (data.Length - LegacyBaseRegionSize) +
+ 6783:             " bytes");
+ 6784: 
+ 6785:         sb.AppendLine(
+ 6786:             "ファイル末尾の追加データ: " +
+ 6787:             (data.Length > LegacyBaseRegionSize
+ 6788:                 ? (data.Length - LegacyBaseRegionSize) + " bytes"
+ 6789:                 : "なし"));
+ 6790: 
+ 6791:         sb.AppendLine("");
+ 6792:         sb.AppendLine(
+ 6793:             "バージョンマーカー位置: " +
+ 6794:             VersionMarkerOffset);
+ 6795: 
+ 6796:         sb.AppendLine(
+ 6797:             "マーカー周辺4 bytes: " +
+ 6798:             GetHex(data, VersionMarkerOffset, 4));
+ 6799: 
+ 6800:         sb.AppendLine(
+ 6801:             "拡張開始候補位置: " +
+ 6802:             ExtensionStartOffset);
+ 6803: 
+ 6804:         sb.AppendLine(
+ 6805:             "拡張開始候補周辺16 bytes: " +
+ 6806:             GetHex(data, ExtensionStartOffset, 16));
+ 6807: 
+ 6808:         sb.AppendLine("");
+ 6809:         sb.AppendLine(
+ 6810:             "注意: マーカー値や拡張領域の内部構造は未確定です。");
+ 6811: 
+ 6812:         sb.AppendLine(
+ 6813:             "この診断機能はデータの意味を推測して変更しません。");
+ 6814: 
+ 6815:         sb.AppendLine("========================================");
+ 6816: 
+ 6817:         return sb.ToString();
+ 6818:     }
+ 6819: 
+ 6820:     public static void SaveCopy(
+ 6821:         TornekoBinPreservationSnapshot snapshot,
+ 6822:         string destinationPath)
+ 6823:     {
+ 6824:         if (snapshot == null)
+ 6825:             throw new System.ArgumentNullException("snapshot");
+ 6826: 
+ 6827:         if (string.IsNullOrWhiteSpace(destinationPath))
+ 6828:             throw new System.ArgumentException("保存先が空です。");
+ 6829: 
+ 6830:         string fullPath =
+ 6831:             System.IO.Path.GetFullPath(destinationPath);
+ 6832: 
+ 6833:         string directory =
+ 6834:             System.IO.Path.GetDirectoryName(fullPath);
+ 6835: 
+ 6836:         if (!System.IO.Directory.Exists(directory))
+ 6837:             System.IO.Directory.CreateDirectory(directory);
+ 6838: 
+ 6839:         byte[] output = snapshot.GetCopy();
+ 6840: 
+ 6841:         // 元ファイルには触れず、指定先に完全なコピーを作成する。
+ 6842:         System.IO.File.WriteAllBytes(fullPath, output);
+ 6843: 
