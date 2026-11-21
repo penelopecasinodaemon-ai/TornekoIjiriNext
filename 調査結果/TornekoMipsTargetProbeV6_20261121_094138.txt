@@ -1,0 +1,872 @@
+Torneko MIPS Target Probe V6 Fixed
+Date: 2026-11-21 09:41:38
+PID: 6708
+EE Base: 0x1B919910000
+RAM size: 0x2000000
+Read only
+Target offsets: 0758, 0798, 0B70
+LUI candidate count: 300
+Target hit count: 0
+
+===== RESULTS =====
+
+LUI at EE+0x00082A98 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00084EE0 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00088868 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x000889A0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00201A04 register=r5
+
+LUI at EE+0x00201A24 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00201A28 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00201A8C register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00201B0C register=r5
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00201B20 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00201B24 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00208244 register=r10
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002082F0 register=r10
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00208874 register=r10
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002088A0 register=r10
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002164B0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0022B2D0 register=r19
+
+LUI at EE+0x00245640 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0024CD7C register=r5
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0024F848 register=r6
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00257F8C register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0025D9E8 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0025E658 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00260334 register=r3
+
+LUI at EE+0x00263000 register=r6
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00266EE0 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0028D048 register=r3
+
+LUI at EE+0x00297E8C register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0029C038 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002A05B0 register=r6
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002A05FC register=r6
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002A0654 register=r6
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002A06C4 register=r6
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002A1078 register=r3
+
+LUI at EE+0x002AEA48 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002B18EC register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002B1C54 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002B2B38 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002BD568 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002C76C4 register=r10
+
+LUI at EE+0x002C7AE8 register=r10
+
+LUI at EE+0x002C8288 register=r3
+
+LUI at EE+0x002CA880 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002CA8BC register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002CA8F8 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002CDCC4 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002F0CF0 register=r3
+
+LUI at EE+0x002F1B40 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002F1B68 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x002F6744 register=r4
+
+LUI at EE+0x0033F5D0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0034146C register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0034147C register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x003414B0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341768 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x003417B8 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x003417C8 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341A80 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341AD0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341AE0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341C2C register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341CB4 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341EF4 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341F04 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00341F38 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0034EA00 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00352A58 register=r3
+  Base register overwritten before scan limit.
+
+LUI at EE+0x003531F4 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x003561C0 register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x003567AC register=r2
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0064FF8C register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x0064FF94 register=r12
+
+LUI at EE+0x0065040C register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00650414 register=r12
+
+LUI at EE+0x00662A30 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662A34 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662A38 register=r4
+
+LUI at EE+0x00662B40 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662B44 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662B48 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662C10 register=r20
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662C14 register=r20
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662C18 register=r20
+
+LUI at EE+0x00662C50 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662C54 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662C58 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662CE0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662CE4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662CE8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662D20 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662D24 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662D28 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662DF0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662DF4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662DF8 register=r12
+
+LUI at EE+0x00662E30 register=r20
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662E34 register=r20
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662E38 register=r20
+
+LUI at EE+0x00662E70 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662E74 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662E78 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662F00 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662F04 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662F08 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662F40 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662F44 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00662F48 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663010 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663014 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663018 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663050 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663054 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663058 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663120 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663124 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663128 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663160 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663164 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663168 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663230 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663234 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663238 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663270 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663274 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663278 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006632B0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006632B4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006632B8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663338 register=r12
+
+LUI at EE+0x00663450 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663454 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663458 register=r4
+
+LUI at EE+0x00663560 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663564 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663568 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006635A0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006635A4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006635A8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663670 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663674 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663678 register=r12
+
+LUI at EE+0x006638D0 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006638D4 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006638D8 register=r4
+
+LUI at EE+0x00663910 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663914 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663918 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006639A0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006639A4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006639A8 register=r12
+
+LUI at EE+0x00663BC0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663BC4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663BC8 register=r12
+
+LUI at EE+0x00663D10 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663D14 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663D18 register=r28
+
+LUI at EE+0x00663D50 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663D54 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663D58 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663DE0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663DE4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663DE8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663E20 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663E24 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663E28 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663E60 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663E64 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663E68 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663EF0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663EF4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663EF8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663F30 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663F34 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663F38 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663F70 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663F74 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00663F78 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664040 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664044 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664048 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664110 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664114 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664118 register=r4
+
+LUI at EE+0x00664220 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664224 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664228 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664260 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664264 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664268 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006642A0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006642A4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006642A8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664330 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664334 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664338 register=r4
+
+LUI at EE+0x00664440 register=r28
+
+LUI at EE+0x00664480 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664484 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664488 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664550 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664554 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664558 register=r12
+
+LUI at EE+0x006645C0 register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006645C8 register=r4
+
+LUI at EE+0x006645D0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006645D4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006645D8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664660 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664664 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664668 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006646A0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006646A4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006646A8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006646E0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006646E4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006646E8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664770 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664774 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664778 register=r28
+
+LUI at EE+0x006647A8 register=r12
+
+LUI at EE+0x00664878 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664880 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664884 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664888 register=r12
+
+LUI at EE+0x00664900 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664904 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664908 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664990 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664994 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664998 register=r12
+
+LUI at EE+0x006649D0 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006649D4 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x006649D8 register=r28
+
+LUI at EE+0x00664AA0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664AA4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664AA8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664AE4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664AE8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664BB0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664BB4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664BB8 register=r12
+
+LUI at EE+0x00664D00 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664D04 register=r28
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664D08 register=r28
+
+LUI at EE+0x00664DD0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664DD4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664DD8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664E10 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664E14 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664E18 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664EE0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664EE4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664EE8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664F20 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664F24 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664F28 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664F60 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664F64 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664F68 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664FF0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664FF4 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00664FF8 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665030 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665034 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665038 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665070 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665074 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665078 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665100 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665104 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665108 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665140 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665144 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665148 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665180 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665184 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665188 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665210 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665214 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665218 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665250 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665254 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665258 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665290 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665294 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x00665298 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x010F418C register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x010F41BC register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x010F41DC register=r4
+  Base register overwritten before scan limit.
+
+LUI at EE+0x010F429C register=r4
+
+LUI at EE+0x01AF9AE8 register=r15
+
+LUI at EE+0x01FFA1AC register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x01FFA1B0 register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x01FFA1B4 register=r12
+
+LUI at EE+0x01FFA50C register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x01FFA514 register=r12
+
+LUI at EE+0x01FFA98C register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x01FFA994 register=r12
+
+LUI at EE+0x01FFF8CC register=r12
+  Base register overwritten before scan limit.
+
+LUI at EE+0x01FFF8D4 register=r12
+
+===== END =====
