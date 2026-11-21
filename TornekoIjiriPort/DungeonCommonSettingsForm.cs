@@ -1822,8 +1822,9 @@ internal sealed class DungeonCommonSettingsForm : Form
 
             foreach (MemoryChange change in changes)
             {
-                WritePineMemory(
-                    checked(change.Address - eeBase),
+                WriteMemory(
+                    process,
+                    change.Address,
                     change.NewData);
 
                 completed.Add(change);
@@ -1897,8 +1898,9 @@ internal sealed class DungeonCommonSettingsForm : Form
 
                 try
                 {
-                    WritePineMemory(
-                        checked(change.Address - eeBase),
+                    WriteMemory(
+                        process,
+                        change.Address,
                         change.OldData);
 
                     byte[] restored = ReadMemory(
