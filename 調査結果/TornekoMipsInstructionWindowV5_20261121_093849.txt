@@ -1,0 +1,287 @@
+Torneko MIPS Instruction Window V5
+PID: 6708
+EE Base: 0x1B919910000
+Read only
+Window: 32 instructions before and after each LUI
+
+========================================
+LUI_82A98
+Center: EE+0x00082A98
+========================================
+  EE+0x00082A18 RAW=FFA80070 OP_3F              rs=29 rt= 8 rd= 0 sh= 1 imm=0x0070
+  EE+0x00082A1C RAW=FFA90078 OP_3F              rs=29 rt= 9 rd= 0 sh= 1 imm=0x0078
+  EE+0x00082A20 RAW=FFAA0080 OP_3F              rs=29 rt=10 rd= 0 sh= 2 imm=0x0080
+  EE+0x00082A24 RAW=FFAB0088 OP_3F              rs=29 rt=11 rd= 0 sh= 2 imm=0x0088
+  EE+0x00082A28 RAW=E7AC0048 OP_39              rs=29 rt=12 rd= 0 sh= 1 imm=0x0048
+  EE+0x00082A2C RAW=E7AE004C OP_39              rs=29 rt=14 rd= 0 sh= 1 imm=0x004C
+  EE+0x00082A30 RAW=E7B00050 OP_39              rs=29 rt=16 rd= 0 sh= 1 imm=0x0050
+  EE+0x00082A34 RAW=0C020946 JAL                rs= 0 rt= 2 rd= 1 sh= 5 imm=0x0946
+  EE+0x00082A38 RAW=E7B20054 OP_39              rs=29 rt=18 rd= 0 sh= 1 imm=0x0054
+  EE+0x00082A3C RAW=DFBF0000 OP_37              rs=29 rt=31 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082A40 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00082A44 RAW=27BD0090 ADDIU              rs=29 rt=29 rd= 0 sh= 2 imm=0x0090
+  EE+0x00082A48 RAW=27BDFFD0 ADDIU              rs=29 rt=29 rd=31 sh=31 imm=0xFFD0
+  EE+0x00082A4C RAW=3C030009 LUI                rs= 0 rt= 3 rd= 0 sh= 0 imm=0x0009
+  EE+0x00082A50 RAW=FFB10010 OP_3F              rs=29 rt=17 rd= 0 sh= 0 imm=0x0010
+  EE+0x00082A54 RAW=8C629518 LW                 rs= 3 rt= 2 rd=18 sh=20 imm=0x9518
+  EE+0x00082A58 RAW=0060882D SPECIAL funct=2D   rs= 3 rt= 0 rd=17 sh= 0 imm=0x882D
+  EE+0x00082A5C RAW=FFBF0020 OP_3F              rs=29 rt=31 rd= 0 sh= 0 imm=0x0020
+  EE+0x00082A60 RAW=0441001C OP_01              rs= 2 rt= 1 rd= 0 sh= 0 imm=0x001C
+  EE+0x00082A64 RAW=FFB00000 OP_3F              rs=29 rt=16 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082A68 RAW=3C020009 LUI                rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0009
+  EE+0x00082A6C RAW=2450C200 ADDIU              rs= 2 rt=16 rd=24 sh= 8 imm=0xC200
+  EE+0x00082A70 RAW=3C058000 LUI                rs= 0 rt= 5 rd=16 sh= 0 imm=0x8000
+  EE+0x00082A74 RAW=0200202D SPECIAL funct=2D   rs=16 rt= 0 rd= 4 sh= 0 imm=0x202D
+  EE+0x00082A78 RAW=34A50006 ORI                rs= 5 rt= 5 rd= 0 sh= 0 imm=0x0006
+  EE+0x00082A7C RAW=0C02120A JAL                rs= 0 rt= 2 rd= 2 sh= 8 imm=0x120A
+  EE+0x00082A80 RAW=0000302D SPECIAL funct=2D   rs= 0 rt= 0 rd= 6 sh= 0 imm=0x302D
+  EE+0x00082A84 RAW=04430003 OP_01              rs= 2 rt= 3 rd= 0 sh= 0 imm=0x0003
+  EE+0x00082A88 RAW=8E020024 LW                 rs=16 rt= 2 rd= 0 sh= 0 imm=0x0024
+  EE+0x00082A8C RAW=10000012 BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0012
+  EE+0x00082A90 RAW=2402FFFF ADDIU              rs= 0 rt= 2 rd=31 sh=31 imm=0xFFFF
+  EE+0x00082A94 RAW=10400003 BEQ                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0003
+> EE+0x00082A98 RAW=3C020010 LUI                rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0010
+  EE+0x00082A9C RAW=1000000D BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x000D
+  EE+0x00082AA0 RAW=AE209518 SW                 rs=17 rt= 0 rd=18 sh=20 imm=0x9518
+  EE+0x00082AA4 RAW=2403FFFF ADDIU              rs= 0 rt= 3 rd=31 sh=31 imm=0xFFFF
+  EE+0x00082AA8 RAW=2442FFFF ADDIU              rs= 2 rt= 2 rd=31 sh=31 imm=0xFFFF
+  EE+0x00082AAC RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AB0 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AB4 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AB8 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082ABC RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AC0 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AC4 RAW=1443FFFA BNE                rs= 2 rt= 3 rd=31 sh=31 imm=0xFFFA
+  EE+0x00082AC8 RAW=2442FFFF ADDIU              rs= 2 rt= 2 rd=31 sh=31 imm=0xFFFF
+  EE+0x00082ACC RAW=1000FFE8 BEQ                rs= 0 rt= 0 rd=31 sh=31 imm=0xFFE8
+  EE+0x00082AD0 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AD4 RAW=0000102D SPECIAL funct=2D   rs= 0 rt= 0 rd= 2 sh= 0 imm=0x102D
+  EE+0x00082AD8 RAW=DFBF0020 OP_37              rs=29 rt=31 rd= 0 sh= 0 imm=0x0020
+  EE+0x00082ADC RAW=DFB10010 OP_37              rs=29 rt=17 rd= 0 sh= 0 imm=0x0010
+  EE+0x00082AE0 RAW=DFB00000 OP_37              rs=29 rt=16 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AE4 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00082AE8 RAW=27BD0030 ADDIU              rs=29 rt=29 rd= 0 sh= 0 imm=0x0030
+  EE+0x00082AEC RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082AF0 RAW=2402FFFF ADDIU              rs= 0 rt= 2 rd=31 sh=31 imm=0xFFFF
+  EE+0x00082AF4 RAW=3C030009 LUI                rs= 0 rt= 3 rd= 0 sh= 0 imm=0x0009
+  EE+0x00082AF8 RAW=AC629518 SW                 rs= 3 rt= 2 rd=18 sh=20 imm=0x9518
+  EE+0x00082AFC RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00082B00 RAW=0000102D SPECIAL funct=2D   rs= 0 rt= 0 rd= 2 sh= 0 imm=0x102D
+  EE+0x00082B04 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00082B08 RAW=27BDFF90 ADDIU              rs=29 rt=29 rd=31 sh=30 imm=0xFF90
+  EE+0x00082B0C RAW=FFB40050 OP_3F              rs=29 rt=20 rd= 0 sh= 1 imm=0x0050
+  EE+0x00082B10 RAW=FFB30040 OP_3F              rs=29 rt=19 rd= 0 sh= 1 imm=0x0040
+  EE+0x00082B14 RAW=00E0A02D SPECIAL funct=2D   rs= 7 rt= 0 rd=20 sh= 0 imm=0xA02D
+  EE+0x00082B18 RAW=FFB20030 OP_3F              rs=29 rt=18 rd= 0 sh= 0 imm=0x0030
+
+========================================
+LUI_84EE0
+Center: EE+0x00084EE0
+========================================
+  EE+0x00084E60 RAW=1000002E BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x002E
+  EE+0x00084E64 RAW=DFB40060 OP_37              rs=29 rt=20 rd= 0 sh= 1 imm=0x0060
+  EE+0x00084E68 RAW=0000A02D SPECIAL funct=2D   rs= 0 rt= 0 rd=20 sh= 0 imm=0xA02D
+  EE+0x00084E6C RAW=1A600007 BLEZ               rs=19 rt= 0 rd= 0 sh= 0 imm=0x0007
+  EE+0x00084E70 RAW=AE200010 SW                 rs=17 rt= 0 rd= 0 sh= 0 imm=0x0010
+  EE+0x00084E74 RAW=8E020028 LW                 rs=16 rt= 2 rd= 0 sh= 0 imm=0x0028
+  EE+0x00084E78 RAW=24140001 ADDIU              rs= 0 rt=20 rd= 0 sh= 0 imm=0x0001
+  EE+0x00084E7C RAW=AFB20000 SW                 rs=29 rt=18 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084E80 RAW=AFA20004 SW                 rs=29 rt= 2 rd= 0 sh= 0 imm=0x0004
+  EE+0x00084E84 RAW=AFB30008 SW                 rs=29 rt=19 rd= 0 sh= 0 imm=0x0008
+  EE+0x00084E88 RAW=AFA0000C SW                 rs=29 rt= 0 rd= 0 sh= 0 imm=0x000C
+  EE+0x00084E8C RAW=00142900 SPECIAL funct=00   rs= 0 rt=20 rd= 5 sh= 4 imm=0x2900
+  EE+0x00084E90 RAW=8E040020 LW                 rs=16 rt= 4 rd= 0 sh= 0 imm=0x0020
+  EE+0x00084E94 RAW=03A51821 SPECIAL funct=21   rs=29 rt= 5 rd= 3 sh= 0 imm=0x1821
+  EE+0x00084E98 RAW=27A20004 ADDIU              rs=29 rt= 2 rd= 0 sh= 0 imm=0x0004
+  EE+0x00084E9C RAW=AC710000 SW                 rs= 3 rt=17 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EA0 RAW=00451021 SPECIAL funct=21   rs= 2 rt= 5 rd= 2 sh= 0 imm=0x1021
+  EE+0x00084EA4 RAW=AC440000 SW                 rs= 2 rt= 4 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EA8 RAW=27A30008 ADDIU              rs=29 rt= 3 rd= 0 sh= 0 imm=0x0008
+  EE+0x00084EAC RAW=00651821 SPECIAL funct=21   rs= 3 rt= 5 rd= 3 sh= 0 imm=0x1821
+  EE+0x00084EB0 RAW=24040040 ADDIU              rs= 0 rt= 4 rd= 0 sh= 1 imm=0x0040
+  EE+0x00084EB4 RAW=27A2000C ADDIU              rs=29 rt= 2 rd= 0 sh= 0 imm=0x000C
+  EE+0x00084EB8 RAW=AC640000 SW                 rs= 3 rt= 4 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EBC RAW=00451021 SPECIAL funct=21   rs= 2 rt= 5 rd= 2 sh= 0 imm=0x1021
+  EE+0x00084EC0 RAW=26940001 ADDIU              rs=20 rt=20 rd= 0 sh= 0 imm=0x0001
+  EE+0x00084EC4 RAW=AC400000 SW                 rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EC8 RAW=03A0202D SPECIAL funct=2D   rs=29 rt= 0 rd= 4 sh= 0 imm=0x202D
+  EE+0x00084ECC RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084ED0 RAW=0C020E98 JAL                rs= 0 rt= 2 rd= 1 sh=26 imm=0x0E98
+  EE+0x00084ED4 RAW=0280282D SPECIAL funct=2D   rs=20 rt= 0 rd= 5 sh= 0 imm=0x282D
+  EE+0x00084ED8 RAW=1440000F BNE                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x000F
+  EE+0x00084EDC RAW=DFBF0070 OP_37              rs=29 rt=31 rd= 0 sh= 1 imm=0x0070
+> EE+0x00084EE0 RAW=3C030010 LUI                rs= 0 rt= 3 rd= 0 sh= 0 imm=0x0010
+  EE+0x00084EE4 RAW=2404FFFF ADDIU              rs= 0 rt= 4 rd=31 sh=31 imm=0xFFFF
+  EE+0x00084EE8 RAW=2463FFFF ADDIU              rs= 3 rt= 3 rd=31 sh=31 imm=0xFFFF
+  EE+0x00084EEC RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EF0 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EF4 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EF8 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084EFC RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084F00 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084F04 RAW=5464FFFA OP_15              rs= 3 rt= 4 rd=31 sh=31 imm=0xFFFA
+  EE+0x00084F08 RAW=2463FFFF ADDIU              rs= 3 rt= 3 rd=31 sh=31 imm=0xFFFF
+  EE+0x00084F0C RAW=5040FFF0 OP_14              rs= 2 rt= 0 rd=31 sh=31 imm=0xFFF0
+  EE+0x00084F10 RAW=03A0202D SPECIAL funct=2D   rs=29 rt= 0 rd= 4 sh= 0 imm=0x202D
+  EE+0x00084F14 RAW=DFBF0070 OP_37              rs=29 rt=31 rd= 0 sh= 1 imm=0x0070
+  EE+0x00084F18 RAW=DFB40060 OP_37              rs=29 rt=20 rd= 0 sh= 1 imm=0x0060
+  EE+0x00084F1C RAW=DFB30050 OP_37              rs=29 rt=19 rd= 0 sh= 1 imm=0x0050
+  EE+0x00084F20 RAW=DFB20040 OP_37              rs=29 rt=18 rd= 0 sh= 1 imm=0x0040
+  EE+0x00084F24 RAW=DFB10030 OP_37              rs=29 rt=17 rd= 0 sh= 0 imm=0x0030
+  EE+0x00084F28 RAW=DFB00020 OP_37              rs=29 rt=16 rd= 0 sh= 0 imm=0x0020
+  EE+0x00084F2C RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00084F30 RAW=27BD0080 ADDIU              rs=29 rt=29 rd= 0 sh= 2 imm=0x0080
+  EE+0x00084F34 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084F38 RAW=27BDFFE0 ADDIU              rs=29 rt=29 rd=31 sh=31 imm=0xFFE0
+  EE+0x00084F3C RAW=FFB00000 OP_3F              rs=29 rt=16 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084F40 RAW=FFBF0010 OP_3F              rs=29 rt=31 rd= 0 sh= 0 imm=0x0010
+  EE+0x00084F44 RAW=10000004 BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0004
+  EE+0x00084F48 RAW=0080802D SPECIAL funct=2D   rs= 4 rt= 0 rd=16 sh= 0 imm=0x802D
+  EE+0x00084F4C RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084F50 RAW=0C021364 JAL                rs= 0 rt= 2 rd= 2 sh=13 imm=0x1364
+  EE+0x00084F54 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00084F58 RAW=0C021358 JAL                rs= 0 rt= 2 rd= 2 sh=13 imm=0x1358
+  EE+0x00084F5C RAW=0200202D SPECIAL funct=2D   rs=16 rt= 0 rd= 4 sh= 0 imm=0x202D
+  EE+0x00084F60 RAW=1440FFFB BNE                rs= 2 rt= 0 rd=31 sh=31 imm=0xFFFB
+
+========================================
+LUI_88868
+Center: EE+0x00088868
+========================================
+  EE+0x000887E8 RAW=DFBF0020 OP_37              rs=29 rt=31 rd= 0 sh= 0 imm=0x0020
+  EE+0x000887EC RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x000887F0 RAW=27BD0030 ADDIU              rs=29 rt=29 rd= 0 sh= 0 imm=0x0030
+  EE+0x000887F4 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x000887F8 RAW=27BDFFC0 ADDIU              rs=29 rt=29 rd=31 sh=31 imm=0xFFC0
+  EE+0x000887FC RAW=FFA40020 OP_3F              rs=29 rt= 4 rd= 0 sh= 0 imm=0x0020
+  EE+0x00088800 RAW=03A0282D SPECIAL funct=2D   rs=29 rt= 0 rd= 5 sh= 0 imm=0x282D
+  EE+0x00088804 RAW=FFBF0030 OP_3F              rs=29 rt=31 rd= 0 sh= 0 imm=0x0030
+  EE+0x00088808 RAW=0C021F22 JAL                rs= 0 rt= 2 rd= 3 sh=28 imm=0x1F22
+  EE+0x0008880C RAW=27A40020 ADDIU              rs=29 rt= 4 rd= 0 sh= 0 imm=0x0020
+  EE+0x00088810 RAW=DFA20010 OP_37              rs=29 rt= 2 rd= 0 sh= 0 imm=0x0010
+  EE+0x00088814 RAW=3C033FFF LUI                rs= 0 rt= 3 rd= 7 sh=31 imm=0x3FFF
+  EE+0x00088818 RAW=3463FFFF ORI                rs= 3 rt= 3 rd=31 sh=31 imm=0xFFFF
+  EE+0x0008881C RAW=8FA40000 LW                 rs=29 rt= 4 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088820 RAW=000240B8 SPECIAL funct=38   rs= 0 rt= 2 rd= 8 sh= 2 imm=0x40B8
+  EE+0x00088824 RAW=0008403F SPECIAL funct=3F   rs= 0 rt= 8 rd= 8 sh= 0 imm=0x403F
+  EE+0x00088828 RAW=8FA50004 LW                 rs=29 rt= 5 rd= 0 sh= 0 imm=0x0004
+  EE+0x0008882C RAW=00431024 SPECIAL funct=24   rs= 2 rt= 3 rd= 2 sh= 0 imm=0x1024
+  EE+0x00088830 RAW=35070001 ORI                rs= 8 rt= 7 rd= 0 sh= 0 imm=0x0001
+  EE+0x00088834 RAW=8FA60008 LW                 rs=29 rt= 6 rd= 0 sh= 0 imm=0x0008
+  EE+0x00088838 RAW=0C0224EE JAL                rs= 0 rt= 2 rd= 4 sh=19 imm=0x24EE
+  EE+0x0008883C RAW=0102380A SPECIAL funct=0A   rs= 8 rt= 2 rd= 7 sh= 0 imm=0x380A
+  EE+0x00088840 RAW=DFBF0030 OP_37              rs=29 rt=31 rd= 0 sh= 0 imm=0x0030
+  EE+0x00088844 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00088848 RAW=27BD0040 ADDIU              rs=29 rt=29 rd= 0 sh= 1 imm=0x0040
+  EE+0x0008884C RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088850 RAW=8C830000 LW                 rs= 4 rt= 3 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088854 RAW=0000382D SPECIAL funct=2D   rs= 0 rt= 0 rd= 7 sh= 0 imm=0x382D
+  EE+0x00088858 RAW=8C880004 LW                 rs= 4 rt= 8 rd= 0 sh= 0 imm=0x0004
+  EE+0x0008885C RAW=2C620002 SLTIU              rs= 3 rt= 2 rd= 0 sh= 0 imm=0x0002
+  EE+0x00088860 RAW=10400005 BEQ                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0005
+  EE+0x00088864 RAW=8C85000C LW                 rs= 4 rt= 5 rd= 0 sh= 0 imm=0x000C
+> EE+0x00088868 RAW=3C020010 LUI                rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0010
+  EE+0x0008886C RAW=240700FF ADDIU              rs= 0 rt= 7 rd= 0 sh= 3 imm=0x00FF
+  EE+0x00088870 RAW=10000026 BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0026
+  EE+0x00088874 RAW=00A22825 SPECIAL funct=25   rs= 5 rt= 2 rd= 5 sh= 0 imm=0x2825
+  EE+0x00088878 RAW=38620004 XORI               rs= 3 rt= 2 rd= 0 sh= 0 imm=0x0004
+  EE+0x0008887C RAW=10400014 BEQ                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0014
+  EE+0x00088880 RAW=38620002 XORI               rs= 3 rt= 2 rd= 0 sh= 0 imm=0x0002
+  EE+0x00088884 RAW=14400003 BNE                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0003
+  EE+0x00088888 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x0008888C RAW=1000001F BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x001F
+  EE+0x00088890 RAW=0000282D SPECIAL funct=2D   rs= 0 rt= 0 rd= 5 sh= 0 imm=0x282D
+  EE+0x00088894 RAW=10A0001E BEQ                rs= 5 rt= 0 rd= 0 sh= 0 imm=0x001E
+  EE+0x00088898 RAW=3C03FF80 LUI                rs= 0 rt= 3 rd=31 sh=30 imm=0xFF80
+  EE+0x0008889C RAW=8C830008 LW                 rs= 4 rt= 3 rd= 0 sh= 0 imm=0x0008
+  EE+0x000888A0 RAW=2862FF82 SLTI               rs= 3 rt= 2 rd=31 sh=30 imm=0xFF82
+  EE+0x000888A4 RAW=10400007 BEQ                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0007
+  EE+0x000888A8 RAW=2402FF82 ADDIU              rs= 0 rt= 2 rd=31 sh=30 imm=0xFF82
+  EE+0x000888AC RAW=00431023 SPECIAL funct=23   rs= 2 rt= 3 rd= 2 sh= 0 imm=0x1023
+  EE+0x000888B0 RAW=2843001A SLTI               rs= 2 rt= 3 rd= 0 sh= 0 imm=0x001A
+  EE+0x000888B4 RAW=14600014 BNE                rs= 3 rt= 0 rd= 0 sh= 0 imm=0x0014
+  EE+0x000888B8 RAW=00452806 SPECIAL funct=06   rs= 2 rt= 5 rd= 5 sh= 0 imm=0x2806
+  EE+0x000888BC RAW=10000012 BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0012
+  EE+0x000888C0 RAW=0000282D SPECIAL funct=2D   rs= 0 rt= 0 rd= 5 sh= 0 imm=0x282D
+  EE+0x000888C4 RAW=28620080 SLTI               rs= 3 rt= 2 rd= 0 sh= 2 imm=0x0080
+  EE+0x000888C8 RAW=14400004 BNE                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0004
+  EE+0x000888CC RAW=2467007F ADDIU              rs= 3 rt= 7 rd= 0 sh= 1 imm=0x007F
+  EE+0x000888D0 RAW=240700FF ADDIU              rs= 0 rt= 7 rd= 0 sh= 3 imm=0x00FF
+  EE+0x000888D4 RAW=1000000D BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x000D
+  EE+0x000888D8 RAW=0000282D SPECIAL funct=2D   rs= 0 rt= 0 rd= 5 sh= 0 imm=0x282D
+  EE+0x000888DC RAW=24020040 ADDIU              rs= 0 rt= 2 rd= 0 sh= 1 imm=0x0040
+  EE+0x000888E0 RAW=30A3007F ANDI               rs= 5 rt= 3 rd= 0 sh= 1 imm=0x007F
+  EE+0x000888E4 RAW=54620004 OP_15              rs= 3 rt= 2 rd= 0 sh= 0 imm=0x0004
+  EE+0x000888E8 RAW=24A5003F ADDIU              rs= 5 rt= 5 rd= 0 sh= 0 imm=0x003F
+
+========================================
+LUI_889A0
+Center: EE+0x000889A0
+========================================
+  EE+0x00088920 RAW=3C03807F LUI                rs= 0 rt= 3 rd=16 sh= 1 imm=0x807F
+  EE+0x00088924 RAW=00C23025 SPECIAL funct=25   rs= 6 rt= 2 rd= 6 sh= 0 imm=0x3025
+  EE+0x00088928 RAW=3463FFFF ORI                rs= 3 rt= 3 rd=31 sh=31 imm=0xFFFF
+  EE+0x0008892C RAW=30E400FF ANDI               rs= 7 rt= 4 rd= 0 sh= 3 imm=0x00FF
+  EE+0x00088930 RAW=00C33024 SPECIAL funct=24   rs= 6 rt= 3 rd= 6 sh= 0 imm=0x3024
+  EE+0x00088934 RAW=000425C0 SPECIAL funct=00   rs= 0 rt= 4 rd= 4 sh=23 imm=0x25C0
+  EE+0x00088938 RAW=3C027FFF LUI                rs= 0 rt= 2 rd=15 sh=31 imm=0x7FFF
+  EE+0x0008893C RAW=00C43025 SPECIAL funct=25   rs= 6 rt= 4 rd= 6 sh= 0 imm=0x3025
+  EE+0x00088940 RAW=3442FFFF ORI                rs= 2 rt= 2 rd=31 sh=31 imm=0xFFFF
+  EE+0x00088944 RAW=00081FC0 SPECIAL funct=00   rs= 0 rt= 8 rd= 3 sh=31 imm=0x1FC0
+  EE+0x00088948 RAW=00C23024 SPECIAL funct=24   rs= 6 rt= 2 rd= 6 sh= 0 imm=0x3024
+  EE+0x0008894C RAW=00C33025 SPECIAL funct=25   rs= 6 rt= 3 rd= 6 sh= 0 imm=0x3025
+  EE+0x00088950 RAW=44860000 OP_11              rs= 4 rt= 6 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088954 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00088958 RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x0008895C RAW=00000000 SPECIAL funct=00   rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088960 RAW=8C820000 LW                 rs= 4 rt= 2 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088964 RAW=3C03007F LUI                rs= 0 rt= 3 rd= 0 sh= 1 imm=0x007F
+  EE+0x00088968 RAW=3463FFFF ORI                rs= 3 rt= 3 rd=31 sh=31 imm=0xFFFF
+  EE+0x0008896C RAW=000227C2 SPECIAL funct=02   rs= 0 rt= 2 rd= 4 sh=31 imm=0x27C2
+  EE+0x00088970 RAW=000235C2 SPECIAL funct=02   rs= 0 rt= 2 rd= 6 sh=23 imm=0x35C2
+  EE+0x00088974 RAW=00431824 SPECIAL funct=24   rs= 2 rt= 3 rd= 3 sh= 0 imm=0x1824
+  EE+0x00088978 RAW=30C600FF ANDI               rs= 6 rt= 6 rd= 0 sh= 3 imm=0x00FF
+  EE+0x0008897C RAW=14C00004 BNE                rs= 6 rt= 0 rd= 0 sh= 0 imm=0x0004
+  EE+0x00088980 RAW=ACA40004 SW                 rs= 5 rt= 4 rd= 0 sh= 0 imm=0x0004
+  EE+0x00088984 RAW=24020002 ADDIU              rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0002
+  EE+0x00088988 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x0008898C RAW=ACA20000 SW                 rs= 5 rt= 2 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088990 RAW=240200FF ADDIU              rs= 0 rt= 2 rd= 0 sh= 3 imm=0x00FF
+  EE+0x00088994 RAW=14C2000E BNE                rs= 6 rt= 2 rd= 0 sh= 0 imm=0x000E
+  EE+0x00088998 RAW=3C024000 LUI                rs= 0 rt= 2 rd= 8 sh= 0 imm=0x4000
+  EE+0x0008899C RAW=14600004 BNE                rs= 3 rt= 0 rd= 0 sh= 0 imm=0x0004
+> EE+0x000889A0 RAW=3C020010 LUI                rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0010
+  EE+0x000889A4 RAW=24020004 ADDIU              rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0004
+  EE+0x000889A8 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x000889AC RAW=ACA20000 SW                 rs= 5 rt= 2 rd= 0 sh= 0 imm=0x0000
+  EE+0x000889B0 RAW=00621024 SPECIAL funct=24   rs= 3 rt= 2 rd= 2 sh= 0 imm=0x1024
+  EE+0x000889B4 RAW=10400003 BEQ                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0003
+  EE+0x000889B8 RAW=24020001 ADDIU              rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0001
+  EE+0x000889BC RAW=10000002 BEQ                rs= 0 rt= 0 rd= 0 sh= 0 imm=0x0002
+  EE+0x000889C0 RAW=ACA20000 SW                 rs= 5 rt= 2 rd= 0 sh= 0 imm=0x0000
+  EE+0x000889C4 RAW=ACA00000 SW                 rs= 5 rt= 0 rd= 0 sh= 0 imm=0x0000
+  EE+0x000889C8 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x000889CC RAW=ACA3000C SW                 rs= 5 rt= 3 rd= 0 sh= 0 imm=0x000C
+  EE+0x000889D0 RAW=000319C0 SPECIAL funct=00   rs= 0 rt= 3 rd= 3 sh= 7 imm=0x19C0
+  EE+0x000889D4 RAW=00621825 SPECIAL funct=25   rs= 3 rt= 2 rd= 3 sh= 0 imm=0x1825
+  EE+0x000889D8 RAW=24C4FF81 ADDIU              rs= 6 rt= 4 rd=31 sh=30 imm=0xFF81
+  EE+0x000889DC RAW=24020003 ADDIU              rs= 0 rt= 2 rd= 0 sh= 0 imm=0x0003
+  EE+0x000889E0 RAW=ACA3000C SW                 rs= 5 rt= 3 rd= 0 sh= 0 imm=0x000C
+  EE+0x000889E4 RAW=ACA40008 SW                 rs= 5 rt= 4 rd= 0 sh= 0 imm=0x0008
+  EE+0x000889E8 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x000889EC RAW=ACA20000 SW                 rs= 5 rt= 2 rd= 0 sh= 0 imm=0x0000
+  EE+0x000889F0 RAW=0080482D SPECIAL funct=2D   rs= 4 rt= 0 rd= 9 sh= 0 imm=0x482D
+  EE+0x000889F4 RAW=8D240000 LW                 rs= 9 rt= 4 rd= 0 sh= 0 imm=0x0000
+  EE+0x000889F8 RAW=2C820002 SLTIU              rs= 4 rt= 2 rd= 0 sh= 0 imm=0x0002
+  EE+0x000889FC RAW=50400003 OP_14              rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0003
+  EE+0x00088A00 RAW=8CA30000 LW                 rs= 5 rt= 3 rd= 0 sh= 0 imm=0x0000
+  EE+0x00088A04 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00088A08 RAW=0120102D SPECIAL funct=2D   rs= 9 rt= 0 rd= 2 sh= 0 imm=0x102D
+  EE+0x00088A0C RAW=2C620002 SLTIU              rs= 3 rt= 2 rd= 0 sh= 0 imm=0x0002
+  EE+0x00088A10 RAW=10400003 BEQ                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0003
+  EE+0x00088A14 RAW=38820004 XORI               rs= 4 rt= 2 rd= 0 sh= 0 imm=0x0004
+  EE+0x00088A18 RAW=03E00008 SPECIAL funct=08   rs=31 rt= 0 rd= 0 sh= 0 imm=0x0008
+  EE+0x00088A1C RAW=00A0102D SPECIAL funct=2D   rs= 5 rt= 0 rd= 2 sh= 0 imm=0x102D
+  EE+0x00088A20 RAW=14400009 BNE                rs= 2 rt= 0 rd= 0 sh= 0 imm=0x0009
+
+===== END =====
