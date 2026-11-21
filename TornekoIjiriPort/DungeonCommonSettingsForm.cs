@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Net.Sockets;
@@ -1510,25 +1510,23 @@ internal sealed class DungeonCommonSettingsForm : Form
         const long OriginalDescriptionRecordOffset = 0x00105427L;
         const long OriginalNameRecordOffset = 0x00105441L;
 
-        long[] PriceRecordOffsets =
+        byte[] oldPriceSignature =
         {
-            0x00650354L,
-            0x00650594L,
-            0x006507D4L,
-            0x00650A14L
+            0x88, 0x13, 0x00, 0xC4, 0x09,
+            0x00, 0x03, 0x05, 0xA4, 0x00
         };
 
-        byte[] expectedPriceData =
+        byte[] newPriceSignature =
         {
-            0x88, 0x13, 0x00, 0xC4,
-            0x09, 0x00, 0x03, 0x05
+            0x98, 0x3A, 0x00, 0x4C, 0x1D,
+            0x00, 0x03, 0x05, 0xA4, 0x00
         };
 
-        byte[] newPriceData =
-        {
-            0x98, 0x3A, 0x00, 0x4C,
-            0x1D, 0x00, 0x03, 0x05
-        };
+        byte[] newBuyPriceData =
+            BitConverter.GetBytes((ushort)15000);
+
+        byte[] newSellPriceData =
+            BitConverter.GetBytes((ushort)7500);
 
         string newName = "スライムの指輪";
 
@@ -1548,7 +1546,7 @@ internal sealed class DungeonCommonSettingsForm : Form
             "元のレコードは上書きしません。\r\n\r\n" +
             "価格変更: 今回は対象外です。\r\n" +
             "" +
-            "価格データ4か所も変更します。\r\n\r\n" +
+            "価格データ7件を変更します。\r\n\r\n" +
             "先にPCSX2を一時停止してください。停止中に実行しますか？",
             "スライムの指輪への変更",
             MessageBoxButtons.YesNo,
@@ -1594,6 +1592,13 @@ internal sealed class DungeonCommonSettingsForm : Form
                 throw new IOException(
                     "PCSX2プロセスを開けません。\r\nWin32エラー: " +
                     Marshal.GetLastWin32Error());
+
+            // PINEの状態確認コマンドは使用しない。
+            // 既存のWindowsプロセスメモリ読み取りでEE RAMを取得する。
+            byte[] ram = ReadMemory(
+                process,
+                eeBase,
+                EeRamSize);
 
             // ------------------------------------------------
             // Verify original resource IDs
@@ -1819,13 +1824,144 @@ internal sealed class DungeonCommonSettingsForm : Form
             // Slime Ring price records
             // ------------------------------------------------
 
+            var priceRecordOffsets =
+                new System.Collections.Generic.List<int>();
+
+            for (int offset = 0;
+                 offset <= ram.Length - oldPriceSignature.Length;
+                 offset++)
+            {
+                bool originalMatch = true;
+                bool modifiedMatch = true;
+
+                for (int j = 0; j < oldPriceSignature.Length; j++)
+                {
+                    if (ram[offset + j] != oldPriceSignature[j])
+                        originalMatch = false;
+
+                    if (ram[offset + j] != newPriceSignature[j])
+                        modifiedMatch = false;
+
+                    if (!originalMatch && !modifiedMatch)
+                        break;
+                }
+
+                if (originalMatch || modifiedMatch)
+                    priceRecordOffsets.Add(offset);
+            }
+
+            if (priceRecordOffsets.Count == 0)
+            {
+                var report = new StringBuilder();
+
+                report.AppendLine("Slime Ring Price Record Diagnostic");
+                report.AppendLine("Detected count: " + priceRecordOffsets.Count);
+                report.AppendLine("EE RAM size: 0x" + ram.Length.ToString("X8"));
+                report.AppendLine();
+
+                report.AppendLine("=== Detected records ===");
+
+                foreach (int foundOffset in priceRecordOffsets)
+                {
+                    report.AppendLine(
+                        "EE+0x" + foundOffset.ToString("X8") +
+                        " : " +
+                        Convert.ToHexString(ram, foundOffset, 10));
+                }
+
+                long[] knownOffsets =
+                {
+                    0x00650114L,
+                    0x00650354L,
+                    0x00650594L,
+                    0x006507D4L,
+                    0x00650A14L,
+                    0x01FFA694L,
+                    0x01FFA8D4L,
+                    0x01FFAB14L,
+                    0x01FFAD54L,
+                    0x01FFAF94L
+                };
+
+                report.AppendLine();
+                report.AppendLine("=== Previously identified 10 offsets ===");
+
+                foreach (long knownOffset in knownOffsets)
+                {
+                    if (knownOffset >= 0 &&
+                        knownOffset + 10 <= ram.Length)
+                    {
+                        report.AppendLine(
+                            "EE+0x" + knownOffset.ToString("X8") +
+                            " : " +
+                            Convert.ToHexString(ram, (int)knownOffset, 10));
+                    }
+                }
+
+                string reportPath = Path.Combine(
+                    AppContext.BaseDirectory,
+                    "SlimeRingPriceScan.txt");
+
+                File.WriteAllText(
+                    reportPath,
+                    report.ToString(),
+                    Encoding.UTF8);
+
+                throw new InvalidOperationException(
+                    "価格レコードが1件も検出されませんでした。" +
+                    "\r\n検出件数: " + priceRecordOffsets.Count +
+                    "\r\n診断レポート: " + reportPath +
+                    "\r\n書き込みは行っていません。");
+            }
+
+            foreach (int priceOffset in priceRecordOffsets)
+            {
+                byte[] currentBuyPrice = new byte[2];
+                byte[] currentSellPrice = new byte[2];
+
+                Array.Copy(
+                    ram,
+                    priceOffset,
+                    currentBuyPrice,
+                    0,
+                    2);
+
+                Array.Copy(
+                    ram,
+                    priceOffset + 3,
+                    currentSellPrice,
+                    0,
+                    2);
+
+                if (!System.Linq.Enumerable.SequenceEqual(
+                    currentBuyPrice,
+                    newBuyPriceData))
+                {
+                    changes.Add(new MemoryChange(
+                        "スライムの指輪・買値15000G",
+                        checked(eeBase + priceOffset),
+                        newBuyPriceData,
+                        currentBuyPrice));
+                }
+
+                if (!System.Linq.Enumerable.SequenceEqual(
+                    currentSellPrice,
+                    newSellPriceData))
+                {
+                    changes.Add(new MemoryChange(
+                        "スライムの指輪・売値7500G",
+                        checked(eeBase + priceOffset + 3),
+                        newSellPriceData,
+                        currentSellPrice));
+                }
+            }
 
             // ------------------------------------------------
             // Preflight verification
             // ------------------------------------------------
 
             _itemStatus.Text =
-                "8か所の書き込み先を事前照合しています...";
+                "名前・説明文・価格の書き込み先を事前照合しています...";
 
             foreach (MemoryChange change in changes)
             {
@@ -1896,6 +2032,18 @@ internal sealed class DungeonCommonSettingsForm : Form
                 NameIndexOffset,
                 BitConverter.GetBytes((uint)NameRecordOffset));
 
+            foreach (int priceOffset in priceRecordOffsets)
+            {
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・買値15000G",
+                    priceOffset,
+                    newBuyPriceData);
+
+                Torneko4PatchStore.Register(
+                    "スライムの指輪・売値7500G",
+                    priceOffset + 3,
+                    newSellPriceData);
+            }
 
             _itemStatus.Text =
                 "スライムの指輪への変更が完了しました。";
@@ -1910,13 +2058,9 @@ internal sealed class DungeonCommonSettingsForm : Form
                 "名前レコード: EE+0x00139D50\r\n" +
                 "説明文索引: EE+0x00100794\r\n" +
                 "名前索引: EE+0x00100798\r\n" +
-                "価格変更: 今回は対象外です。\r\n" +
-                "" +
-                "価格レコード: EE+0x00650354\r\n" +
-                "価格レコード: EE+0x00650594\r\n" +
-                "価格レコード: EE+0x006507D4\r\n" +
-                "価格レコード: EE+0x00650A14\r\n\r\n" +
-                "名前・説明文・索引の4か所の書き込みと読み戻し検証に成功しました。\r\n" +
+                "価格: 買値15000G / 売値7500G\r\n" +
+                "価格レコード: " + priceRecordOffsets.Count + "件\r\n\r\n" +
+                "名前・説明文・索引と価格レコード" + priceRecordOffsets.Count + "件の処理を確認しました。\r\n" +
                 "元のレコードは変更していません。\r\n" +
                 "保存対象への登録も完了しました。",
                 "スライムの指輪・変更成功",
