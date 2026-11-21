@@ -220,9 +220,10 @@ internal sealed class DungeonCommonSettingsForm : Form
             Dock = DockStyle.Fill,
             Padding = new Padding(16),
             ColumnCount = 1,
-            RowCount = 3
+            RowCount = 4
         };
 
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
@@ -254,6 +255,15 @@ internal sealed class DungeonCommonSettingsForm : Form
 
         hoshifuriButton.Click += (_, _) => ApplyRingUpgrade(false);
 
+        var slimeRingButton = new Button
+        {
+            Text = "指輪164→スライムの指輪",
+            Dock = DockStyle.Fill,
+            Font = new Font("Yu Gothic UI", 11, FontStyle.Bold)
+        };
+
+        slimeRingButton.Click += (_, _) => ApplySlimeRing();
+
         _itemStatus = new Label
         {
             Text = "",
@@ -263,6 +273,7 @@ internal sealed class DungeonCommonSettingsForm : Form
         root.Controls.Add(hayabusaButton, 0, 0);
         root.Controls.Add(yamabikoButton, 0, 1);
         root.Controls.Add(hoshifuriButton, 0, 2);
+        root.Controls.Add(slimeRingButton, 0, 3);
 
         page.Controls.Add(root);
     }
@@ -1473,6 +1484,470 @@ internal sealed class DungeonCommonSettingsForm : Form
             CloseHandle(process);
     }
 
+    private void ApplySlimeRing()
+    {
+        if (!Pcsx2LiveSession.IsConnected ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            MessageBox.Show(
+                this,
+                "先にメイン画面からPCSX2へ接続してください。",
+                "PCSX2未接続",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+            return;
+        }
+
+        const int EeRamSize = 0x02000000;
+
+        const long DescriptionRecordOffset = 0x00139D00L;
+        const long NameRecordOffset = 0x00139D50L;
+
+        const long DescriptionIndexOffset = 0x00100794L;
+        const long NameIndexOffset = 0x00100798L;
+
+        const long OriginalDescriptionRecordOffset = 0x00105427L;
+        const long OriginalNameRecordOffset = 0x00105441L;
+
+        string newName = "スライムの指輪";
+
+        string descriptionText =
+            "[ｽﾗｲﾑﾉﾕびﾜ]\r" +
+            "スライム系ﾉ仲間が強ｸﾅﾙぞ。\r" +
+            "ｺﾉ指輪ﾉ効果ﾊ合成でｷﾅｲぞ。";
+
+        if (MessageBox.Show(
+            this,
+            "アイテム164をスライムの指輪に変更します。\r\n\r\n" +
+            "アイテム名:\r\n" +
+            newName + "\r\n\r\n" +
+            "説明文:\r\n" +
+            descriptionText.Replace("\r", "\r\n") + "\r\n\r\n" +
+            "説明文と名前のリソースレコードを新しい領域へ移設します。\r\n" +
+            "元のレコードは上書きしません。\r\n\r\n" +
+            "PCSX2のメモリを書き換えます。実行しますか？",
+            "スライムの指輪への変更",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning) != DialogResult.Yes)
+        {
+            return;
+        }
+
+        IntPtr process = IntPtr.Zero;
+
+        var changes =
+            new System.Collections.Generic.List<MemoryChange>();
+
+        var completed =
+            new System.Collections.Generic.List<MemoryChange>();
+
+        long eeBase = 0;
+
+        try
+        {
+            _itemStatus.Text =
+                "PCSX2のEE RAMを確認しています...";
+
+            eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
+                Pcsx2LiveSession.ProcessId);
+
+            if (eeBase <= 0)
+                throw new InvalidOperationException(
+                    "EE RAM基準アドレスを取得できません。");
+
+            const uint access =
+                0x0008 |
+                0x0010 |
+                0x0020 |
+                0x0400;
+
+            process = OpenProcess(
+                access,
+                false,
+                Pcsx2LiveSession.ProcessId);
+
+            if (process == IntPtr.Zero)
+                throw new IOException(
+                    "PCSX2プロセスを開けません。\r\nWin32エラー: " +
+                    Marshal.GetLastWin32Error());
+
+            // ------------------------------------------------
+            // Verify original resource IDs
+            // ------------------------------------------------
+
+            byte[] expectedDescriptionId =
+                MakeNullTerminated("item_164_e");
+
+            byte[] currentDescriptionId = ReadMemory(
+                process,
+                checked(eeBase + OriginalDescriptionRecordOffset),
+                expectedDescriptionId.Length);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                expectedDescriptionId,
+                currentDescriptionId))
+            {
+                throw new InvalidOperationException(
+                    "説明文レコードIDが想定と一致しません。\r\n" +
+                    "確認先: EE+0x00105427\r\n" +
+                    "安全のため停止しました。");
+            }
+
+            byte[] expectedNameId =
+                MakeNullTerminated("item_164");
+
+            byte[] currentNameId = ReadMemory(
+                process,
+                checked(eeBase + OriginalNameRecordOffset),
+                expectedNameId.Length);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                expectedNameId,
+                currentNameId))
+            {
+                throw new InvalidOperationException(
+                    "アイテム名レコードIDが想定と一致しません。\r\n" +
+                    "確認先: EE+0x00105441\r\n" +
+                    "安全のため停止しました。");
+            }
+
+            // ------------------------------------------------
+            // Verify original description
+            // ------------------------------------------------
+
+            byte[] expectedOriginalDescription =
+                MakeNullTerminated("指輪ﾉﾖび２だ。");
+
+            byte[] currentOriginalDescription = ReadMemory(
+                process,
+                checked(eeBase + 0x00105432L),
+                expectedOriginalDescription.Length);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                expectedOriginalDescription,
+                currentOriginalDescription))
+            {
+                throw new InvalidOperationException(
+                    "アイテム164の元説明文が想定と一致しません。\r\n" +
+                    "確認先: EE+0x00105432\r\n" +
+                    "安全のため停止しました。");
+            }
+
+            // ------------------------------------------------
+            // Verify index pointers
+            // ------------------------------------------------
+
+            byte[] expectedDescriptionPointer =
+                BitConverter.GetBytes(
+                    (uint)OriginalDescriptionRecordOffset);
+
+            byte[] expectedNamePointer =
+                BitConverter.GetBytes(
+                    (uint)OriginalNameRecordOffset);
+
+            byte[] currentDescriptionPointer = ReadMemory(
+                process,
+                checked(eeBase + DescriptionIndexOffset),
+                4);
+
+            byte[] currentNamePointer = ReadMemory(
+                process,
+                checked(eeBase + NameIndexOffset),
+                4);
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                expectedDescriptionPointer,
+                currentDescriptionPointer))
+            {
+                throw new InvalidOperationException(
+                    "説明文の索引ポインタが想定と一致しません。\r\n" +
+                    "確認先: EE+0x00100794\r\n" +
+                    "安全のため停止しました。");
+            }
+
+            if (!System.Linq.Enumerable.SequenceEqual(
+                expectedNamePointer,
+                currentNamePointer))
+            {
+                throw new InvalidOperationException(
+                    "名前の索引ポインタが想定と一致しません。\r\n" +
+                    "確認先: EE+0x00100798\r\n" +
+                    "安全のため停止しました。");
+            }
+
+            // ------------------------------------------------
+            // Verify destination area
+            // ------------------------------------------------
+
+            byte[] freeRegion = ReadMemory(
+                process,
+                checked(eeBase + DescriptionRecordOffset),
+                0x100);
+
+            for (int i = 0; i < freeRegion.Length; i++)
+            {
+                if (freeRegion[i] != 0)
+                {
+                    throw new InvalidOperationException(
+                        "移設先の空き領域にデータがあります。\r\n" +
+                        "確認先: EE+0x00139D00\r\n" +
+                        "誤上書き防止のため停止しました。");
+                }
+            }
+
+            // ------------------------------------------------
+            // Construct description record
+            // ------------------------------------------------
+
+            byte[] descriptionId =
+                MakeNullTerminated("item_164_e");
+
+            byte[] descriptionPayload =
+                MakeNullTerminated(descriptionText);
+
+            byte[] descriptionRecord =
+                new byte[descriptionId.Length + descriptionPayload.Length];
+
+            Array.Copy(
+                descriptionId,
+                0,
+                descriptionRecord,
+                0,
+                descriptionId.Length);
+
+            Array.Copy(
+                descriptionPayload,
+                0,
+                descriptionRecord,
+                descriptionId.Length,
+                descriptionPayload.Length);
+
+            // ------------------------------------------------
+            // Construct name record
+            // ------------------------------------------------
+
+            byte[] nameId =
+                MakeNullTerminated("item_164");
+
+            byte[] namePayload =
+                MakeNullTerminated(newName);
+
+            byte[] nameRecord =
+                new byte[nameId.Length + namePayload.Length];
+
+            Array.Copy(
+                nameId,
+                0,
+                nameRecord,
+                0,
+                nameId.Length);
+
+            Array.Copy(
+                namePayload,
+                0,
+                nameRecord,
+                nameId.Length,
+                namePayload.Length);
+
+            if (descriptionRecord.Length >
+                NameRecordOffset - DescriptionRecordOffset)
+            {
+                throw new InvalidOperationException(
+                    "説明文レコードが名前レコードの配置位置を超えています。");
+            }
+
+            if (DescriptionRecordOffset + descriptionRecord.Length >
+                NameRecordOffset)
+            {
+                throw new InvalidOperationException(
+                    "説明文レコードと名前レコードが重複します。");
+            }
+
+            // ------------------------------------------------
+            // Prepare changes
+            // ------------------------------------------------
+
+            changes.Add(new MemoryChange(
+                "説明文レコード移設",
+                checked(eeBase + DescriptionRecordOffset),
+                descriptionRecord,
+                new byte[descriptionRecord.Length]));
+
+            changes.Add(new MemoryChange(
+                "アイテム名レコード移設",
+                checked(eeBase + NameRecordOffset),
+                nameRecord,
+                new byte[nameRecord.Length]));
+
+            changes.Add(new MemoryChange(
+                "説明文索引ポインタ",
+                checked(eeBase + DescriptionIndexOffset),
+                BitConverter.GetBytes((uint)DescriptionRecordOffset),
+                expectedDescriptionPointer));
+
+            changes.Add(new MemoryChange(
+                "アイテム名索引ポインタ",
+                checked(eeBase + NameIndexOffset),
+                BitConverter.GetBytes((uint)NameRecordOffset),
+                expectedNamePointer));
+
+            // ------------------------------------------------
+            // Preflight verification
+            // ------------------------------------------------
+
+            _itemStatus.Text =
+                "4か所の書き込み先を事前照合しています...";
+
+            foreach (MemoryChange change in changes)
+            {
+                byte[] current = ReadMemory(
+                    process,
+                    change.Address,
+                    change.OldData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(
+                    current,
+                    change.OldData))
+                {
+                    throw new IOException(
+                        change.Name + "の書き込み前照合に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+                }
+            }
+
+            // ------------------------------------------------
+            // Write and verify
+            // ------------------------------------------------
+
+            foreach (MemoryChange change in changes)
+            {
+                WritePineMemory(
+                    checked(change.Address - eeBase),
+                    change.NewData);
+
+                completed.Add(change);
+
+                byte[] verify = ReadMemory(
+                    process,
+                    change.Address,
+                    change.NewData.Length);
+
+                if (!System.Linq.Enumerable.SequenceEqual(
+                    verify,
+                    change.NewData))
+                {
+                    throw new IOException(
+                        change.Name + "の読み戻し検証に失敗しました。\r\n" +
+                        "アドレス: 0x" + change.Address.ToString("X"));
+                }
+            }
+
+            // ------------------------------------------------
+            // Register persistent patches
+            // ------------------------------------------------
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文レコード",
+                DescriptionRecordOffset,
+                descriptionRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前レコード",
+                NameRecordOffset,
+                nameRecord);
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・説明文索引",
+                DescriptionIndexOffset,
+                BitConverter.GetBytes((uint)DescriptionRecordOffset));
+
+            Torneko4PatchStore.Register(
+                "スライムの指輪・名前索引",
+                NameIndexOffset,
+                BitConverter.GetBytes((uint)NameRecordOffset));
+
+            _itemStatus.Text =
+                "スライムの指輪への変更が完了しました。";
+
+            MessageBox.Show(
+                this,
+                "スライムの指輪への変更が完了しました！\r\n\r\n" +
+                "アイテム名: " + newName + "\r\n\r\n" +
+                "説明文:\r\n" +
+                descriptionText.Replace("\r", "\r\n") + "\r\n\r\n" +
+                "説明文レコード: EE+0x00139D00\r\n" +
+                "名前レコード: EE+0x00139D50\r\n" +
+                "説明文索引: EE+0x00100794\r\n" +
+                "名前索引: EE+0x00100798\r\n\r\n" +
+                "4か所の書き込みと読み戻し検証に成功しました。\r\n" +
+                "元のレコードは変更していません。\r\n" +
+                "保存対象への登録も完了しました。",
+                "スライムの指輪・変更成功",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            var rollbackReport = new StringBuilder();
+
+            for (int i = completed.Count - 1; i >= 0; i--)
+            {
+                MemoryChange change = completed[i];
+
+                try
+                {
+                    WritePineMemory(
+                        checked(change.Address - eeBase),
+                        change.OldData);
+
+                    byte[] restored = ReadMemory(
+                        process,
+                        change.Address,
+                        change.OldData.Length);
+
+                    bool success =
+                        System.Linq.Enumerable.SequenceEqual(
+                            restored,
+                            change.OldData);
+
+                    rollbackReport.AppendLine(
+                        change.Name + ": " +
+                        (success ? "復元成功" : "復元確認失敗"));
+                }
+                catch (Exception rollbackError)
+                {
+                    rollbackReport.AppendLine(
+                        change.Name + ": 復元エラー " +
+                        rollbackError.Message);
+                }
+            }
+
+            _itemStatus.Text =
+                "スライムの指輪への変更に失敗しました: " + ex.Message;
+
+            if (process != IntPtr.Zero)
+            {
+                CloseHandle(process);
+                process = IntPtr.Zero;
+            }
+
+            MessageBox.Show(
+                this,
+                "スライムの指輪への変更に失敗しました。\r\n\r\n" +
+                ex.Message + "\r\n\r\n" +
+                "書き込み済みデータの復元結果:\r\n" +
+                (rollbackReport.Length == 0
+                    ? "書き込み前の確認段階で停止しました。"
+                    : rollbackReport.ToString()),
+                "スライムの指輪・変更エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+
+        if (process != IntPtr.Zero)
+            CloseHandle(process);
+    }
     private void ApplyHayabusa()
     {
         if (!Pcsx2LiveSession.IsConnected ||
