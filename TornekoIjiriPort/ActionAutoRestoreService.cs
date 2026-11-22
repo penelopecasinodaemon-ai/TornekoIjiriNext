@@ -164,6 +164,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     internal event Action<string>? StatusChanged;
 
+    internal bool IonazunForceEnabled
+    {
+        get
+        {
+            lock (_stateSync)
+                return _forceIonazun;
+        }
+    }
+
     internal ActionAutoRestoreService()
     {
         _timer = new System.Threading.Timer(Poll, null, 500, 500);
