@@ -4140,7 +4140,7 @@ internal static class Torneko4FileService
     private static readonly byte[] Magic =
         System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
 
-    private const int FormatVersion = 3;
+    private const int FormatVersion = 4;
     private const int BaseSize = 524288;
     private const int MaximumOriginalSize = 64 * 1024 * 1024;
 
@@ -4174,7 +4174,8 @@ internal static class Torneko4FileService
         TornekoBinPreservationSnapshot snapshot,
         byte[] editedBase,
         System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
-        System.Collections.Generic.IDictionary<int, ushort> monsterActions)
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions,
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
     {
         if (snapshot == null)
             throw new ArgumentNullException(nameof(snapshot));
@@ -4410,7 +4411,7 @@ internal static class Torneko4FileService
 
         int version = reader.ReadInt32();
 
-        if (version != 1 && version != 2 && version != FormatVersion)
+        if (version != 1 && version != 2 && version != 3 && version != FormatVersion)
             throw new InvalidDataException(
                 "未対応のTorneko4バージョンです: " + version);
 

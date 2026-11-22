@@ -317,6 +317,12 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
     private readonly ComboBox _actionChange = CreateActionChoice();
+    private readonly CheckBox _ganirasuBarrier = new CheckBox
+    {
+        Text = "ガニラスバリアを所持する",
+        AutoSize = true,
+        Dock = DockStyle.Fill
+    };
     private readonly Label _actionMonitorStatus = new Label();
     private readonly ActionAutoRestoreService _actionRestore;
     private readonly bool _ownsActionRestore;
@@ -453,7 +459,7 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 14,
+            RowCount = 15,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
@@ -474,6 +480,9 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
+        fieldGrid.Controls.Add(_ganirasuBarrier, 0, 14);
+        fieldGrid.SetColumnSpan(_ganirasuBarrier, 2);
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
         fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
         fieldGrid.Controls.Add(CreateField("防御力", _defense), 0, 1);
@@ -549,6 +558,20 @@ internal sealed class MonsterCreatorForm : Form
         _applyButton.Width = 130;
         _applyButton.Height = 36;
         _applyButton.Click += (_, _) => ApplySelected();
+
+        _ganirasuBarrier.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            Torneko4GanirasuBarrierStore.Set(
+                _selectedMonsterId,
+                _ganirasuBarrier.Checked);
+
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " のガニラスバリア設定を更新しました。";
+        };
 
         var reloadButton = new Button
         {
@@ -990,6 +1013,7 @@ buttons.Controls.Add(_applyButton);
         _skillMessage.Enabled = enabled && _skillDataReady;
         _applyButton.Enabled = enabled;
         _actionChange.Enabled = _selectedMonsterId >= 0;
+        _ganirasuBarrier.Enabled = enabled && _selectedMonsterId >= 0;
     }
 
     private void RefreshList()
@@ -1047,6 +1071,9 @@ buttons.Controls.Add(_applyButton);
         int id = _visibleIds[index];
         _selectedMonsterId = id;
         _loadingSelection = true;
+
+        _ganirasuBarrier.Checked =
+            Torneko4GanirasuBarrierStore.Get(id);
 
         // まず未選択状態に戻し、このモンスター専用の設定があれば復元する。
         _actionChange.SelectedIndex = 0;

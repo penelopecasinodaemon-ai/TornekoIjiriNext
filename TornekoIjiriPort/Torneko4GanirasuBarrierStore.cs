@@ -12,8 +12,8 @@ internal static class Torneko4GanirasuBarrierStore
 
         int[] enabledIds =
         {
-            197, 187, 198, 23, 188,
-            114, 115, 116, 127, 128
+            196, 186, 197, 22, 187,
+            113, 114, 115, 126, 127
         };
 
         foreach (int id in enabledIds)
@@ -76,6 +76,17 @@ internal static class Torneko4GanirasuBarrierStore
                 Values[pair.Key] = pair.Value;
             }
         }
+    }
+
+    public static Dictionary<int, bool> GetDefaultCopy()
+    {
+        bool[] defaults = CreateDefaults();
+        var result = new Dictionary<int, bool>();
+
+        for (int i = 0; i < defaults.Length; i++)
+            result.Add(i, defaults[i]);
+
+        return result;
     }
 
     public static void Reset()
