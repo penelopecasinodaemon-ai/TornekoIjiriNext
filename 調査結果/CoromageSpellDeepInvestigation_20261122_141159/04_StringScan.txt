@@ -1,0 +1,2 @@
+﻿STRING AND SPELL NAME SCAN
+ASCII / UTF-8 printable runs, minimum length 4
