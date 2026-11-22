@@ -181,6 +181,20 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 
+    internal static uint GetSharedStatus()
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            return SharedPine.GetStatus();
+        }
+    }
+
     private static bool IsLegacyPatch(uint instruction)
     {
         return (instruction & 0xFFFF0000u) == LegacyPatchBase;
@@ -347,10 +361,20 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private bool IsDispatcherCode(uint address)
     {
         uint tableAddress = address + TableOffset;
+        uint traceAddress = address + 0x80u;
 
         uint[] expected =
         {
             0x90480006u,
+
+            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x356B0000u | (traceAddress & 0xFFFFu),
+            0xAD710000u,
+            0xAD680004u,
+            0x8D6C0008u,
+            0x258C0001u,
+            0xAD6C0008u,
+
             0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
             0x35290000u | (tableAddress & 0xFFFFu),
             0x01284821u,
@@ -401,42 +425,50 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private void WriteDispatcherCode(uint address)
     {
         uint tableAddress = address + TableOffset;
+        uint traceAddress = address + 0x80u;
 
         uint[] code =
         {
-            // lbu t0,6(v0) : 1バイトの種族IDを読み取る
+            // lbu t0,6(v0) : 種族ID
             0x90480006u,
 
-            // lui t1,hi(table)
-            0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
+            // 記録領域のアドレスをt3へ設定
+            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x356B0000u | (traceAddress & 0xFFFFu),
 
-            // ori t1,t1,lo(table)
+            // 元の特技ID s1 と種族ID t0 を保存
+            0xAD710000u,
+            0xAD680004u,
+
+            // 記録回数を1増やす
+            0x8D6C0008u,
+            0x258C0001u,
+            0xAD6C0008u,
+
+            // 特技テーブルのアドレス
+            0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
             0x35290000u | (tableAddress & 0xFFFFu),
 
-            // addu t1,t1,t0
+            // 種族IDを使って特技テーブルを検索
             0x01284821u,
-
-            // lbu t2,0(t1)
             0x912A0000u,
 
-            // beq t2,zero,skip
+            // 設定があれば特技IDを上書き
             0x11400002u,
-
-            // nop
             0x00000000u,
-
-            // addu s1,t2,zero
             0x01408821u,
 
-            // j dgEnemyAttack
+            // 元の敵特技処理へ戻る
             0x0808F1D4u,
-
-            // nop
             0x00000000u
         };
 
         for (int i = 0; i < code.Length; i++)
             _pine.Write32(address + (uint)(i * 4), code[i]);
+
+        _pine.Write32(traceAddress, 0u);
+        _pine.Write32(traceAddress + 4u, 0u);
+        _pine.Write32(traceAddress + 8u, 0u);
 
         if (!IsDispatcherCode(address))
         {
@@ -599,6 +631,58 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 
+    internal static string ReadActionTrace()
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            uint call = SharedPine.Read32(PatchAddress);
+
+            if ((call >> 26) != 3u)
+            {
+                throw new InvalidOperationException(
+                    "敵特技フックが見つかりません。特技設定を適用してください。");
+            }
+
+            uint cave = (call & 0x03FFFFFFu) << 2;
+
+            if (cave < CaveSearchEnd || cave > CaveSearchStart)
+            {
+                throw new InvalidOperationException(
+                    "コードケーブのアドレスが範囲外です。");
+            }
+
+            uint traceAddress = cave + 0x80u;
+            uint actionId = SharedPine.Read32(traceAddress);
+            uint speciesId = SharedPine.Read32(traceAddress + 4u);
+            uint count = SharedPine.Read32(traceAddress + 8u);
+
+            string[] lines =
+            {
+                "ENEMY ACTION TRACE",
+                "Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                "Read only: YES",
+                "Hook address: 0x" + PatchAddress.ToString("X8"),
+                "Code cave: 0x" + cave.ToString("X8"),
+                "Trace address: 0x" + traceAddress.ToString("X8"),
+                "",
+                "Recorded calls: " + count.ToString(),
+                "Species ID: " + speciesId.ToString(),
+                "Action ID: 0x" + (actionId & 0xFFFFu).ToString("X4"),
+                "Action ID signed: " + unchecked((short)(actionId & 0xFFFFu)).ToString(),
+                "",
+                "Species ID is the runtime ID used by the game.",
+                "Action ID is captured before the per-species override."
+            };
+
+            return string.Join(Environment.NewLine, lines);
+        }
+    }
     private void Poll(object? state)
     {
         if (_disposed ||

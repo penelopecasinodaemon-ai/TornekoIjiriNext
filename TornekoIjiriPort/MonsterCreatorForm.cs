@@ -568,9 +568,16 @@ internal sealed class MonsterCreatorForm : Form
                 _selectedMonsterId,
                 _ganirasuBarrier.Checked);
 
+            bool applied =
+                Torneko4GanirasuBarrierRuntime.TryApply(
+                    Torneko4GanirasuBarrierStore.GetCopy(),
+                    out string barrierMessage);
+
             _status.Text =
                 MonsterNames[_selectedMonsterId] +
-                " のガニラスバリア設定を更新しました。";
+                " のガニラスバリア設定を更新しました。" +
+                Environment.NewLine +
+                barrierMessage;
         };
 
         var reloadButton = new Button
@@ -592,6 +599,120 @@ internal sealed class MonsterCreatorForm : Form
 buttons.Controls.Add(_applyButton);
         buttons.Controls.Add(reloadButton);
         buttons.Controls.Add(closeButton);
+        var numericExperimentButton = new Button
+        {
+            Text = "演出値 201↔202",
+            Width = 145,
+            Height = 36
+        };
+
+        numericExperimentButton.Click += (_, _) =>
+        {
+            try
+            {
+                uint status = ActionAutoRestoreService.GetSharedStatus();
+
+                if (status != 1)
+                    throw new InvalidOperationException(
+                        "PCSX2を一時停止してから実行してください。");
+
+                const uint address = 0x002B46D0u;
+                const uint original = 0x240500C9u;
+                const uint changed = 0x240500CAu;
+
+                uint current =
+                    ActionAutoRestoreService.ReadShared32(address);
+
+                uint target = current == original
+                    ? changed
+                    : current == changed
+                        ? original
+                        : throw new InvalidOperationException(
+                            "対象命令が想定値ではありません: 0x" +
+                            current.ToString("X8"));
+
+                ActionAutoRestoreService.WriteShared32(address, target);
+
+                uint verify =
+                    ActionAutoRestoreService.ReadShared32(address);
+
+                if (verify != target)
+                    throw new InvalidOperationException(
+                        "書き込み後の読み戻し検証に失敗しました。");
+
+                string result = target == changed
+                    ? "201 → 202 に変更しました。"
+                    : "元の201へ復元しました。";
+
+                MessageBox.Show(
+                    this,
+                    result + "\r\n現在値: 0x" +
+                    verify.ToString("X8") +
+                    "\r\nこれは演出側の数値で、呪文行動IDの確定ではありません。",
+                    "数値実験",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "数値実験エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(numericExperimentButton);
+
+        var actionTraceButton = new Button
+        {
+            Text = "直近の敵行動ID記録",
+            Width = 165,
+            Height = 36
+        };
+
+        actionTraceButton.Click += (_, _) =>
+        {
+            try
+            {
+                string report = ActionAutoRestoreService.ReadActionTrace();
+
+                string desktop =
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                string outputPath = System.IO.Path.Combine(
+                    desktop,
+                    "EnemyActionTrace_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt");
+
+                System.IO.File.WriteAllText(
+                    outputPath,
+                    report,
+                    System.Text.Encoding.UTF8);
+
+                MessageBox.Show(
+                    this,
+                    "行動IDの読み取りが完了しました。\r\n\r\n" + outputPath +
+                    "\r\n\r\n" + report,
+                    "敵行動ID記録",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "敵行動ID記録エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(actionTraceButton);
 
         var bottom = new TableLayoutPanel
         {
@@ -635,8 +756,176 @@ buttons.Controls.Add(_applyButton);
             }
         };
 
+        var coromageProbeButton = new Button
+        {
+            Text = "コロマージ調査",
+            Dock = DockStyle.Fill
+        };
+
+        coromageProbeButton.Click += (_, _) =>
+        {
+            try
+            {
+                var addresses = new List<uint>();
+
+                for (uint address = 0x00228BB8; address <= 0x00228C20; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x00229150; address <= 0x00229220; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002B4680; address <= 0x002B4710; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x0029ABE0; address <= 0x0029AC80; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002F3C60; address <= 0x002F3D80; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002EC564; address <= 0x002EC740; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x00228BB8; address <= 0x00229300; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002B4714; address <= 0x002B4750; address += 4)
+                    addresses.Add(address);
+                for (uint address = 0x002F29A4; address <= 0x002F2B20; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002FD6BC; address <= 0x002FD7C0; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002FFB00; address <= 0x002FFC00; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002F0768; address <= 0x002F0860; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002F06C8; address <= 0x002F07C0; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x0029AC94; address <= 0x0029AD80; address += 4)
+                    addresses.Add(address);
+
+                uint[] dispatchAddresses =
+                {
+                    0x002F29A4,
+                    0x002F2A30,
+                    0x002FD6BC,
+                    0x002FFB00,
+                    0x002F0768,
+                    0x002F06C8
+                };
+
+                addresses.AddRange(dispatchAddresses);
+
+                for (uint address = 0x002EC540; address <= 0x002EC640; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x0029AC5C; address <= 0x0029AD00; address += 4)
+                    addresses.Add(address);
+
+                uint[] additionalAddresses =
+                {
+                    0x002B46C8,
+                    0x002B46CC,
+                    0x002B46D0,
+                    0x002B49A0,
+                    0x002B49C4,
+                    0x002B4A78
+                };
+
+                addresses.AddRange(additionalAddresses);
+                for (uint address = 0x002C94C0; address < 0x002C9580; address += 4)
+                    addresses.Add(address);
+                for (uint address = 0x002C752C; address <= 0x002C7C00; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002C9694; address <= 0x002C9C00; address += 4)
+                    addresses.Add(address);
+                for (uint address = 0x002C74C0; address <= 0x002C7600; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002C9300; address <= 0x002C94C0; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002C9580; address <= 0x002C9700; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002CCE40; address <= 0x002CCFA0; address += 4)
+                    addresses.Add(address);
+
+                for (uint address = 0x002CDF00; address <= 0x002CE100; address += 4)
+                    addresses.Add(address);
+                for (uint spellDispatchAddress = 0x002CF600; spellDispatchAddress <= 0x002D06CC; spellDispatchAddress += 4)
+                    addresses.Add(spellDispatchAddress);
+
+                for (uint spellHandlerAddress = 0x002B5CCC; spellHandlerAddress <= 0x002B8AC0; spellHandlerAddress += 4)
+                    addresses.Add(spellHandlerAddress);
+                for (uint coromageActionAddress = 0x00229480; coromageActionAddress <= 0x00229680; coromageActionAddress += 4)
+                    addresses.Add(coromageActionAddress);
+
+                for (uint coromageCandidateAddress = 0x008FCF20; coromageCandidateAddress <= 0x008FCFD0; coromageCandidateAddress += 4)
+                    addresses.Add(coromageCandidateAddress);
+                for (uint coromageTailAddress = 0x00229300; coromageTailAddress <= 0x00229500; coromageTailAddress += 4)
+                    addresses.Add(coromageTailAddress);
+
+                for (uint coromageTableAddress = 0x0065D100; coromageTableAddress <= 0x0065D220; coromageTableAddress += 4)
+                    addresses.Add(coromageTableAddress);
+
+                var report = new StringBuilder();
+
+                report.AppendLine("COROMAGE SPELL MEMORY READ");
+                report.AppendLine("READ ONLY");
+                report.AppendLine("Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                report.AppendLine("Address base: 0x00200000");
+                report.AppendLine();
+
+                foreach (uint address in addresses)
+                {
+                    uint value = ActionAutoRestoreService.ReadShared32(address);
+
+                    report.AppendLine(
+                        "0x" + address.ToString("X8") +
+                        "  0x" + value.ToString("X8"));
+                }
+
+                string desktop =
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                string outputPath = System.IO.Path.Combine(
+                    desktop,
+                    "CoromageSpellMemoryRead_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt");
+
+                System.IO.File.WriteAllText(
+                    outputPath,
+                    report.ToString(),
+                    Encoding.UTF8);
+
+                MessageBox.Show(
+                    this,
+                    "読み取り専用調査が完了しました。\n\n" + outputPath,
+                    "コロマージ調査",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    "PINE読み取りに失敗しました。\n\n" + ex.Message,
+                    "コロマージ調査",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        };
+
         infoPanel.Controls.Add(_actionMonitorStatus, 0, 0);
-        infoPanel.SetColumnSpan(_actionMonitorStatus, 2);
+        infoPanel.Controls.Add(coromageProbeButton, 1, 0);
         infoPanel.Controls.Add(_selectedInfo, 0, 1);
         infoPanel.Controls.Add(copyInfoButton, 1, 1);
         right.Controls.Add(infoPanel, 0, 2);
@@ -711,17 +1000,28 @@ buttons.Controls.Add(_applyButton);
             {
                 _actionMonitorStatus.Text =
                     "種族別特技設定なし：元の命令を維持しています。";
-                return;
             }
 
-            if (!_actionRestore.TryApply(
-                savedActions,
-                out string applyMessage))
+            if (savedActions.Count > 0)
             {
-                _actionMonitorStatus.Text =
-                    "保存済み種族別特技の再適用に失敗: " +
-                    applyMessage;
+                if (!_actionRestore.TryApply(
+                    savedActions,
+                    out string applyMessage))
+                {
+                    _actionMonitorStatus.Text =
+                        "保存済み種族別特技の再適用に失敗: " +
+                        applyMessage;
+                }
             }
+
+            Torneko4GanirasuBarrierRuntime.TryApply(
+                Torneko4GanirasuBarrierStore.GetCopy(),
+                out string barrierMessage);
+
+            _actionMonitorStatus.Text =
+                _actionMonitorStatus.Text +
+                Environment.NewLine +
+                barrierMessage;
         };
     }
 

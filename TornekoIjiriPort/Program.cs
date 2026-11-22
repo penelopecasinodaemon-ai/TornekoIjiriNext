@@ -4113,13 +4113,15 @@ internal sealed class Torneko4Package
     public string OriginalSourcePath { get; }
     public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
     public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
+    public System.Collections.Generic.Dictionary<int, bool> GanirasuBarrier { get; }
 
     public Torneko4Package(
         TornekoBinPreservationSnapshot snapshot,
         byte[] editedBase,
         string originalSourcePath,
         System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
-        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null)
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null,
+        System.Collections.Generic.Dictionary<int, bool> ganirasuBarrier = null)
     {
         Snapshot = snapshot;
         EditedBase = (byte[])editedBase.Clone();
@@ -4132,6 +4134,10 @@ internal sealed class Torneko4Package
         MonsterActions = monsterActions == null
             ? new System.Collections.Generic.Dictionary<int, ushort>()
             : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
+
+        GanirasuBarrier = ganirasuBarrier == null
+            ? global::Torneko4GanirasuBarrierStore.GetDefaultCopy()
+            : new System.Collections.Generic.Dictionary<int, bool>(ganirasuBarrier);
     }
 }
 
@@ -4140,7 +4146,7 @@ internal static class Torneko4FileService
     private static readonly byte[] Magic =
         System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
 
-    private const int FormatVersion = 4;
+    private const int FormatVersion = 5;
     private const int BaseSize = 524288;
     private const int MaximumOriginalSize = 64 * 1024 * 1024;
 
@@ -4260,6 +4266,25 @@ internal static class Torneko4FileService
             throw new InvalidDataException(
                 "モンスター別特技設定数が上限を超えています。");
 
+        var barrierList =
+            new System.Collections.Generic.SortedDictionary<int, bool>();
+
+        var barrierSource = ganirasuBarrier ??
+            global::Torneko4GanirasuBarrierStore.GetDefaultCopy();
+
+        foreach (var pair in barrierSource)
+        {
+            if (pair.Key < 0 || pair.Key >= 199)
+                throw new InvalidDataException(
+                    "ガニラスバリアのモンスター番号が不正です。");
+
+            barrierList[pair.Key] = pair.Value;
+        }
+
+        if (barrierList.Count != 199)
+            throw new InvalidDataException(
+                "ガニラスバリア設定は199種類すべて必要です。");
+
         string fullPath = Path.GetFullPath(path);
         string directory = Path.GetDirectoryName(fullPath);
 
@@ -4316,6 +4341,15 @@ internal static class Torneko4FileService
                     writer.Write(pair.Value);
                 }
 
+                // バージョン5追加領域：ガニラスバリア設定
+                writer.Write(barrierList.Count);
+
+                foreach (var pair in barrierList)
+                {
+                    writer.Write(pair.Key);
+                    writer.Write(pair.Value);
+                }
+
                 writer.Flush();
                 stream.Flush(true);
             }
@@ -4342,6 +4376,23 @@ internal static class Torneko4FileService
             if (check.MonsterActions.Count != actionList.Count)
                 throw new IOException(
                     "保存後のモンスター別特技設定数検証に失敗しました。");
+
+            if (check.GanirasuBarrier.Count != barrierList.Count)
+                throw new IOException(
+                    "保存後のガニラスバリア設定数検証に失敗しました。");
+
+            foreach (var pair in barrierList)
+            {
+                if (!check.GanirasuBarrier.TryGetValue(
+                    pair.Key,
+                    out bool savedValue) ||
+                    savedValue != pair.Value)
+                {
+                    throw new IOException(
+                        "保存後のガニラスバリア設定検証に失敗しました。番号: " +
+                        pair.Key);
+                }
+            }
 
             foreach (var pair in actionList)
             {
@@ -4411,7 +4462,7 @@ internal static class Torneko4FileService
 
         int version = reader.ReadInt32();
 
-        if (version != 1 && version != 2 && version != 3 && version != FormatVersion)
+        if (version != 1 && version != 2 && version != 3 && version != 4 && version != FormatVersion)
             throw new InvalidDataException(
                 "未対応のTorneko4バージョンです: " + version);
 
@@ -4563,6 +4614,36 @@ internal static class Torneko4FileService
             }
         }
 
+        var ganirasuBarrier =
+            global::Torneko4GanirasuBarrierStore.GetDefaultCopy();
+
+        if (version >= 5)
+        {
+            int barrierCount = reader.ReadInt32();
+
+            if (barrierCount != 199)
+                throw new InvalidDataException(
+                    "ガニラスバリア設定の件数が不正です。");
+
+            ganirasuBarrier.Clear();
+
+            for (int i = 0; i < barrierCount; i++)
+            {
+                int monsterId = reader.ReadInt32();
+                bool enabled = reader.ReadBoolean();
+
+                if (monsterId < 0 || monsterId >= 199)
+                    throw new InvalidDataException(
+                        "ガニラスバリアのモンスター番号が不正です。");
+
+                if (ganirasuBarrier.ContainsKey(monsterId))
+                    throw new InvalidDataException(
+                        "ガニラスバリア設定が重複しています。");
+
+                ganirasuBarrier.Add(monsterId, enabled);
+            }
+        }
+
         if (stream.Position != stream.Length)
             throw new InvalidDataException(
                 "Torneko4の末尾に不明なデータがあります。");
@@ -4582,7 +4663,8 @@ internal static class Torneko4FileService
             editedBase,
             originalSourcePath,
             patchList,
-            monsterActions);
+            monsterActions,
+            ganirasuBarrier);
     }
 }
 
@@ -5114,7 +5196,8 @@ buttons.Controls.Add(UiFactory.Button(
                 _binSnapshot,
                 _bin,
                 Torneko4PatchStore.GetCopy(),
-                Torneko4ActionStore.GetCopy());
+                Torneko4ActionStore.GetCopy(),
+                global::Torneko4GanirasuBarrierStore.GetCopy());
 
             _binPath = dialog.FileName;
             UpdateStatus();
@@ -5192,6 +5275,7 @@ buttons.Controls.Add(UiFactory.Button(
                 _bin = (byte[])package.EditedBase.Clone();
                 Torneko4PatchStore.ReplaceAll(package.Patches);
                 Torneko4ActionStore.ReplaceAll(package.MonsterActions);
+                global::Torneko4GanirasuBarrierStore.ReplaceAll(package.GanirasuBarrier);
                 loaded = true;
             }
 
@@ -5214,6 +5298,7 @@ buttons.Controls.Add(UiFactory.Button(
                 _bin = loadedBase;
                 Torneko4PatchStore.Clear();
                 Torneko4ActionStore.Clear();
+                global::Torneko4GanirasuBarrierStore.Reset();
                 loaded = true;
             }
 
@@ -5233,7 +5318,14 @@ buttons.Controls.Add(UiFactory.Button(
                 Torneko4ActionStore.GetCopy(),
                 out string actionApplyMessage);
 
-            _pcsx2DataStatus.Text = actionApplyMessage;
+            Torneko4GanirasuBarrierRuntime.TryApply(
+                global::Torneko4GanirasuBarrierStore.GetCopy(),
+                out string barrierApplyMessage);
+
+            _pcsx2DataStatus.Text =
+                actionApplyMessage +
+                Environment.NewLine +
+                barrierApplyMessage;
 
             // 読み込み直後に既存の安全検証付き適用処理へ進む。
             ApplyBinToPcsx2();
