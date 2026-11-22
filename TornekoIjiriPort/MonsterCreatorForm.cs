@@ -2269,6 +2269,11 @@ right.Controls.Add(_count, 0, 0);
         if (_loadingSelection)
             return;
 
+        _ionazunAlways.Enabled =
+            _dataReady &&
+            _selectedMonsterId >= 0 &&
+            IsIonazunActionSelected();
+
         if (_selectedMonsterId < 0)
             return;
 
