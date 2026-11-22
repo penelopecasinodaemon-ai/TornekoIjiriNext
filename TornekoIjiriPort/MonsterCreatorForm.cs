@@ -317,6 +317,12 @@ internal sealed class MonsterCreatorForm : Form
     private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
     private readonly NumericUpDown _recoveryConstant = CreateNumber(ushort.MaxValue);
     private readonly ComboBox _actionChange = CreateActionChoice();
+    private readonly CheckBox _ionazunAlways = new CheckBox
+    {
+        Text = "コロマージのイオナズンを確定で唱える（回数制限なし）",
+        AutoSize = true,
+        Dock = DockStyle.Fill
+    };
     private readonly CheckBox _ganirasuBarrier = new CheckBox
     {
         Text = "ガニラスバリアを所持する",
@@ -459,7 +465,7 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Top,
             ColumnCount = 2,
-            RowCount = 15,
+            RowCount = 16,
             AutoSize = true,
             Padding = new Padding(0, 8, 0, 8)
         };
@@ -482,6 +488,9 @@ internal sealed class MonsterCreatorForm : Form
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 78));
         fieldGrid.Controls.Add(_ganirasuBarrier, 0, 14);
         fieldGrid.SetColumnSpan(_ganirasuBarrier, 2);
+        fieldGrid.Controls.Add(_ionazunAlways, 0, 15);
+        fieldGrid.SetColumnSpan(_ionazunAlways, 2);
+        fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         fieldGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         fieldGrid.Controls.Add(CreateField("HP", _hp), 0, 0);
         fieldGrid.Controls.Add(CreateField("攻撃力", _attack), 1, 0);
@@ -559,6 +568,24 @@ internal sealed class MonsterCreatorForm : Form
         _applyButton.Width = 130;
         _applyButton.Height = 36;
         _applyButton.Click += (_, _) => ApplySelected();
+
+        _ionazunAlways.Checked = _actionRestore.IonazunForceEnabled;
+        _ionazunAlways.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            if (_actionRestore.SetIonazunForce(
+                _ionazunAlways.Checked,
+                out string ionazunMessage))
+            {
+                _status.Text = ionazunMessage;
+            }
+            else
+            {
+                _status.Text = ionazunMessage;
+            }
+        };
 
         _ganirasuBarrier.CheckedChanged += (_, _) =>
         {
@@ -1776,6 +1803,7 @@ right.Controls.Add(_count, 0, 0);
         _applyButton.Enabled = enabled;
         _actionChange.Enabled = _selectedMonsterId >= 0;
         _ganirasuBarrier.Enabled = enabled && _selectedMonsterId >= 0;
+        _ionazunAlways.Enabled = enabled && IsIonazunActionSelected();
     }
 
     private void RefreshList()
@@ -2212,6 +2240,14 @@ right.Controls.Add(_count, 0, 0);
             "モンスター番号：" + _selectedMonsterId.ToString("D3") +
             "　／　BINレコード位置：0x" + offset.ToString("X") +
             "\r\nHP・攻撃力・防御力・最大レベル・経験値を更新しました。";    }
+
+    private bool IsIonazunActionSelected()
+    {
+        int index = _actionChange.SelectedIndex - 1;
+        return index >= 0 &&
+            index < ActionAutoRestoreService.ActionChoices.Length &&
+            ActionAutoRestoreService.ActionChoices[index].Id == 0x00BF;
+    }
 
     private static ComboBox CreateActionChoice()
     {
