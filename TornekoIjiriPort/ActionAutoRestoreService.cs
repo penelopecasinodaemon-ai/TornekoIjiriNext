@@ -358,9 +358,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
             current != IonazunCompareForced)
         {
             throw new InvalidOperationException(
-                "イオナズン確定判定の命令が想定外です。\\n" +
+                "イオナズン確定判定の命令が想定外です。\n" +
                 "アドレス: 0x" + IonazunCompareAddress.ToString("X8") +
-                "\\n現在値: 0x" + current.ToString("X8"));
+                "\n現在値: 0x" + current.ToString("X8"));
         }
 
         _pine.Write32(IonazunCompareAddress, desired);
