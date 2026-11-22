@@ -29,6 +29,17 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint CaveSize = 0x200u;
     private const uint TableOffset = 0x100u;
     private const int TableSize = 256;
+    // コロマージ呪文分岐調査フック
+    private const uint SpellDispatchAddress = 0x002CF600u;
+    private const uint SpellDispatchOriginalInstruction = 0x2A020046u;
+    private const uint SpellDispatchDelayAddress = 0x002CF604u;
+    private const uint SpellDispatchOriginalDelay = 0x10400013u;
+    private const uint SpellTraceDataOffset = 0x100u;
+    private const uint SpellTraceCaveSearchStart = 0x01EF0000u;
+    private const uint SpellTraceCaveSearchEnd = 0x01E00000u;
+    private const uint SpellTraceCaveSearchStep = 0x00010000u;
+    private const uint SpellTraceCaveSize = 0x200u;
+    private static uint _spellTraceCaveAddress;
 
         internal static readonly (ushort Id, string Name)[] ActionChoices =
     {
@@ -683,6 +694,435 @@ internal sealed class ActionAutoRestoreService : IDisposable
             return string.Join(Environment.NewLine, lines);
         }
     }
+    private static bool IsSpellTraceJump(uint instruction)
+    {
+        return (instruction & 0xFC000000u) == 0x08000000u;
+    }
+
+    private static uint DecodeSpellTraceJump(uint instruction)
+    {
+        return (instruction & 0x03FFFFFFu) << 2;
+    }
+
+    private static uint EncodeSpellTraceJump(uint address)
+    {
+        if ((address & 0xF0000000u) !=
+            ((SpellDispatchAddress + 4u) & 0xF0000000u))
+        {
+            throw new InvalidOperationException(
+                "呪文分岐フックのジャンプ先が範囲外です。");
+        }
+
+        return 0x08000000u | ((address >> 2) & 0x03FFFFFFu);
+    }
+
+    private static uint[] BuildSpellTraceCode(uint caveAddress)
+    {
+        uint traceAddress = caveAddress + SpellTraceDataOffset;
+
+        return new uint[]
+        {
+            0x27BDFFF0u,
+            0xAFA80000u,
+            0xAFA90004u,
+            0xAFBA0008u,
+            0xAFBB000Cu,
+
+            0x3C1A0000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x375A0000u | (traceAddress & 0xFFFFu),
+
+            0xAF500000u,
+            0xAF510004u,
+            0xAF520008u,
+            0xAF53000Cu,
+            0xAF540010u,
+            0xAF5F0014u,
+
+            0x8F5B0018u,
+            0x277B0001u,
+            0xAF5B0018u,
+
+            0x8FA80000u,
+            0x8FA90004u,
+            0x8FBA0008u,
+            0x8FBB000Cu,
+            0x27BD0010u,
+
+            // 元の slti v0,s0,70
+            0x2A020046u,
+
+            // 条件分岐。遅延スロットも元の命令を再現する。
+            0x10400004u,
+            0x24020048u,
+
+            // 条件成立側：元の 0x002CF60C へ戻る
+            0x08000000u | ((0x002CF60Cu >> 2) & 0x03FFFFFFu),
+            0x00000000u,
+
+            // 条件不成立側：元の 0x002CF654 へ戻る
+            0x08000000u | ((0x002CF654u >> 2) & 0x03FFFFFFu),
+            0x00000000u
+        };
+    }
+
+    private static bool IsSpellTraceCode(uint caveAddress)
+    {
+        uint[] expected = BuildSpellTraceCode(caveAddress);
+
+        for (int i = 0; i < expected.Length; i++)
+        {
+            uint actual = SharedPine.Read32(
+                caveAddress + (uint)(i * 4));
+
+            if (actual != expected[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    private static uint FindSpellTraceCave()
+    {
+        for (
+            uint candidate = SpellTraceCaveSearchStart;
+            candidate >= SpellTraceCaveSearchEnd;
+            candidate -= SpellTraceCaveSearchStep)
+        {
+            bool free = true;
+
+            for (
+                uint offset = 0;
+                offset < SpellTraceCaveSize;
+                offset += 4)
+            {
+                if (SharedPine.Read32(candidate + offset) != 0)
+                {
+                    free = false;
+                    break;
+                }
+            }
+
+            if (free)
+                return candidate;
+        }
+
+        throw new InvalidOperationException(
+            "呪文分岐調査用の空き領域が見つかりません。\n" +
+            "安全のためメモリへの書き込みを中止しました。");
+    }
+
+    private static void WriteSpellTraceCode(uint caveAddress)
+    {
+        uint[] code = BuildSpellTraceCode(caveAddress);
+
+        for (int i = 0; i < code.Length; i++)
+        {
+            SharedPine.Write32(
+                caveAddress + (uint)(i * 4),
+                code[i]);
+        }
+
+        uint traceAddress = caveAddress + SpellTraceDataOffset;
+
+        for (uint offset = 0; offset < 28u; offset += 4u)
+            SharedPine.Write32(traceAddress + offset, 0u);
+
+        if (!IsSpellTraceCode(caveAddress))
+        {
+            throw new InvalidOperationException(
+                "呪文分岐調査コードの書き込み検証に失敗しました。");
+        }
+    }
+
+    internal static string InstallSpellDispatchTrace()
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            uint status = SharedPine.GetStatus();
+
+            if (status != 1u)
+            {
+                throw new InvalidOperationException(
+                    "PCSX2を一時停止してから設置してください。");
+            }
+
+            uint currentCall =
+                SharedPine.Read32(SpellDispatchAddress);
+
+            uint currentDelay =
+                SharedPine.Read32(SpellDispatchDelayAddress);
+
+            if (IsSpellTraceJump(currentCall))
+            {
+                uint detectedCave = DecodeSpellTraceJump(currentCall);
+
+                if (detectedCave < SpellTraceCaveSearchEnd ||
+                    detectedCave > SpellTraceCaveSearchStart ||
+                    currentDelay != 0u ||
+                    !IsSpellTraceCode(detectedCave))
+                {
+                    throw new InvalidOperationException(
+                        "既存の呪文分岐フックを検証できません。");
+                }
+
+                _spellTraceCaveAddress = detectedCave;
+
+                return
+                    "呪文分岐フックは既に設置されています。\n" +
+                    "コードケーブ: 0x" + detectedCave.ToString("X8");
+            }
+
+            if (currentCall != SpellDispatchOriginalInstruction)
+            {
+                throw new InvalidOperationException(
+                    "0x002CF600の命令が想定値と異なります。\n" +
+                    "現在値: 0x" + currentCall.ToString("X8"));
+            }
+
+            if (currentDelay != SpellDispatchOriginalDelay)
+            {
+                throw new InvalidOperationException(
+                    "0x002CF604の命令が想定値と異なります。\n" +
+                    "現在値: 0x" + currentDelay.ToString("X8"));
+            }
+
+            uint caveAddress = FindSpellTraceCave();
+
+            WriteSpellTraceCode(caveAddress);
+
+            uint traceAddress = caveAddress + SpellTraceDataOffset;
+
+            uint verifyS0 = SharedPine.Read32(traceAddress);
+            uint verifyCount = SharedPine.Read32(traceAddress + 24u);
+
+            if (verifyS0 != 0u || verifyCount != 0u)
+            {
+                throw new InvalidOperationException(
+                    "記録領域の初期化検証に失敗しました。");
+            }
+
+            uint jumpInstruction =
+                EncodeSpellTraceJump(caveAddress);
+
+            SharedPine.Write32(
+                SpellDispatchDelayAddress,
+                0u);
+
+            if (SharedPine.Read32(SpellDispatchDelayAddress) != 0u)
+            {
+                SharedPine.Write32(
+                    SpellDispatchDelayAddress,
+                    SpellDispatchOriginalDelay);
+
+                throw new InvalidOperationException(
+                    "分岐遅延スロットの書き込みに失敗しました。");
+            }
+
+            try
+            {
+                SharedPine.Write32(
+                    SpellDispatchAddress,
+                    jumpInstruction);
+
+                uint verifyCall =
+                    SharedPine.Read32(SpellDispatchAddress);
+
+                if (verifyCall != jumpInstruction)
+                {
+                    throw new InvalidOperationException(
+                        "呪文分岐フックの設置検証に失敗しました。");
+                }
+            }
+            catch
+            {
+                SharedPine.Write32(
+                    SpellDispatchAddress,
+                    SpellDispatchOriginalInstruction);
+
+                SharedPine.Write32(
+                    SpellDispatchDelayAddress,
+                    SpellDispatchOriginalDelay);
+
+                throw;
+            }
+
+            _spellTraceCaveAddress = caveAddress;
+
+            return
+                "呪文分岐フックを設置しました。\n" +
+                "フック: 0x" + SpellDispatchAddress.ToString("X8") + "\n" +
+                "コードケーブ: 0x" + caveAddress.ToString("X8") + "\n" +
+                "記録領域: 0x" + traceAddress.ToString("X8") + "\n\n" +
+                "PCSX2を再開してコロマージに呪文を使わせてください。";
+        }
+    }
+
+    internal static string ReadSpellDispatchTrace()
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            if (SharedPine.GetStatus() != 1u)
+            {
+                throw new InvalidOperationException(
+                    "記録を読む前にPCSX2を一時停止してください。");
+            }
+
+            uint call = SharedPine.Read32(SpellDispatchAddress);
+
+            if (!IsSpellTraceJump(call))
+            {
+                throw new InvalidOperationException(
+                    "呪文分岐フックが設置されていません。");
+            }
+
+            uint caveAddress = DecodeSpellTraceJump(call);
+
+            if (caveAddress < SpellTraceCaveSearchEnd ||
+                caveAddress > SpellTraceCaveSearchStart)
+            {
+                throw new InvalidOperationException(
+                    "呪文分岐コードケーブのアドレスが範囲外です。");
+            }
+
+            if (SharedPine.Read32(SpellDispatchDelayAddress) != 0u ||
+                !IsSpellTraceCode(caveAddress))
+            {
+                throw new InvalidOperationException(
+                    "呪文分岐フックのコード検証に失敗しました。");
+            }
+
+            uint traceAddress = caveAddress + SpellTraceDataOffset;
+
+            uint s0 = SharedPine.Read32(traceAddress);
+            uint s1 = SharedPine.Read32(traceAddress + 4u);
+            uint s2 = SharedPine.Read32(traceAddress + 8u);
+            uint s3 = SharedPine.Read32(traceAddress + 12u);
+            uint s4 = SharedPine.Read32(traceAddress + 16u);
+            uint ra = SharedPine.Read32(traceAddress + 20u);
+            uint count = SharedPine.Read32(traceAddress + 24u);
+
+            string[] lines =
+            {
+                "COROMAGE SPELL DISPATCH TRACE",
+                "Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                "Read only: YES",
+                "Hook address: 0x" + SpellDispatchAddress.ToString("X8"),
+                "Code cave: 0x" + caveAddress.ToString("X8"),
+                "Trace address: 0x" + traceAddress.ToString("X8"),
+                "",
+                "Recorded calls: " + count.ToString(),
+                "s0: " + s0.ToString() + " (0x" + s0.ToString("X8") + ")",
+                "s1: " + s1.ToString() + " (0x" + s1.ToString("X8") + ")",
+                "s2: " + s2.ToString() + " (0x" + s2.ToString("X8") + ")",
+                "s3: " + s3.ToString() + " (0x" + s3.ToString("X8") + ")",
+                "s4: " + s4.ToString() + " (0x" + s4.ToString("X8") + ")",
+                "ra: 0x" + ra.ToString("X8"),
+                "",
+                "s0 is the primary spell-dispatch candidate.",
+                "Values are the latest captured register state."
+            };
+
+            return string.Join(Environment.NewLine, lines);
+        }
+    }
+
+    internal static string RestoreSpellDispatchTrace()
+    {
+        lock (SharedPineAccessSync)
+        {
+            if (!SharedPine.TryConnect())
+            {
+                throw new InvalidOperationException(
+                    "PCSX2 PINE TCP 28011に接続できません。");
+            }
+
+            if (SharedPine.GetStatus() != 1u)
+            {
+                throw new InvalidOperationException(
+                    "PCSX2を一時停止してから解除してください。");
+            }
+
+            uint currentCall =
+                SharedPine.Read32(SpellDispatchAddress);
+
+            uint currentDelay =
+                SharedPine.Read32(SpellDispatchDelayAddress);
+
+            if (currentCall == SpellDispatchOriginalInstruction &&
+                currentDelay == SpellDispatchOriginalDelay)
+            {
+                return "呪文分岐フックは既に解除されています。";
+            }
+
+            if (currentCall != SpellDispatchOriginalInstruction &&
+                !IsSpellTraceJump(currentCall))
+            {
+                throw new InvalidOperationException(
+                    "フック命令が想定外のため解除を中止しました。\n" +
+                    "現在値: 0x" + currentCall.ToString("X8"));
+            }
+
+            if (IsSpellTraceJump(currentCall))
+            {
+                uint caveAddress = DecodeSpellTraceJump(currentCall);
+
+                if (caveAddress < SpellTraceCaveSearchEnd ||
+                    caveAddress > SpellTraceCaveSearchStart ||
+                    !IsSpellTraceCode(caveAddress))
+                {
+                    throw new InvalidOperationException(
+                        "コードケーブを検証できないため解除を中止しました。");
+                }
+
+                if (currentDelay != 0u)
+                {
+                    throw new InvalidOperationException(
+                        "遅延スロットが想定値と異なるため解除を中止しました。");
+                }
+            }
+
+            SharedPine.Write32(
+                SpellDispatchAddress,
+                SpellDispatchOriginalInstruction);
+
+            if (SharedPine.Read32(SpellDispatchAddress) !=
+                SpellDispatchOriginalInstruction)
+            {
+                throw new InvalidOperationException(
+                    "元の分岐命令への復元に失敗しました。");
+            }
+
+            SharedPine.Write32(
+                SpellDispatchDelayAddress,
+                SpellDispatchOriginalDelay);
+
+            if (SharedPine.Read32(SpellDispatchDelayAddress) !=
+                SpellDispatchOriginalDelay)
+            {
+                throw new InvalidOperationException(
+                    "元の遅延スロットへの復元に失敗しました。");
+            }
+
+            _spellTraceCaveAddress = 0u;
+
+            return
+                "呪文分岐フックを解除しました。\n" +
+                "元の2命令を復元しました。";
+        }
+    }
+
     private void Poll(object? state)
     {
         if (_disposed ||

@@ -551,7 +551,8 @@ internal sealed class MonsterCreatorForm : Form
         {
             Dock = DockStyle.Fill,
             FlowDirection = FlowDirection.LeftToRight,
-            WrapContents = false
+            WrapContents = true,
+            AutoScroll = true
         };
 
         _applyButton.Text = "再適用";
@@ -714,18 +715,478 @@ buttons.Controls.Add(_applyButton);
 
         buttons.Controls.Add(actionTraceButton);
 
+        var coromageCaveScanButton = new Button
+        {
+            Text = "コロマージ空き領域調査",
+            Width = 190,
+            Height = 36
+        };
+
+        coromageCaveScanButton.Click += (_, _) =>
+        {
+            try
+            {
+                string report = CoromageCaveScan.Run();
+
+                string desktop =
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                string outputPath = System.IO.Path.Combine(
+                    desktop,
+                    "CoromageCaveScan_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt");
+
+                System.IO.File.WriteAllText(
+                    outputPath,
+                    report,
+                    System.Text.Encoding.UTF8);
+
+                MessageBox.Show(
+                    this,
+                    "調査結果を保存しました。\r\n" +
+                    outputPath +
+                    "\r\n\r\n" +
+                    report,
+                    "コロマージ空き領域調査",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "空き領域調査エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageCaveScanButton);
+
+        var coromageCallsiteInstallButton = new Button
+        {
+            Text = "呼出地点フック設置",
+            Width = 190,
+            Height = 36
+        };
+
+        coromageCallsiteInstallButton.Click += (_, _) =>
+        {
+            try
+            {
+                string result = CoromageCallsiteTrace.Install();
+
+                MessageBox.Show(
+                    this,
+                    result,
+                    "呼出地点フック設置",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "呼出地点フック設置エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageCallsiteInstallButton);
+        buttons.Controls.SetChildIndex(coromageCallsiteInstallButton, 0);
+
+        var coromageCallsiteReadButton = new Button
+        {
+            Text = "呼出記録読取",
+            Width = 190,
+            Height = 36
+        };
+
+        coromageCallsiteReadButton.Click += (_, _) =>
+        {
+            try
+            {
+                string report = CoromageCallsiteTrace.Read();
+
+                string desktop =
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                string outputPath = System.IO.Path.Combine(
+                    desktop,
+                    "CoromageCallsiteTrace_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt");
+
+                System.IO.File.WriteAllText(
+                    outputPath,
+                    report,
+                    System.Text.Encoding.UTF8);
+
+                MessageBox.Show(
+                    this,
+                    "記録を保存しました。\r\n" + outputPath + "\r\n\r\n" + report,
+                    "呼出記録読取",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "呼出記録読取エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageCallsiteReadButton);
+
+        var coromageCallsiteRestoreButton = new Button
+        {
+            Text = "呼出地点フック解除",
+            Width = 190,
+            Height = 36
+        };
+
+        coromageCallsiteRestoreButton.Click += (_, _) =>
+        {
+            try
+            {
+                string result = CoromageCallsiteTrace.Restore();
+
+                MessageBox.Show(
+                    this,
+                    result,
+                    "呼出地点フック解除",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "呼出地点フック解除エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageCallsiteRestoreButton);
+
+        var coromageInstallButton = new Button
+        {
+            Text = "関数入口フック設置",
+            Width = 150,
+            Height = 36
+        };
+
+        coromageInstallButton.Click += (_, _) =>
+        {
+            try
+            {
+                MessageBox.Show(
+                    this,
+                    CoromageFunctionTrace.Install(),
+                    "関数入口フック",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "関数入口フック設置エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageInstallButton);
+
+        var coromageReadButton = new Button
+        {
+            Text = "関数記録読取",
+            Width = 130,
+            Height = 36
+        };
+
+        coromageReadButton.Click += (_, _) =>
+        {
+            try
+            {
+                string report = CoromageFunctionTrace.Read();
+
+                string desktop =
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                string outputPath = System.IO.Path.Combine(
+                    desktop,
+                    "CoromageFunctionTrace_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt");
+
+                System.IO.File.WriteAllText(
+                    outputPath,
+                    report,
+                    System.Text.Encoding.UTF8);
+
+                MessageBox.Show(
+                    this,
+                    "記録を保存しました。\r\n" + outputPath +
+                    "\r\n\r\n" + report,
+                    "関数記録読取",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "関数記録読取エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageReadButton);
+
+        var coromageRestoreButton = new Button
+        {
+            Text = "関数フック解除",
+            Width = 130,
+            Height = 36
+        };
+
+        coromageRestoreButton.Click += (_, _) =>
+        {
+            try
+            {
+                MessageBox.Show(
+                    this,
+                    CoromageFunctionTrace.Restore(),
+                    "関数フック解除",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "関数フック解除エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(coromageRestoreButton);
+        var spellTraceInstallButton = new Button
+        {
+            Text = "呪文分岐フック設置",
+            Width = 155,
+            Height = 36
+        };
+
+        spellTraceInstallButton.Click += (_, _) =>
+        {
+            try
+            {
+                string result =
+                    ActionAutoRestoreService.InstallSpellDispatchTrace();
+
+                MessageBox.Show(
+                    this,
+                    result,
+                    "呪文分岐フック",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "呪文分岐フック設置エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        var spellTraceReadButton = new Button
+        {
+            Text = "呪文分岐記録読取",
+            Width = 155,
+            Height = 36
+        };
+
+        spellTraceReadButton.Click += (_, _) =>
+        {
+            try
+            {
+                string report =
+                    ActionAutoRestoreService.ReadSpellDispatchTrace();
+
+                string desktop =
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                string outputPath = System.IO.Path.Combine(
+                    desktop,
+                    "CoromageSpellDispatchTrace_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt");
+
+                System.IO.File.WriteAllText(
+                    outputPath,
+                    report,
+                    System.Text.Encoding.UTF8);
+
+                MessageBox.Show(
+                    this,
+                    "呪文分岐記録を保存しました。\n\n" +
+                    outputPath + "\n\n" + report,
+                    "呪文分岐記録",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "呪文分岐記録エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        var spellTraceRestoreButton = new Button
+        {
+            Text = "呪文分岐フック解除",
+            Width = 155,
+            Height = 36
+        };
+
+        spellTraceRestoreButton.Click += (_, _) =>
+        {
+            try
+            {
+                string result =
+                    ActionAutoRestoreService.RestoreSpellDispatchTrace();
+
+                MessageBox.Show(
+                    this,
+                    result,
+                    "呪文分岐フック解除",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "呪文分岐フック解除エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        buttons.Controls.Add(spellTraceInstallButton);
+        buttons.Controls.Add(spellTraceReadButton);
+        buttons.Controls.Add(spellTraceRestoreButton);
+
+        var diagnosticActions = new Dictionary<string, Button>
+        {
+            { "呼出地点フック設置", coromageCallsiteInstallButton },
+            { "呼出記録読取", coromageCallsiteReadButton },
+            { "呼出地点フック解除", coromageCallsiteRestoreButton },
+            { "関数入口フック設置", coromageInstallButton },
+            { "関数記録読取", coromageReadButton },
+            { "関数フック解除", coromageRestoreButton },
+            { "呪文分岐フック設置", spellTraceInstallButton },
+            { "呪文分岐記録読取", spellTraceReadButton },
+            { "呪文分岐フック解除", spellTraceRestoreButton },
+            { "コロマージ空き領域調査", coromageCaveScanButton },
+            { "直近の敵行動ID記録", actionTraceButton },
+            { "演出値 201↔202 実験", numericExperimentButton }
+        };
+
+        var diagnosticChoice = new ComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 390,
+            Height = 36,
+            Margin = new Padding(3, 3, 8, 3)
+        };
+
+        diagnosticChoice.Items.AddRange(
+            diagnosticActions.Keys.Cast<object>().ToArray());
+
+        diagnosticChoice.SelectedIndex = 0;
+
+        var diagnosticApplyButton = new Button
+        {
+            Text = "選択した処理を実行",
+            Width = 160,
+            Height = 36,
+            Margin = new Padding(3)
+        };
+
+        diagnosticApplyButton.Click += (_, _) =>
+        {
+            if (diagnosticChoice.SelectedItem is string selectedName &&
+                diagnosticActions.TryGetValue(
+                    selectedName,
+                    out Button selectedAction))
+            {
+                selectedAction.PerformClick();
+            }
+        };
+
+        var diagnosticPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.LeftToRight,
+            WrapContents = false,
+            AutoScroll = true,
+            Margin = new Padding(0)
+        };
+
+        diagnosticPanel.Controls.Add(diagnosticChoice);
+        diagnosticPanel.Controls.Add(diagnosticApplyButton);
+
+        buttons.Controls.Clear();
+        buttons.FlowDirection = FlowDirection.LeftToRight;
+        buttons.WrapContents = false;
+        buttons.AutoScroll = false;
+        buttons.Controls.Add(_applyButton);
+        buttons.Controls.Add(reloadButton);
+        buttons.Controls.Add(closeButton);
+
         var bottom = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 2
+            RowCount = 3,
+            Margin = new Padding(0)
         };
+
         bottom.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         bottom.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
-        bottom.Controls.Add(_status, 0, 0);
-        bottom.Controls.Add(buttons, 0, 1);
+        bottom.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
 
-        right.Controls.Add(_count, 0, 0);
+        bottom.Controls.Add(_status, 0, 0);
+        bottom.Controls.Add(diagnosticPanel, 0, 1);
+        bottom.Controls.Add(buttons, 0, 2);
+right.Controls.Add(_count, 0, 0);
         right.Controls.Add(_selectedTitle, 0, 1);
         var infoPanel = new TableLayoutPanel
         {
@@ -930,6 +1391,7 @@ buttons.Controls.Add(_applyButton);
         infoPanel.Controls.Add(copyInfoButton, 1, 1);
         right.Controls.Add(infoPanel, 0, 2);
         right.Controls.Add(content, 0, 3);
+        right.RowStyles[4] = new RowStyle(SizeType.Absolute, 112);
         right.Controls.Add(bottom, 0, 4);
 
         root.Controls.Add(left, 0, 0);
