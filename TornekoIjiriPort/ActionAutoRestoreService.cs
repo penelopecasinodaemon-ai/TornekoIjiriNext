@@ -160,6 +160,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private int _pollBusy;
     private bool _disposed;
     private bool _forceIonazun;
+    private bool _ionazunPatchMayBeActive;
     private string _lastStatus = "";
 
     internal event Action<string>? StatusChanged;
@@ -352,7 +353,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
             : IonazunCompareOriginal;
 
         if (current == desired)
+        {
+            _ionazunPatchMayBeActive = shouldForce;
             return;
+        }
 
         if (current != IonazunCompareOriginal &&
             current != IonazunCompareForced)
@@ -371,6 +375,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException(
                 "イオナズン確定判定の書き込み検証に失敗しました。");
         }
+
+        _ionazunPatchMayBeActive = shouldForce;
     }
 
     private byte[] BuildActionTable(
@@ -1194,9 +1200,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
             lock (_operationSync)
             {
                 Dictionary<int, ushort> snapshot;
+                bool forceIonazun;
 
                 lock (_stateSync)
+                {
                     snapshot = new Dictionary<int, ushort>(_actions);
+                    forceIonazun = _forceIonazun;
+                }
 
                 if (snapshot.Count == 0)
                 {
@@ -1204,7 +1214,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                         "種族別特技設定なし：元の命令を維持しています。");
                 }
 
-                if (snapshot.Count > 0)
+                if (snapshot.Count > 0 || forceIonazun || _ionazunPatchMayBeActive)
                 {
                     bool connected = _pine.TryConnect();
 
