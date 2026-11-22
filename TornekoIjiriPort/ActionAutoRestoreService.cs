@@ -31,6 +31,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const int TableSize = 256;
     // コロマージ呪文分岐調査フック
     private const uint SpellDispatchAddress = 0x002CF600u;
+    // MOD版コロマージ呪文成功判定: slt v0,v0,v1 を li v0,1 に置換
+    private const uint IonazunCompareAddress = 0x00228DE8u;
+    private const uint IonazunCompareOriginal = 0x0043102Au;
+    private const uint IonazunCompareForced = 0x24020001u;
     private const uint SpellDispatchOriginalInstruction = 0x2A020046u;
     private const uint SpellDispatchDelayAddress = 0x002CF604u;
     private const uint SpellDispatchOriginalDelay = 0x10400013u;
@@ -155,6 +159,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private int _pollBusy;
     private bool _disposed;
+    private bool _forceIonazun;
     private string _lastStatus = "";
 
     internal event Action<string>? StatusChanged;
@@ -312,6 +317,50 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     ex.Message;
                 return false;
             }
+        }
+    }
+
+    internal bool SetIonazunForce(bool enabled, out string message)
+    {
+        lock (_stateSync)
+            _forceIonazun = enabled;
+
+        return TryApply(Torneko4ActionStore.GetCopy(), out message);
+    }
+
+    private void ApplyIonazunForce(Dictionary<int, ushort> actions)
+    {
+        bool shouldForce;
+        lock (_stateSync)
+        {
+            shouldForce = _forceIonazun &&
+                actions.ContainsValue(0x00BF);
+        }
+
+        uint current = _pine.Read32(IonazunCompareAddress);
+        uint desired = shouldForce
+            ? IonazunCompareForced
+            : IonazunCompareOriginal;
+
+        if (current == desired)
+            return;
+
+        if (current != IonazunCompareOriginal &&
+            current != IonazunCompareForced)
+        {
+            throw new InvalidOperationException(
+                "イオナズン確定判定の命令が想定外です。\\n" +
+                "アドレス: 0x" + IonazunCompareAddress.ToString("X8") +
+                "\\n現在値: 0x" + current.ToString("X8"));
+        }
+
+        _pine.Write32(IonazunCompareAddress, desired);
+
+        uint verify = _pine.Read32(IonazunCompareAddress);
+        if (verify != desired)
+        {
+            throw new InvalidOperationException(
+                "イオナズン確定判定の書き込み検証に失敗しました。");
         }
     }
 
@@ -592,6 +641,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             _codeCaveAddress = detectedCave;
         }
+
+        ApplyIonazunForce(actions);
 
         if (actions.Count == 0)
         {
@@ -1161,9 +1212,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
                         if (status == 0)
                         {
                             ApplyRuntime(snapshot);
-                            RaiseStatus(
-                                "種族別特技ディスパッチャー適用中：" +
-                                snapshot.Count + "種類");
+                            RaiseStatus(snapshot.Count > 0
+                                ? "種族別特技ディスパッチャー適用中：" + snapshot.Count + "種類"
+                                : "種族別特技設定なし：元の命令を維持しています。");
                         }
 
                         if (status == 1)
@@ -1222,7 +1273,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
             try
             {
                 if (_pine.TryConnect() && _pine.GetStatus() == 0)
+                {
+                    ApplyIonazunForce(new Dictionary<int, ushort>());
                     RestoreCallInstruction();
+                }
             }
             catch
             {
