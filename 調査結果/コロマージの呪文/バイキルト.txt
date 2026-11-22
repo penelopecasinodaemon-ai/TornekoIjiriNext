@@ -1,0 +1,14 @@
+﻿ENEMY ACTION TRACE
+Date: 2026-11-22 16:46:29
+Read only: YES
+Hook address: 0x002435C4
+Code cave: 0x01F90000
+Trace address: 0x01F90080
+
+Recorded calls: 1
+Species ID: 20
+Action ID: 0x0014
+Action ID signed: 20
+
+Species ID is the runtime ID used by the game.
+Action ID is captured before the per-species override.
