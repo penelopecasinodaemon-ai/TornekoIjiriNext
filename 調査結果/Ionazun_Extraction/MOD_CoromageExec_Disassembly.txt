@@ -1,0 +1,480 @@
+
+C:\Users\penelope\Desktop\トルネコいじり作業環境\Torneko3_MOD.elf:     file format elf32-littlemips
+
+
+Disassembly of section .text:
+
+00228d70 <dgEnemy_CoromageExec>:
+  228d70:	27bdfeb0 	addiu	sp,sp,-336
+  228d74:	3c02008f 	lui	v0,0x8f
+  228d78:	ffb00110 	sd	s0,272(sp)
+  228d7c:	27b00040 	addiu	s0,sp,64
+  228d80:	30a500ff 	andi	a1,a1,0xff
+  228d84:	ffb10118 	sd	s1,280(sp)
+  228d88:	ffb20120 	sd	s2,288(sp)
+  228d8c:	0080882d 	move	s1,a0
+  228d90:	ffb30128 	sd	s3,296(sp)
+  228d94:	ffb40130 	sd	s4,304(sp)
+  228d98:	ffb50138 	sd	s5,312(sp)
+  228d9c:	ffb60140 	sd	s6,320(sp)
+  228da0:	ffbf0148 	sd	ra,328(sp)
+  228da4:	2447cf20 	addiu	a3,v0,-12512
+  228da8:	68e30007 	ldl	v1,7(a3)
+  228dac:	6ce30000 	ldr	v1,0(a3)
+  228db0:	8ce40008 	lw	a0,8(a3)
+  228db4:	b2030007 	sdl	v1,7(s0)
+  228db8:	b6030000 	sdr	v1,0(s0)
+  228dbc:	ae040008 	sw	a0,8(s0)
+  228dc0:	10a000b4 	beqz	a1,229094 <dgEnemy_CoromageExec+0x324>
+  228dc4:	00000000 	nop
+  228dc8:	8e220008 	lw	v0,8(s1)
+  228dcc:	84420168 	lh	v0,360(v0)
+  228dd0:	144000e3 	bnez	v0,229160 <dgEnemy_CoromageExec+0x3f0>
+  228dd4:	24040003 	li	a0,3
+  228dd8:	0000202d 	move	a0,zero
+  228ddc:	0c08748e 	jal	21d238 <dgRandam100>
+  228de0:	a3809272 	sb	zero,-28046(gp)
+  228de4:	87839cea 	lh	v1,-25366(gp)
+  228de8:	0043102a 	slt	v0,v0,v1
+  228dec:	104000a1 	beqz	v0,229074 <dgEnemy_CoromageExec+0x304>
+  228df0:	3c05008f 	lui	a1,0x8f
+  228df4:	0220202d 	move	a0,s1
+  228df8:	0c098d92 	jal	263648 <fpswStatusWindowSetDgn>
+  228dfc:	24a5cf30 	addiu	a1,a1,-12496
+  228e00:	0220202d 	move	a0,s1
+  228e04:	24050007 	li	a1,7
+  228e08:	0c0894c4 	jal	225310 <dgEnemyMotion>
+  228e0c:	0000302d 	move	a2,zero
+  228e10:	0c089b92 	jal	226e48 <dgEnemyAttackWaitAnimation>
+  228e14:	0220202d 	move	a0,s1
+  228e18:	0220202d 	move	a0,s1
+  228e1c:	0000282d 	move	a1,zero
+  228e20:	0c0b24e1 	jal	2c9384 <dgUtCheckMahotone>
+  228e24:	0000302d 	move	a2,zero
+  228e28:	5440018b 	bnezl	v0,229458 <dgEnemy_CoromageExec+0x6e8>
+  228e2c:	dfb00110 	ld	s0,272(sp)
+  228e30:	3c020065 	lui	v0,0x65
+  228e34:	8c53d16c 	lw	s3,-11924(v0)
+  228e38:	2a620028 	slti	v0,s3,40
+  228e3c:	10400086 	beqz	v0,229058 <dgEnemy_CoromageExec+0x2e8>
+  228e40:	24020001 	li	v0,1
+  228e44:	00131080 	sll	v0,s3,0x2
+  228e48:	27b40060 	addiu	s4,sp,96
+  228e4c:	3c120060 	lui	s2,0x60
+  228e50:	02429021 	addu	s2,s2,v0
+  228e54:	8e526180 	lw	s2,24960(s2)
+  228e58:	3c020092 	lui	v0,0x92
+  228e5c:	97879020 	lhu	a3,-28640(gp)
+  228e60:	27b50050 	addiu	s5,sp,80
+  228e64:	97889030 	lhu	t0,-28624(gp)
+  228e68:	0280202d 	move	a0,s4
+  228e6c:	0220282d 	move	a1,s1
+  228e70:	24437688 	addiu	v1,v0,30344
+  228e74:	80690000 	lb	t1,0(v1)
+  228e78:	806a0001 	lb	t2,1(v1)
+  228e7c:	a2a90000 	sb	t1,0(s5)
+  228e80:	a2aa0001 	sb	t2,1(s5)
+  228e84:	0c08639f 	jal	218e7c <dgSetDeadAction>
+  228e88:	24060007 	li	a2,7
+  228e8c:	8e420000 	lw	v0,0(s2)
+  228e90:	0441006c 	bgez	v0,229044 <dgEnemy_CoromageExec+0x2d4>
+  228e94:	24160001 	li	s6,1
+  228e98:	3c020069 	lui	v0,0x69
+  228e9c:	0240202d 	move	a0,s2
+  228ea0:	0c0b1d4b 	jal	2c752c <fpsUtMonsterName>
+  228ea4:	8c4521e4 	lw	a1,8676(v0)
+  228ea8:	12510066 	beq	s2,s1,229044 <dgEnemy_CoromageExec+0x2d4>
+  228eac:	0220202d 	move	a0,s1
+  228eb0:	0c0a9c50 	jal	2a7140 <dgIsSameRoomAttack>
+  228eb4:	0240282d 	move	a1,s2
+  228eb8:	10400062 	beqz	v0,229044 <dgEnemy_CoromageExec+0x2d4>
+  228ebc:	0220202d 	move	a0,s1
+  228ec0:	0c08dbe5 	jal	236f94 <dgEnemyCheckSameSide>
+  228ec4:	0240282d 	move	a1,s2
+  228ec8:	5440005f 	bnezl	v0,229048 <dgEnemy_CoromageExec+0x2d8>
+  228ecc:	26730001 	addiu	s3,s3,1
+  228ed0:	8e420008 	lw	v0,8(s2)
+  228ed4:	8c450014 	lw	a1,20(v0)
+  228ed8:	0c087b76 	jal	21edd8 <dgUtIsRiver>
+  228edc:	8c440010 	lw	a0,16(v0)
+  228ee0:	54400059 	bnezl	v0,229048 <dgEnemy_CoromageExec+0x2d8>
+  228ee4:	26730001 	addiu	s3,s3,1
+  228ee8:	0220202d 	move	a0,s1
+  228eec:	0240282d 	move	a1,s2
+  228ef0:	0c0b24e1 	jal	2c9384 <dgUtCheckMahotone>
+  228ef4:	0000302d 	move	a2,zero
+  228ef8:	54400053 	bnezl	v0,229048 <dgEnemy_CoromageExec+0x2d8>
+  228efc:	26730001 	addiu	s3,s3,1
+  228f00:	97879020 	lhu	a3,-28640(gp)
+  228f04:	0220202d 	move	a0,s1
+  228f08:	97889030 	lhu	t0,-28624(gp)
+  228f0c:	0240282d 	move	a1,s2
+  228f10:	0280302d 	move	a2,s4
+  228f14:	0c0b25a5 	jal	2c9694 <dgUtCheckGaniras>
+  228f18:	24090001 	li	t1,1
+  228f1c:	5440004a 	bnezl	v0,229048 <dgEnemy_CoromageExec+0x2d8>
+  228f20:	26730001 	addiu	s3,s3,1
+  228f24:	0220202d 	move	a0,s1
+  228f28:	0240282d 	move	a1,s2
+  228f2c:	0c0b257e 	jal	2c95f8 <dgUtCheckMoguriMonster>
+  228f30:	24060001 	li	a2,1
+  228f34:	54400044 	bnezl	v0,229048 <dgEnemy_CoromageExec+0x2d8>
+  228f38:	26730001 	addiu	s3,s3,1
+  228f3c:	0220202d 	move	a0,s1
+  228f40:	0240282d 	move	a1,s2
+  228f44:	0c08dedb 	jal	237b6c <dgNowAstronOrFreeze>
+  228f48:	24060001 	li	a2,1
+  228f4c:	5440003e 	bnezl	v0,229048 <dgEnemy_CoromageExec+0x2d8>
+  228f50:	26730001 	addiu	s3,s3,1
+  228f54:	8f82999c 	lw	v0,-26212(gp)
+  228f58:	8e450008 	lw	a1,8(s2)
+  228f5c:	8c440008 	lw	a0,8(v0)
+  228f60:	8ca20010 	lw	v0,16(a1)
+  228f64:	8c830010 	lw	v1,16(a0)
+  228f68:	00431023 	subu	v0,v0,v1
+  228f6c:	24420004 	addiu	v0,v0,4
+  228f70:	2c420009 	sltiu	v0,v0,9
+  228f74:	5040001d 	beqzl	v0,228fec <dgEnemy_CoromageExec+0x27c>
+  228f78:	97869c60 	lhu	a2,-25504(gp)
+  228f7c:	8c830014 	lw	v1,20(a0)
+  228f80:	8ca20014 	lw	v0,20(a1)
+  228f84:	00431023 	subu	v0,v0,v1
+  228f88:	24420004 	addiu	v0,v0,4
+  228f8c:	2c420009 	sltiu	v0,v0,9
+  228f90:	50400016 	beqzl	v0,228fec <dgEnemy_CoromageExec+0x27c>
+  228f94:	97869c60 	lhu	a2,-25504(gp)
+  228f98:	27b00070 	addiu	s0,sp,112
+  228f9c:	24a50010 	addiu	a1,a1,16
+  228fa0:	0c0b1d11 	jal	2c7444 <dgUtCellPosYp>
+  228fa4:	0200202d 	move	a0,s0
+  228fa8:	0000282d 	move	a1,zero
+  228fac:	27a40080 	addiu	a0,sp,128
+  228fb0:	0c0d2237 	jal	3488dc <memset>
+  228fb4:	24060090 	li	a2,144
+  228fb8:	0200282d 	move	a1,s0
+  228fbc:	0c0b7a43 	jal	2de90c <AL3D_CopyVector>
+  228fc0:	27a40080 	addiu	a0,sp,128
+  228fc4:	0000202d 	move	a0,zero
+  228fc8:	24050021 	li	a1,33
+  228fcc:	0c0bb159 	jal	2ec564 <onEffectStart2>
+  228fd0:	27a60080 	addiu	a2,sp,128
+  228fd4:	0240202d 	move	a0,s2
+  228fd8:	0c0a9f5e 	jal	2a7d78 <dgSEPlayCh>
+  228fdc:	240508b3 	li	a1,2227
+  228fe0:	0c0c0c74 	jal	3031d0 <tkPlayVibration>
+  228fe4:	24040005 	li	a0,5
+  228fe8:	97869c60 	lhu	a2,-25504(gp)
+  228fec:	0240282d 	move	a1,s2
+  228ff0:	938d9038 	lbu	t5,-28616(gp)
+  228ff4:	0280382d 	move	a3,s4
+  228ff8:	00063400 	sll	a2,a2,0x10
+  228ffc:	93839098 	lbu	v1,-28520(gp)
+  229000:	978c9020 	lhu	t4,-28640(gp)
+  229004:	00063403 	sra	a2,a2,0x10
+  229008:	97829030 	lhu	v0,-28624(gp)
+  22900c:	02a0402d 	move	t0,s5
+  229010:	0220202d 	move	a0,s1
+  229014:	24090001 	li	t1,1
+  229018:	240a0014 	li	t2,20
+  22901c:	240b0001 	li	t3,1
+  229020:	a3ad0000 	sb	t5,0(sp)
+  229024:	a3a30008 	sb	v1,8(sp)
+  229028:	a7ac0010 	sh	t4,16(sp)
+  22902c:	a7a20018 	sh	v0,24(sp)
+  229030:	a3b60020 	sb	s6,32(sp)
+  229034:	afa00028 	sw	zero,40(sp)
+  229038:	afa00030 	sw	zero,48(sp)
+  22903c:	0c0832ea 	jal	20cba8 <dgDamageEnemyEt>
+  229040:	a3a00038 	sb	zero,56(sp)
+  229044:	26730001 	addiu	s3,s3,1
+  229048:	2a620028 	slti	v0,s3,40
+  22904c:	1440ff7e 	bnez	v0,228e48 <dgEnemy_CoromageExec+0xd8>
+  229050:	00131080 	sll	v0,s3,0x2
+  229054:	24020001 	li	v0,1
+  229058:	0220202d 	move	a0,s1
+  22905c:	0c0a664c 	jal	299930 <dgPartyLevelUp>
+  229060:	a3829272 	sb	v0,-28046(gp)
+  229064:	8e230008 	lw	v1,8(s1)
+  229068:	240203e7 	li	v0,999
+  22906c:	100000f9 	b	229454 <dgEnemy_CoromageExec+0x6e4>
+  229070:	a4620168 	sh	v0,360(v1)
+  229074:	0c08e2e7 	jal	238b9c <dgEnemyRealPopoloParty>
+  229078:	0220202d 	move	a0,s1
+  22907c:	10400037 	beqz	v0,22915c <dgEnemy_CoromageExec+0x3ec>
+  229080:	0220202d 	move	a0,s1
+  229084:	0c08288c 	jal	20a230 <dgAttackPartyLevelup>
+  229088:	24050001 	li	a1,1
+  22908c:	10000034 	b	229160 <dgEnemy_CoromageExec+0x3f0>
+  229090:	24040003 	li	a0,3
+  229094:	0c08748e 	jal	21d238 <dgRandam100>
+  229098:	0000202d 	move	a0,zero
+  22909c:	87839cea 	lh	v1,-25366(gp)
+  2290a0:	0043102a 	slt	v0,v0,v1
+  2290a4:	1040002e 	beqz	v0,229160 <dgEnemy_CoromageExec+0x3f0>
+  2290a8:	24040003 	li	a0,3
+  2290ac:	3c05008f 	lui	a1,0x8f
+  2290b0:	0220202d 	move	a0,s1
+  2290b4:	24a5cf40 	addiu	a1,a1,-12480
+  2290b8:	0c098d92 	jal	263648 <fpswStatusWindowSetDgn>
+  2290bc:	3c120092 	lui	s2,0x92
+  2290c0:	0220202d 	move	a0,s1
+  2290c4:	24050008 	li	a1,8
+  2290c8:	0c0894c4 	jal	225310 <dgEnemyMotion>
+  2290cc:	0000302d 	move	a2,zero
+  2290d0:	0c08dfb7 	jal	237edc <dgEnemyInScreenView>
+  2290d4:	0220202d 	move	a0,s1
+  2290d8:	1040001c 	beqz	v0,22914c <dgEnemy_CoromageExec+0x3dc>
+  2290dc:	0220202d 	move	a0,s1
+  2290e0:	0c089b92 	jal	226e48 <dgEnemyAttackWaitAnimation>
+  2290e4:	0000802d 	move	s0,zero
+  2290e8:	0220202d 	move	a0,s1
+  2290ec:	0c098d92 	jal	263648 <fpswStatusWindowSetDgn>
+  2290f0:	26457690 	addiu	a1,s2,30352
+  2290f4:	8e22000c 	lw	v0,12(s1)
+  2290f8:	24030008 	li	v1,8
+  2290fc:	3c010001 	lui	at,0x1
+  229100:	00220821 	addu	at,at,v0
+  229104:	8422a110 	lh	v0,-24304(at)
+  229108:	544300d3 	bnel	v0,v1,229458 <dgEnemy_CoromageExec+0x6e8>
+  22910c:	dfb00110 	ld	s0,272(sp)
+  229110:	2404000a 	li	a0,10
+  229114:	24050330 	li	a1,816
+  229118:	0c0a6af8 	jal	29abe0 <dgPauseTaskN>
+  22911c:	26100001 	addiu	s0,s0,1
+  229120:	2a020064 	slti	v0,s0,100
+  229124:	104000cb 	beqz	v0,229454 <dgEnemy_CoromageExec+0x6e4>
+  229128:	24030008 	li	v1,8
+  22912c:	8e22000c 	lw	v0,12(s1)
+  229130:	3c010001 	lui	at,0x1
+  229134:	00220821 	addu	at,at,v0
+  229138:	8422a110 	lh	v0,-24304(at)
+  22913c:	5043fff5 	beql	v0,v1,229114 <dgEnemy_CoromageExec+0x3a4>
+  229140:	2404000a 	li	a0,10
+  229144:	100000c4 	b	229458 <dgEnemy_CoromageExec+0x6e8>
+  229148:	dfb00110 	ld	s0,272(sp)
+  22914c:	0c098d92 	jal	263648 <fpswStatusWindowSetDgn>
+  229150:	26457690 	addiu	a1,s2,30352
+  229154:	100000c0 	b	229458 <dgEnemy_CoromageExec+0x6e8>
+  229158:	dfb00110 	ld	s0,272(sp)
+  22915c:	24040003 	li	a0,3
+  229160:	0c09ca3e 	jal	2728f8 <RandamLimit>
+  229164:	0000282d 	move	a1,zero
+  229168:	0220202d 	move	a0,s1
+  22916c:	0040902d 	move	s2,v0
+  229170:	00121080 	sll	v0,s2,0x2
+  229174:	02021021 	addu	v0,s0,v0
+  229178:	0c098d92 	jal	263648 <fpswStatusWindowSetDgn>
+  22917c:	8c450000 	lw	a1,0(v0)
+  229180:	0220202d 	move	a0,s1
+  229184:	24050007 	li	a1,7
+  229188:	0c0894c4 	jal	225310 <dgEnemyMotion>
+  22918c:	0000302d 	move	a2,zero
+  229190:	0c089b92 	jal	226e48 <dgEnemyAttackWaitAnimation>
+  229194:	0220202d 	move	a0,s1
+  229198:	0220202d 	move	a0,s1
+  22919c:	0000282d 	move	a1,zero
+  2291a0:	0c0b24e1 	jal	2c9384 <dgUtCheckMahotone>
+  2291a4:	0000302d 	move	a2,zero
+  2291a8:	544000ab 	bnezl	v0,229458 <dgEnemy_CoromageExec+0x6e8>
+  2291ac:	dfb00110 	ld	s0,272(sp)
+  2291b0:	0c08dfb7 	jal	237edc <dgEnemyInScreenView>
+  2291b4:	0220202d 	move	a0,s1
+  2291b8:	10400017 	beqz	v0,229218 <dgEnemy_CoromageExec+0x4a8>
+  2291bc:	24020001 	li	v0,1
+  2291c0:	1242000f 	beq	s2,v0,229200 <dgEnemy_CoromageExec+0x490>
+  2291c4:	2a420002 	slti	v0,s2,2
+  2291c8:	10400005 	beqz	v0,2291e0 <dgEnemy_CoromageExec+0x470>
+  2291cc:	24020002 	li	v0,2
+  2291d0:	12400007 	beqz	s2,2291f0 <dgEnemy_CoromageExec+0x480>
+  2291d4:	3c020065 	lui	v0,0x65
+  2291d8:	10000011 	b	229220 <dgEnemy_CoromageExec+0x4b0>
+  2291dc:	8c53d16c 	lw	s3,-11924(v0)
+  2291e0:	1242000b 	beq	s2,v0,229210 <dgEnemy_CoromageExec+0x4a0>
+  2291e4:	3c020065 	lui	v0,0x65
+  2291e8:	1000000d 	b	229220 <dgEnemy_CoromageExec+0x4b0>
+  2291ec:	8c53d16c 	lw	s3,-11924(v0)
+  2291f0:	0c0bcf21 	jal	2f3c84 <onEffectFloorBikiltStart>
+  2291f4:	8e24000c 	lw	a0,12(s1)
+  2291f8:	10000008 	b	22921c <dgEnemy_CoromageExec+0x4ac>
+  2291fc:	3c020065 	lui	v0,0x65
+  229200:	0c0bcf34 	jal	2f3cd0 <onEffectFloorSkaraStart>
+  229204:	8e24000c 	lw	a0,12(s1)
+  229208:	10000004 	b	22921c <dgEnemy_CoromageExec+0x4ac>
+  22920c:	3c020065 	lui	v0,0x65
+  229210:	0c0bcf4a 	jal	2f3d28 <onEffectFloorPiorimuStart>
+  229214:	8e24000c 	lw	a0,12(s1)
+  229218:	3c020065 	lui	v0,0x65
+  22921c:	8c53d16c 	lw	s3,-11924(v0)
+  229220:	2a620028 	slti	v0,s3,40
+  229224:	1040008c 	beqz	v0,229458 <dgEnemy_CoromageExec+0x6e8>
+  229228:	dfb00110 	ld	s0,272(sp)
+  22922c:	00131080 	sll	v0,s3,0x2
+  229230:	27b40060 	addiu	s4,sp,96
+  229234:	3c100060 	lui	s0,0x60
+  229238:	02028021 	addu	s0,s0,v0
+  22923c:	8e106180 	lw	s0,24960(s0)
+  229240:	0280202d 	move	a0,s4
+  229244:	97879020 	lhu	a3,-28640(gp)
+  229248:	0220282d 	move	a1,s1
+  22924c:	97889030 	lhu	t0,-28624(gp)
+  229250:	0c08639f 	jal	218e7c <dgSetDeadAction>
+  229254:	24060041 	li	a2,65
+  229258:	8e020000 	lw	v0,0(s0)
+  22925c:	04410079 	bgez	v0,229444 <dgEnemy_CoromageExec+0x6d4>
+  229260:	3c020069 	lui	v0,0x69
+  229264:	0200202d 	move	a0,s0
+  229268:	0c0b1d4b 	jal	2c752c <fpsUtMonsterName>
+  22926c:	8c4521e4 	lw	a1,8676(v0)
+  229270:	0220202d 	move	a0,s1
+  229274:	0c08dbe5 	jal	236f94 <dgEnemyCheckSameSide>
+  229278:	0200282d 	move	a1,s0
+  22927c:	10400071 	beqz	v0,229444 <dgEnemy_CoromageExec+0x6d4>
+  229280:	0200282d 	move	a1,s0
+  229284:	0220202d 	move	a0,s1
+  229288:	0c0b24e1 	jal	2c9384 <dgUtCheckMahotone>
+  22928c:	0000302d 	move	a2,zero
+  229290:	5440006d 	bnezl	v0,229448 <dgEnemy_CoromageExec+0x6d8>
+  229294:	26730001 	addiu	s3,s3,1
+  229298:	97879020 	lhu	a3,-28640(gp)
+  22929c:	0280302d 	move	a2,s4
+  2292a0:	97889030 	lhu	t0,-28624(gp)
+  2292a4:	0220202d 	move	a0,s1
+  2292a8:	0200282d 	move	a1,s0
+  2292ac:	0c0b25a5 	jal	2c9694 <dgUtCheckGaniras>
+  2292b0:	24090001 	li	t1,1
+  2292b4:	54400064 	bnezl	v0,229448 <dgEnemy_CoromageExec+0x6d8>
+  2292b8:	26730001 	addiu	s3,s3,1
+  2292bc:	0220202d 	move	a0,s1
+  2292c0:	0200282d 	move	a1,s0
+  2292c4:	0c0b257e 	jal	2c95f8 <dgUtCheckMoguriMonster>
+  2292c8:	24060001 	li	a2,1
+  2292cc:	5440005e 	bnezl	v0,229448 <dgEnemy_CoromageExec+0x6d8>
+  2292d0:	26730001 	addiu	s3,s3,1
+  2292d4:	0220202d 	move	a0,s1
+  2292d8:	0200282d 	move	a1,s0
+  2292dc:	0c08dedb 	jal	237b6c <dgNowAstronOrFreeze>
+  2292e0:	24060001 	li	a2,1
+  2292e4:	54400058 	bnezl	v0,229448 <dgEnemy_CoromageExec+0x6d8>
+  2292e8:	26730001 	addiu	s3,s3,1
+  2292ec:	0c08df02 	jal	237c08 <dgEnemyIsShopMaster>
+  2292f0:	0200202d 	move	a0,s0
+  2292f4:	54400054 	bnezl	v0,229448 <dgEnemy_CoromageExec+0x6d8>
+  2292f8:	26730001 	addiu	s3,s3,1
+  2292fc:	24020001 	li	v0,1
+  229300:	12420024 	beq	s2,v0,229394 <dgEnemy_CoromageExec+0x624>
+  229304:	2a420002 	slti	v0,s2,2
+  229308:	10400005 	beqz	v0,229320 <dgEnemy_CoromageExec+0x5b0>
+  22930c:	24020002 	li	v0,2
+  229310:	12400007 	beqz	s2,229330 <dgEnemy_CoromageExec+0x5c0>
+  229314:	00000000 	nop
+  229318:	1000004b 	b	229448 <dgEnemy_CoromageExec+0x6d8>
+  22931c:	26730001 	addiu	s3,s3,1
+  229320:	1242003d 	beq	s2,v0,229418 <dgEnemy_CoromageExec+0x6a8>
+  229324:	00000000 	nop
+  229328:	10000047 	b	229448 <dgEnemy_CoromageExec+0x6d8>
+  22932c:	26730001 	addiu	s3,s3,1
+  229330:	12600015 	beqz	s3,229388 <dgEnemy_CoromageExec+0x618>
+  229334:	3c06008f 	lui	a2,0x8f
+  229338:	0c0b37f0 	jal	2cdfc0 <dgUtSetStatusMonsterBikiruto>
+  22933c:	0200202d 	move	a0,s0
+  229340:	54400005 	bnezl	v0,229358 <dgEnemy_CoromageExec+0x5e8>
+  229344:	3c06008f 	lui	a2,0x8f
+  229348:	3c06008f 	lui	a2,0x8f
+  22934c:	0200282d 	move	a1,s0
+  229350:	1000002d 	b	229408 <dgEnemy_CoromageExec+0x698>
+  229354:	24c6cf50 	addiu	a2,a2,-12464
+  229358:	0220202d 	move	a0,s1
+  22935c:	24c6cf60 	addiu	a2,a2,-12448
+  229360:	0c098d59 	jal	263564 <fpswStatusWindowSetDgnW>
+  229364:	0200282d 	move	a1,s0
+  229368:	24040005 	li	a0,5
+  22936c:	0c0b37d9 	jal	2cdf64 <dgStatusEffect>
+  229370:	0200282d 	move	a1,s0
+  229374:	0200202d 	move	a0,s0
+  229378:	0c0a9f5e 	jal	2a7d78 <dgSEPlayCh>
+  22937c:	24050c80 	li	a1,3200
+  229380:	10000031 	b	229448 <dgEnemy_CoromageExec+0x6d8>
+  229384:	26730001 	addiu	s3,s3,1
+  229388:	0200282d 	move	a1,s0
+  22938c:	1000001e 	b	229408 <dgEnemy_CoromageExec+0x698>
+  229390:	24c6cf70 	addiu	a2,a2,-12432
+  229394:	1260001a 	beqz	s3,229400 <dgEnemy_CoromageExec+0x690>
+  229398:	3c06008f 	lui	a2,0x8f
+  22939c:	8e020008 	lw	v0,8(s0)
+  2293a0:	84420110 	lh	v0,272(v0)
+  2293a4:	28420013 	slti	v0,v0,19
+  2293a8:	10400012 	beqz	v0,2293f4 <dgEnemy_CoromageExec+0x684>
+  2293ac:	3c06008f 	lui	a2,0x8f
+  2293b0:	3c06008f 	lui	a2,0x8f
+  2293b4:	0220202d 	move	a0,s1
+  2293b8:	24c6cf80 	addiu	a2,a2,-12416
+  2293bc:	0c098d59 	jal	263564 <fpswStatusWindowSetDgnW>
+  2293c0:	0200282d 	move	a1,s0
+  2293c4:	24040007 	li	a0,7
+  2293c8:	0c0b37d9 	jal	2cdf64 <dgStatusEffect>
+  2293cc:	0200282d 	move	a1,s0
+  2293d0:	8e030008 	lw	v1,8(s0)
+  2293d4:	0200202d 	move	a0,s0
+  2293d8:	24050c81 	li	a1,3201
+  2293dc:	94620110 	lhu	v0,272(v1)
+  2293e0:	24420001 	addiu	v0,v0,1
+  2293e4:	0c0a9f5e 	jal	2a7d78 <dgSEPlayCh>
+  2293e8:	a4620110 	sh	v0,272(v1)
+  2293ec:	10000016 	b	229448 <dgEnemy_CoromageExec+0x6d8>
+  2293f0:	26730001 	addiu	s3,s3,1
+  2293f4:	0200282d 	move	a1,s0
+  2293f8:	10000003 	b	229408 <dgEnemy_CoromageExec+0x698>
+  2293fc:	24c6cf90 	addiu	a2,a2,-12400
+  229400:	0200282d 	move	a1,s0
+  229404:	24c6cfa0 	addiu	a2,a2,-12384
+  229408:	0c098d59 	jal	263564 <fpswStatusWindowSetDgnW>
+  22940c:	0220202d 	move	a0,s1
+  229410:	1000000d 	b	229448 <dgEnemy_CoromageExec+0x6d8>
+  229414:	26730001 	addiu	s3,s3,1
+  229418:	12600006 	beqz	s3,229434 <dgEnemy_CoromageExec+0x6c4>
+  22941c:	0200282d 	move	a1,s0
+  229420:	0220202d 	move	a0,s1
+  229424:	0c0b33ad 	jal	2cceb4 <dgUtSetStatusFast>
+  229428:	0000302d 	move	a2,zero
+  22942c:	10000006 	b	229448 <dgEnemy_CoromageExec+0x6d8>
+  229430:	26730001 	addiu	s3,s3,1
+  229434:	3c06008f 	lui	a2,0x8f
+  229438:	24c6cfb0 	addiu	a2,a2,-12368
+  22943c:	0c098d59 	jal	263564 <fpswStatusWindowSetDgnW>
+  229440:	0220202d 	move	a0,s1
+  229444:	26730001 	addiu	s3,s3,1
+  229448:	2a620028 	slti	v0,s3,40
+  22944c:	1440ff78 	bnez	v0,229230 <dgEnemy_CoromageExec+0x4c0>
+  229450:	00131080 	sll	v0,s3,0x2
+  229454:	dfb00110 	ld	s0,272(sp)
+  229458:	dfb10118 	ld	s1,280(sp)
+  22945c:	dfb20120 	ld	s2,288(sp)
+  229460:	dfb30128 	ld	s3,296(sp)
+  229464:	dfb40130 	ld	s4,304(sp)
+  229468:	dfb50138 	ld	s5,312(sp)
+  22946c:	dfb60140 	ld	s6,320(sp)
+  229470:	dfbf0148 	ld	ra,328(sp)
+  229474:	03e00008 	jr	ra
+  229478:	27bd0150 	addiu	sp,sp,336
+
+Disassembly of section .vutext:
+
+Disassembly of section .DVP.overlay..0x0.2213892170.18.0:
+
+Disassembly of section .DVP.overlay..unknvma.2256712727.394.1:
+
+Disassembly of section .DVP.overlay..0x0.2366183671.18.0:
+
+Disassembly of section .DVP.overlay..unknvma.875910486.367.1:
+
+Disassembly of section .DVP.overlay..0x0.2158701207.19.0:
+
+Disassembly of section .DVP.overlay..unknvma.1887408076.410.1:
+
+Disassembly of section .DVP.overlay..0x0.3910459133.18.0:
+
+Disassembly of section .DVP.overlay..unknvma.1902513628.394.1:
+
+Disassembly of section .DVP.overlay..0x0.1282071883.17.0:
+
+Disassembly of section .DVP.overlay..unknvma.1276789728.412.1:
