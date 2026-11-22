@@ -1,0 +1,885 @@
+﻿ACTION TRACE SOURCE INSPECTION
+Date: 2026-11-22 16:38:58
+Read only: YES
+
+===== ActionAutoRestoreService.cs =====
+    7: namespace TornekoIjiriPort;
+    8: 
+    9: internal sealed class ActionAutoRestoreService : IDisposable
+   10: {
+   11:     // 敵特技呼び出し命令
+   12:     private const uint PatchAddress = 0x002435C4u;
+   13: 
+   14:     // 元の jal dgEnemyAttack
+   15:     private const uint OriginalCallInstruction = 0x0C08F1D4u;
+   16: 
+   17:     // 元の遅延スロット lh s1,4(v0)
+   18:     private const uint DelaySlotAddress = 0x002435C8u;
+   19:     private const uint OriginalDelayInstruction = 0x84510004u;
+   20: 
+   21:     // 旧版の全敵共通パッチ ori s1,zero,actionId
+   22:     private const uint LegacyPatchBase = 0x34110000u;
+   23: 
+   24:     // EE RAMの高位領域から512バイトの空き領域を探す
+   25:     private const uint CaveSearchStart = 0x01FF0000u;
+   26:     private const uint CaveSearchEnd = 0x01F00000u;
+   27:     private const uint CaveSearchStep = 0x00010000u;
+   28: 
+   29:     private const uint CaveSize = 0x200u;
+   30:     private const uint TableOffset = 0x100u;
+   31:     private const int TableSize = 256;
+   32: 
+   33:         internal static readonly (ushort Id, string Name)[] ActionChoices =
+   34:     {
+   35:         (0x08, "体力が回復しなくなった"),
+   36:         (0x09, "体力が減っていく"),
+   37:         (0x13, "かなしばり"),
+   38:         (0x1A, "仲間たちを呼ぶ"),
+   39:         (0x1C, "凍える吹雪"),
+   40:         (0x1F, "呪いの言葉"),
+   41:         (0x20, "杖の使用回数0"),
+   42:         (0x21, "睨みつけ"),
+   43:         (0x22, "アストロン"),
+   44:         (0x23, "力を溜めた(トロル)"),
+   45:         (0x24, "力を溜めた(トロルボンバー)"),
+   46:         (0x25, "超ちからため(トロルキング)"),
+   47:         (0x26, "くさった死体のくさった液"),
+   48:         (0x27, "リビングデッドのくさった液"),
+   49:         (0x28, "グールのくさった液"),
+   50:         (0x29, "どくどくゾンビのくさった液"),
+   51:         (0x2B, "キースのホーミングブレス"),
+   52:         (0x2C, "ダースのホーミングブレス"),
+   53:         (0x2D, "装備弾き"),
+   54:         (0x2E, "しりょうのきしのアイテム弾き"),
+   55:         (0x2F, "かげのきしのアイテム弾き"),
+   56:         (0x33, "わらいぶくろのお金盗み"),
+   57:         (0x34, "毒を受けて力が1下がった"),
+   58:         (0x35, "毒を受けて力が3下がった(マタンゴ)"),
+   59:         (0x36, "毒を受けて力が3下がった(マージマタンゴ)"),
+   60:         (0x37, "ラリホー"),
+   61:         (0x38, "催眠"),
+   62:         (0x39, "ベビーサタンのアイテム盗み"),
+   63:         (0x3A, "ミニデーモンの壺盗み"),
+   64:         (0x3B, "つかいまの装備盗み"),
+   65:         (0x3C, "ミステリドールの吸収光線"),
+  151:     internal ActionAutoRestoreService()
+  152:     {
+  153:         _timer = new System.Threading.Timer(Poll, null, 500, 500);
+  154:     }
+  155: 
+  156:     internal static uint ReadShared32(uint address)
+  157:     {
+  158:         lock (SharedPineAccessSync)
+  159:         {
+  160:             if (!SharedPine.TryConnect())
+  161:             {
+  162:                 throw new InvalidOperationException(
+  163:                     "PCSX2 PINE TCP 28011に接続できません。");
+  164:             }
+  165: 
+  166:             return SharedPine.Read32(address);
+  167:         }
+  168:     }
+  169: 
+  170:     internal static void WriteShared32(uint address, uint value)
+  171:     {
+  172:         lock (SharedPineAccessSync)
+  173:         {
+  174:             if (!SharedPine.TryConnect())
+  175:             {
+  176:                 throw new InvalidOperationException(
+  177:                     "PCSX2 PINE TCP 28011に接続できません。");
+  178:             }
+  179: 
+  180:             SharedPine.Write32(address, value);
+  181:         }
+  182:     }
+  183: 
+  184:     internal static uint GetSharedStatus()
+  185:     {
+  186:         lock (SharedPineAccessSync)
+  187:         {
+  188:             if (!SharedPine.TryConnect())
+  189:             {
+  190:                 throw new InvalidOperationException(
+  191:                     "PCSX2 PINE TCP 28011に接続できません。");
+  192:             }
+  193: 
+  194:             return SharedPine.GetStatus();
+  195:         }
+  196:     }
+  197: 
+  198:     private static bool IsLegacyPatch(uint instruction)
+  199:     {
+  200:         return (instruction & 0xFFFF0000u) == LegacyPatchBase;
+  201:     }
+  202: 
+  203:     private static bool IsDispatcherCall(uint instruction)
+  204:     {
+  205:         if ((instruction >> 26) != 3u)
+  206:             return false;
+  207: 
+  208:         uint target = (instruction & 0x03FFFFFFu) << 2;
+  209: 
+  210:         return target >= CaveSearchEnd &&
+  211:                target <= CaveSearchStart;
+  212:     }
+  213: 
+  214:     private static uint DecodeDispatcherAddress(uint instruction)
+  215:     {
+  216:         return (instruction & 0x03FFFFFFu) << 2;
+  217:     }
+  218: 
+  219:     private static uint EncodeJal(uint address)
+  220:     {
+  221:         if ((address & 0xF0000000u) !=
+  222:             ((PatchAddress + 4u) & 0xF0000000u))
+  223:         {
+  224:             throw new InvalidOperationException(
+  225:                 "ディスパッチャーのアドレスがJALの到達範囲外です。");
+  226:         }
+  227: 
+  228:         return 0x0C000000u | ((address >> 2) & 0x03FFFFFFu);
+  229:     }
+  230: 
+  231:     internal bool TryApply(
+  232:         IEnumerable<KeyValuePair<int, ushort>> monsterActions,
+  233:         out string message)
+  234:     {
+  235:         message = "";
+  236: 
+  237:         if (monsterActions == null)
+  238:         {
+  239:             message = "モンスター別特技設定がありません。";
+  240:             return false;
+  241:         }
+  242: 
+  243:         var copy = new Dictionary<int, ushort>();
+  244: 
+  245:         foreach (var pair in monsterActions)
+  246:             copy[pair.Key] = pair.Value;
+  247: 
+  248:         lock (_stateSync)
+  249:             _actions = copy;
+  250: 
+  251:         lock (_operationSync)
+  252:         {
+  253:             try
+  254:             {
+  255:                 if (!_pine.TryConnect())
+  256:                 {
+  257:                     message =
+  268:                         "設定は保持しました。\n" +
+  269:                         "PCSX2をゲーム実行状態にしてください。";
+  270:                     return false;
+  271:                 }
+  272: 
+  273:                 ApplyRuntime(copy);
+  274: 
+  275:                 if (copy.Count == 0)
+  276:                 {
+  277:                     message =
+  278:                         "種族別特技設定をすべて解除しました。\n" +
+  279:                         "元の特技処理命令へ復元しました。";
+  280:                     RaiseStatus("種族別特技設定なし：元の命令へ復元済みです。");
+  281:                     return true;
+  282:                 }
+  283: 
+  284:                 message =
+  285:                     "種族別特技設定をPCSX2へ適用しました。\n" +
+  286:                     "設定種族数: " + copy.Count + "\n" +
+  287:                     "種族IDはモンスター一覧番号+1で照合します。\n" +
+  288:                     "個体データは変更していません。\n" +
+  289:                     "実際の特技動作はゲーム内で確認してください。";
+  290: 
+  291:                 RaiseStatus(
+  292:                     "種族別特技ディスパッチャー適用中：" +
+  293:                     copy.Count + "種類");
+  294: 
+  295:                 return true;
+  296:             }
+  297:             catch (Exception ex)
+  298:             {
+  299:                 message =
+  300:                     "種族別特技の適用に失敗しました。\n" +
+  301:                     ex.Message;
+  302:                 return false;
+  303:             }
+  304:         }
+  305:     }
+  306: 
+  307:     private byte[] BuildActionTable(
+  308:         Dictionary<int, ushort> actions)
+  356:         }
+  357: 
+  358:         return true;
+  359:     }
+  360: 
+  361:     private bool IsDispatcherCode(uint address)
+  362:     {
+  363:         uint tableAddress = address + TableOffset;
+  364: 
+  365:         uint[] expected =
+  366:         {
+  367:             0x90480006u,
+  368:             0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
+  369:             0x35290000u | (tableAddress & 0xFFFFu),
+  370:             0x01284821u,
+  371:             0x912A0000u,
+  372:             0x11400002u,
+  373:             0x00000000u,
+  374:             0x01408821u,
+  375:             0x0808F1D4u,
+  376:             0x00000000u
+  377:         };
+  378: 
+  379:         for (int i = 0; i < expected.Length; i++)
+  380:         {
+  381:             if (_pine.Read32(address + (uint)(i * 4)) != expected[i])
+  382:                 return false;
+  383:         }
+  384: 
+  385:         return true;
+  386:     }
+  387: 
+  388:     private uint FindCodeCave()
+  389:     {
+  390:         for (
+  391:             uint candidate = CaveSearchStart;
+  392:             candidate >= CaveSearchEnd;
+  393:             candidate -= CaveSearchStep)
+  394:         {
+  395:             bool free = true;
+  396: 
+  397:             for (uint offset = 0; offset < CaveSize; offset += 4)
+  398:             {
+  399:                 if (_pine.Read32(candidate + offset) != 0)
+  400:                 {
+  401:                     free = false;
+  402:                     break;
+  403:                 }
+  404:             }
+  405: 
+  406:             if (free)
+  407:                 return candidate;
+  408:         }
+  409: 
+  410:         throw new InvalidOperationException(
+  411:             "EE RAMの指定範囲に512バイトの空き領域が見つかりません。\n" +
+  412:             "安全確認のため、コードを書き込みませんでした。");
+  413:     }
+  414: 
+  415:     private void WriteDispatcherCode(uint address)
+  416:     {
+  417:         uint tableAddress = address + TableOffset;
+  418: 
+  419:         uint[] code =
+  420:         {
+  421:             // lbu t0,6(v0) : 1バイトの種族IDを読み取る
+  422:             0x90480006u,
+  423: 
+  424:             // lui t1,hi(table)
+  425:             0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
+  426: 
+  427:             // ori t1,t1,lo(table)
+  428:             0x35290000u | (tableAddress & 0xFFFFu),
+  429: 
+  430:             // addu t1,t1,t0
+  431:             0x01284821u,
+  432: 
+  433:             // lbu t2,0(t1)
+  434:             0x912A0000u,
+  435: 
+  436:             // beq t2,zero,skip
+  437:             0x11400002u,
+  438: 
+  439:             // nop
+  440:             0x00000000u,
+  441: 
+  442:             // addu s1,t2,zero
+  443:             0x01408821u,
+  444: 
+  445:             // j dgEnemyAttack
+  446:             0x0808F1D4u,
+  447: 
+  448:             // nop
+  449:             0x00000000u
+  450:         };
+  451: 
+  452:         for (int i = 0; i < code.Length; i++)
+  453:             _pine.Write32(address + (uint)(i * 4), code[i]);
+  454: 
+  455:         if (!IsDispatcherCode(address))
+  456:         {
+  457:             throw new InvalidOperationException(
+  458:                 "MIPSディスパッチャーの書き込み検証に失敗しました。");
+  459:         }
+  460:     }
+  461: 
+  462:     private void WriteActionTable(uint address, byte[] table)
+  463:     {
+  464:         for (int i = 0; i < table.Length; i += 4)
+  465:         {
+  466:             uint value =
+  467:                 (uint)table[i] |
+  468:                 ((uint)table[i + 1] << 8) |
+  469:                 ((uint)table[i + 2] << 16) |
+  470:                 ((uint)table[i + 3] << 24);
+  471: 
+  472:             _pine.Write32(address + (uint)i, value);
+  473:         }
+  474: 
+  475:         for (int i = 0; i < table.Length; i += 4)
+  476:         {
+  477:             uint expected =
+  478:                 (uint)table[i] |
+  479:                 ((uint)table[i + 1] << 8) |
+  480:                 ((uint)table[i + 2] << 16) |
+  481:                 ((uint)table[i + 3] << 24);
+  482: 
+  483:             uint actual = _pine.Read32(address + (uint)i);
+  484: 
+  485:             if (actual != expected)
+  486:             {
+  487:                 throw new InvalidOperationException(
+  488:                     "種族別特技テーブルの検証に失敗しました。位置: 0x" +
+  489:                     (address + (uint)i).ToString("X8"));
+  490:             }
+  491:         }
+  492:     }
+  493: 
+  494:     private void RestoreCallInstruction()
+  495:     {
+  496:         uint current = _pine.Read32(PatchAddress);
+  497: 
+  498:         if (current == OriginalCallInstruction)
+  499:             return;
+  500: 
+  501:         if (!IsDispatcherCall(current))
+  502:         {
+  503:             throw new InvalidOperationException(
+  504:                 "呼び出し命令が想定外のため復元を中止しました: 0x" +
+  505:                 current.ToString("X8"));
+  506:         }
+  507: 
+  508:         _pine.Write32(PatchAddress, OriginalCallInstruction);
+  509: 
+  510:         uint verify = _pine.Read32(PatchAddress);
+  511: 
+  512:         if (verify != OriginalCallInstruction)
+  513:         {
+  514:             throw new InvalidOperationException(
+  515:                 "元の呼び出し命令への復元に失敗しました。");
+  516:         }
+  517:     }
+  518: 
+  519:     private void ApplyRuntime(Dictionary<int, ushort> actions)
+  520:     {
+  521:         uint currentCall = _pine.Read32(PatchAddress);
+  522: 
+  523:         bool currentIsDispatcher = IsDispatcherCall(currentCall);
+  524: 
+  525:         if (currentCall != OriginalCallInstruction &&
+  526:             !currentIsDispatcher)
+  527:         {
+  528:             throw new InvalidOperationException(
+  529:                 "敵特技呼び出し命令が想定外です。\n" +
+  530:                 "現在値: 0x" + currentCall.ToString("X8"));
+  531:         }
+  532: 
+  533:         uint delayInstruction = _pine.Read32(DelaySlotAddress);
+  534: 
+  535:         if (IsLegacyPatch(delayInstruction))
+  536:         {
+  537:             _pine.Write32(
+  538:                 DelaySlotAddress,
+  539:                 OriginalDelayInstruction);
+  540: 
+  541:             delayInstruction = _pine.Read32(DelaySlotAddress);
+  542:         }
+  543: 
+  544:         if (delayInstruction != OriginalDelayInstruction)
+  545:         {
+  546:             throw new InvalidOperationException(
+  547:                 "遅延スロットが想定外です。\n" +
+  548:                 "現在値: 0x" + delayInstruction.ToString("X8"));
+  549:         }
+  550: 
+  551:         if (currentIsDispatcher)
+  552:         {
+  553:             uint detectedCave = DecodeDispatcherAddress(currentCall);
+  554: 
+  555:             if (!IsDispatcherCode(detectedCave))
+  556:             {
+  557:                 RestoreCallInstruction();
+  558: 
+  559:                 throw new InvalidOperationException(
+  560:                     "既存ディスパッチャーのコード検証に失敗しました。\n" +
+  561:                     "安全のため元の呼び出し命令へ戻しました。");
+  562:             }
+  563: 
+  564:             _codeCaveAddress = detectedCave;
+  565:         }
+  566: 
+  567:         if (actions.Count == 0)
+  568:         {
+  569:             if (currentIsDispatcher)
+  570:                 RestoreCallInstruction();
+  571: 
+  572:             return;
+  573:         }
+  574: 
+  575:         byte[] table = BuildActionTable(actions);
+  576: 
+  577:         if (currentIsDispatcher && TablesEqual(_lastTable, table))
+  578:             return;
+  579: 
+  580:         if (currentIsDispatcher)
+  581:             RestoreCallInstruction();
+  582: 
+  583:         bool newCave = false;
+  584: 
+  585:         if (_codeCaveAddress == 0 ||
+  586:             !IsDispatcherCode(_codeCaveAddress))
+  587:         {
+  588:             _codeCaveAddress = FindCodeCave();
+  589:             WriteDispatcherCode(_codeCaveAddress);
+  590:             newCave = true;
+  591:         }
+  592: 
+  593:         uint tableAddress = _codeCaveAddress + TableOffset;
+  594: 
+  595:         if (newCave || !TablesEqual(_lastTable, table))
+  596:         {
+  597:             WriteActionTable(tableAddress, table);
+  598:             _lastTable = (byte[])table.Clone();
+  599:         }
+  600: 
+  601:         uint newCall = EncodeJal(_codeCaveAddress);
+  602: 
+  603:         _pine.Write32(PatchAddress, newCall);
+  604: 
+  605:         uint verifyCall = _pine.Read32(PatchAddress);
+  606: 
+  607:         if (verifyCall != newCall)
+  608:         {
+  609:             throw new InvalidOperationException(
+  610:                 "ディスパッチャー呼び出し命令の検証に失敗しました。\n" +
+  611:                 "書き込み値: 0x" + newCall.ToString("X8") +
+  612:                 "\n読み戻し値: 0x" + verifyCall.ToString("X8"));
+  613:         }
+  614:     }
+  615: 
+  616:     private void Poll(object? state)
+  617:     {
+  618:         if (_disposed ||
+  619:             Interlocked.Exchange(ref _pollBusy, 1) != 0)
+  620:             return;
+  621: 
+  622:         try
+  623:         {
+  624:             lock (_operationSync)
+  625:             {
+  626:                 Dictionary<int, ushort> snapshot;
+  627: 
+  628:                 lock (_stateSync)
+  629:                     snapshot = new Dictionary<int, ushort>(_actions);
+  630: 
+  631:                 if (snapshot.Count == 0)
+  632:                 {
+  633:                     RaiseStatus(
+  634:                         "種族別特技設定なし：元の命令を維持しています。");
+  635:                 }
+  636: 
+  637:                 if (snapshot.Count > 0)
+  638:                 {
+  639:                     bool connected = _pine.TryConnect();
+  640: 
+  648:                     {
+  649:                         uint status = _pine.GetStatus();
+  650: 
+  651:                         if (status == 0)
+  652:                         {
+  653:                             ApplyRuntime(snapshot);
+  654:                             RaiseStatus(
+  655:                                 "種族別特技ディスパッチャー適用中：" +
+  656:                                 snapshot.Count + "種類");
+  657:                         }
+  658: 
+  659:                         if (status == 1)
+  660:                         {
+  661:                             RaiseStatus(
+  662:                                 "PCSX2一時停止中：再開後に設定を確認します。");
+  663:                         }
+  664: 
+  665:                         if (status != 0 && status != 1)
+  666:                         {
+  667:                             RaiseStatus("PCSX2の仮想マシンが停止しています。");
+  668:                         }
+  669:                     }
+  670:                 }
+  671:             }
+  672:         }
+  673:         catch (Exception ex)
+  674:         {
+  675:             RaiseStatus("種族別特技監視エラー: " + ex.Message);
+  676:         }
+  677: 
+  678:         Interlocked.Exchange(ref _pollBusy, 0);
+  679:     }
+  680:     private void RaiseStatus(string message)
+  681:     {
+  682:         if (StatusChanged == null)
+  683:             return;
+  684: 
+  685:         if (string.Equals(
+  686:             _lastStatus,
+  687:             message,
+  688:             StringComparison.Ordinal))
+
+===== MonsterCreatorForm.cs =====
+  346:     private readonly ComboBox _skillMessage = CreateChoice(new[] { "特技メッセージ無し" });
+  347:     private bool _skillDataReady;
+  348:     private readonly Button _applyButton = new Button();
+  349:     private readonly List<int> _visibleIds = new List<int>();
+  350: 
+  351:     private int _recordTableOffset = -1;
+  352:     private int _selectedMonsterId = -1;
+  353:     private int _loadedRecruitModifier;
+  354:     private int _loadedRecoveryConstant;
+  355:     private bool _dataReady;
+  356:     private bool _loadingSelection;
+  357:     private bool _automaticLiveApply;
+  358: 
+  359:     public MonsterCreatorForm() : this(null, null, null)
+  360:     {
+  361:     }
+  362: 
+  363:     public MonsterCreatorForm(byte[]? bin, Action? onChanged)
+  364:         : this(bin, onChanged, null)
+  365:     {
+  366:     }
+  367: 
+  368:     public MonsterCreatorForm(
+  369:         byte[]? bin,
+  370:         Action? onChanged,
+  371:         ActionAutoRestoreService? actionRestore)
+  372:     {
+  373:         _actionRestore = actionRestore ??
+  374:             new ActionAutoRestoreService();
+  375: 
+  376:         _ownsActionRestore = actionRestore == null;
+  377: 
+  378:         _bin = bin;
+  379:         _onChanged = onChanged;
+  380:         _recruitModifier.Minimum = short.MinValue;
+  381:         _recruitModifier.Maximum = short.MaxValue;
+  382: 
+  383:         Text = "モンスタークリエイター";
+  384:         StartPosition = FormStartPosition.CenterParent;
+  385:         Width = 1050;
+  386:         Height = 650;
+  599: buttons.Controls.Add(_applyButton);
+  600:         buttons.Controls.Add(reloadButton);
+  601:         buttons.Controls.Add(closeButton);
+  602:         var numericExperimentButton = new Button
+  603:         {
+  604:             Text = "演出値 201↔202",
+  605:             Width = 145,
+  606:             Height = 36
+  607:         };
+  608: 
+  609:         numericExperimentButton.Click += (_, _) =>
+  610:         {
+  611:             try
+  612:             {
+  613:                 uint status = ActionAutoRestoreService.GetSharedStatus();
+  614: 
+  615:                 if (status != 1)
+  616:                     throw new InvalidOperationException(
+  617:                         "PCSX2を一時停止してから実行してください。");
+  618: 
+  619:                 const uint address = 0x002B46D0u;
+  620:                 const uint original = 0x240500C9u;
+  621:                 const uint changed = 0x240500CAu;
+  622: 
+  623:                 uint current =
+  624:                     ActionAutoRestoreService.ReadShared32(address);
+  625: 
+  626:                 uint target = current == original
+  627:                     ? changed
+  628:                     : current == changed
+  629:                         ? original
+  630:                         : throw new InvalidOperationException(
+  631:                             "対象命令が想定値ではありません: 0x" +
+  632:                             current.ToString("X8"));
+  633: 
+  634:                 ActionAutoRestoreService.WriteShared32(address, target);
+  635: 
+  636:                 uint verify =
+  637:                     ActionAutoRestoreService.ReadShared32(address);
+  638: 
+  639:                 if (verify != target)
+  640:                     throw new InvalidOperationException(
+  641:                         "書き込み後の読み戻し検証に失敗しました。");
+  642: 
+  643:                 string result = target == changed
+  644:                     ? "201 → 202 に変更しました。"
+  645:                     : "元の201へ復元しました。";
+  646: 
+  647:                 MessageBox.Show(
+  648:                     this,
+  649:                     result + "\r\n現在値: 0x" +
+  650:                     verify.ToString("X8") +
+  651:                     "\r\nこれは演出側の数値で、呪文行動IDの確定ではありません。",
+  652:                     "数値実験",
+  653:                     MessageBoxButtons.OK,
+  654:                     MessageBoxIcon.Information);
+  655:             }
+  656:             catch (Exception ex)
+  657:             {
+  658:                 MessageBox.Show(
+  659:                     this,
+  660:                     ex.Message,
+  661:                     "数値実験エラー",
+  662:                     MessageBoxButtons.OK,
+  663:                     MessageBoxIcon.Warning);
+  664:             }
+  665:         };
+  666: 
+  667:         buttons.Controls.Add(numericExperimentButton);
+  668: 
+  669:         var bottom = new TableLayoutPanel
+  670:         {
+  671:             Dock = DockStyle.Fill,
+  672:             ColumnCount = 1,
+  708:             }
+  709:         };
+  710: 
+  711:         var coromageProbeButton = new Button
+  712:         {
+  713:             Text = "コロマージ調査",
+  714:             Dock = DockStyle.Fill
+  715:         };
+  716: 
+  717:         coromageProbeButton.Click += (_, _) =>
+  718:         {
+  719:             try
+  720:             {
+  721:                 var addresses = new List<uint>();
+  722: 
+  723:                 for (uint address = 0x00228BB8; address <= 0x00228C20; address += 4)
+  724:                     addresses.Add(address);
+  725: 
+  726:                 for (uint address = 0x00229150; address <= 0x00229220; address += 4)
+  727:                     addresses.Add(address);
+  728: 
+  729:                 for (uint address = 0x002B4680; address <= 0x002B4710; address += 4)
+  730:                     addresses.Add(address);
+  731: 
+  732:                 for (uint address = 0x0029ABE0; address <= 0x0029AC80; address += 4)
+  733:                     addresses.Add(address);
+  734: 
+  735:                 for (uint address = 0x002F3C60; address <= 0x002F3D80; address += 4)
+  736:                     addresses.Add(address);
+  737: 
+  738:                 for (uint address = 0x002EC564; address <= 0x002EC740; address += 4)
+  739:                     addresses.Add(address);
+  740: 
+  741:                 for (uint address = 0x00228BB8; address <= 0x00229300; address += 4)
+  742:                     addresses.Add(address);
+  743: 
+  744:                 for (uint address = 0x002B4714; address <= 0x002B4750; address += 4)
+  745:                     addresses.Add(address);
+  746:                 for (uint address = 0x002F29A4; address <= 0x002F2B20; address += 4)
+  747:                     addresses.Add(address);
+  748: 
+  835:                 report.AppendLine("Address base: 0x00200000");
+  836:                 report.AppendLine();
+  837: 
+  838:                 foreach (uint address in addresses)
+  839:                 {
+  840:                     uint value = ActionAutoRestoreService.ReadShared32(address);
+  841: 
+  842:                     report.AppendLine(
+  843:                         "0x" + address.ToString("X8") +
+  844:                         "  0x" + value.ToString("X8"));
+  845:                 }
+  846: 
+  847:                 string desktop =
+  848:                     Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+  849: 
+  850:                 string outputPath = System.IO.Path.Combine(
+  851:                     desktop,
+  852:                     "CoromageSpellMemoryRead_" +
+  853:                     DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+  854:                     ".txt");
+  855: 
+  856:                 System.IO.File.WriteAllText(
+  857:                     outputPath,
+  858:                     report.ToString(),
+  859:                     Encoding.UTF8);
+  860: 
+  861:                 MessageBox.Show(
+  862:                     this,
+  863:                     "読み取り専用調査が完了しました。\n\n" + outputPath,
+  864:                     "コロマージ調査",
+  865:                     MessageBoxButtons.OK,
+  866:                     MessageBoxIcon.Information);
+  867:             }
+  868:             catch (Exception ex)
+  869:             {
+  870:                 MessageBox.Show(
+  871:                     this,
+  872:                     "PINE読み取りに失敗しました。\n\n" + ex.Message,
+  873:                     "コロマージ調査",
+  874:                     MessageBoxButtons.OK,
+  875:                     MessageBoxIcon.Error);
+  876:             }
+  877:         };
+  878: 
+  879:         infoPanel.Controls.Add(_actionMonitorStatus, 0, 0);
+  880:         infoPanel.Controls.Add(coromageProbeButton, 1, 0);
+  881:         infoPanel.Controls.Add(_selectedInfo, 0, 1);
+  882:         infoPanel.Controls.Add(copyInfoButton, 1, 1);
+  883:         right.Controls.Add(infoPanel, 0, 2);
+  884:         right.Controls.Add(content, 0, 3);
+  885:         right.Controls.Add(bottom, 0, 4);
+  886: 
+  887:         root.Controls.Add(left, 0, 0);
+  888:         root.Controls.Add(right, 1, 0);
+  889:         Controls.Add(root);
+  890: 
+  891:         _dataReady = TryResolveRecordTable(_bin, out _recordTableOffset, out string reason);
+  892:         _skillDataReady = TryResolveSkillExtension(_bin);
+  893: 
+  894:         if (_skillDataReady && _bin != null)
+  895:         {
+  896:             _skillMessage.Items.Clear();
+  897:             _skillMessage.Items.AddRange(ReadSkillMessageChoices(_bin));
+  898:         }
+  899:         _applyButton.Enabled = _dataReady;
+  900: 
+  901:         if (_dataReady)
+  902:         {
+  903:             _status.Text =
+  904:                 "BIN読込済み：基本レコード位置 0x" +
+  905:                 _recordTableOffset.ToString("X") +
+  906:                 " ／ 199件・24 bytes";
+  907:             if (!_skillDataReady)
+  908:                 _status.Text += " ／ 特技設定はバージョン5拡張データ未検出";
+  909:             else
+  910:                 _status.Text += " ／ 特技設定データ読込済み";
+  911:         }
+  912:         else
+  913:         {
+  914:             _status.Text = reason;
+  915:             SetEditorEnabled(false);
+  916:         }
+  917: 
+  918:         BindLiveEditEvents();
+  919:         RefreshList();
+  920:         Action<string> actionStatusHandler = message =>
+  921:         {
+  922:             if (IsHandleCreated && !IsDisposed)
+  923:             {
+  924:                 try
+  925:                 {
+  926:                     BeginInvoke(
+  927:                         (Action)(() => _actionMonitorStatus.Text = message));
+  928:                 }
+  929:                 catch
+  930:                 {
+  931:                 }
+  932:             }
+  933:         };
+  934: 
+  935:         _actionRestore.StatusChanged += actionStatusHandler;
+  936: 
+  937:         FormClosed += (_, _) =>
+  938:         {
+  939:             _actionRestore.StatusChanged -= actionStatusHandler;
+  940: 
+ 1351:             SetEditorEnabled(false);
+ 1352:             _loadingSelection = false;
+ 1353:             return;
+ 1354:         }
+ 1355: 
+ 1356:         int offset = checked(_recordTableOffset + id * MonsterRecordSize);
+ 1357:         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+ 1358: 
+ 1359:         // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+ 1360:         int hspMonsterIndex = id + 1;
+ 1361:         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+ 1362:         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+ 1363: 
+ 1364:         if (Pcsx2LiveSession.IsConnected &&
+ 1365:             Pcsx2LiveSession.ProcessId > 0 &&
+ 1366:             Pcsx2LiveSession.MemoryLayout != null)
+ 1367:         {
+ 1368:             try
+ 1369:             {
+ 1370:                 var requested = new List<Tuple<int, int, string>>
+ 1371:                 {
+ 1372:                     Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+ 1373:                     Tuple.Create(recruitOffset, 2, "勧誘修正値"),
+ 1374:                     Tuple.Create(recoveryOffset, 2, "回復定数")
+ 1375:                 };
+ 1376:                 // HSPは回復配列の先頭2 bytesで配列全体の有効/未初期化を判定する。
+ 1377:                 if (hspMonsterIndex != 0)
+ 1378:                     requested.Add(Tuple.Create(RecoveryConstantDataOffset, 2, "回復定数配列識別"));
+ 1379: 
+ 1380:                 int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+ 1381:                 int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+ 1382:                 if (_skillDataReady)
+ 1383:                 {
+ 1384:                     requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
+ 1385:                     requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
+ 1386:                 }
+ 1387:                 else
+ 1388:                 {
+ 1389:                     // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
+ 1390:                     requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
+ 1391:                 }
+ 1498:     {
+ 1499:         if (!_dataReady || _bin == null || _selectedMonsterId < 0)
+ 1500:             return;
+ 1501: 
+ 1502:         int offset = checked(
+ 1503:             _recordTableOffset + _selectedMonsterId * MonsterRecordSize);
+ 1504: 
+ 1505:         BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+ 1506: 
+ 1507:         BinFileService.WriteUInt16(_bin, offset, (ushort)_hp.Value);
+ 1508:         BinFileService.WriteUInt16(_bin, offset + 2, (ushort)_attack.Value);
+ 1509:         BinFileService.WriteUInt16(_bin, offset + 4, (ushort)_defense.Value);
+ 1510:         _bin[offset + 11] = (byte)_maxLevel.Value;
+ 1511:         BinFileService.WriteUInt16(_bin, offset + 12, (ushort)_experience.Value);
+ 1512:         byte systemFlags = 0;
+ 1513:         for (int i = 0; i < _systemChecks.Length; i++)
+ 1514:             if (_systemChecks[i].Checked) systemFlags |= (byte)(1 << i);
+ 1515:         byte skillFlags = 0;
+ 1516:         for (int i = 0; i < _skillChecks.Length; i++)
+ 1517:             if (_skillChecks[i].Checked) skillFlags |= (byte)(1 << i);
+ 1518:         _bin[offset + 6] = systemFlags;
+ 1519:         _bin[offset + 7] = skillFlags;
+ 1520:         if (_moveSpeed.SelectedIndex >= 0)
+ 1521:             _bin[offset + 9] = (byte)_moveSpeed.SelectedIndex;
+ 1522:         _bin[offset + 10] = (byte)_dropRate.Value;
+ 1523:         if (_dropItem.SelectedIndex >= 0)
+ 1524:             BinFileService.WriteUInt16(_bin, offset + 16, (ushort)_dropItem.SelectedIndex);
+ 1525:         _bin[offset + 18] = (byte)_sleepRate.Value;
+ 1526:         _bin[offset + 22] = (byte)_skillRate.Value;
+ 1527: 
+ 1528:         // HSP var_407 の先頭空行を含むIDに合わせる。
+ 1529:         int hspMonsterIndex = _selectedMonsterId + 1;
+ 1530:         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+ 1531:         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+ 1532:         int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+ 1533:         int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+ 1534:         int enemyItemOffset = rangeOffset + 18;
+ 1535: 
+ 1536:         // var_411 の編集値をBIN作業データへ常時保持する。
+ 1537:         BinFileService.CheckRange(_bin, enemyItemOffset, 2);
+ 1538:         if (_enemyThrowItem.SelectedIndex >= 0)
+
