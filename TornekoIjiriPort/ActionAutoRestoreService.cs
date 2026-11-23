@@ -35,6 +35,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint IonazunCompareAddress = 0x00228DE8u;
     private const uint IonazunCompareOriginal = 0x0043102Au;
     private const uint IonazunCompareForced = 0x24020001u;
+
+    // 使用済みイオナズン判定の種族別フック
+    private const uint IonazunUsedBranchAddress = 0x00228DD0u;
+    private const uint IonazunUsedBranchOriginal = 0x144000E3u;
+    private const uint IonazunRepeatCaveStart = 0x01DF0000u;
+    private const uint IonazunRepeatCaveEnd = 0x01D00000u;
+    private const uint IonazunRepeatCaveStep = 0x00010000u;
+    private const uint IonazunRepeatCaveSize = 0x100u;
     private const uint SpellDispatchOriginalInstruction = 0x2A020046u;
     private const uint SpellDispatchDelayAddress = 0x002CF604u;
     private const uint SpellDispatchOriginalDelay = 0x10400013u;
@@ -161,6 +169,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private bool _disposed;
     private bool _forceIonazun;
     private bool _ionazunPatchMayBeActive;
+    private uint _ionazunRepeatCaveAddress;
     private string _lastStatus = "";
 
     internal event Action<string>? StatusChanged;
@@ -379,6 +388,255 @@ internal sealed class ActionAutoRestoreService : IDisposable
         _ionazunPatchMayBeActive = shouldForce;
     }
 
+    private static bool IsIonazunRepeatJump(uint instruction)
+    {
+        return (instruction & 0xFC000000u) == 0x08000000u;
+    }
+
+    private static uint DecodeIonazunRepeatJump(uint instruction)
+    {
+        return (instruction & 0x03FFFFFFu) << 2;
+    }
+
+    private static uint EncodeIonazunRepeatJump(
+        uint fromAddress,
+        uint targetAddress)
+    {
+        if (((fromAddress + 4u) & 0xF0000000u) !=
+            (targetAddress & 0xF0000000u))
+        {
+            throw new InvalidOperationException(
+                "イオナズン分岐フックのジャンプ先が範囲外です。");
+        }
+
+        return 0x08000000u |
+            ((targetAddress >> 2) & 0x03FFFFFFu);
+    }
+
+    private uint FindIonazunRepeatCave()
+    {
+        for (
+            uint candidate = IonazunRepeatCaveStart;
+            candidate >= IonazunRepeatCaveEnd;
+            candidate -= IonazunRepeatCaveStep)
+        {
+            bool free = true;
+
+            for (
+                uint offset = 0;
+                offset < IonazunRepeatCaveSize;
+                offset += 4u)
+            {
+                if (_pine.Read32(candidate + offset) != 0u)
+                {
+                    free = false;
+                    break;
+                }
+            }
+
+            if (free)
+                return candidate;
+        }
+
+        throw new InvalidOperationException(
+            "イオナズン分岐フック用の空き領域が見つかりません。");
+    }
+
+    private uint[] BuildIonazunRepeatCode(
+        uint caveAddress,
+        uint dispatcherAddress)
+    {
+        uint traceAddress = dispatcherAddress + 0x80u;
+        uint tableAddress = dispatcherAddress + TableOffset;
+
+        return new uint[]
+        {
+            // スタックに一時レジスタを退避
+            0x27BDFFF0u,
+            0xAFA80000u,
+            0xAFA90004u,
+            0xAFAA0008u,
+
+            // 現在行動中の種族IDを取得
+            0x3C080000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x35080000u | (traceAddress & 0xFFFFu),
+            0x8D090004u,
+
+            // 種族別特技テーブルを参照
+            0x3C080000u | ((tableAddress >> 16) & 0xFFFFu),
+            0x35080000u | (tableAddress & 0xFFFFu),
+            0x01094021u,
+            0x910A0000u,
+
+            // 特技IDがBFでなければ使用済み判定を維持
+            0x240800BFu,
+            0x15480002u,
+            0x00000000u,
+
+            // BFなら使用済み判定用のv0を0にする
+            0x00001021u,
+
+            // 一時レジスタを復元
+            0x8FA80000u,
+            0x8FA90004u,
+            0x8FAA0008u,
+            0x27BD0010u,
+
+            // 元のbne v0,zero,0x00229160を再現
+            0x14400003u,
+            0x00000000u,
+
+            // 使用済みでなければ0x00228DD8へ戻る
+            EncodeIonazunRepeatJump(
+                caveAddress + 21u * 4u,
+                0x00228DD8u),
+            0x00000000u,
+
+            // 使用済みなら元の分岐先へ進む
+            EncodeIonazunRepeatJump(
+                caveAddress + 23u * 4u,
+                0x00229160u),
+            0x00000000u
+        };
+    }
+
+    private void ApplyIonazunRepeatPatch(
+        Dictionary<int, ushort> actions)
+    {
+        bool shouldPatch = false;
+
+        lock (_stateSync)
+        {
+            if (_forceIonazun)
+            {
+                foreach (var pair in actions)
+                {
+                    if (pair.Value == 0x00BF)
+                    {
+                        shouldPatch = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        uint current =
+            _pine.Read32(IonazunUsedBranchAddress);
+
+        if (!shouldPatch)
+        {
+            RestoreIonazunRepeatPatch();
+            return;
+        }
+
+        if (_codeCaveAddress == 0)
+        {
+            throw new InvalidOperationException(
+                "種族別特技ディスパッチャーが未設置です。");
+        }
+
+        uint caveAddress;
+
+        if (current == IonazunUsedBranchOriginal)
+        {
+            caveAddress = FindIonazunRepeatCave();
+        }
+        else if (IsIonazunRepeatJump(current))
+        {
+            caveAddress = DecodeIonazunRepeatJump(current);
+
+            if (caveAddress < IonazunRepeatCaveEnd ||
+                caveAddress > IonazunRepeatCaveStart)
+            {
+                throw new InvalidOperationException(
+                    "イオナズン分岐フックのジャンプ先が想定範囲外です。");
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                "使用済み判定命令が想定外です。\n" +
+                "現在値: 0x" + current.ToString("X8"));
+        }
+
+        uint[] code = BuildIonazunRepeatCode(
+            caveAddress,
+            _codeCaveAddress);
+
+        for (int i = 0; i < code.Length; i++)
+        {
+            _pine.Write32(
+                caveAddress + (uint)(i * 4),
+                code[i]);
+        }
+
+        for (int i = 0; i < code.Length; i++)
+        {
+            uint actual =
+                _pine.Read32(caveAddress + (uint)(i * 4));
+
+            if (actual != code[i])
+            {
+                throw new InvalidOperationException(
+                    "イオナズン分岐フックのコード検証に失敗しました。");
+            }
+        }
+
+        uint jump = EncodeIonazunRepeatJump(
+            IonazunUsedBranchAddress,
+            caveAddress);
+
+        _pine.Write32(IonazunUsedBranchAddress, jump);
+
+        if (_pine.Read32(IonazunUsedBranchAddress) != jump)
+        {
+            throw new InvalidOperationException(
+                "イオナズン分岐フックの設置に失敗しました。");
+        }
+
+        _ionazunRepeatCaveAddress = caveAddress;
+    }
+
+    private void RestoreIonazunRepeatPatch()
+    {
+        uint current =
+            _pine.Read32(IonazunUsedBranchAddress);
+
+        if (current == IonazunUsedBranchOriginal)
+        {
+            _ionazunRepeatCaveAddress = 0;
+            return;
+        }
+
+        if (!IsIonazunRepeatJump(current))
+        {
+            throw new InvalidOperationException(
+                "イオナズン使用済み判定の命令が想定外です。\n" +
+                "現在値: 0x" + current.ToString("X8"));
+        }
+
+        uint caveAddress = DecodeIonazunRepeatJump(current);
+
+        if (caveAddress < IonazunRepeatCaveEnd ||
+            caveAddress > IonazunRepeatCaveStart)
+        {
+            throw new InvalidOperationException(
+                "別のフックと思われるため復元を中止しました。");
+        }
+
+        _pine.Write32(
+            IonazunUsedBranchAddress,
+            IonazunUsedBranchOriginal);
+
+        if (_pine.Read32(IonazunUsedBranchAddress) !=
+            IonazunUsedBranchOriginal)
+        {
+            throw new InvalidOperationException(
+                "イオナズン使用済み判定の復元に失敗しました。");
+        }
+
+        _ionazunRepeatCaveAddress = 0;
+    }
     private byte[] BuildActionTable(
         Dictionary<int, ushort> actions)
     {
@@ -661,6 +919,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         if (actions.Count == 0)
         {
+            RestoreIonazunRepeatPatch();
+
             if (currentIsDispatcher)
                 RestoreCallInstruction();
 
@@ -670,7 +930,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         byte[] table = BuildActionTable(actions);
 
         if (currentIsDispatcher && TablesEqual(_lastTable, table))
+        {
+            ApplyIonazunRepeatPatch(actions);
             return;
+        }
 
         if (currentIsDispatcher)
             RestoreCallInstruction();
@@ -706,6 +969,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 "書き込み値: 0x" + newCall.ToString("X8") +
                 "\n読み戻し値: 0x" + verifyCall.ToString("X8"));
         }
+
+        ApplyIonazunRepeatPatch(actions);
     }
 
     internal static string ReadActionTrace()
@@ -1293,6 +1558,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             {
                 if (_pine.TryConnect() && _pine.GetStatus() == 0)
                 {
+                    RestoreIonazunRepeatPatch();
                     ApplyIonazunForce(new Dictionary<int, ushort>());
                     RestoreCallInstruction();
                 }
