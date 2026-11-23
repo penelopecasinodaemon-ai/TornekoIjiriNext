@@ -569,13 +569,14 @@ internal sealed class MonsterCreatorForm : Form
         _applyButton.Height = 36;
         _applyButton.Click += (_, _) => ApplySelected();
 
-        _ionazunAlways.Checked = _actionRestore.IonazunForceEnabled;
+        _ionazunAlways.Checked = false;
         _ionazunAlways.CheckedChanged += (_, _) =>
         {
             if (_loadingSelection || _selectedMonsterId < 0)
                 return;
 
             if (_actionRestore.SetIonazunForce(
+                _selectedMonsterId,
                 _ionazunAlways.Checked,
                 out string ionazunMessage))
             {
@@ -1864,6 +1865,9 @@ right.Controls.Add(_count, 0, 0);
 
         _ganirasuBarrier.Checked =
             Torneko4GanirasuBarrierStore.Get(id);
+
+        _ionazunAlways.Checked =
+            Torneko4ActionStore.GetIonazunForce(id);
 
         // まず未選択状態に戻し、このモンスター専用の設定があれば復元する。
         _actionChange.SelectedIndex = 0;
