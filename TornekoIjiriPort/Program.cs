@@ -4677,6 +4677,8 @@ internal sealed class MainForm : Form
     private readonly AppSettings _settings;
     private readonly ActionAutoRestoreService _actionRestore =
         new ActionAutoRestoreService();
+    private readonly SlimeRingLevelUpService _slimeRingLevelUp =
+        new SlimeRingLevelUpService();
 
     private readonly Label _pcsx2ConnectionStatus =
         new Label();
@@ -4919,18 +4921,35 @@ buttons.Controls.Add(UiFactory.Button(
 
         Pcsx2LiveSession.StateChanged += UpdatePcsx2Status;
         _actionRestore.StatusChanged += UpdateActionRestoreStatus;
+        _slimeRingLevelUp.StatusChanged += UpdateSlimeRingStatus;
 
         FormClosed += (_, _) =>
         {
             Pcsx2LiveSession.StateChanged -= UpdatePcsx2Status;
             _actionRestore.StatusChanged -= UpdateActionRestoreStatus;
+            _slimeRingLevelUp.StatusChanged -= UpdateSlimeRingStatus;
 
             // アプリ本体を終了するときだけフックを解除する。
+            _slimeRingLevelUp.Dispose();
             _actionRestore.Dispose();
         };
 
         UpdateStatus();
         UpdatePcsx2Status();
+    }
+
+    private void UpdateSlimeRingStatus(string message)
+    {
+        if (IsDisposed || Disposing)
+            return;
+
+        if (InvokeRequired)
+        {
+            BeginInvoke(new Action(() => UpdateSlimeRingStatus(message)));
+            return;
+        }
+
+        _pcsx2DataStatus.Text = message;
     }
 
     private void UpdateActionRestoreStatus(string message)
