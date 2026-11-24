@@ -4679,6 +4679,7 @@ internal sealed class MainForm : Form
         new ActionAutoRestoreService();
     private readonly SlimeRingLevelUpService _slimeRingLevelUp =
         new SlimeRingLevelUpService();
+    private readonly SlimeRingRuntimeService _slimeRingRuntime;
 
     private readonly Label _pcsx2ConnectionStatus =
         new Label();
@@ -4698,6 +4699,7 @@ internal sealed class MainForm : Form
         Font = new Font("Yu Gothic UI", 10);
 
         _settings = AppSettings.Load();
+        _slimeRingRuntime = new SlimeRingRuntimeService(() => _bin, _actionRestore);
 
         var root = new TableLayoutPanel
         {
@@ -4928,6 +4930,7 @@ buttons.Controls.Add(UiFactory.Button(
         Pcsx2LiveSession.StateChanged += UpdatePcsx2Status;
         _actionRestore.StatusChanged += UpdateActionRestoreStatus;
         _slimeRingLevelUp.StatusChanged += UpdateSlimeRingStatus;
+        _slimeRingRuntime.StatusChanged += UpdateSlimeRingStatus;
 
         // スライムの指輪の状態表示をダブルクリックすると全文をコピーする。
         _pcsx2DataStatus.Cursor = Cursors.Hand;
@@ -4954,6 +4957,8 @@ buttons.Controls.Add(UiFactory.Button(
             Pcsx2LiveSession.StateChanged -= UpdatePcsx2Status;
             _actionRestore.StatusChanged -= UpdateActionRestoreStatus;
             _slimeRingLevelUp.StatusChanged -= UpdateSlimeRingStatus;
+            _slimeRingRuntime.StatusChanged -= UpdateSlimeRingStatus;
+            _slimeRingRuntime.Dispose();
 
             // アプリ本体を終了するときだけフックを解除する。
             _slimeRingLevelUp.Dispose();
