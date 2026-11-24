@@ -4829,6 +4829,12 @@ internal sealed class MainForm : Form
         buttons.Controls.Add(UiFactory.Button(
             "改造データを.Torneko4保存", (_, _) => SaveTorneko4()));
         buttons.Controls.Add(UiFactory.Button(
+            "スライムの指輪編集", (_, _) =>
+            {
+                using var slimeRingForm = new SlimeRingEditorForm();
+                slimeRingForm.ShowDialog(this);
+            }));
+        buttons.Controls.Add(UiFactory.Button(
             "モンスターを編集", (_, _) =>
             {
                 using var monsterForm = new MonsterCreatorForm(
