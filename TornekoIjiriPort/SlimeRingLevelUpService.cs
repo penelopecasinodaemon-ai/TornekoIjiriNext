@@ -35,7 +35,7 @@ internal sealed class SlimeRingLevelUpService : IDisposable
     private const uint CallCounterOffset = 0x1F0u;
     private const uint BonusCounterOffset = 0x1F4u;
 
-    private readonly Timer _timer;
+    private readonly System.Threading.Timer _timer;
     private int _busy;
     private bool _disposed;
     private bool _installed;
@@ -49,7 +49,7 @@ internal sealed class SlimeRingLevelUpService : IDisposable
     internal SlimeRingLevelUpService()
     {
         Pcsx2LiveSession.StateChanged += OnSessionChanged;
-        _timer = new Timer(Poll, null, 1000, 1000);
+        _timer = new System.Threading.Timer(Poll, null, 1000, 1000);
     }
 
     private void OnSessionChanged()
