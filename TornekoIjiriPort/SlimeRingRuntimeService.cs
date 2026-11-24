@@ -35,6 +35,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private int _processId;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
+    private string _lastBarrierTrace = string.Empty;
     private int _busy;
 
     internal event Action<string>? StatusChanged;
@@ -92,6 +93,19 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 ApplyRingSettings();
                 _settingsWriteTime = writeTime;
             }
+
+            if (_ringActive)
+            {
+                string trace =
+                    Torneko4GanirasuBarrierRuntime.ReadRuntimeTrace();
+
+                if (!string.IsNullOrEmpty(trace) &&
+                    trace != _lastBarrierTrace)
+                {
+                    _lastBarrierTrace = trace;
+                    RaiseStatus(trace);
+                }
+            }
         }
         catch (Exception ex) { RaiseStatus("スライムの指輪：反映エラー / " + ex.Message); }
         finally { Interlocked.Exchange(ref _busy, 0); }
@@ -117,6 +131,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             _baseIonazun = Torneko4ActionStore.GetIonazunForceCopy();
             _baseBarrier = global::Torneko4GanirasuBarrierStore.GetCopy();
             _ringActive = true;
+            _lastBarrierTrace = string.Empty;
         }
         RaiseStatus("スライムの指輪：装備を検出。17種の専用設定を適用します。");
     }
@@ -216,6 +231,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 for (int i = 0; i < 199; i++) Torneko4ActionStore.SetIonazunForce(i, _baseIonazun.Contains(i));
             if (_baseBarrier != null) global::Torneko4GanirasuBarrierStore.ReplaceAll(_baseBarrier);
             _ringActive = false;
+            _lastBarrierTrace = string.Empty;
             _baseActions = null;
             _baseIonazun = null;
             _baseBarrier = null;

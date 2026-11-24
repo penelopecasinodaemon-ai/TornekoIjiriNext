@@ -14,6 +14,7 @@ internal static class Torneko4GanirasuBarrierRuntime
     private const uint TableAOffset = 0x100u;
     private const uint TableBOffset = 0x200u;
     private const uint CaveSize = 0x300u;
+    private const uint TraceOffset = 0x070u;
 
     private static readonly uint[] CallAddresses =
     {
@@ -28,13 +29,13 @@ internal static class Torneko4GanirasuBarrierRuntime
 
     private static readonly uint[] DelayAddresses =
     {
-        0x00248D9Cu,
-        0x0028DC34u,
-        0x002B0348u,
-        0x002B067Cu,
-        0x002B4874u,
-        0x002C9700u,
-        0x002CB690u
+        0x00248D98u,
+        0x0028DC30u,
+        0x002B0344u,
+        0x002B0678u,
+        0x002B4870u,
+        0x002C96FCu,
+        0x002CB68Cu
     };
 
     private static readonly uint[] ExpectedDelayInstructions =
@@ -74,13 +75,16 @@ internal static class Torneko4GanirasuBarrierRuntime
 
                 byte[] desiredTable = BuildTable(settings);
                 uint cave = FindExistingCave();
+                bool newCave = cave == 0;
 
-                if (cave == 0)
+                if (newCave)
                 {
                     cave = FindFreeCave();
                     VerifyCaveIsEmpty(cave);
-                    InstallCode(cave);
+                }
 
+                if (newCave)
+                {
                     uint tableA = cave + TableAOffset;
                     uint tableB = cave + TableBOffset;
 
@@ -102,6 +106,7 @@ internal static class Torneko4GanirasuBarrierRuntime
                     }
                 }
 
+                InstallCode(cave);
                 VerifyCode(cave);
 
                 uint pointerCell = cave + ActivePointerOffset;
@@ -243,6 +248,41 @@ internal static class Torneko4GanirasuBarrierRuntime
         }
     }
 
+    internal static string ReadRuntimeTrace()
+    {
+        try
+        {
+            uint cave = FindExistingCave();
+            if (cave == 0)
+                return "";
+
+            uint trace = cave + TraceOffset;
+            uint count = ActionAutoRestoreService.ReadShared32(trace + 12u);
+
+            if (count == 0)
+                return "";
+
+            uint argument =
+                ActionAutoRestoreService.ReadShared32(trace);
+
+            uint returnAddress =
+                ActionAutoRestoreService.ReadShared32(trace + 4u);
+
+            uint result =
+                ActionAutoRestoreService.ReadShared32(trace + 8u);
+
+            return
+                "ガニラスバリア診断: 呼出回数=" + count +
+                " / a0=" + argument +
+                " (0x" + argument.ToString("X8") + ")" +
+                " / 戻り値=" + result +
+                " / RA=0x" + returnAddress.ToString("X8");
+        }
+        catch (Exception ex)
+        {
+            return "ガニラスバリア診断読取エラー: " + ex.Message;
+        }
+    }
     private static void RestoreKnownTestPatch()
     {
         uint current =
@@ -364,23 +404,85 @@ internal static class Torneko4GanirasuBarrierRuntime
         }
     }
 
+private static uint[] BuildCode(uint cave)
+    {
+        uint pointerCell = cave + ActivePointerOffset;
+        uint traceAddress = cave + TraceOffset;
+
+        return new uint[]
+        {
+            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x356B0000u | (traceAddress & 0xFFFFu),
+
+            // a0とraを記録
+            0xAD640000u,
+            0xAD7F0004u,
+
+            // a0 < 200 ?
+            0x2C8800C8u,
+            0x1100000Cu,
+            0x00000000u,
+
+            // 有効テーブルのポインタを取得
+            0x3C090000u | ((pointerCell >> 16) & 0xFFFFu),
+            0x35290000u | (pointerCell & 0xFFFFu),
+            0x8D290000u,
+
+            // table[a0]
+            0x01244821u,
+            0x91220000u,
+
+            // 判定結果を記録
+            0xAD620008u,
+
+            // 呼び出し回数を加算
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
+
+            0x03E00008u,
+            0x00000000u,
+
+            // 範囲外ならfalse
+            0x24020000u,
+            0xAD620008u,
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
+            0x03E00008u,
+            0x00000000u
+        };
+    }
     private static void InstallCode(uint cave)
     {
         uint pointerCell = cave + ActivePointerOffset;
+        uint traceAddress = cave + TraceOffset;
 
         uint[] words =
         {
+            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x356B0000u | (traceAddress & 0xFFFFu),
+            0xAD640000u,
+            0xAD7F0004u,
             0x2C8800C8u,
-            0x11000008u,
+            0x1100000Cu,
             0x00000000u,
             0x3C090000u | ((pointerCell >> 16) & 0xFFFFu),
             0x35290000u | (pointerCell & 0xFFFFu),
             0x8D290000u,
             0x01244821u,
             0x91220000u,
+            0xAD620008u,
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
             0x03E00008u,
             0x00000000u,
-            0x24020000u,
+            0x00001021u,
+            0xAD620008u,
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
             0x03E00008u,
             0x00000000u
         };
@@ -392,26 +494,47 @@ internal static class Torneko4GanirasuBarrierRuntime
                 words[i]);
         }
 
+        // 入力ID・戻り先・判定結果・実行回数を初期化
+        for (uint offset = 0; offset < 16; offset += 4)
+        {
+            ActionAutoRestoreService.WriteShared32(
+                traceAddress + offset,
+                0u);
+        }
+
         VerifyCode(cave);
     }
 
     private static void VerifyCode(uint cave)
     {
         uint pointerCell = cave + ActivePointerOffset;
+        uint traceAddress = cave + TraceOffset;
 
         uint[] expected =
         {
+            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
+            0x356B0000u | (traceAddress & 0xFFFFu),
+            0xAD640000u,
+            0xAD7F0004u,
             0x2C8800C8u,
-            0x11000008u,
+            0x1100000Cu,
             0x00000000u,
             0x3C090000u | ((pointerCell >> 16) & 0xFFFFu),
             0x35290000u | (pointerCell & 0xFFFFu),
             0x8D290000u,
             0x01244821u,
             0x91220000u,
+            0xAD620008u,
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
             0x03E00008u,
             0x00000000u,
-            0x24020000u,
+            0x00001021u,
+            0xAD620008u,
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
             0x03E00008u,
             0x00000000u
         };
@@ -424,7 +547,7 @@ internal static class Torneko4GanirasuBarrierRuntime
 
             if (actual != expected[i])
                 throw new InvalidOperationException(
-                    "専用コードの検証に失敗しました。位置=0x" +
+                    "トレース付き専用コードの検証に失敗しました。位置=0x" +
                     (cave + (uint)(i * 4)).ToString("X8"));
         }
     }
