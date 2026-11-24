@@ -205,7 +205,13 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 ionazun.Add(storeId);
             }
             else ionazun.Remove(storeId);
-            barriers[storeId] = item.GanirasuBarrier;
+            // 指輪側でチェックしたモンスターだけ、
+            // モンスタークリエイター側の設定より優先して所持させる。
+            // チェックなしの場合は基準設定をそのまま維持する。
+            if (item.GanirasuBarrier)
+            {
+                barriers[storeId] = true;
+            }
         }
 
         Torneko4ActionStore.ReplaceAll(actions);
