@@ -272,6 +272,7 @@ internal sealed class SlimeRingLevelUpService : IDisposable
         // 元の jal 0x002C7444 を実行する。
         code.Add(EncodeJal(caveAddress + (uint)(code.Count * 4), OriginalCallTarget));
         code.Add(0x00000000u); // nop
+        code.Add(0x8FB40004u); // lw s4,4(sp)（元の種族情報ポインタを復元）
 
         var skipBranches = new List<(int Index, int Opcode, int Rs, int Rt)>();
 
@@ -293,7 +294,7 @@ internal sealed class SlimeRingLevelUpService : IDisposable
         code.Add(0x2D2A00C8u); // sltiu t2,t1,200
         AddBranchPlaceholder(code, skipBranches, 4, 10, 0);
 
-        // レコードアドレス = テーブル基点 + (種族ID-1)*24。
+        // レコードアドレス = ID 0の未使用レコードを含む基点 + 種族ID*24。
         code.Add(0x00095080u); // sll t2,t1,4
         code.Add(0x000958C0u); // sll t3,t1,3
         code.Add(0x014B5021u); // addu t2,t2,t3
