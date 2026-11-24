@@ -260,7 +260,7 @@ internal static class Torneko4GanirasuBarrierRuntime
             uint count = ActionAutoRestoreService.ReadShared32(trace + 12u);
 
             if (count == 0)
-                return "";
+                return "ガニラスバリア診断: 呼出回数=0 / フック未到達";
 
             uint argument =
                 ActionAutoRestoreService.ReadShared32(trace);
