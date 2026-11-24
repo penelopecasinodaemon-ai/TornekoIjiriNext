@@ -158,11 +158,15 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         }
 
         string applyResult = Pcsx2BinApplier.ApplyRanges(Pcsx2LiveSession.ProcessId, Pcsx2LiveSession.MemoryLayout!, writes);
-        ApplyActionAndExtraSettings(settings);
-        RaiseStatus("スライムの指輪：17種の個別設定を適用中\r\n" + applyResult);
+        string runtimeResult = ApplyActionAndExtraSettings(settings);
+        RaiseStatus(
+            "スライムの指輪：17種の個別設定を適用中" +
+            Environment.NewLine + applyResult +
+            Environment.NewLine + "--- 特技・バリア適用結果 ---" +
+            Environment.NewLine + runtimeResult);
     }
 
-    private void ApplyActionAndExtraSettings(SlimeRingSettings settings)
+    private string ApplyActionAndExtraSettings(SlimeRingSettings settings)
     {
         Dictionary<int, ushort> actions;
         HashSet<int> ionazun;
@@ -195,8 +199,11 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         if (!_actionRestore.TryApply(actions, out string actionMessage))
             throw new InvalidOperationException("特技変更の適用に失敗しました: " + actionMessage);
+
         if (!Torneko4GanirasuBarrierRuntime.TryApply(barriers, out string barrierMessage))
             throw new InvalidOperationException("ガニラスバリアの適用に失敗しました: " + barrierMessage);
+
+        return actionMessage + Environment.NewLine + barrierMessage;
     }
 
     private void Deactivate(string status)

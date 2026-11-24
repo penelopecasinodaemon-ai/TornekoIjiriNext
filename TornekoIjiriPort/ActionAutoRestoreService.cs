@@ -888,7 +888,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         return new uint[]
         {
-            0x90480006u,
+            0x90480004u,
 
             0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
             0x356B0000u | (traceAddress & 0xFFFFu),

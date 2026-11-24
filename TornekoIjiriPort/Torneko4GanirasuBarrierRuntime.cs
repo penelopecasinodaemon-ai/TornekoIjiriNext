@@ -28,13 +28,13 @@ internal static class Torneko4GanirasuBarrierRuntime
 
     private static readonly uint[] DelayAddresses =
     {
-        0x00248D98u,
-        0x0028DC30u,
-        0x002B0344u,
-        0x002B0678u,
-        0x002B4870u,
-        0x002C96FCu,
-        0x002CB68Cu
+        0x00248D9Cu,
+        0x0028DC34u,
+        0x002B0348u,
+        0x002B067Cu,
+        0x002B4874u,
+        0x002C9700u,
+        0x002CB690u
     };
 
     private static readonly uint[] ExpectedDelayInstructions =
@@ -225,9 +225,21 @@ internal static class Torneko4GanirasuBarrierRuntime
     {
         for (int i = 0; i < DelayAddresses.Length; i++)
         {
-            uint actual =
-                ActionAutoRestoreService.ReadShared32(DelayAddresses[i]);
+            uint address = DelayAddresses[i] + 4u;
 
+            uint actual =
+                ActionAutoRestoreService.ReadShared32(address);
+
+            uint expected = ExpectedDelayInstructions[i];
+
+            if (actual != expected)
+            {
+                throw new InvalidOperationException(
+                    "ガニラスバリア呼び出し元の遅延スロットが想定外です。" +
+                    " アドレス=0x" + address.ToString("X8") +
+                    " 期待値=0x" + expected.ToString("X8") +
+                    " 現在値=0x" + actual.ToString("X8"));
+            }
         }
     }
 
