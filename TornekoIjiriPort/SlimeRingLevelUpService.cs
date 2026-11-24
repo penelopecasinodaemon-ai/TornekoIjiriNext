@@ -16,11 +16,6 @@ internal sealed class SlimeRingLevelUpService : IDisposable
     private const uint OriginalCallTarget = 0x002C7444u;
     private const uint ContinueAddress = 0x002C11A0u;
 
-    private const uint RingStateAddress = 0x00650112u;
-    private const uint RingItemAddress = 0x0065011Cu;
-    private const byte RingEquippedMask = 0x10;
-    private const ushort SlimeRingItemId = 0x00A4;
-    private const byte SlimeFamilyMask = 0x20;
 
     private const int MonsterRecordSize = 24;
     private const int MonsterRecordCount = 199;
@@ -41,20 +36,13 @@ internal sealed class SlimeRingLevelUpService : IDisposable
     private bool _installed;
     private int _processId;
     private uint _caveAddress;
-    private uint _tableBaseAddress;
     private string _lastStatus = "";
 
     internal event Action<string>? StatusChanged;
 
     internal SlimeRingLevelUpService()
     {
-        Pcsx2LiveSession.StateChanged += OnSessionChanged;
         _timer = new System.Threading.Timer(Poll, null, 1000, 1000);
-    }
-
-    private void OnSessionChanged()
-    {
-        Poll(null);
     }
 
     private void Poll(object? state)
@@ -78,7 +66,6 @@ internal sealed class SlimeRingLevelUpService : IDisposable
                 _processId = processId;
                 _installed = false;
                 _caveAddress = 0;
-                _tableBaseAddress = 0;
             }
 
             if (!_installed)
@@ -150,7 +137,6 @@ internal sealed class SlimeRingLevelUpService : IDisposable
                 if (IsOurCode(existingCave, tableBase))
                 {
                     _caveAddress = existingCave;
-                    _tableBaseAddress = tableBase;
                     _installed = true;
                     return;
                 }
@@ -191,7 +177,6 @@ internal sealed class SlimeRingLevelUpService : IDisposable
         }
 
         _caveAddress = cave;
-        _tableBaseAddress = tableBase;
         _installed = true;
 
         RaiseStatus(
@@ -318,10 +303,20 @@ internal sealed class SlimeRingLevelUpService : IDisposable
         code.Add(0x314A0020u); // andi t2,t2,0x20
         AddBranchPlaceholder(code, skipBranches, 4, 10, 0);
 
+        // 保存しておいた能力値ポインタがEE RAM内の整列済みアドレスか確認。
+        code.Add(0x8FAC0008u); // lw t4,8(sp)
+        AddAddress(code, 8, 0x00180000u);
+        code.Add(0x0188482Bu); // sltu t1,t4,t0
+        AddBranchPlaceholder(code, skipBranches, 5, 9, 0);
+        AddAddress(code, 8, 0x02000000u);
+        code.Add(0x0188482Bu); // sltu t1,t4,t0
+        AddBranchPlaceholder(code, skipBranches, 4, 9, 0);
+        code.Add(0x31890003u); // andi t1,t4,3
+        AddBranchPlaceholder(code, skipBranches, 5, 9, 0);
+
         // a2に保存した能力値構造体の4項目をそれぞれ+1。
         // レベルアップ解析で確認した配置：HP +16、最大HP +20、
         // 攻撃力 +32、防御力 +36。
-        code.Add(0x8FAC0008u); // lw t4,8(sp)
         code.Add(0x8D880010u); // lw t0,16(t4)
         code.Add(0x25080001u); // addiu t0,t0,1
         code.Add(0xAD880010u); // sw t0,16(t4)
@@ -443,7 +438,6 @@ internal sealed class SlimeRingLevelUpService : IDisposable
             return;
 
         _disposed = true;
-        Pcsx2LiveSession.StateChanged -= OnSessionChanged;
         _timer.Dispose();
 
         try
