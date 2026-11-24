@@ -1,0 +1,3971 @@
+========== MonsterCreatorForm.cs ==========
+---- 12行目 ----
+namespace TornekoIjiriPort;
+
+internal sealed class MonsterCreatorForm : Form
+{
+    private static readonly string[] MonsterNames = @"
+スモールグール
+
+---- 14行目 ----
+internal sealed class MonsterCreatorForm : Form
+{
+    private static readonly string[] MonsterNames = @"
+スモールグール
+ベロベロ
+はぐれメタル
+
+---- 216行目 ----
+".Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+    private const int MonsterRecordSize = 24;
+    private const int MonsterRecordCount = 199;
+    private const int RecruitModifierDataOffset = 365123;
+    private const int RecoveryConstantDataOffset = 364595;
+
+---- 217行目 ----
+
+    private const int MonsterRecordSize = 24;
+    private const int MonsterRecordCount = 199;
+    private const int RecruitModifierDataOffset = 365123;
+    private const int RecoveryConstantDataOffset = 364595;
+    private const int LegacyModifierArraySize = 512;
+
+---- 274行目 ----
+    private const uint SkillMessagePointerBase = 0x209126D0;
+
+    private readonly byte[]? _bin;
+    private readonly Action? _onChanged;
+    private readonly TextBox _search = new TextBox();
+    private readonly ListBox _list = new ListBox();
+
+---- 314行目 ----
+    private readonly CheckBox[] _skillChecks = CreateChecks(SkillFamilyNames);
+    private readonly NumericUpDown _dropRate = CreateNumber(byte.MaxValue);
+    private readonly ComboBox _dropItem = CreateChoice(MonsterSkillData.DropItemChoices);
+    private readonly NumericUpDown _sleepRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _skillRate = CreateNumber(byte.MaxValue);
+    private readonly NumericUpDown _recruitModifier = CreateNumber(ushort.MaxValue);
+
+---- 349行目 ----
+
+    private readonly ComboBox _skillRange = CreateChoice(SkillRangeNames);
+    private readonly ComboBox _enemyThrowItem = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem1 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem2 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _skillMessage = CreateChoice(new[] { "特技メッセージ無し" });
+
+---- 350行目 ----
+    private readonly ComboBox _skillRange = CreateChoice(SkillRangeNames);
+    private readonly ComboBox _enemyThrowItem = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem1 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem2 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _skillMessage = CreateChoice(new[] { "特技メッセージ無し" });
+    private bool _skillDataReady;
+
+---- 351行目 ----
+    private readonly ComboBox _enemyThrowItem = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem1 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _allyThrowItem2 = CreateChoice(MonsterSkillData.ThrowItemChoices);
+    private readonly ComboBox _skillMessage = CreateChoice(new[] { "特技メッセージ無し" });
+    private bool _skillDataReady;
+    private readonly Button _applyButton = new Button();
+
+---- 358行目 ----
+
+    private int _recordTableOffset = -1;
+    private int _selectedMonsterId = -1;
+    private int _loadedRecruitModifier;
+    private int _loadedRecoveryConstant;
+    private bool _dataReady;
+
+---- 365行目 ----
+    private bool _automaticLiveApply;
+
+    public MonsterCreatorForm() : this(null, null, null)
+    {
+    }
+
+
+---- 369行目 ----
+    }
+
+    public MonsterCreatorForm(byte[]? bin, Action? onChanged)
+        : this(bin, onChanged, null)
+    {
+    }
+
+---- 374行目 ----
+    }
+
+    public MonsterCreatorForm(
+        byte[]? bin,
+        Action? onChanged,
+        ActionAutoRestoreService? actionRestore)
+
+---- 375行目 ----
+
+    public MonsterCreatorForm(
+        byte[]? bin,
+        Action? onChanged,
+        ActionAutoRestoreService? actionRestore)
+    {
+
+---- 501行目 ----
+        fieldGrid.Controls.Add(CreateField("最大レベル", _maxLevel), 0, 2);
+        fieldGrid.Controls.Add(CreateField("成長タイプ", _growthType), 1, 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("系統", _systemChecks), 0, 3);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("特技系統", _skillChecks), 0, 4);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+
+---- 503行目 ----
+        fieldGrid.Controls.Add(CreateCheckGroup("系統", _systemChecks), 0, 3);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateCheckGroup("特技系統", _skillChecks), 0, 4);
+        fieldGrid.SetColumnSpan(fieldGrid.Controls[fieldGrid.Controls.Count - 1], 2);
+        fieldGrid.Controls.Add(CreateField("移動速度", _moveSpeed), 0, 5);
+        fieldGrid.Controls.Add(CreateField("ドロップ率（%）", _dropRate), 1, 5);
+
+---- 537行目 ----
+            ForeColor = Color.DimGray,
+            Text =
+                "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
+                "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
+                "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
+                "特技使用率(+22)はAのみを書き込みます。+23のBは変更しません。\r\n" +
+
+---- 538行目 ----
+            Text =
+                "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
+                "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
+                "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
+                "特技使用率(+22)はAのみを書き込みます。+23のBは変更しません。\r\n" +
+                "勧誘修正値・回復定数は旧HSPの独立配列（各256件）を編集します。\r\n" +
+
+---- 575行目 ----
+        _ionazunAlways.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            if (_actionRestore.SetIonazunForce(
+
+---- 579行目 ----
+
+            if (_actionRestore.SetIonazunForce(
+                _selectedMonsterId,
+                _ionazunAlways.Checked,
+                out string ionazunMessage))
+            {
+
+---- 593行目 ----
+        _ganirasuBarrier.CheckedChanged += (_, _) =>
+        {
+            if (_loadingSelection || _selectedMonsterId < 0)
+                return;
+
+            Torneko4GanirasuBarrierStore.Set(
+
+---- 597行目 ----
+
+            Torneko4GanirasuBarrierStore.Set(
+                _selectedMonsterId,
+                _ganirasuBarrier.Checked);
+
+            bool applied =
+
+---- 606行目 ----
+
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " のガニラスバリア設定を更新しました。" +
+                Environment.NewLine +
+                barrierMessage;
+
+---- 649行目 ----
+
+                const uint address = 0x002B46D0u;
+                const uint original = 0x240500C9u;
+                const uint changed = 0x240500CAu;
+
+                uint current =
+
+---- 650行目 ----
+                const uint address = 0x002B46D0u;
+                const uint original = 0x240500C9u;
+                const uint changed = 0x240500CAu;
+
+                uint current =
+                    ActionAutoRestoreService.ReadShared32(address);
+
+---- 1444行目 ----
+                "BIN読込済み：基本レコード位置 0x" +
+                _recordTableOffset.ToString("X") +
+                " ／ 199件・24 bytes";
+            if (!_skillDataReady)
+                _status.Text += " ／ 特技設定はバージョン5拡張データ未検出";
+            else
+
+---- 1483行目 ----
+                _actionRestore.Dispose();
+        };
+        // 画面ハンドル生成後に保存済み種族別特技設定を再適用する。
+        // コンストラクター中のイベント通知取りこぼしを防止する。
+        Shown += (_, _) =>
+        {
+
+---- 1492行目 ----
+            {
+                _actionMonitorStatus.Text =
+                    "種族別特技設定なし：元の命令を維持しています。";
+            }
+
+            if (savedActions.Count > 0)
+
+---- 1502行目 ----
+                {
+                    _actionMonitorStatus.Text =
+                        "保存済み種族別特技の再適用に失敗: " +
+                        applyMessage;
+                }
+            }
+
+---- 1661行目 ----
+
+    private static bool TryResolveRecordTable(
+        byte[]? bin,
+        out int tableOffset,
+        out string reason)
+    {
+
+---- 1673行目 ----
+        if (bin.Length < BinFileService.ExpectedSize)
+        {
+            reason = "BINサイズが524,288 bytes未満のため編集できません。";
+            return false;
+        }
+
+
+---- 1682行目 ----
+        // var_149 = DWORD(var_134 + 16) + var_143
+        uint rawPointer = BinFileService.ReadUInt32(bin, 16);
+        uint correction = (uint)bin[3] << 24;
+        uint pointer = unchecked(rawPointer + correction);
+
+        // 旧版のEEアドレス 0x20180000 を物理RAM側へ正規化。
+
+---- 1698行目 ----
+        // モンスターIDとBINレコードの対応を1レコード分補正
+
+        offset += MonsterRecordSize;
+        long requiredEnd = offset + (long)MonsterRecordCount * MonsterRecordSize;
+
+        if (offset < 0 || requiredEnd > bin.Length)
+
+---- 1699行目 ----
+
+        offset += MonsterRecordSize;
+        long requiredEnd = offset + (long)MonsterRecordCount * MonsterRecordSize;
+
+        if (offset < 0 || requiredEnd > bin.Length)
+        {
+
+---- 1706行目 ----
+                "モンスターデータ領域がBIN内にありません。\r\n" +
+                "推定位置：0x" + offset.ToString("X") +
+                " ／ 必要長：" + (MonsterRecordCount * MonsterRecordSize) + " bytes";
+            return false;
+        }
+
+
+---- 1715行目 ----
+    }
+
+    private static string[] ReadSkillMessageChoices(byte[] bin)
+    {
+        var choices = new List<string>(SkillMessageCount + 1);
+        choices.Add("特技メッセージ無し");
+
+---- 1748行目 ----
+    }
+
+    private static uint ReadUInt32LE(byte[] data, int offset)
+    {
+        BinFileService.CheckRange(data, offset, 4);
+        return (uint)data[offset]
+
+---- 1754行目 ----
+            | ((uint)data[offset + 1] << 8)
+            | ((uint)data[offset + 2] << 16)
+            | ((uint)data[offset + 3] << 24);
+    }
+
+    private static void WriteUInt32LE(byte[] data, int offset, uint value)
+
+---- 1757行目 ----
+    }
+
+    private static void WriteUInt32LE(byte[] data, int offset, uint value)
+    {
+        BinFileService.CheckRange(data, offset, 4);
+        data[offset] = (byte)value;
+
+---- 1763行目 ----
+        data[offset + 1] = (byte)(value >> 8);
+        data[offset + 2] = (byte)(value >> 16);
+        data[offset + 3] = (byte)(value >> 24);
+    }
+
+    private static bool TryResolveSkillExtension(byte[]? bin)
+
+---- 1766行目 ----
+    }
+
+    private static bool TryResolveSkillExtension(byte[]? bin)
+    {
+        if (bin == null)
+            return false;
+
+---- 1805行目 ----
+        _skillMessage.Enabled = enabled && _skillDataReady;
+        _applyButton.Enabled = enabled;
+        _actionChange.Enabled = _selectedMonsterId >= 0;
+        _ganirasuBarrier.Enabled = enabled && _selectedMonsterId >= 0;
+        _ionazunAlways.Enabled = enabled && IsIonazunActionSelected();
+    }
+
+---- 1806行目 ----
+        _applyButton.Enabled = enabled;
+        _actionChange.Enabled = _selectedMonsterId >= 0;
+        _ganirasuBarrier.Enabled = enabled && _selectedMonsterId >= 0;
+        _ionazunAlways.Enabled = enabled && IsIonazunActionSelected();
+    }
+
+
+---- 1818行目 ----
+        _visibleIds.Clear();
+
+        for (int i = 0; i < MonsterNames.Length; i++)
+        {
+            string id = i.ToString("D3");
+            string name = MonsterNames[i];
+
+---- 1821行目 ----
+        {
+            string id = i.ToString("D3");
+            string name = MonsterNames[i];
+
+            bool matches =
+                query.Length == 0 ||
+
+---- 1839行目 ----
+
+        _count.Text =
+            "登録モンスター：" + MonsterNames.Length +
+            "種類　／　検索結果：" + _visibleIds.Count + "種類";
+
+        if (_list.Items.Count > 0)
+
+---- 1854行目 ----
+        if (index < 0 || index >= _visibleIds.Count)
+        {
+            _selectedMonsterId = -1;
+            _loadingSelection = false;
+            _selectedTitle.Text = "モンスター未選択";
+            _selectedInfo.Text = "検索条件に一致するモンスターを選択してください。";
+
+---- 1863行目 ----
+
+        int id = _visibleIds[index];
+        _selectedMonsterId = id;
+        _loadingSelection = true;
+
+        _ganirasuBarrier.Checked =
+
+---- 1885行目 ----
+        }
+
+        _selectedTitle.Text = MonsterNames[id];
+
+        if (!_dataReady || _bin == null)
+        {
+
+---- 1891行目 ----
+            _selectedInfo.Text =
+                "モンスター番号：" + id.ToString("D3") +
+                "\r\n一覧登録名：" + MonsterNames[id] +
+                "\r\n\r\n" + _status.Text;
+            SetEditorEnabled(false);
+            _loadingSelection = false;
+
+---- 1898行目 ----
+        }
+
+        int offset = checked(_recordTableOffset + id * MonsterRecordSize);
+        BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+
+        // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+
+---- 1899行目 ----
+
+        int offset = checked(_recordTableOffset + id * MonsterRecordSize);
+        BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+
+        // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+        int hspMonsterIndex = id + 1;
+
+---- 1902行目 ----
+
+        // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+        int hspMonsterIndex = id + 1;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+
+
+---- 1903行目 ----
+        // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
+        int hspMonsterIndex = id + 1;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+
+        if (Pcsx2LiveSession.IsConnected &&
+
+---- 1904行目 ----
+        int hspMonsterIndex = id + 1;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+
+        if (Pcsx2LiveSession.IsConnected &&
+            Pcsx2LiveSession.ProcessId > 0 &&
+
+---- 1914行目 ----
+                var requested = new List<Tuple<int, int, string>>
+                {
+                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+                    Tuple.Create(recruitOffset, 2, "勧誘修正値"),
+                    Tuple.Create(recoveryOffset, 2, "回復定数")
+                };
+
+---- 1919行目 ----
+                };
+                // HSPは回復配列の先頭2 bytesで配列全体の有効/未初期化を判定する。
+                if (hspMonsterIndex != 0)
+                    requested.Add(Tuple.Create(RecoveryConstantDataOffset, 2, "回復定数配列識別"));
+
+                int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+
+---- 1922行目 ----
+                    requested.Add(Tuple.Create(RecoveryConstantDataOffset, 2, "回復定数配列識別"));
+
+                int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+                int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+                if (_skillDataReady)
+                {
+
+---- 1923行目 ----
+
+                int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+                int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+                if (_skillDataReady)
+                {
+                    requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
+
+---- 1943行目 ----
+                    Array.Copy(item.Item2, 0, _bin, item.Item1, item.Item2.Length);
+
+                _status.Text = MonsterNames[id] + " の現在値をPCSX2から読み込みました。";
+            }
+            catch (Exception ex)
+            {
+
+---- 1992行目 ----
+
+        // var_411 は常にレコード+18。特技拡張BINがなくてもライブ読込値を表示する。
+        int enemyItemOffset = SkillRangeDataOffset + hspMonsterIndex * 20 + 18;
+        ushort enemyItemValue = BinFileService.ReadUInt16(_bin, enemyItemOffset);
+        bool canShowLiveEnemyItem =
+            Pcsx2LiveSession.IsConnected && Pcsx2LiveSession.MemoryLayout != null;
+
+---- 2004行目 ----
+        if (_skillDataReady)
+        {
+            int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+            int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+
+            ushort rangeValue = BinFileService.ReadUInt16(_bin, rangeOffset + 6);
+
+---- 2005行目 ----
+        {
+            int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+            int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+
+            ushort rangeValue = BinFileService.ReadUInt16(_bin, rangeOffset + 6);
+            uint messagePointer = ReadUInt32LE(_bin, rangeOffset + 10);
+
+---- 2032行目 ----
+            "モンスター番号：" + id.ToString("D3") +
+            "　／　BINレコード位置：0x" + offset.ToString("X") +
+            "\r\nレコード長：24 bytes　／　未解析領域は変更しません。" +
+            skillDebug;
+
+        _loadingSelection = false;
+
+---- 2041行目 ----
+    private void ApplySelected()
+    {
+        if (!_dataReady || _bin == null || _selectedMonsterId < 0)
+            return;
+
+        int offset = checked(
+
+---- 2045行目 ----
+
+        int offset = checked(
+            _recordTableOffset + _selectedMonsterId * MonsterRecordSize);
+
+        BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+
+
+---- 2047行目 ----
+            _recordTableOffset + _selectedMonsterId * MonsterRecordSize);
+
+        BinFileService.CheckRange(_bin, offset, MonsterRecordSize);
+
+        BinFileService.WriteUInt16(_bin, offset, (ushort)_hp.Value);
+        BinFileService.WriteUInt16(_bin, offset + 2, (ushort)_attack.Value);
+
+---- 2071行目 ----
+
+        // HSP var_407 の先頭空行を含むIDに合わせる。
+        int hspMonsterIndex = _selectedMonsterId + 1;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+        int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+
+---- 2072行目 ----
+        // HSP var_407 の先頭空行を含むIDに合わせる。
+        int hspMonsterIndex = _selectedMonsterId + 1;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+        int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+        int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+
+---- 2073行目 ----
+        int hspMonsterIndex = _selectedMonsterId + 1;
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+        int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+        int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+        int enemyItemOffset = rangeOffset + 18;
+
+---- 2074行目 ----
+        int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+        int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+        int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+        int enemyItemOffset = rangeOffset + 18;
+
+
+---- 2075行目 ----
+        int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
+        int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
+        int allyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
+        int enemyItemOffset = rangeOffset + 18;
+
+        // var_411 の編集値をBIN作業データへ常時保持する。
+
+---- 2145行目 ----
+            try
+            {
+                var writes = new List<Tuple<int, byte[], string>>();
+
+                byte[] CopyRange(int start, int length)
+                {
+
+---- 2147行目 ----
+                var writes = new List<Tuple<int, byte[], string>>();
+
+                byte[] CopyRange(int start, int length)
+                {
+                    BinFileService.CheckRange(_bin, start, length);
+                    byte[] result = new byte[length];
+
+---- 2150行目 ----
+                {
+                    BinFileService.CheckRange(_bin, start, length);
+                    byte[] result = new byte[length];
+                    Array.Copy(_bin, start, result, 0, length);
+                    return result;
+                }
+
+---- 2157行目 ----
+                writes.Add(Tuple.Create(
+                    offset,
+                    CopyRange(offset, MonsterRecordSize - 1),
+                    "モンスターレコード"));
+
+                if (modifierChanged)
+
+---- 2200行目 ----
+                else
+                {
+                    // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
+                    writes.Add(Tuple.Create(
+                        enemyItemOffset,
+                        CopyRange(enemyItemOffset, 2),
+
+---- 2213行目 ----
+
+                _status.Text =
+                    MonsterNames[_selectedMonsterId] +
+                    " の変更をPCSX2へ反映しました。\r\n" +
+                    resultText;
+            }
+
+---- 2238行目 ----
+        {
+            _status.Text =
+                MonsterNames[_selectedMonsterId] +
+                " の変更をBIN作業データへ反映しました。\r\n" +
+                "PCSX2未接続のためゲームメモリには未適用です。";
+        }
+
+---- 2244行目 ----
+
+        _selectedInfo.Text =
+            "モンスター番号：" + _selectedMonsterId.ToString("D3") +
+            "　／　BINレコード位置：0x" + offset.ToString("X") +
+            "\r\nHP・攻撃力・防御力・最大レベル・経験値を更新しました。";    }
+
+
+---- 2278行目 ----
+        _ionazunAlways.Enabled =
+            _dataReady &&
+            _selectedMonsterId >= 0 &&
+            IsIonazunActionSelected();
+
+        if (_selectedMonsterId < 0)
+
+---- 2281行目 ----
+            IsIonazunActionSelected();
+
+        if (_selectedMonsterId < 0)
+            return;
+
+        // プレースホルダーを選んだ場合は、そのモンスターの設定を解除する。
+
+---- 2287行目 ----
+        if (_actionChange.SelectedIndex == 0)
+        {
+            Torneko4ActionStore.Remove(_selectedMonsterId);
+
+            _actionRestore.TryApply(
+                Torneko4ActionStore.GetCopy(),
+
+---- 2312行目 ----
+
+        // PINEへの適用が失敗しても、選択した設定自体は保持する。
+        Torneko4ActionStore.Set(_selectedMonsterId, action.Id);
+
+        if (_actionRestore.TryApply(Torneko4ActionStore.GetCopy(), out string message))
+        {
+
+========== ActionAutoRestoreService.cs ==========
+---- 12行目 ----
+{
+    // 敵特技呼び出し命令
+    private const uint PatchAddress = 0x002435C4u;
+
+    // 元の jal dgEnemyAttack
+    private const uint OriginalCallInstruction = 0x0C08F1D4u;
+
+---- 18行目 ----
+
+    // 元の遅延スロット lh s1,4(v0)
+    private const uint DelaySlotAddress = 0x002435C8u;
+    private const uint OriginalDelayInstruction = 0x84510004u;
+
+    // 旧版の全敵共通パッチ ori s1,zero,actionId
+
+---- 34行目 ----
+    private const uint IonazunCompareOriginal = 0x0043102Au;
+
+    // 使用済みイオナズン判定の種族別フック
+    private const uint IonazunUsedBranchAddress = 0x00228DD0u;
+    private const uint IonazunUsedBranchOriginal = 0x144000E3u;
+    private const uint IonazunUsedBranchDelayAddress = 0x00228DD4u;
+
+---- 38行目 ----
+    private const uint IonazunUsedBranchOriginal = 0x144000E3u;
+    private const uint IonazunUsedBranchDelayAddress = 0x00228DD4u;
+    private const uint IonazunUsedBranchDelayOriginal = 0x24040003u;
+
+    // 確率判定は2命令まとめてフックする
+    private const uint IonazunCompareBranchAddress = 0x00228DECu;
+
+---- 67行目 ----
+        (0x22, "アストロン"),
+        (0x23, "力を溜めた(トロル)"),
+        (0x24, "力を溜めた(トロルボンバー)"),
+        (0x25, "超ちからため(トロルキング)"),
+        (0x26, "くさった死体のくさった液"),
+        (0x27, "リビングデッドのくさった液"),
+
+---- 255行目 ----
+
+    internal bool TryApply(
+        IEnumerable<KeyValuePair<int, ushort>> monsterActions,
+        out string message)
+    {
+        message = "";
+
+---- 260行目 ----
+        message = "";
+
+        if (monsterActions == null)
+        {
+            message = "モンスター別特技設定がありません。";
+            return false;
+
+---- 268行目 ----
+        var copy = new Dictionary<int, ushort>();
+
+        foreach (var pair in monsterActions)
+            copy[pair.Key] = pair.Value;
+
+        lock (_stateSync)
+
+---- 301行目 ----
+                {
+                    message =
+                        "種族別特技設定をすべて解除しました。\n" +
+                        "元の特技処理命令へ復元しました。";
+                    RaiseStatus("種族別特技設定なし：元の命令へ復元済みです。");
+                    return true;
+
+---- 303行目 ----
+                        "種族別特技設定をすべて解除しました。\n" +
+                        "元の特技処理命令へ復元しました。";
+                    RaiseStatus("種族別特技設定なし：元の命令へ復元済みです。");
+                    return true;
+                }
+
+
+---- 308行目 ----
+
+                message =
+                    "種族別特技設定をPCSX2へ適用しました。\n" +
+                    "設定種族数: " + copy.Count + "\n" +
+                    "種族IDはモンスター一覧番号+1で照合します。\n" +
+                    "個体データは変更していません。\n" +
+
+---- 309行目 ----
+                message =
+                    "種族別特技設定をPCSX2へ適用しました。\n" +
+                    "設定種族数: " + copy.Count + "\n" +
+                    "種族IDはモンスター一覧番号+1で照合します。\n" +
+                    "個体データは変更していません。\n" +
+                    "実際の特技動作はゲーム内で確認してください。";
+
+---- 310行目 ----
+                    "種族別特技設定をPCSX2へ適用しました。\n" +
+                    "設定種族数: " + copy.Count + "\n" +
+                    "種族IDはモンスター一覧番号+1で照合します。\n" +
+                    "個体データは変更していません。\n" +
+                    "実際の特技動作はゲーム内で確認してください。";
+
+
+---- 315行目 ----
+
+                RaiseStatus(
+                    "種族別特技ディスパッチャー適用中：" +
+                    copy.Count + "種類");
+
+                return true;
+
+---- 328行目 ----
+                string logPath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                    "トルネコいじり_種族別特技エラー.txt");
+
+                try
+                {
+
+---- 342行目 ----
+
+                message =
+                    "種族別特技の適用に失敗しました。\n" +
+                    ex.Message +
+                    "\n詳細ログ: " + logPath;
+                return false;
+
+---- 350行目 ----
+    }
+
+    internal bool IsIonazunForceEnabled(int monsterId)
+    {
+        return Torneko4ActionStore.GetIonazunForce(monsterId);
+    }
+
+---- 352行目 ----
+    internal bool IsIonazunForceEnabled(int monsterId)
+    {
+        return Torneko4ActionStore.GetIonazunForce(monsterId);
+    }
+
+    internal bool SetIonazunForce(
+
+---- 356行目 ----
+
+    internal bool SetIonazunForce(
+        int monsterId,
+        bool enabled,
+        out string message)
+    {
+
+---- 360行目 ----
+        out string message)
+    {
+        Torneko4ActionStore.SetIonazunForce(monsterId, enabled);
+        return TryApply(Torneko4ActionStore.GetCopy(), out message);
+    }
+    private static bool IsIonazunRepeatJump(uint instruction)
+
+---- 399行目 ----
+            0x375A0000u | (traceAddress & 0xFFFFu),
+
+            // k0 = trace[3]（現在の種族に設定された特技ID）
+            0x8F5A000Cu,
+
+            // 0xFFなら0、そうでなければ0以外
+
+---- 410行目 ----
+
+            // ONなら使用済み判定を通過させる
+            0x24020000u,
+
+            // 元の bne v0,zero,0x00229160
+            0x14400003u,
+
+---- 452行目 ----
+
+            // ONなら成功扱い
+            0x24020001u,
+
+            // 元の分岐処理へ移動
+            0x10000003u,
+
+---- 522行目 ----
+
+        // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+        if (currentCompare == 0x24020001u)
+        {
+            _pine.Write32(
+                IonazunCompareAddress,
+
+---- 680行目 ----
+
+        // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+        if (currentCompare == 0x24020001u)
+        {
+            _pine.Write32(
+                IonazunCompareAddress,
+
+---- 813行目 ----
+    }
+
+    private List<(byte SpeciesId, byte Marker, byte ActualAction)>
+        BuildActionEntries(Dictionary<int, ushort> actions)
+    {
+        var entries =
+
+---- 817行目 ----
+    {
+        var entries =
+            new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+
+        var enabled = Torneko4ActionStore.GetIonazunForceCopy();
+
+
+---- 864行目 ----
+        }
+
+        entries.Sort((a, b) => a.SpeciesId.CompareTo(b.SpeciesId));
+
+        return entries;
+    }
+
+---- 869行目 ----
+    }
+
+    private static byte[] BuildActionData(
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        byte[] data = new byte[entries.Count * 3];
+
+---- 870行目 ----
+
+    private static byte[] BuildActionData(
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        byte[] data = new byte[entries.Count * 3];
+
+
+---- 872行目 ----
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        byte[] data = new byte[entries.Count * 3];
+
+        for (int i = 0; i < entries.Count; i++)
+        {
+
+---- 876行目 ----
+        for (int i = 0; i < entries.Count; i++)
+        {
+            data[i * 3] = entries[i].SpeciesId;
+            data[i * 3 + 1] = entries[i].Marker;
+            data[i * 3 + 2] = entries[i].ActualAction;
+        }
+
+---- 921行目 ----
+        return new uint[]
+        {
+            // t1 = コンパクトな種族別設定データ
+            0x3C090000u | ((dataAddress >> 16) & 0xFFFFu),
+            0x35290000u | (dataAddress & 0xFFFFu),
+
+
+---- 925行目 ----
+            0x35290000u | (dataAddress & 0xFFFFu),
+
+            // t4 = 登録種族数
+            0x240C0000u | ((uint)entryCount & 0xFFFFu),
+
+            // 検索ループ
+
+---- 926行目 ----
+
+            // t4 = 登録種族数
+            0x240C0000u | ((uint)entryCount & 0xFFFFu),
+
+            // 検索ループ
+            0x912A0000u,
+
+---- 967行目 ----
+
+    private static uint GetRequiredCaveSize(
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        // +0x12C までが固定コード領域。
+        // その後に種族ごと3バイトの設定を置く。
+
+---- 970行目 ----
+    {
+        // +0x12C までが固定コード領域。
+        // その後に種族ごと3バイトの設定を置く。
+        uint dataLength = (uint)entries.Count * 3u;
+        uint paddedDataLength = (dataLength + 3u) & ~3u;
+
+
+---- 979行目 ----
+    private bool IsDispatcherCode(
+        uint address,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        uint[] stub = BuildDispatcherStub(address);
+        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
+
+---- 983行目 ----
+        uint[] stub = BuildDispatcherStub(address);
+        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
+        byte[] data = BuildActionData(entries);
+
+        for (int i = 0; i < stub.Length; i++)
+        {
+
+---- 1060行目 ----
+            "EE RAMに必要サイズ " + requiredSize +
+            " バイトの連続した空き領域が見つかりません。\n" +
+            "512バイト固定ではなく、設定種族数に応じたサイズで探索しました。");
+    }
+
+    private void WriteDispatcherCode(
+
+---- 1065行目 ----
+    private void WriteDispatcherCode(
+        uint address,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        uint[] stub = BuildDispatcherStub(address);
+        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
+
+---- 1069行目 ----
+        uint[] stub = BuildDispatcherStub(address);
+        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
+        byte[] data = BuildActionData(entries);
+
+        // メインディスパッチャー
+        for (int i = 0; i < stub.Length; i++)
+
+---- 1087行目 ----
+        }
+
+        // 種族別検索コード
+        uint lookupAddress = address + 0xE4u;
+
+        for (int i = 0; i < lookup.Length; i++)
+
+---- 1097行目 ----
+        }
+
+        // 種族別データ。1種族につき3バイトのみ。
+        uint dataAddress = address + 0x12Cu;
+        uint paddedLength = ((uint)data.Length + 3u) & ~3u;
+
+
+---- 1284行目 ----
+            uint traceAddress = cave + 0xD4u;
+            uint actionId = SharedPine.Read32(traceAddress);
+            uint speciesId = SharedPine.Read32(traceAddress + 4u);
+            uint count = SharedPine.Read32(traceAddress + 8u);
+
+            string[] lines =
+
+---- 1297行目 ----
+                "",
+                "Recorded calls: " + count.ToString(),
+                "Species ID: " + speciesId.ToString(),
+                "Action ID: 0x" + (actionId & 0xFFFFu).ToString("X4"),
+                "Action ID signed: " + unchecked((short)(actionId & 0xFFFFu)).ToString(),
+                "",
+
+---- 1301行目 ----
+                "Action ID signed: " + unchecked((short)(actionId & 0xFFFFu)).ToString(),
+                "",
+                "Species ID is the runtime ID used by the game.",
+                "Action ID is captured before the per-species override."
+            };
+
+
+---- 1302行目 ----
+                "",
+                "Species ID is the runtime ID used by the game.",
+                "Action ID is captured before the per-species override."
+            };
+
+            return string.Join(Environment.NewLine, lines);
+
+---- 1367行目 ----
+            // 条件分岐。遅延スロットも元の命令を再現する。
+            0x10400004u,
+            0x24020048u,
+
+            // 条件成立側：元の 0x002CF60C へ戻る
+            0x08000000u | ((0x002CF60Cu >> 2) & 0x03FFFFFFu),
+
+---- 1513行目 ----
+
+            uint verifyS0 = SharedPine.Read32(traceAddress);
+            uint verifyCount = SharedPine.Read32(traceAddress + 24u);
+
+            if (verifyS0 != 0u || verifyCount != 0u)
+            {
+
+---- 1625行目 ----
+            uint s4 = SharedPine.Read32(traceAddress + 16u);
+            uint ra = SharedPine.Read32(traceAddress + 20u);
+            uint count = SharedPine.Read32(traceAddress + 24u);
+
+            string[] lines =
+            {
+
+---- 1757行目 ----
+                {
+                    RaiseStatus(
+                        "種族別特技設定なし：元の命令を維持しています。");
+                }
+
+                if (snapshot.Count > 0 || _ionazunRepeatCaveAddress != 0)
+
+---- 1778行目 ----
+                            ApplyRuntime(snapshot);
+                            RaiseStatus(snapshot.Count > 0
+                                ? "種族別特技ディスパッチャー適用中：" + snapshot.Count + "種類"
+                                : "種族別特技設定なし：元の命令を維持しています。");
+                        }
+
+
+---- 1779行目 ----
+                            RaiseStatus(snapshot.Count > 0
+                                ? "種族別特技ディスパッチャー適用中：" + snapshot.Count + "種類"
+                                : "種族別特技設定なし：元の命令を維持しています。");
+                        }
+
+                        if (status == 1)
+
+---- 1798行目 ----
+        catch (Exception ex)
+        {
+            RaiseStatus("種族別特技監視エラー: " + ex.Message);
+        }
+
+        Interlocked.Exchange(ref _pollBusy, 0);
+
+---- 1909行目 ----
+        internal uint Read32(uint address)
+        {
+            byte[] args = new byte[4];
+            WriteUInt32(args, 0, address);
+
+            return BitConverter.ToUInt32(
+
+---- 1918行目 ----
+        internal void Write32(uint address, uint value)
+        {
+            byte[] args = new byte[8];
+
+            WriteUInt32(args, 0, address);
+            WriteUInt32(args, 4, value);
+
+---- 1926行目 ----
+        }
+
+        private byte[] Request(
+            byte opcode,
+            byte[] args,
+            int expectedPayloadLength)
+
+---- 1928行目 ----
+        private byte[] Request(
+            byte opcode,
+            byte[] args,
+            int expectedPayloadLength)
+        {
+            lock (_sync)
+
+---- 1936行目 ----
+                    throw new InvalidOperationException("PINE接続がありません。");
+
+                byte[] body = new byte[1 + args.Length];
+                body[0] = opcode;
+
+                Array.Copy(args, 0, body, 1, args.Length);
+
+---- 1941行目 ----
+                Array.Copy(args, 0, body, 1, args.Length);
+
+                byte[] packet = new byte[4 + body.Length];
+
+                WriteUInt32(packet, 0, (uint)packet.Length);
+                Array.Copy(body, 0, packet, 4, body.Length);
+
+---- 1950行目 ----
+                    _stream.Write(packet, 0, packet.Length);
+
+                    byte[] header = ReadExactly(_stream, 4);
+                    uint responseLength = BitConverter.ToUInt32(header, 0);
+
+                    if (responseLength < 5 || responseLength > 1024)
+
+---- 1953行目 ----
+                    uint responseLength = BitConverter.ToUInt32(header, 0);
+
+                    if (responseLength < 5 || responseLength > 1024)
+                        throw new InvalidOperationException(
+                            "PINE応答サイズが不正です: " + responseLength);
+
+
+---- 1957行目 ----
+                            "PINE応答サイズが不正です: " + responseLength);
+
+                    byte[] response =
+                        ReadExactly(_stream, checked((int)responseLength - 4));
+
+                    if (response[0] != 0)
+
+---- 1970行目 ----
+                            "PINE応答長が一致しません。");
+
+                    byte[] payload = new byte[actualPayloadLength];
+
+                    if (actualPayloadLength > 0)
+                        Array.Copy(response, 1, payload, 0, actualPayloadLength);
+
+---- 1985行目 ----
+        }
+
+        private static byte[] ReadExactly(NetworkStream stream, int length)
+        {
+            byte[] data = new byte[length];
+            int offset = 0;
+
+---- 1987行目 ----
+        private static byte[] ReadExactly(NetworkStream stream, int length)
+        {
+            byte[] data = new byte[length];
+            int offset = 0;
+
+            while (offset < length)
+
+---- 2005行目 ----
+
+        private static void WriteUInt32(
+            byte[] data,
+            int offset,
+            uint value)
+        {
+
+---- 2012行目 ----
+            data[offset + 1] = (byte)((value >> 8) & 0xFF);
+            data[offset + 2] = (byte)((value >> 16) & 0xFF);
+            data[offset + 3] = (byte)((value >> 24) & 0xFF);
+        }
+
+        internal void Disconnect()
+
+========== Program.cs ==========
+---- 45行目 ----
+    }
+
+    public static string DecodeText(byte[] data)
+    {
+        if (data == null)
+            return "";
+
+---- 54行目 ----
+
+    public static string DecodeText(
+        byte[] data,
+        int offset,
+        int count)
+    {
+
+---- 75行目 ----
+    }
+
+    private static string SafeCp932(byte[] bytes)
+    {
+        try
+        {
+
+---- 89行目 ----
+
+    private static void AddCandidate(
+        byte[] bytes,
+        System.Text.Encoding encoding,
+        string name,
+        System.Collections.Generic.List<Candidate> candidates)
+
+---- 246行目 ----
+    private const uint PAGE_GUARD = 0x100;
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+
+---- 253行目 ----
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+
+---- 290行目 ----
+        IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        UIntPtr nSize,
+        out UIntPtr lpNumberOfBytesRead);
+
+
+---- 319行目 ----
+
+    private static int FindPattern(
+        byte[] buffer,
+        int length,
+        byte[] pattern)
+    {
+
+---- 321行目 ----
+        byte[] buffer,
+        int length,
+        byte[] pattern)
+    {
+        if (length < pattern.Length)
+            return -1;
+
+---- 453行目 ----
+                typeof(MEMORY_BASIC_INFORMATION));
+
+            const int CHUNK_SIZE = 1024 * 1024;
+            const int FALLBACK_SIZE = 4096;
+
+            ulong firstAddress = 0;
+
+---- 460行目 ----
+            ulong firstPrefixAddress = 0;
+
+            byte[] signatureAPrefix =
+            {
+                0x20, 0x00, 0x18, 0x00,
+                0xA0, 0x00, 0x18, 0x00
+
+---- 466行目 ----
+            };
+
+            byte[][] signatureAFragments =
+            {
+                new byte[] { 0x20, 0x00, 0x18, 0x00 },
+                new byte[] { 0xA0, 0x00, 0x18, 0x00 },
+
+---- 468行目 ----
+            byte[][] signatureAFragments =
+            {
+                new byte[] { 0x20, 0x00, 0x18, 0x00 },
+                new byte[] { 0xA0, 0x00, 0x18, 0x00 },
+                new byte[] { 0x20, 0x01, 0x18, 0x00 },
+                new byte[] { 0xC0, 0x10, 0x18 }
+
+---- 469行目 ----
+            {
+                new byte[] { 0x20, 0x00, 0x18, 0x00 },
+                new byte[] { 0xA0, 0x00, 0x18, 0x00 },
+                new byte[] { 0x20, 0x01, 0x18, 0x00 },
+                new byte[] { 0xC0, 0x10, 0x18 }
+            };
+
+---- 470行目 ----
+                new byte[] { 0x20, 0x00, 0x18, 0x00 },
+                new byte[] { 0xA0, 0x00, 0x18, 0x00 },
+                new byte[] { 0x20, 0x01, 0x18, 0x00 },
+                new byte[] { 0xC0, 0x10, 0x18 }
+            };
+
+
+---- 471行目 ----
+                new byte[] { 0xA0, 0x00, 0x18, 0x00 },
+                new byte[] { 0x20, 0x01, 0x18, 0x00 },
+                new byte[] { 0xC0, 0x10, 0x18 }
+            };
+
+            ulong[] fragmentAddresses = new ulong[4];
+
+---- 491行目 ----
+                int maxPatternLength = System.Math.Max(
+                    SignatureA.Length, SignatureB.Length);
+                byte[] buffer = new byte[CHUNK_SIZE + 32];
+
+                while (offset < runEnd - runStart)
+                {
+
+---- 499行目 ----
+                        (runEnd - runStart) - offset);
+
+                    byte[] chunkBuffer = new byte[request];
+                    UIntPtr bytesRead;
+
+                    ReadProcessMemory(
+
+---- 695行目 ----
+                if (firstPrefixAddress != 0)
+                {
+                    byte[] diagnosticBytes = new byte[SignatureA.Length];
+                    UIntPtr diagnosticRead;
+
+                    bool diagnosticSuccess = ReadProcessMemory(
+
+---- 834行目 ----
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+
+---- 838行目 ----
+        out System.UIntPtr read);
+
+    private static byte[] Read(
+        System.IntPtr handle,
+        long address,
+        int size)
+
+---- 847行目 ----
+                nameof(address));
+
+        byte[] buffer = new byte[size];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+
+---- 892行目 ----
+                process.MainModule.BaseAddress.ToInt64();
+
+            byte[] dos = Read(handle, moduleBase, 64);
+
+            if (dos[0] != 0x4D || dos[1] != 0x5A)
+                throw new System.InvalidOperationException(
+
+---- 901行目 ----
+                System.BitConverter.ToInt32(dos, 0x3C);
+
+            if (peOffset <= 0 || peOffset > 1024 * 1024)
+                throw new System.InvalidOperationException(
+                    "PCSX2のPEヘッダー位置が不正です。");
+
+
+---- 905行目 ----
+                    "PCSX2のPEヘッダー位置が不正です。");
+
+            byte[] pe = Read(
+                handle,
+                checked(moduleBase + peOffset),
+                24 + 120);
+
+---- 908行目 ----
+                handle,
+                checked(moduleBase + peOffset),
+                24 + 120);
+
+            if (pe[0] != 0x50 || pe[1] != 0x45 ||
+                pe[2] != 0 || pe[3] != 0)
+
+---- 916行目 ----
+
+            ushort magic =
+                System.BitConverter.ToUInt16(pe, 24);
+
+            if (magic != 0x20B)
+                throw new System.InvalidOperationException(
+
+---- 923行目 ----
+
+            uint exportRva =
+                System.BitConverter.ToUInt32(pe, 24 + 112);
+
+            uint exportSize =
+                System.BitConverter.ToUInt32(pe, 24 + 116);
+
+---- 926行目 ----
+
+            uint exportSize =
+                System.BitConverter.ToUInt32(pe, 24 + 116);
+
+            if (exportRva == 0 || exportSize < 40)
+                throw new System.InvalidOperationException(
+
+---- 932行目 ----
+                    "PCSX2のエクスポートテーブルがありません。");
+
+            byte[] exportDirectory = Read(
+                handle,
+                checked(moduleBase + exportRva),
+                40);
+
+---- 938行目 ----
+
+            uint numberOfNames =
+                System.BitConverter.ToUInt32(exportDirectory, 24);
+
+            uint functionsRva =
+                System.BitConverter.ToUInt32(exportDirectory, 28);
+
+---- 959行目 ----
+                    checked(moduleBase + namesRva + (long)i * 4));
+
+                byte[] nameBytes = Read(
+                    handle,
+                    checked(moduleBase + nameRva),
+                    32);
+
+---- 977行目 ----
+                    continue;
+
+                byte[] ordinalBytes = Read(
+                    handle,
+                    checked(moduleBase + ordinalsRva + (long)i * 2),
+                    2);
+
+---- 1001行目 ----
+                // EEmemはポインタ変数。
+                // 変数の格納場所から実際のEEメモリ先頭を読む。
+                byte[] pointerBytes = Read(
+                    handle,
+                    checked(moduleBase + variableRva),
+                    8);
+
+---- 1075行目 ----
+            // var_143 = var_142 * 16777216
+            byte highByte = Read(handle, signatureA + 3, 1)[0];
+            uint correction = (uint)highByte << 24;
+
+            layout.Correction = correction;
+
+
+---- 1111行目 ----
+// 第2識別アドレスを基準にする領域
+map["var_150"] = AddOffset(b, 87592);
+map["var_152"] = AddOffset(b, 89224);
+map["var_154"] = AddOffset(b, 16);
+map["var_156"] = AddOffset(b, 23797200);
+map["var_170"] = AddOffset(b, 232804);
+
+---- 1172行目 ----
+map["var_197"] = AddOffset(a, 546469266L - 538443776L);
+map["var_198"] = AddOffset(a, 543478226L - 538443776L);
+map["var_199"] = AddOffset(a, 543489746L - 538443776L);
+
+// 第2識別アドレスを基準にする追加領域
+map["var_200"] = AddOffset(b, 2722880);
+
+---- 1201行目 ----
+
+// HSPの定数・サイズ
+map["var_221_constant"] = 6984312L - 6972240L;
+map["var_223_size"] = 220 * 20;
+
+// var_222 = 543676328 - 16 * 20 - 538443776 + var_134
+
+---- 1227行目 ----
+// HSPの固定値。これらはアドレスではなく相対オフセット。
+map["var_239_offset"] = 692944;
+map["var_240_offset"] = 919568;
+map["var_241_offset"] = 919569;
+map["var_242_offset"] = 919570;
+map["var_243_offset"] = 919580;
+
+---- 1228行目 ----
+map["var_239_offset"] = 692944;
+map["var_240_offset"] = 919568;
+map["var_241_offset"] = 919569;
+map["var_242_offset"] = 919570;
+map["var_243_offset"] = 919580;
+map["var_244_offset"] = 919583;
+
+---- 1229行目 ----
+map["var_240_offset"] = 919568;
+map["var_241_offset"] = 919569;
+map["var_242_offset"] = 919570;
+map["var_243_offset"] = 919580;
+map["var_244_offset"] = 919583;
+map["var_245_offset"] = 919584;
+
+---- 1230行目 ----
+map["var_241_offset"] = 919569;
+map["var_242_offset"] = 919570;
+map["var_243_offset"] = 919580;
+map["var_244_offset"] = 919583;
+map["var_245_offset"] = 919584;
+map["var_246_offset"] = 919572;
+
+---- 1231行目 ----
+map["var_242_offset"] = 919570;
+map["var_243_offset"] = 919580;
+map["var_244_offset"] = 919583;
+map["var_245_offset"] = 919584;
+map["var_246_offset"] = 919572;
+map["var_247_offset"] = 919588;
+
+---- 1232行目 ----
+map["var_243_offset"] = 919580;
+map["var_244_offset"] = 919583;
+map["var_245_offset"] = 919584;
+map["var_246_offset"] = 919572;
+map["var_247_offset"] = 919588;
+map["var_248_offset"] = 919585;
+
+---- 1233行目 ----
+map["var_244_offset"] = 919583;
+map["var_245_offset"] = 919584;
+map["var_246_offset"] = 919572;
+map["var_247_offset"] = 919588;
+map["var_248_offset"] = 919585;
+map["var_249_offset"] = 931848;
+
+---- 1234行目 ----
+map["var_245_offset"] = 919584;
+map["var_246_offset"] = 919572;
+map["var_247_offset"] = 919588;
+map["var_248_offset"] = 919585;
+map["var_249_offset"] = 931848;
+map["var_250_offset"] = 931852;
+
+---- 1235行目 ----
+map["var_246_offset"] = 919572;
+map["var_247_offset"] = 919588;
+map["var_248_offset"] = 919585;
+map["var_249_offset"] = 931848;
+map["var_250_offset"] = 931852;
+map["var_251_offset"] = 931856;
+
+---- 1236行目 ----
+map["var_247_offset"] = 919588;
+map["var_248_offset"] = 919585;
+map["var_249_offset"] = 931848;
+map["var_250_offset"] = 931852;
+map["var_251_offset"] = 931856;
+map["var_252_offset"] = 931860;
+
+---- 1278行目 ----
+internal static class Pcsx2VanillaBinReader
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+
+---- 1302行目 ----
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+
+---- 1306行目 ----
+        out System.UIntPtr read);
+
+    private static byte[] Read(
+        System.IntPtr handle,
+        long address,
+        int length)
+
+---- 1317行目 ----
+            throw new System.ArgumentOutOfRangeException(nameof(address));
+
+        if (length < 0 || length > 64 * 1024 * 1024)
+            throw new System.ArgumentOutOfRangeException(nameof(length));
+
+        byte[] buffer = new byte[length];
+
+---- 1320行目 ----
+            throw new System.ArgumentOutOfRangeException(nameof(length));
+
+        byte[] buffer = new byte[length];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+
+---- 1372行目 ----
+        long value = Address(layout, key);
+
+        if (value <= 0 || value > 1024 * 1024)
+            throw new System.InvalidOperationException(
+                "メモリ領域サイズが不正です: " + key);
+
+
+---- 1381行目 ----
+    private static void Append(
+        System.IntPtr handle,
+        byte[] bin,
+        ref int destination,
+        long address,
+        int length)
+
+---- 1396行目 ----
+        }
+
+        byte[] part = Read(handle, address, length);
+
+        System.Buffer.BlockCopy(
+            part,
+
+---- 1410行目 ----
+
+    private static void AppendFlag(
+        byte[] bin,
+        ref int destination,
+        byte value)
+    {
+
+---- 1422行目 ----
+    }
+
+    public static byte[] Capture(
+        int processId,
+        Pcsx2MemoryLayout layout)
+    {
+
+---- 1445行目 ----
+            // 旧HSP:
+            // ReadProcessMemory var_130, var_134,
+            // varptr(var_226), 524288, var_145
+            byte[] bin = Read(
+                handle,
+                layout.SignatureA,
+
+---- 1446行目 ----
+            // ReadProcessMemory var_130, var_134,
+            // varptr(var_226), 524288, var_145
+            byte[] bin = Read(
+                handle,
+                layout.SignatureA,
+                BaseSize);
+
+---- 1544行目 ----
+            {
+                throw new System.InvalidOperationException(
+                    "旧HSP互換BINの構築位置が524288 bytesを超えました。");
+            }
+
+            if (bin.Length != BaseSize)
+
+---- 1549行目 ----
+            if (bin.Length != BaseSize)
+                throw new System.InvalidOperationException(
+                    "BINサイズが524288 bytesではありません。");
+
+            return bin;
+        }
+
+---- 1570行目 ----
+    public static bool VanillaDataLoaded { get; private set; }
+    public static int ProcessId { get; private set; }
+    public static byte[]? VanillaBin { get; private set; }
+    public static Pcsx2MemoryLayout? MemoryLayout { get; private set; }
+
+    public static event System.Action? StateChanged;
+
+---- 1588行目 ----
+    }
+
+    public static void SetVanillaData(byte[] data)
+    {
+        if (data == null || data.Length != 524288)
+            throw new System.ArgumentException(
+
+---- 1590行目 ----
+    public static void SetVanillaData(byte[] data)
+    {
+        if (data == null || data.Length != 524288)
+            throw new System.ArgumentException(
+                "取得BINは524288 bytesである必要があります。");
+
+
+---- 1592行目 ----
+        if (data == null || data.Length != 524288)
+            throw new System.ArgumentException(
+                "取得BINは524288 bytesである必要があります。");
+
+        VanillaBin = (byte[])data.Clone();
+        VanillaDataLoaded = true;
+
+---- 1594行目 ----
+                "取得BINは524288 bytesである必要があります。");
+
+        VanillaBin = (byte[])data.Clone();
+        VanillaDataLoaded = true;
+
+        StateChanged?.Invoke();
+
+---- 1819行目 ----
+            Log(layout.Describe());
+
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+
+---- 1821行目 ----
+            Log("旧HSP互換の524288 bytes BINを構築します。");
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+
+---- 1943行目 ----
+internal static class Pcsx2BinApplier
+{
+    private const int BaseSize = 524288;
+    private const int VersionOffset = 355056;
+    private const int ExtensionOffset = 355072;
+
+
+---- 1956行目 ----
+        public string Name { get; }
+        public long Address { get; }
+        public byte[] Data { get; }
+        public byte[] Original { get; set; } = System.Array.Empty<byte>();
+
+        public WriteBlock(string name, long address, byte[] data)
+
+---- 1957行目 ----
+        public long Address { get; }
+        public byte[] Data { get; }
+        public byte[] Original { get; set; } = System.Array.Empty<byte>();
+
+        public WriteBlock(string name, long address, byte[] data)
+        {
+
+---- 1959行目 ----
+        public byte[] Original { get; set; } = System.Array.Empty<byte>();
+
+        public WriteBlock(string name, long address, byte[] data)
+        {
+            Name = name;
+            Address = address;
+
+---- 1967行目 ----
+    }
+
+    private static readonly byte[] SignatureA =
+    {
+        0x20, 0x00, 0x18, 0x00, 0xA0,
+        0x00, 0x18, 0x00, 0x20, 0x01,
+
+---- 1974行目 ----
+    };
+
+    private static readonly byte[] SignatureB =
+    {
+        0x69, 0x74, 0x65, 0x6D,
+        0x5F, 0x65, 0x71, 0x75,
+
+---- 1990行目 ----
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ReadProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr read);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+
+---- 1995行目 ----
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool WriteProcessMemory(
+        System.IntPtr process, System.IntPtr address, byte[] buffer,
+        System.UIntPtr size, out System.UIntPtr written);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+
+---- 2097行目 ----
+    }
+
+    private static byte[] ReadExact(
+        System.IntPtr handle, long address, int length, string name)
+    {
+        if (address <= 0 || length <= 0)
+
+---- 2104行目 ----
+
+        checked { long unused = address + length; }
+        byte[] buffer = new byte[length];
+        System.UIntPtr read;
+
+        bool ok = ReadProcessMemory(
+
+---- 2127行目 ----
+
+    private static void WriteExact(
+        System.IntPtr handle, long address, byte[] data, string name)
+    {
+        if (address <= 0 || data == null || data.Length == 0)
+            throw new System.InvalidOperationException("書き込み範囲が不正です: " + name);
+
+---- 2260行目 ----
+    }
+
+    private static void CheckBinRange(byte[] bin, int offset, int length)
+    {
+        if (offset < 0 || length < 0 || offset > bin.Length - length)
+            throw new System.InvalidOperationException(
+
+---- 2269行目 ----
+    private static void AddBlock(
+        System.Collections.Generic.List<WriteBlock> blocks,
+        byte[] bin, ref int cursor, long address, int length, string name)
+    {
+        CheckBinRange(bin, cursor, length);
+        if (address <= 0)
+
+---- 2276行目 ----
+
+        checked { long unused = address + length; }
+        byte[] data = new byte[length];
+        System.Buffer.BlockCopy(bin, cursor, data, 0, length);
+        blocks.Add(new WriteBlock(name, address, data));
+        cursor = checked(cursor + length + 16);
+
+---- 2284行目 ----
+    private static void AddKeyBlock(
+        System.Collections.Generic.List<WriteBlock> blocks,
+        byte[] bin, ref int cursor, Pcsx2MemoryLayout layout,
+        string addressKey, string sizeKey)
+    {
+        AddBlock(blocks, bin, ref cursor,
+
+---- 2291行目 ----
+    }
+
+    private static void SkipFlag(byte[] bin, ref int cursor)
+    {
+        CheckBinRange(bin, cursor, 1);
+        cursor = checked(cursor + 17);
+
+---- 2298行目 ----
+
+    public static string Apply(
+        int processId, Pcsx2MemoryLayout layout, byte[] bin)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+---- 2305行目 ----
+            throw new System.ArgumentNullException(nameof(layout));
+        if (bin == null || bin.Length != BaseSize)
+            throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+
+---- 2308行目 ----
+
+        var blocks = new System.Collections.Generic.List<WriteBlock>();
+        blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
+
+        int version = bin[VersionOffset];
+        int cursor = ExtensionOffset;
+
+---- 2367行目 ----
+
+        if (cursor > bin.Length)
+            throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
+
+        System.IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
+
+---- 2381行目 ----
+        {
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+
+---- 2382行目 ----
+            // 書き込み直前に識別パターンがまだ存在することを確認。
+            byte[] currentA = ReadExact(handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+            byte[] currentB = ReadExact(handle, layout.SignatureB, SignatureB.Length, "識別パターンB");
+
+            if (!System.Linq.Enumerable.SequenceEqual(currentA, SignatureA) ||
+                !System.Linq.Enumerable.SequenceEqual(currentB, SignatureB))
+
+---- 2432行目 ----
+                    WriteExact(handle, block.Address, block.Data, block.Name);
+
+                    byte[] verify = ReadExact(handle, block.Address, block.Data.Length, block.Name + "の書き込み確認");
+                    if (!System.Linq.Enumerable.SequenceEqual(verify, block.Data))
+                        throw new System.InvalidOperationException("書き込み後の読み戻しが一致しません: " + block.Name);
+                }
+
+---- 2446行目 ----
+                    {
+                        WriteExact(handle, block.Address, block.Original, block.Name + "の復元");
+                        byte[] restored = ReadExact(handle, block.Address, block.Original.Length, block.Name + "の復元確認");
+                        if (!System.Linq.Enumerable.SequenceEqual(restored, block.Original))
+                            throw new System.InvalidOperationException("復元後の読み戻しが一致しません。");
+                    }
+
+---- 2501行目 ----
+        }
+    }
+    public static System.Collections.Generic.List<System.Tuple<int, byte[], string>> ReadRanges(
+        int processId,
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
+
+---- 2524行目 ----
+            bool isSkillRange =
+                item.Item1 >= 382206 &&
+                item.Item1 + item.Item2 <= 382206 + 199 * 20;
+
+            if (isSkillRange)
+            {
+
+---- 2565行目 ----
+        }
+
+        var result = new System.Collections.Generic.List<System.Tuple<int, byte[], string>>();
+        if (requested.Count == 0)
+            return result;
+
+
+---- 2581行目 ----
+        try
+        {
+            byte[] signature = ReadExact(
+                handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+
+            if (!System.Linq.Enumerable.SequenceEqual(signature, SignatureA))
+
+---- 2591行目 ----
+            {
+                WriteBlock block = requested[i];
+                byte[] data = ReadExact(
+                    handle, block.Address, block.Data.Length, block.Name);
+                result.Add(System.Tuple.Create(requestedOffsets[i], data, block.Name));
+            }
+
+---- 2607行目 ----
+        int processId,
+        Pcsx2MemoryLayout layout,
+        System.Collections.Generic.IEnumerable<System.Tuple<int, byte[], string>> ranges)
+    {
+        if (processId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(processId));
+
+---- 2633行目 ----
+            bool isSkillRange =
+                item.Item1 >= 382206 &&
+                item.Item1 + item.Item2.Length <= 382206 + 199 * 20;
+
+            if (isSkillRange)
+            {
+
+---- 2681行目 ----
+                item.Item3,
+                targetAddress,
+                (byte[])item.Item2.Clone()));
+
+            mappingDetails.Add(
+                item.Item3 +
+
+---- 2705行目 ----
+        try
+        {
+            byte[] signature = ReadExact(
+                handle, layout.SignatureA, SignatureA.Length, "識別パターンA");
+
+            if (!System.Linq.Enumerable.SequenceEqual(signature, SignatureA))
+
+---- 2746行目 ----
+                    WriteExact(handle, block.Address, block.Data, block.Name);
+
+                    byte[] verify = ReadExact(
+                        handle, block.Address, block.Data.Length, block.Name + "読み戻し");
+
+                    if (!System.Linq.Enumerable.SequenceEqual(verify, block.Data))
+
+---- 2767行目 ----
+                            handle, block.Address, block.Original, block.Name + "復元");
+
+                        byte[] restored = ReadExact(
+                            handle, block.Address, block.Original.Length, block.Name + "復元確認");
+
+                        if (!System.Linq.Enumerable.SequenceEqual(restored, block.Original))
+
+---- 2857行目 ----
+                patch.Name,
+                address,
+                (byte[])patch.Data.Clone()));
+        }
+
+        // 重複する書き込み範囲を禁止
+
+---- 2920行目 ----
+                        block.Name);
+
+                    byte[] verify = ReadExact(
+                        handle,
+                        block.Address,
+                        block.Data.Length,
+
+---- 2952行目 ----
+                            block.Name + "の復元");
+
+                        byte[] restored = ReadExact(
+                            handle,
+                            block.Address,
+                            block.Original.Length,
+
+---- 3017行目 ----
+internal static class BinFileService
+{
+    public const int ExpectedSize = 524288;
+    public const int VersionMarkerOffset = 355056;
+    public const int ExtensionStartOffset = 355072;
+
+
+---- 3021行目 ----
+    public const int ExtensionStartOffset = 355072;
+
+    public static byte[] Load(string path)
+    {
+        if (!File.Exists(path))
+            throw new FileNotFoundException("BINファイルが見つかりません。", path);
+
+---- 3026行目 ----
+            throw new FileNotFoundException("BINファイルが見つかりません。", path);
+
+        byte[] data = File.ReadAllBytes(path);
+
+        if (data.Length < ExpectedSize)
+        {
+
+---- 3039行目 ----
+    }
+
+    public static void Save(string path, byte[] data, bool overwrite)
+    {
+        if (data.Length < ExpectedSize)
+            throw new InvalidDataException("保存データのサイズが524288バイトではありません。");
+
+---- 3042行目 ----
+    {
+        if (data.Length < ExpectedSize)
+            throw new InvalidDataException("保存データのサイズが524288バイトではありません。");
+
+        string fullPath = Path.GetFullPath(path);
+        string? directory = Path.GetDirectoryName(fullPath);
+
+---- 3081行目 ----
+    }
+
+    public static ushort ReadUInt16(byte[] data, int offset)
+    {
+        CheckRange(data, offset, 2);
+        return BitConverter.ToUInt16(data, offset);
+
+---- 3087行目 ----
+    }
+
+    public static uint ReadUInt32(byte[] data, int offset)
+    {
+        CheckRange(data, offset, 4);
+        return BitConverter.ToUInt32(data, offset);
+
+---- 3093行目 ----
+    }
+
+    public static void WriteUInt16(byte[] data, int offset, ushort value)
+    {
+        CheckRange(data, offset, 2);
+        BitConverter.GetBytes(value).CopyTo(data, offset);
+
+---- 3099行目 ----
+    }
+
+    public static void WriteUInt32(byte[] data, int offset, uint value)
+    {
+        CheckRange(data, offset, 4);
+        BitConverter.GetBytes(value).CopyTo(data, offset);
+
+---- 3105行目 ----
+    }
+
+    public static void CheckRange(byte[] data, int offset, int length)
+    {
+        if (offset < 0 || length < 0 ||
+            offset > data.Length - length)
+
+---- 3125行目 ----
+
+    public int FloorNumber { get; }
+    public byte[] Data { get; }
+
+    public FloorData(int floorNumber, byte[] source)
+    {
+
+---- 3127行目 ----
+    public byte[] Data { get; }
+
+    public FloorData(int floorNumber, byte[] source)
+    {
+        if (source.Length != RecordSize)
+            throw new ArgumentException("フロアデータは768バイト必要です。");
+
+---- 3133行目 ----
+
+        FloorNumber = floorNumber;
+        Data = (byte[])source.Clone();
+    }
+
+    public byte ReadByte(int offset)
+
+---- 3162行目 ----
+// モンスター出現テーブル
+// ============================================================
+internal sealed class MonsterSpawnRecord
+{
+    public const int RecordSize = 6;
+
+
+---- 3166行目 ----
+    public const int RecordSize = 6;
+
+    public ushort MonsterId { get; set; }
+    public ushort CumulativeRate { get; set; }
+    public ushort QuantityValue { get; set; }
+
+
+---- 3170行目 ----
+    public ushort QuantityValue { get; set; }
+
+    public static MonsterSpawnRecord Read(byte[] data, int offset)
+    {
+        BinFileService.CheckRange(data, offset, RecordSize);
+
+
+---- 3174行目 ----
+        BinFileService.CheckRange(data, offset, RecordSize);
+
+        return new MonsterSpawnRecord
+        {
+            MonsterId = BinFileService.ReadUInt16(data, offset),
+            CumulativeRate = BinFileService.ReadUInt16(data, offset + 2),
+
+---- 3176行目 ----
+        return new MonsterSpawnRecord
+        {
+            MonsterId = BinFileService.ReadUInt16(data, offset),
+            CumulativeRate = BinFileService.ReadUInt16(data, offset + 2),
+            QuantityValue = BinFileService.ReadUInt16(data, offset + 4)
+        };
+
+---- 3182行目 ----
+    }
+
+    public void Write(byte[] data, int offset)
+    {
+        BinFileService.CheckRange(data, offset, RecordSize);
+
+
+---- 3186行目 ----
+        BinFileService.CheckRange(data, offset, RecordSize);
+
+        BinFileService.WriteUInt16(data, offset, MonsterId);
+        BinFileService.WriteUInt16(data, offset + 2, CumulativeRate);
+        BinFileService.WriteUInt16(data, offset + 4, QuantityValue);
+    }
+
+---- 3199行目 ----
+    public const int RecordSize = 20;
+
+    public byte[] Data { get; }
+
+    public ItemRecord(byte[] source)
+    {
+
+---- 3201行目 ----
+    public byte[] Data { get; }
+
+    public ItemRecord(byte[] source)
+    {
+        if (source.Length != RecordSize)
+            throw new ArgumentException("アイテムレコードは20バイト必要です。");
+
+---- 3206行目 ----
+            throw new ArgumentException("アイテムレコードは20バイト必要です。");
+
+        Data = (byte[])source.Clone();
+    }
+}
+
+
+---- 3213行目 ----
+// モンスターレコード
+// ============================================================
+internal sealed class MonsterRecord
+{
+    public const int RecordSize = 24;
+
+
+---- 3215行目 ----
+internal sealed class MonsterRecord
+{
+    public const int RecordSize = 24;
+
+    public byte[] Data { get; }
+
+
+---- 3217行目 ----
+    public const int RecordSize = 24;
+
+    public byte[] Data { get; }
+
+    public MonsterRecord(byte[] source)
+    {
+
+---- 3219行目 ----
+    public byte[] Data { get; }
+
+    public MonsterRecord(byte[] source)
+    {
+        if (source.Length != RecordSize)
+            throw new ArgumentException("モンスターレコードは24バイト必要です。");
+
+---- 3222行目 ----
+    {
+        if (source.Length != RecordSize)
+            throw new ArgumentException("モンスターレコードは24バイト必要です。");
+
+        Data = (byte[])source.Clone();
+    }
+
+---- 3224行目 ----
+            throw new ArgumentException("モンスターレコードは24バイト必要です。");
+
+        Data = (byte[])source.Clone();
+    }
+}
+
+
+---- 3259行目 ----
+            result.MemoryFilePath = lines[23].Trim();
+
+        if (lines.Length > 24)
+            result.RankingDisplayName = lines[24].Trim();
+
+        return result;
+
+---- 3260行目 ----
+
+        if (lines.Length > 24)
+            result.RankingDisplayName = lines[24].Trim();
+
+        return result;
+    }
+
+---- 3271行目 ----
+internal sealed class AppSettings
+{
+    public int MonsterSpawnCycle { get; set; } = 30;
+    public bool ShowAdventureTurns { get; set; }
+
+    private static string SettingsPath =>
+
+---- 3534行目 ----
+// メイン画面
+// ============================================================
+internal sealed class MonsterNameEditorForm : Form
+{
+    private const int ScanStart = 0x10E800;
+    private const int ScanEnd = 0x130000;
+
+---- 3576行目 ----
+        System.IntPtr process,
+        System.IntPtr address,
+        byte[] buffer,
+        System.UIntPtr size,
+        out System.UIntPtr read);
+
+
+---- 3590行目 ----
+    }
+
+    public MonsterNameEditorForm(int processId)
+    {
+        _processId = processId;
+        _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
+
+---- 3680行目 ----
+    }
+
+    private byte[] ReadEeRange()
+    {
+        int length = ScanEnd - ScanStart;
+        byte[] buffer = new byte[length];
+
+---- 3683行目 ----
+    {
+        int length = ScanEnd - ScanStart;
+        byte[] buffer = new byte[length];
+
+        IntPtr handle = OpenProcess(
+            PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
+
+---- 3779行目 ----
+            return false;
+
+        if (value.Length > 24)
+            return false;
+
+        bool hasJapanese = false;
+
+---- 3814行目 ----
+            _detail.Clear();
+
+            byte[] data = ReadEeRange();
+
+            int i = 0;
+            while (i < data.Length - 4)
+
+---- 3974行目 ----
+                dialog.Filter = "テキストファイル (*.txt)|*.txt";
+                dialog.FileName =
+                    "TornekoMonsterNames_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                    ".txt";
+
+
+---- 4030行目 ----
+    public string Name { get; }
+    public long Address { get; }
+    public byte[] Data { get; }
+
+    public Torneko4MemoryPatch(string name, long address, byte[] data)
+    {
+
+---- 4032行目 ----
+    public byte[] Data { get; }
+
+    public Torneko4MemoryPatch(string name, long address, byte[] data)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("変更名が空です。");
+
+---- 4042行目 ----
+        Name = name;
+        Address = address;
+        Data = (byte[])data.Clone();
+    }
+
+    public Torneko4MemoryPatch Clone()
+
+---- 4058行目 ----
+        Patches = new System.Collections.Generic.List<Torneko4MemoryPatch>();
+
+    public static void Register(string name, long address, byte[] data)
+    {
+        var patch = new Torneko4MemoryPatch(name, address, data);
+
+
+---- 4112行目 ----
+{
+    public TornekoBinPreservationSnapshot Snapshot { get; }
+    public byte[] EditedBase { get; }
+    public string OriginalSourcePath { get; }
+    public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+    public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
+
+---- 4115行目 ----
+    public string OriginalSourcePath { get; }
+    public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
+    public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
+    public System.Collections.Generic.Dictionary<int, bool> GanirasuBarrier { get; }
+
+    public Torneko4Package(
+
+---- 4120行目 ----
+    public Torneko4Package(
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        string originalSourcePath,
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null,
+
+---- 4123行目 ----
+        string originalSourcePath,
+        System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
+        System.Collections.Generic.Dictionary<int, ushort> monsterActions = null,
+        System.Collections.Generic.Dictionary<int, bool> ganirasuBarrier = null)
+    {
+        Snapshot = snapshot;
+
+---- 4127行目 ----
+    {
+        Snapshot = snapshot;
+        EditedBase = (byte[])editedBase.Clone();
+        OriginalSourcePath = originalSourcePath ?? "";
+
+        Patches = patches == null
+
+---- 4134行目 ----
+            : patches.ConvertAll(x => x.Clone());
+
+        MonsterActions = monsterActions == null
+            ? new System.Collections.Generic.Dictionary<int, ushort>()
+            : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
+
+
+---- 4136行目 ----
+        MonsterActions = monsterActions == null
+            ? new System.Collections.Generic.Dictionary<int, ushort>()
+            : new System.Collections.Generic.Dictionary<int, ushort>(monsterActions);
+
+        GanirasuBarrier = ganirasuBarrier == null
+            ? global::Torneko4GanirasuBarrierStore.GetDefaultCopy()
+
+---- 4146行目 ----
+internal static class Torneko4FileService
+{
+    private static readonly byte[] Magic =
+        System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
+
+    private const int FormatVersion = 5;
+
+---- 4150行目 ----
+
+    private const int FormatVersion = 5;
+    private const int BaseSize = 524288;
+    private const int MaximumOriginalSize = 64 * 1024 * 1024;
+
+    // ファイル全体の実用上の安全上限。基本領域の容量制限ではない。
+
+---- 4151行目 ----
+    private const int FormatVersion = 5;
+    private const int BaseSize = 524288;
+    private const int MaximumOriginalSize = 64 * 1024 * 1024;
+
+    // ファイル全体の実用上の安全上限。基本領域の容量制限ではない。
+    private const long MaximumPackageSize = 1024L * 1024L * 1024L;
+
+---- 4154行目 ----
+
+    // ファイル全体の実用上の安全上限。基本領域の容量制限ではない。
+    private const long MaximumPackageSize = 1024L * 1024L * 1024L;
+
+    private const int MaximumPatchCount = 100000;
+    private const int MaximumPatchSize = 64 * 1024 * 1024;
+
+---- 4157行目 ----
+
+    private const int MaximumPatchCount = 100000;
+    private const int MaximumPatchSize = 64 * 1024 * 1024;
+
+    public static void Save(
+        string path,
+
+---- 4162行目 ----
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase)
+    {
+        Save(path, snapshot, editedBase,
+            new System.Collections.Generic.List<Torneko4MemoryPatch>(),
+
+---- 4172行目 ----
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches)
+    {
+        Save(path, snapshot, editedBase, patches, null);
+
+---- 4181行目 ----
+        string path,
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions,
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
+
+---- 4183行目 ----
+        byte[] editedBase,
+        System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
+        System.Collections.Generic.IDictionary<int, ushort> monsterActions,
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
+    {
+        if (snapshot == null)
+
+---- 4196行目 ----
+            throw new ArgumentException("保存先が指定されていません。");
+
+        byte[] original = snapshot.GetCopy();
+
+        if (original.Length < BaseSize ||
+            original.Length > MaximumOriginalSize)
+
+---- 4249行目 ----
+            new System.Collections.Generic.SortedDictionary<int, ushort>();
+
+        if (monsterActions != null)
+        {
+            foreach (var pair in monsterActions)
+            {
+
+---- 4251行目 ----
+        if (monsterActions != null)
+        {
+            foreach (var pair in monsterActions)
+            {
+                if (pair.Key < 0 || pair.Key >= 199)
+                    throw new InvalidDataException(
+
+---- 4253行目 ----
+            foreach (var pair in monsterActions)
+            {
+                if (pair.Key < 0 || pair.Key >= 199)
+                    throw new InvalidDataException(
+                        "モンスター番号が不正です: " + pair.Key);
+
+
+---- 4265行目 ----
+        }
+
+        if (actionList.Count > 199)
+            throw new InvalidDataException(
+                "モンスター別特技設定数が上限を超えています。");
+
+
+---- 4277行目 ----
+        foreach (var pair in barrierSource)
+        {
+            if (pair.Key < 0 || pair.Key >= 199)
+                throw new InvalidDataException(
+                    "ガニラスバリアのモンスター番号が不正です。");
+
+
+---- 4284行目 ----
+        }
+
+        if (barrierList.Count != 199)
+            throw new InvalidDataException(
+                "ガニラスバリア設定は199種類すべて必要です。");
+
+
+---- 4286行目 ----
+        if (barrierList.Count != 199)
+            throw new InvalidDataException(
+                "ガニラスバリア設定は199種類すべて必要です。");
+
+        string fullPath = Path.GetFullPath(path);
+        string directory = Path.GetDirectoryName(fullPath);
+
+---- 4376行目 ----
+                    "保存後の追加変更数検証に失敗しました。");
+
+            if (check.MonsterActions.Count != actionList.Count)
+                throw new IOException(
+                    "保存後のモンスター別特技設定数検証に失敗しました。");
+
+
+---- 4399行目 ----
+            foreach (var pair in actionList)
+            {
+                if (!check.MonsterActions.TryGetValue(pair.Key, out ushort savedId) ||
+                    savedId != pair.Value)
+                {
+                    throw new IOException(
+
+---- 4452行目 ----
+            FileShare.Read);
+
+        using var reader = new BinaryReader(
+            stream,
+            System.Text.Encoding.UTF8,
+            true);
+
+---- 4457行目 ----
+            true);
+
+        byte[] magic = reader.ReadBytes(8);
+
+        if (!System.Linq.Enumerable.SequenceEqual(magic, Magic))
+            throw new InvalidDataException(
+
+---- 4491行目 ----
+        }
+
+        byte[] original = reader.ReadBytes(originalLength);
+        byte[] editedBase = reader.ReadBytes(editedLength);
+
+        if (original.Length != originalLength ||
+
+---- 4492行目 ----
+
+        byte[] original = reader.ReadBytes(originalLength);
+        byte[] editedBase = reader.ReadBytes(editedLength);
+
+        if (original.Length != originalLength ||
+            editedBase.Length != editedLength)
+
+---- 4561行目 ----
+                        "追加変更データが上限を超えています。");
+
+                byte[] data = reader.ReadBytes(dataLength);
+
+                if (data.Length != dataLength)
+                    throw new InvalidDataException(
+
+---- 4584行目 ----
+        }
+
+        var monsterActions =
+            new System.Collections.Generic.Dictionary<int, ushort>();
+
+        // バージョン3で追加されたモンスター別特技設定。
+
+---- 4592行目 ----
+            int actionCount = reader.ReadInt32();
+
+            if (actionCount < 0 || actionCount > 199)
+                throw new InvalidDataException(
+                    "モンスター別特技設定の件数が不正です。");
+
+
+---- 4598行目 ----
+            for (int i = 0; i < actionCount; i++)
+            {
+                int monsterId = reader.ReadInt32();
+                ushort actionId = reader.ReadUInt16();
+
+                if (monsterId < 0 || monsterId >= 199)
+
+---- 4601行目 ----
+                ushort actionId = reader.ReadUInt16();
+
+                if (monsterId < 0 || monsterId >= 199)
+                    throw new InvalidDataException(
+                        "モンスター番号が不正です: " + monsterId);
+
+
+---- 4603行目 ----
+                if (monsterId < 0 || monsterId >= 199)
+                    throw new InvalidDataException(
+                        "モンスター番号が不正です: " + monsterId);
+
+                if (actionId > 0xFF)
+                    throw new InvalidDataException(
+
+---- 4609行目 ----
+                        "特技IDが不正です: " + actionId);
+
+                if (monsterActions.ContainsKey(monsterId))
+                    throw new InvalidDataException(
+                        "モンスター別特技設定が重複しています: " + monsterId);
+
+
+---- 4611行目 ----
+                if (monsterActions.ContainsKey(monsterId))
+                    throw new InvalidDataException(
+                        "モンスター別特技設定が重複しています: " + monsterId);
+
+                monsterActions.Add(monsterId, actionId);
+            }
+
+---- 4613行目 ----
+                        "モンスター別特技設定が重複しています: " + monsterId);
+
+                monsterActions.Add(monsterId, actionId);
+            }
+        }
+
+
+---- 4624行目 ----
+            int barrierCount = reader.ReadInt32();
+
+            if (barrierCount != 199)
+                throw new InvalidDataException(
+                    "ガニラスバリア設定の件数が不正です。");
+
+
+---- 4632行目 ----
+            for (int i = 0; i < barrierCount; i++)
+            {
+                int monsterId = reader.ReadInt32();
+                bool enabled = reader.ReadBoolean();
+
+                if (monsterId < 0 || monsterId >= 199)
+
+---- 4635行目 ----
+                bool enabled = reader.ReadBoolean();
+
+                if (monsterId < 0 || monsterId >= 199)
+                    throw new InvalidDataException(
+                        "ガニラスバリアのモンスター番号が不正です。");
+
+
+---- 4639行目 ----
+                        "ガニラスバリアのモンスター番号が不正です。");
+
+                if (ganirasuBarrier.ContainsKey(monsterId))
+                    throw new InvalidDataException(
+                        "ガニラスバリア設定が重複しています。");
+
+
+---- 4643行目 ----
+                        "ガニラスバリア設定が重複しています。");
+
+                ganirasuBarrier.Add(monsterId, enabled);
+            }
+        }
+
+
+---- 4666行目 ----
+            originalSourcePath,
+            patchList,
+            monsterActions,
+            ganirasuBarrier);
+    }
+}
+
+---- 4673行目 ----
+internal sealed class MainForm : Form
+{
+    private byte[]? _bin;
+    private TornekoBinPreservationSnapshot? _binSnapshot;
+    private string? _binPath;
+    private readonly Label _status;
+
+---- 4720行目 ----
+            Dock = DockStyle.Fill,
+            BorderStyle = BorderStyle.FixedSingle,
+            BackColor = Color.FromArgb(245, 248, 252)
+        };
+
+        var pcsx2Title = new Label
+
+---- 4834行目 ----
+            "モンスターを編集", (_, _) =>
+            {
+                using var monsterForm = new MonsterCreatorForm(
+                    _bin,
+                    UpdateStatus,
+                    _actionRestore);
+
+---- 4838行目 ----
+                    UpdateStatus,
+                    _actionRestore);
+                monsterForm.ShowDialog(this);
+            }));
+buttons.Controls.Add(UiFactory.Button(
+            "モンスター名変更", (_, _) =>
+
+---- 4850行目 ----
+                }
+
+                using var nameForm = new MonsterNameEditor20261114(
+                    Pcsx2LiveSession.ProcessId);
+                nameForm.ShowDialog(this);
+            }));
+
+---- 5089行目 ----
+            Pcsx2LiveSession.SetMemoryLayout(layout);
+
+            byte[] vanillaBin =
+                await System.Threading.Tasks.Task.Run(
+                    () => Pcsx2VanillaBinReader.Capture(
+                        processId,
+
+---- 5095行目 ----
+                        layout));
+
+            if (vanillaBin == null || vanillaBin.Length != 524288)
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+
+---- 5098行目 ----
+            {
+                throw new System.InvalidOperationException(
+                    "取得したBINのサイズが524288 bytesではありません。");
+            }
+
+            // メイン画面のBIN編集データへ反映
+
+---- 5111行目 ----
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        catch (System.Exception ex)
+        {
+
+---- 5172行目 ----
+
+            _pcsx2DataStatus.Text =
+                "バニラデータ読み込み済み（524,288 bytes）";
+        }
+        else if (_bin != null && _binPath == null)
+        {
+
+---- 5186行目 ----
+    }
+
+    private void LoadPcsx2VanillaData(byte[] data)
+    {
+        if (data == null || data.Length != 524288)
+            throw new System.InvalidOperationException(
+
+---- 5188行目 ----
+    private void LoadPcsx2VanillaData(byte[] data)
+    {
+        if (data == null || data.Length != 524288)
+            throw new System.InvalidOperationException(
+                "PCSX2から取得したBINサイズが不正です。");
+
+
+---- 5192行目 ----
+                "PCSX2から取得したBINサイズが不正です。");
+
+        _bin = (byte[])data.Clone();
+
+        _binSnapshot =
+            TornekoBinPreservation.CreateInMemorySnapshot(_bin);
+
+---- 5206行目 ----
+    {
+        if (_bin == null ||
+            _bin.Length != 524288 ||
+            _binSnapshot == null)
+        {
+            MessageBox.Show(
+
+---- 5314行目 ----
+
+                _binSnapshot = package.Snapshot;
+                _bin = (byte[])package.EditedBase.Clone();
+                Torneko4PatchStore.ReplaceAll(package.Patches);
+                Torneko4ActionStore.ReplaceAll(package.MonsterActions);
+                global::Torneko4GanirasuBarrierStore.ReplaceAll(package.GanirasuBarrier);
+
+---- 5316行目 ----
+                _bin = (byte[])package.EditedBase.Clone();
+                Torneko4PatchStore.ReplaceAll(package.Patches);
+                Torneko4ActionStore.ReplaceAll(package.MonsterActions);
+                global::Torneko4GanirasuBarrierStore.ReplaceAll(package.GanirasuBarrier);
+                loaded = true;
+            }
+
+---- 5329行目 ----
+                    TornekoBinPreservation.Load(dialog.FileName);
+
+                byte[] loadedBase =
+                    TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+
+                if (loadedBase.Length != 524288)
+
+---- 5332行目 ----
+                    TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+
+                if (loadedBase.Length != 524288)
+                    throw new InvalidDataException(
+                        "BINの基本領域が524288 bytesではありません。");
+
+
+---- 5334行目 ----
+                if (loadedBase.Length != 524288)
+                    throw new InvalidDataException(
+                        "BINの基本領域が524288 bytesではありません。");
+
+                _binSnapshot = snapshot;
+                _bin = loadedBase;
+
+---- 5354行目 ----
+                "改造データ読み込み完了。PCSX2への適用確認中...";
+
+            // 種族別特技設定をアプリ常駐サービスへ渡す。
+            // PINE未接続の場合も設定は保持され、サービスが再試行する。
+            _actionRestore.TryApply(
+                Torneko4ActionStore.GetCopy(),
+
+---- 5394行目 ----
+                TornekoBinPreservation.Load(dialog.FileName);
+
+            // 編集対象は先頭524288 bytesのみ。
+            byte[] loaded =
+                TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+
+
+---- 5395行目 ----
+
+            // 編集対象は先頭524288 bytesのみ。
+            byte[] loaded =
+                TornekoBinEditPreserver.ExtractBaseRegion(snapshot);
+
+            if (loaded.Length != BinFileService.ExpectedSize)
+
+---- 5427行目 ----
+        private void ApplyBinToPcsx2()
+    {
+        if (_bin == null || _bin.Length != 524288)
+        {
+            MessageBox.Show(this, "先に改造ダンジョンのBINデータを読み込んでください。");
+            return;
+
+---- 5732行目 ----
+internal sealed class FloorEditorForm : Form
+{
+    private readonly byte[] _bin;
+    private readonly NumericUpDown _floorNumber;
+    private readonly DataGridView _grid;
+    private byte[]? _working;
+
+---- 5735行目 ----
+    private readonly NumericUpDown _floorNumber;
+    private readonly DataGridView _grid;
+    private byte[]? _working;
+
+    public FloorEditorForm(byte[] bin)
+    {
+
+---- 5737行目 ----
+    private byte[]? _working;
+
+    public FloorEditorForm(byte[] bin)
+    {
+        _bin = bin;
+
+
+---- 5889行目 ----
+internal sealed class GenericRecordEditorForm : Form
+{
+    private readonly byte[] _bin;
+    private readonly int _recordSize;
+    private readonly DataGridView _grid;
+    private readonly NumericUpDown _recordIndex;
+
+---- 5895行目 ----
+
+    public GenericRecordEditorForm(
+        byte[] bin, string title, int recordSize)
+    {
+        _bin = bin;
+        _recordSize = recordSize;
+
+---- 5993行目 ----
+            BinFileService.CheckRange(_bin, offset, _recordSize);
+
+            byte[] temporary = new byte[_recordSize];
+
+            foreach (DataGridViewRow row in _grid.Rows)
+            {
+
+---- 6040行目 ----
+internal sealed class SpawnTableEditorForm : Form
+{
+    private readonly byte[] _bin;
+    private readonly NumericUpDown _baseOffset;
+    private readonly DataGridView _grid;
+
+
+---- 6044行目 ----
+    private readonly DataGridView _grid;
+
+    public SpawnTableEditorForm(byte[] bin)
+    {
+        _bin = bin;
+
+
+---- 6065行目 ----
+        {
+            Minimum = 0,
+            Maximum = bin.Length - MonsterSpawnRecord.RecordSize,
+            Width = 160,
+            Hexadecimal = false
+        };
+
+---- 6115行目 ----
+            int count = Math.Min(
+                100,
+                (_bin.Length - offset) / MonsterSpawnRecord.RecordSize);
+
+            _grid.Rows.Clear();
+
+
+---- 6121行目 ----
+            for (int i = 0; i < count; i++)
+            {
+                var record = MonsterSpawnRecord.Read(
+                    _bin,
+                    offset + i * MonsterSpawnRecord.RecordSize);
+
+
+---- 6123行目 ----
+                var record = MonsterSpawnRecord.Read(
+                    _bin,
+                    offset + i * MonsterSpawnRecord.RecordSize);
+
+                _grid.Rows.Add(
+                    record.MonsterId,
+
+---- 6126行目 ----
+
+                _grid.Rows.Add(
+                    record.MonsterId,
+                    record.CumulativeRate,
+                    record.QuantityValue);
+            }
+
+---- 6149行目 ----
+                _bin,
+                offset,
+                checked(_grid.Rows.Count * MonsterSpawnRecord.RecordSize));
+
+            byte[] temporary = new byte[
+                _grid.Rows.Count * MonsterSpawnRecord.RecordSize];
+
+---- 6151行目 ----
+                checked(_grid.Rows.Count * MonsterSpawnRecord.RecordSize));
+
+            byte[] temporary = new byte[
+                _grid.Rows.Count * MonsterSpawnRecord.RecordSize];
+
+            for (int i = 0; i < _grid.Rows.Count; i++)
+
+---- 6152行目 ----
+
+            byte[] temporary = new byte[
+                _grid.Rows.Count * MonsterSpawnRecord.RecordSize];
+
+            for (int i = 0; i < _grid.Rows.Count; i++)
+            {
+
+---- 6162行目 ----
+                ushort quantity = Convert.ToUInt16(row.Cells[2].Value);
+
+                var record = new MonsterSpawnRecord
+                {
+                    MonsterId = id,
+                    CumulativeRate = rate,
+
+---- 6164行目 ----
+                var record = new MonsterSpawnRecord
+                {
+                    MonsterId = id,
+                    CumulativeRate = rate,
+                    QuantityValue = quantity
+                };
+
+---- 6171行目 ----
+                record.Write(
+                    temporary,
+                    i * MonsterSpawnRecord.RecordSize);
+            }
+
+            Array.Copy(temporary, 0, _bin, offset, temporary.Length);
+
+---- 6227行目 ----
+            Minimum = 1,
+            Maximum = 999999,
+            Value = Math.Clamp(settings.MonsterSpawnCycle, 1, 999999),
+            Width = 150
+        };
+
+
+---- 6266行目 ----
+        save.Click += (_, _) =>
+        {
+            _settings.MonsterSpawnCycle = (int)_spawnCycle.Value;
+            _settings.ShowAdventureTurns = _showTurns.Checked;
+
+            try
+
+---- 6290行目 ----
+internal static class TornekoDataBufferLocator
+{
+    public static byte[] Find(object root)
+    {
+        if (root == null) return null;
+
+
+---- 6305行目 ----
+    }
+
+    private static byte[] FindInternal(
+        object obj,
+        System.Reflection.BindingFlags flags,
+        System.Collections.Generic.HashSet<object> visited,
+
+---- 6314行目 ----
+        if (!visited.Add(obj)) return null;
+
+        if (obj is byte[] direct && direct.Length >= 524288)
+            return direct;
+
+        Type type = obj.GetType();
+
+---- 6326行目 ----
+            catch { }
+
+            if (value is byte[] bytes && bytes.Length >= 524288)
+                return bytes;
+        }
+
+
+---- 6340行目 ----
+            catch { }
+
+            if (value is byte[] bytes && bytes.Length >= 524288)
+                return bytes;
+        }
+
+
+---- 6356行目 ----
+                    continue;
+
+                byte[] found = FindInternal(value, flags, visited, depth + 1);
+                if (found != null) return found;
+            }
+        }
+
+---- 6382行目 ----
+    System.Windows.Forms.Form
+{
+    private readonly byte[] _data;
+    private readonly System.Windows.Forms.TabControl _tabs;
+
+    public TornekoDataWorkbenchForm(byte[] data)
+
+---- 6385行目 ----
+    private readonly System.Windows.Forms.TabControl _tabs;
+
+    public TornekoDataWorkbenchForm(byte[] data)
+    {
+        if (data == null)
+            throw new System.ArgumentNullException(nameof(data));
+
+---- 6464行目 ----
+        descriptionLabel.Top = 8;
+        descriptionLabel.Width = 950;
+        descriptionLabel.Height = 24;
+
+        var offsetLabel = new System.Windows.Forms.Label();
+        offsetLabel.Text = "BINオフセット（10進数または0x16進数）";
+
+---- 6497行目 ----
+        {
+            grid.Columns.Add("Index", "レコード");
+            grid.Columns.Add("MonsterId", "モンスターID");
+            grid.Columns.Add("Cumulative", "累積出現値");
+            grid.Columns.Add("Quantity", "出現数");
+            grid.Columns.Add("Probability", "個別確率(%)");
+
+---- 6588行目 ----
+                        int pos = actualOffset + i * 6;
+
+                        ushort monsterId = ReadU16(pos);
+                        ushort cumulative = ReadU16(pos + 2);
+                        ushort quantity = ReadU16(pos + 4);
+
+
+---- 6597行目 ----
+                        grid.Rows.Add(
+                            i.ToString(),
+                            monsterId.ToString(),
+                            cumulative.ToString(),
+                            quantity.ToString(),
+                            probability.ToString("0.0") + "%");
+
+---- 6785行目 ----
+public sealed class TornekoBinPreservationSnapshot
+{
+    public byte[] Data { get; private set; }
+    public string SourcePath { get; private set; }
+    public int OriginalLength { get; private set; }
+    public string OriginalSha256 { get; private set; }
+
+---- 6791行目 ----
+
+    internal TornekoBinPreservationSnapshot(
+        byte[] data,
+        string sourcePath)
+    {
+        Data = (byte[])data.Clone();
+
+---- 6794行目 ----
+        string sourcePath)
+    {
+        Data = (byte[])data.Clone();
+        SourcePath = sourcePath;
+        OriginalLength = data.Length;
+        OriginalSha256 =
+
+---- 6801行目 ----
+    }
+
+    public byte[] GetCopy()
+    {
+        return (byte[])Data.Clone();
+    }
+
+---- 6803行目 ----
+    public byte[] GetCopy()
+    {
+        return (byte[])Data.Clone();
+    }
+}
+
+
+---- 6809行目 ----
+public static class TornekoBinPreservation
+{
+    public const int LegacyBaseRegionSize = 524288;
+    public const int VersionMarkerOffset = 355056;
+    public const int ExtensionStartOffset = 355072;
+
+
+---- 6814行目 ----
+
+    public static TornekoBinPreservationSnapshot CreateInMemorySnapshot(
+        byte[] data)
+    {
+        if (data == null)
+            throw new System.ArgumentNullException(nameof(data));
+
+---- 6821行目 ----
+        if (data.Length != LegacyBaseRegionSize)
+            throw new System.ArgumentException(
+                "メモリBINは524288 bytesである必要があります。");
+
+        // 保存時の元ファイル判定用の仮想パス。
+        // このパスにファイルを作成することはない。
+
+---- 6846行目 ----
+                path);
+
+        byte[] data = System.IO.File.ReadAllBytes(path);
+
+        return new TornekoBinPreservationSnapshot(
+            data,
+
+---- 6853行目 ----
+    }
+
+    public static string ComputeSha256(byte[] data)
+    {
+        if (data == null)
+            throw new System.ArgumentNullException("data");
+
+---- 6860行目 ----
+        using (var sha = System.Security.Cryptography.SHA256.Create())
+        {
+            byte[] hash = sha.ComputeHash(data);
+            return System.BitConverter.ToString(hash)
+                .Replace("-", "");
+        }
+
+---- 6867行目 ----
+
+    private static string GetHex(
+        byte[] data,
+        int offset,
+        int count)
+    {
+
+---- 6881行目 ----
+            return "(データなし)";
+
+        byte[] part = new byte[count];
+        System.Buffer.BlockCopy(
+            data, offset, part, 0, count);
+
+
+---- 6895行目 ----
+            throw new System.ArgumentNullException("snapshot");
+
+        byte[] data = snapshot.Data;
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine("========================================");
+
+---- 6907行目 ----
+
+        sb.AppendLine(
+            "524288 bytes基本領域: " +
+            (data.Length >= LegacyBaseRegionSize
+                ? "存在"
+                : "サイズ不足"));
+
+---- 6971行目 ----
+            System.IO.Directory.CreateDirectory(directory);
+
+        byte[] output = snapshot.GetCopy();
+
+        // 元ファイルには触れず、指定先に完全なコピーを作成する。
+        System.IO.File.WriteAllBytes(fullPath, output);
+
+---- 6976行目 ----
+        System.IO.File.WriteAllBytes(fullPath, output);
+
+        byte[] check = System.IO.File.ReadAllBytes(fullPath);
+
+        if (check.Length != snapshot.OriginalLength)
+            throw new System.IO.IOException(
+
+---- 7017行目 ----
+public static class TornekoBinEditPreserver
+{
+    public const int BaseRegionSize = 524288;
+
+    public static void SaveEditedBaseCopy(
+        TornekoBinPreservationSnapshot snapshot,
+
+---- 7021行目 ----
+    public static void SaveEditedBaseCopy(
+        TornekoBinPreservationSnapshot snapshot,
+        byte[] editedBaseRegion,
+        string destinationPath)
+    {
+        if (snapshot == null)
+
+---- 7032行目 ----
+        if (editedBaseRegion.Length != BaseRegionSize)
+            throw new System.ArgumentException(
+                "編集済み基本領域は524288 bytesである必要があります。");
+
+        if (string.IsNullOrWhiteSpace(destinationPath))
+            throw new System.ArgumentException("保存先が空です。");
+
+---- 7053行目 ----
+
+        // スナップショットを複製し、元データの完全性を確認する。
+        byte[] original = snapshot.GetCopy();
+
+        if (original.Length != snapshot.OriginalLength)
+            throw new System.InvalidOperationException(
+
+---- 7073行目 ----
+        if (original.Length < BaseRegionSize)
+            throw new System.InvalidOperationException(
+                "元BINが基本領域524288 bytesを満たしていません。");
+
+        // 元BIN全体を複製して、基本領域だけ置換する。
+        byte[] output = (byte[])original.Clone();
+
+---- 7076行目 ----
+
+        // 元BIN全体を複製して、基本領域だけ置換する。
+        byte[] output = (byte[])original.Clone();
+
+        System.Buffer.BlockCopy(
+            editedBaseRegion,
+
+---- 7094行目 ----
+
+        // 保存結果を読み直して検査する。
+        byte[] check =
+            System.IO.File.ReadAllBytes(fullDestination);
+
+        if (check.Length != original.Length)
+
+---- 7095行目 ----
+        // 保存結果を読み直して検査する。
+        byte[] check =
+            System.IO.File.ReadAllBytes(fullDestination);
+
+        if (check.Length != original.Length)
+            throw new System.IO.IOException(
+
+---- 7129行目 ----
+    }
+
+    public static byte[] ExtractBaseRegion(
+        TornekoBinPreservationSnapshot snapshot)
+    {
+        if (snapshot == null)
+
+---- 7135行目 ----
+            throw new System.ArgumentNullException("snapshot");
+
+        byte[] original = snapshot.GetCopy();
+
+        if (original.Length < BaseRegionSize)
+            throw new System.InvalidOperationException(
+
+---- 7139行目 ----
+        if (original.Length < BaseRegionSize)
+            throw new System.InvalidOperationException(
+                "基本領域524288 bytesが存在しません。");
+
+        byte[] result = new byte[BaseRegionSize];
+
+
+---- 7141行目 ----
+                "基本領域524288 bytesが存在しません。");
+
+        byte[] result = new byte[BaseRegionSize];
+
+        System.Buffer.BlockCopy(
+            original,
+
+---- 7153行目 ----
+    }
+
+    public static byte[] ExtractExtensionRegion(
+        TornekoBinPreservationSnapshot snapshot)
+    {
+        if (snapshot == null)
+
+---- 7159行目 ----
+            throw new System.ArgumentNullException("snapshot");
+
+        byte[] original = snapshot.GetCopy();
+
+        if (original.Length <= BaseRegionSize)
+            return new byte[0];
+
+---- 7167行目 ----
+            original.Length - BaseRegionSize;
+
+        byte[] result = new byte[extensionLength];
+
+        System.Buffer.BlockCopy(
+            original,
+
+---- 7185行目 ----
+// PCSX2 v2.8.2 / EEmemリソーステーブル
+// ============================================================
+internal sealed class MonsterNameEditor20261114 : Form
+{
+    // Shift-JIS (CP932) を使用可能にする。
+    // 静的コンストラクターはインスタンスフィールド初期化より先に実行される。
+
+---- 7189行目 ----
+    // Shift-JIS (CP932) を使用可能にする。
+    // 静的コンストラクターはインスタンスフィールド初期化より先に実行される。
+    static MonsterNameEditor20261114()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
+
+---- 7202行目 ----
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+    private static extern bool ReadProcessMemory(
+        IntPtr process, IntPtr address, byte[] buffer,
+        UIntPtr size, out UIntPtr read);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+
+---- 7207行目 ----
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+    private static extern bool WriteProcessMemory(
+        IntPtr process, IntPtr address, byte[] buffer,
+        UIntPtr size, out UIntPtr written);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError=true)]
+
+---- 7224行目 ----
+        public long Address;
+        public int Capacity;
+        public byte[] OriginalBytes = Array.Empty<byte>();
+
+        public override string ToString()
+        {
+
+---- 7257行目 ----
+        UIntPtr length);
+
+    private sealed class MonsterEntry
+    {
+        public string Id = "";
+        public string Name = "";
+
+---- 7263行目 ----
+        public long Address;
+        public int Capacity;
+        public byte[] OriginalBytes = Array.Empty<byte>();
+        public override string ToString() => Name + "  [" + Id + "]";
+    }
+
+
+---- 7271行目 ----
+    private readonly TextBox _name = new TextBox();
+    private readonly Label _status = new Label();
+    private readonly List<MonsterEntry> _entries = new List<MonsterEntry>();
+
+    private readonly List<MemoryMessageEntry> _messages =
+        new List<MemoryMessageEntry>();
+
+---- 7292行目 ----
+        new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+private static string DecodeMonsterName(byte[] data, int offset, int count)
+    {
+        string utf8 = "";
+        string cp932 = "";
+
+---- 7336行目 ----
+    private long _eeBase;
+
+    public MonsterNameEditor20261114(int pid)
+    {
+        _pid = pid;
+        Text = "モンスター名編集";
+
+---- 7420行目 ----
+                    {
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                            "TornekoMonsterNameRawDiagnostic.txt"),
+                        Path.Combine(AppContext.BaseDirectory,
+                            "TornekoMonsterNameRawDiagnostic.txt")
+                    };
+
+---- 7422行目 ----
+                            "TornekoMonsterNameRawDiagnostic.txt"),
+                        Path.Combine(AppContext.BaseDirectory,
+                            "TornekoMonsterNameRawDiagnostic.txt")
+                    };
+
+                    foreach (string path in paths)
+
+---- 7446行目 ----
+    }
+
+    private byte[] Read(IntPtr h, long address, int length)
+    {
+        byte[] b = new byte[length];
+        UIntPtr read;
+
+---- 7448行目 ----
+    private byte[] Read(IntPtr h, long address, int length)
+    {
+        byte[] b = new byte[length];
+        UIntPtr read;
+        if (!ReadProcessMemory(h, new IntPtr(address), b,
+            new UIntPtr((uint)length), out read) ||
+
+---- 7463行目 ----
+        {
+            long module = p.MainModule!.BaseAddress.ToInt64();
+            byte[] dos = Read(h, module, 64);
+            if (dos[0] != 0x4D || dos[1] != 0x5A)
+                throw new InvalidOperationException("PCSX2 PEヘッダーが不正です。");
+
+
+---- 7468行目 ----
+
+            int peOffset = BitConverter.ToInt32(dos, 0x3C);
+            byte[] pe = Read(h, module + peOffset, 144);
+            if (BitConverter.ToUInt16(pe, 24) != 0x20B)
+                throw new InvalidOperationException("64bit版PCSX2ではありません。");
+
+
+---- 7469行目 ----
+            int peOffset = BitConverter.ToInt32(dos, 0x3C);
+            byte[] pe = Read(h, module + peOffset, 144);
+            if (BitConverter.ToUInt16(pe, 24) != 0x20B)
+                throw new InvalidOperationException("64bit版PCSX2ではありません。");
+
+            uint exportRva = BitConverter.ToUInt32(pe, 24 + 112);
+
+---- 7472行目 ----
+                throw new InvalidOperationException("64bit版PCSX2ではありません。");
+
+            uint exportRva = BitConverter.ToUInt32(pe, 24 + 112);
+            uint exportSize = BitConverter.ToUInt32(pe, 24 + 116);
+            if (exportRva == 0 || exportSize < 40)
+                throw new InvalidOperationException("Export tableがありません。");
+
+---- 7473行目 ----
+
+            uint exportRva = BitConverter.ToUInt32(pe, 24 + 112);
+            uint exportSize = BitConverter.ToUInt32(pe, 24 + 116);
+            if (exportRva == 0 || exportSize < 40)
+                throw new InvalidOperationException("Export tableがありません。");
+
+
+---- 7477行目 ----
+                throw new InvalidOperationException("Export tableがありません。");
+
+            byte[] exp = Read(h, module + exportRva, 40);
+            uint count = BitConverter.ToUInt32(exp, 24);
+            uint funcs = BitConverter.ToUInt32(exp, 28);
+            uint names = BitConverter.ToUInt32(exp, 32);
+
+---- 7478行目 ----
+
+            byte[] exp = Read(h, module + exportRva, 40);
+            uint count = BitConverter.ToUInt32(exp, 24);
+            uint funcs = BitConverter.ToUInt32(exp, 28);
+            uint names = BitConverter.ToUInt32(exp, 32);
+            uint ords = BitConverter.ToUInt32(exp, 36);
+
+---- 7490行目 ----
+                uint nr = BitConverter.ToUInt32(
+                    Read(h, module + names + i * 4L, 4), 0);
+                byte[] nb = Read(h, module + nr, 32);
+                int end = Array.IndexOf(nb, (byte)0);
+                if (end < 0) end = nb.Length;
+
+
+---- 7544行目 ----
+            bool match = keyword.Length == 0;
+
+            if (!match && item is MonsterEntry e)
+            {
+                match =
+                    e.Id.IndexOf(keyword,
+
+---- 7609行目 ----
+
+    private void ExtractJapaneseStrings(
+        byte[] data,
+        int count,
+        long baseAddress,
+        HashSet<long> seen,
+
+---- 7734行目 ----
+            long moduleBase = process.MainModule.BaseAddress.ToInt64();
+
+            byte[] dos = Read(handle, moduleBase, 64);
+            int peOffset = BitConverter.ToInt32(dos, 0x3C);
+
+            byte[] pe = Read(handle, moduleBase + peOffset, 144);
+
+---- 7737行目 ----
+            int peOffset = BitConverter.ToInt32(dos, 0x3C);
+
+            byte[] pe = Read(handle, moduleBase + peOffset, 144);
+
+            if (pe[0] != 0x50 || pe[1] != 0x45 ||
+                BitConverter.ToUInt16(pe, 24) != 0x20B)
+
+---- 7740行目 ----
+
+            if (pe[0] != 0x50 || pe[1] != 0x45 ||
+                BitConverter.ToUInt16(pe, 24) != 0x20B)
+                throw new InvalidOperationException(
+                    "PCSX2のPEヘッダーを確認できません。");
+
+
+---- 7751行目 ----
+                    "PCSX2のエクスポートテーブルがありません。");
+
+            byte[] directory = Read(handle, moduleBase + exportRva, 40);
+
+            uint count = BitConverter.ToUInt32(directory, 24);
+            uint functionsRva = BitConverter.ToUInt32(directory, 28);
+
+---- 7753行目 ----
+            byte[] directory = Read(handle, moduleBase + exportRva, 40);
+
+            uint count = BitConverter.ToUInt32(directory, 24);
+            uint functionsRva = BitConverter.ToUInt32(directory, 28);
+            uint namesRva = BitConverter.ToUInt32(directory, 32);
+            uint ordinalsRva = BitConverter.ToUInt32(directory, 36);
+
+---- 7767行目 ----
+                    Read(handle, moduleBase + namesRva + i * 4L, 4), 0);
+
+                byte[] nameBytes = Read(handle, moduleBase + nameRva, 32);
+                int end = Array.IndexOf(nameBytes, (byte)0);
+                if (end < 0) end = nameBytes.Length;
+
+
+---- 7811行目 ----
+        ref int totalFound)
+    {
+        const int chunkSize = 1024 * 1024;
+        const int overlap = 512;
+        const int batchSize = 250;
+
+
+---- 7822行目 ----
+            long address = checked(baseAddress + offset);
+
+            byte[] buffer = new byte[amount];
+            UIntPtr bytesRead;
+
+            bool ok = ReadProcessMemory(
+
+---- 7881行目 ----
+        const uint PAGE_GUARD = 0x100;
+
+        const int MAX_PART_SIZE = 256 * 1024 * 1024;
+        const int BOUNDARY_OVERLAP = 512;
+
+        var seen = new HashSet<long>();
+
+---- 8167行目 ----
+            const int scanEnd = 0x02000000;
+
+            byte[] region = Read(
+                h,
+                _eeBase + scanStart,
+                scanEnd - scanStart
+
+---- 8173行目 ----
+            );
+
+            var found = new List<MonsterEntry>();
+            var seen = new HashSet<string>(
+                StringComparer.OrdinalIgnoreCase
+            );
+
+---- 8363行目 ----
+                    }
+
+                    found.Add(new MonsterEntry
+                    {
+                        Id = id,
+                        Name = name,
+
+---- 8381行目 ----
+
+            // 有効な項目だけを一覧表示
+            foreach (MonsterEntry entry in found)
+            {
+                _entries.Add(entry);
+            }
+
+---- 8391行目 ----
+            _displayEntries.Clear();
+
+            foreach (MonsterEntry entry in _entries)
+                _displayEntries.Add(entry);
+
+            RefreshDisplayList();
+
+---- 8442行目 ----
+            dialog.Title = "モンスター名一覧を保存";
+            dialog.Filter = "テキストファイル (*.txt)|*.txt";
+            dialog.FileName = "TornekoMonsterNames.txt";
+            dialog.InitialDirectory =
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.Desktop
+
+---- 8465行目 ----
+            int row = 0;
+
+            foreach (MonsterEntry e in _entries)
+            {
+                row++;
+                output.Append(row);
+
+---- 8516行目 ----
+    private void SelectEntry()
+    {
+        if (_list.SelectedItem is MonsterEntry e)
+        {
+            _name.ReadOnly = false;
+            _name.Text = e.Name;
+
+---- 8541行目 ----
+    private void ApplySelectedEntry()
+    {
+        if (_list.SelectedItem is MonsterEntry)
+        {
+            ApplyName();
+            return;
+
+---- 8560行目 ----
+    private List<long> FindExactMessageCopies(
+        IntPtr handle,
+        byte[] originalBytes)
+    {
+        if (originalBytes == null || originalBytes.Length < 2)
+            throw new InvalidOperationException(
+
+---- 8570行目 ----
+        long eeBase = ResolveEEmem(handle);
+
+        byte[] memory = Read(handle, eeBase, totalSize);
+
+        var addresses = new List<long>();
+
+
+---- 8634行目 ----
+                    "メッセージを空にはできません。");
+
+            byte[] encoded = _sjis.GetBytes(value);
+
+            if (encoded.Length > entry.Capacity)
+            {
+
+---- 8653行目 ----
+            }
+
+            byte[] current =
+                Read(handle, entry.Address, entry.Capacity + 1);
+
+            if (!current.SequenceEqual(entry.OriginalBytes))
+
+---- 8697行目 ----
+                return;
+
+            byte[] replacement =
+                new byte[entry.Capacity + 1];
+
+            Array.Copy(
+
+---- 8708行目 ----
+            foreach (long address in copies)
+            {
+                byte[] before =
+                    Read(handle, address, entry.OriginalBytes.Length);
+
+                if (!before.SequenceEqual(entry.OriginalBytes))
+
+---- 8731行目 ----
+                    touched.Add(address);
+
+                    byte[] verify =
+                        Read(handle, address, replacement.Length);
+
+                    if (!verify.SequenceEqual(replacement))
+
+---- 8756行目 ----
+                            entry.OriginalBytes);
+
+                        byte[] restored =
+                            Read(handle, address, entry.OriginalBytes.Length);
+
+                        if (!restored.SequenceEqual(entry.OriginalBytes))
+
+---- 8786行目 ----
+            entry.Name = value;
+            entry.OriginalBytes =
+                (byte[])replacement.Clone();
+
+            int index = _list.SelectedIndex;
+
+
+---- 8832行目 ----
+        IntPtr handle,
+        long address,
+        byte[] data)
+    {
+        if (address <= 0 || data == null || data.Length == 0)
+            throw new InvalidOperationException(
+
+---- 8994行目 ----
+            return;
+
+        if (!(_list.SelectedItem is MonsterEntry e))
+        {
+            MessageBox.Show(this, "先に名前を選択してください。");
+            return;
+
+---- 9015行目 ----
+                throw new InvalidOperationException("名前を空にはできません。");
+
+            byte[] encoded = _sjis.GetBytes(value);
+
+            if (encoded.Length > e.Capacity)
+            {
+
+---- 9035行目 ----
+
+            // 書き込み前の内容を確認
+            byte[] before = Read(h, e.Address, e.Capacity + 1);
+
+            int end = Array.IndexOf(before, (byte)0);
+
+
+---- 9048行目 ----
+                !before.SequenceEqual(e.OriginalBytes))
+            {
+                string current = DecodeMonsterName(before, 0, end);
+
+                throw new InvalidOperationException(
+                    "ゲームメモリの元データが変化しています。\r\n" +
+
+---- 9060行目 ----
+
+            // 新しい文字列を作成
+            byte[] replacement = new byte[e.Capacity + 1];
+            Array.Copy(encoded, replacement, encoded.Length);
+
+            // VirtualProtectExを使わず直接書き込む
+
+---- 9090行目 ----
+
+            // 読み戻し検証
+            byte[] verify = Read(h, e.Address, replacement.Length);
+
+            if (!verify.SequenceEqual(replacement))
+            {
+
+---- 9100行目 ----
+            // 一覧と次回照合用の元データを更新
+            e.Name = value;
+            e.OriginalBytes = (byte[])replacement.Clone();
+
+            int index = _list.SelectedIndex;
+            _list.Items[index] = e;
+
