@@ -4923,6 +4923,26 @@ buttons.Controls.Add(UiFactory.Button(
         _actionRestore.StatusChanged += UpdateActionRestoreStatus;
         _slimeRingLevelUp.StatusChanged += UpdateSlimeRingStatus;
 
+        // スライムの指輪の状態表示をダブルクリックすると全文をコピーする。
+        _pcsx2DataStatus.Cursor = Cursors.Hand;
+        _pcsx2DataStatus.DoubleClick += (_, _) =>
+        {
+            try
+            {
+                string message = _pcsx2DataStatus.Text;
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    Clipboard.SetText(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    "クリップボードへのコピーに失敗しました。\n" + ex.Message);
+            }
+        };
+
         FormClosed += (_, _) =>
         {
             Pcsx2LiveSession.StateChanged -= UpdatePcsx2Status;
