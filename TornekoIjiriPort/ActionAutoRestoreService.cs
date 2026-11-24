@@ -24,11 +24,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     // EE RAMの高位領域から512バイトの空き領域を探す
     private const uint CaveSearchStart = 0x01FF0000u;
     private const uint CaveSearchEnd = 0x01F00000u;
-    private const uint CaveSearchStep = 0x00010000u;
-
-    private const uint CaveSize = 0x200u;
-    private const uint TableOffset = 0x100u;
-    private const int TableSize = 256;
+    private const uint CaveSearchStep = 0x00001000u;
     // コロマージ呪文分岐調査フック
     private const uint SpellDispatchAddress = 0x002CF600u;
     // MOD版コロマージ呪文成功判定: slt v0,v0,v1 を li v0,1 に置換
@@ -45,7 +41,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint IonazunCompareBranchAddress = 0x00228DECu;
     private const uint IonazunCompareBranchOriginal = 0x104000A1u;
     private const uint IonazunCompareBranchDelayAddress = 0x00228DF0u;
-    private const uint IonazunCompareBranchDelayOriginal = 0x3C050085u;
+    private const uint IonazunCompareBranchDelayOriginal = 0x3C05008Fu;
     private const uint SpellDispatchOriginalInstruction = 0x2A020046u;
     private const uint SpellDispatchDelayAddress = 0x002CF604u;
     private const uint SpellDispatchOriginalDelay = 0x10400013u;
@@ -164,8 +160,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private Dictionary<int, ushort> _actions =
         new Dictionary<int, ushort>();
-
-    private byte[]? _lastTable;
     private uint _codeCaveAddress;
 
     private int _pollBusy;
@@ -406,7 +400,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x8F5A000Cu,
 
             // 0xFFなら0、そうでなければ0以外
-            0x381A00FFu,
+            0x3B5A00FFu,
 
             // OFFなら元のv0を維持
             0x17400002u,
@@ -448,7 +442,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x8F5A000Cu,
 
             // 0xFFなら0、そうでなければ0以外
-            0x381A00FFu,
+            0x3B5A00FFu,
 
             // OFFなら元のsltへ進む
             0x17400004u,
@@ -470,7 +464,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x10400003u,
 
             // 元の遅延スロット
-            0x3C050085u,
+            0x3C05008Fu,
 
             // 分岐しなかった場合の続き
             EncodeIonazunRepeatJump(
@@ -489,10 +483,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private void ApplyIonazunRepeatPatch(
         Dictionary<int, ushort> actions)
     {
-        byte[] table = BuildActionTable(actions);
+        var entries = BuildActionEntries(actions);
 
         bool shouldPatch =
-            Array.IndexOf(table, (byte)0xFF) >= 0;
+            entries.Exists(x => x.Marker == 0xFF);
 
         if (!shouldPatch)
         {
@@ -501,7 +495,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         if (_codeCaveAddress == 0 ||
-            !IsDispatcherCode(_codeCaveAddress))
+            !IsDispatcherCode(_codeCaveAddress, entries))
         {
             throw new InvalidOperationException(
                 "既存ディスパッチャーを検証できません。");
@@ -523,6 +517,23 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         uint currentCompare =
             _pine.Read32(IonazunCompareAddress);
+
+        // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+        if (currentCompare == 0x24020001u)
+        {
+            _pine.Write32(
+                IonazunCompareAddress,
+                IonazunCompareOriginal);
+
+            currentCompare =
+                _pine.Read32(IonazunCompareAddress);
+
+            if (currentCompare != IonazunCompareOriginal)
+            {
+                throw new InvalidOperationException(
+                    "確率判定命令の復旧に失敗しました。");
+            }
+        }
 
         uint currentCompareBranch =
             _pine.Read32(IonazunCompareBranchAddress);
@@ -665,6 +676,23 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint currentCompare =
             _pine.Read32(IonazunCompareAddress);
 
+        // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+        if (currentCompare == 0x24020001u)
+        {
+            _pine.Write32(
+                IonazunCompareAddress,
+                IonazunCompareOriginal);
+
+            currentCompare =
+                _pine.Read32(IonazunCompareAddress);
+
+            if (currentCompare != IonazunCompareOriginal)
+            {
+                throw new InvalidOperationException(
+                    "確率判定命令の復旧に失敗しました。");
+            }
+        }
+
         uint currentCompareBranch =
             _pine.Read32(IonazunCompareBranchAddress);
 
@@ -686,8 +714,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             uint cave = target - 0x58u;
 
-            if (target != cave + 0x58u ||
-                !IsDispatcherCode(cave))
+            if (target != cave + 0x58u || cave < CaveSearchEnd || cave > CaveSearchStart)
             {
                 throw new InvalidOperationException(
                     "使用済み判定フックの接続先を検証できません。");
@@ -732,8 +759,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             uint cave = target - 0x90u;
 
-            if (target != cave + 0x90u ||
-                !IsDispatcherCode(cave))
+            if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
             {
                 throw new InvalidOperationException(
                     "確率判定フックの接続先を検証できません。");
@@ -784,10 +810,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
         _ionazunRepeatCaveAddress = 0;
     }
 
-    private byte[] BuildActionTable(
-        Dictionary<int, ushort> actions)
+    private List<(byte SpeciesId, byte Marker, byte ActualAction)>
+        BuildActionEntries(Dictionary<int, ushort> actions)
     {
-        var table = new byte[TableSize];
+        var entries =
+            new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+
         var enabled = Torneko4ActionStore.GetIonazunForceCopy();
 
         foreach (var pair in actions)
@@ -815,86 +843,197 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     pair.Value.ToString("X2"));
             }
 
-            int speciesId = pair.Key + 1;
+            bool forceIonazun =
+                pair.Value == 0x00BF && enabled.Contains(pair.Key);
 
-            // 0xFFはアプリ設定が有効なコロマージ魔法専用の内部識別値。
-            // 実際の敵特技処理に渡す直前に0xBFへ戻す。
-            byte value =
-                pair.Value == 0x00BF && enabled.Contains(pair.Key)
-                    ? (byte)0xFF
-                    : (byte)pair.Value;
+            byte marker = forceIonazun
+                ? (byte)0xFF
+                : (byte)pair.Value;
 
-            table[speciesId] = value;
+            byte actualAction = forceIonazun
+                ? (byte)0xBF
+                : (byte)pair.Value;
+
+            entries.Add((
+                (byte)(pair.Key + 1),
+                marker,
+                actualAction
+            ));
         }
 
-        return table;
-    }
-    private static bool TablesEqual(byte[]? a, byte[] b)
-    {
-        if (a == null || a.Length != b.Length)
-            return false;
+        entries.Sort((a, b) => a.SpeciesId.CompareTo(b.SpeciesId));
 
-        for (int i = 0; i < b.Length; i++)
+        return entries;
+    }
+
+    private static byte[] BuildActionData(
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        byte[] data = new byte[entries.Count * 3];
+
+        for (int i = 0; i < entries.Count; i++)
         {
-            if (a[i] != b[i])
-                return false;
+            data[i * 3] = entries[i].SpeciesId;
+            data[i * 3 + 1] = entries[i].Marker;
+            data[i * 3 + 2] = entries[i].ActualAction;
         }
 
-        return true;
+        return data;
     }
 
-    private bool IsDispatcherCode(uint address)
+    private static uint[] BuildDispatcherStub(uint address)
     {
-        uint tableAddress = address + TableOffset;
         uint traceAddress = address + 0xD4u;
+        uint lookupAddress = address + 0xE4u;
 
-        uint[] expected =
+        return new uint[]
         {
             0x90480006u,
 
             0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
             0x356B0000u | (traceAddress & 0xFFFFu),
+
             0xAD710000u,
             0xAD680004u,
+
             0x8D6C0008u,
             0x258C0001u,
             0xAD6C0008u,
 
-            0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
-            0x35290000u | (tableAddress & 0xFFFFu),
-            0x01284821u,
+            0xAD60000Cu,
+
+            EncodeIonazunRepeatJump(
+                address + 9u * 4u,
+                lookupAddress),
+
+            0x00000000u
+        };
+    }
+
+    private static uint[] BuildSparseLookupCode(
+        uint address,
+        int entryCount)
+    {
+        uint dataAddress = address + 0x12Cu;
+
+        return new uint[]
+        {
+            // t1 = コンパクトな種族別設定データ
+            0x3C090000u | ((dataAddress >> 16) & 0xFFFFu),
+            0x35290000u | (dataAddress & 0xFFFFu),
+
+            // t4 = 登録種族数
+            0x240C0000u | ((uint)entryCount & 0xFFFFu),
+
+            // 検索ループ
             0x912A0000u,
 
-            // raw action IDをtrace[3]へ保存
-            0xAD6A000Cu,
-
-            // 0なら上書きせず元の処理へ
-            0x11400006u,
+            // beq t0,t2,match
+            0x110A0007u,
             0x00000000u,
 
-            // 0xFF判定
-            0x240B00FFu,
-            0x154B0002u,
+            // 次の3バイトレコードへ
+            0x25290003u,
+            0x258CFFFFu,
+
+            // bne t4,zero,loop
+            0x1580FFFAu,
             0x00000000u,
 
-            // 0xFFを実際の特技ID 0xBFへ戻す
-            0x240A00BFu,
+            // 該当なし：元の処理へ
+            0x0808F1D4u,
+            0x00000000u,
+
+            // match:
+            // t4 = 設定マーカー
+            0x912C0001u,
+
+            // t2 = 実際に渡す特技ID
+            0x912A0002u,
+
+            // trace[3] = 設定マーカー
+            0xAD6C000Cu,
+
+            // s1 = 実際の特技ID
             0x01408821u,
 
+            // 元の敵特技処理へ
             0x0808F1D4u,
             0x00000000u
         };
+    }
 
-        for (int i = 0; i < expected.Length; i++)
+    private static uint GetRequiredCaveSize(
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        // +0x12C までが固定コード領域。
+        // その後に種族ごと3バイトの設定を置く。
+        uint dataLength = (uint)entries.Count * 3u;
+        uint paddedDataLength = (dataLength + 3u) & ~3u;
+
+        return 0x12Cu + paddedDataLength;
+    }
+
+    private bool IsDispatcherCode(
+        uint address,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+    {
+        uint[] stub = BuildDispatcherStub(address);
+        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
+        byte[] data = BuildActionData(entries);
+
+        for (int i = 0; i < stub.Length; i++)
         {
-            if (_pine.Read32(address + (uint)(i * 4)) != expected[i])
+            if (_pine.Read32(address + (uint)(i * 4)) != stub[i])
+                return false;
+        }
+
+        for (uint offset = (uint)(stub.Length * 4);
+             offset < 0x58u;
+             offset += 4u)
+        {
+            if (_pine.Read32(address + offset) != 0u)
+                return false;
+        }
+
+        uint lookupAddress = address + 0xE4u;
+
+        for (int i = 0; i < lookup.Length; i++)
+        {
+            if (_pine.Read32(lookupAddress + (uint)(i * 4)) != lookup[i])
+                return false;
+        }
+
+        uint dataAddress = address + 0x12Cu;
+        uint paddedLength = ((uint)data.Length + 3u) & ~3u;
+
+        for (uint offset = 0; offset < paddedLength; offset += 4u)
+        {
+            uint expected = 0u;
+
+            for (int b = 0; b < 4; b++)
+            {
+                uint index = offset + (uint)b;
+
+                if (index < (uint)data.Length)
+                    expected |= (uint)data[index] << (b * 8);
+            }
+
+            if (_pine.Read32(dataAddress + offset) != expected)
                 return false;
         }
 
         return true;
     }
-    private uint FindCodeCave()
+
+    private uint FindCodeCave(uint requiredSize)
     {
+        if (requiredSize < 0x130u || requiredSize > 0x10000u)
+        {
+            throw new InvalidOperationException(
+                "必要なコード領域サイズが不正です: " + requiredSize);
+        }
+
         for (
             uint candidate = CaveSearchStart;
             candidate >= CaveSearchEnd;
@@ -902,9 +1041,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             bool free = true;
 
-            for (uint offset = 0; offset < CaveSize; offset += 4)
+            for (uint offset = 0; offset < requiredSize; offset += 4u)
             {
-                if (_pine.Read32(candidate + offset) != 0)
+                if (_pine.Read32(candidate + offset) != 0u)
                 {
                     free = false;
                     break;
@@ -916,110 +1055,78 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         throw new InvalidOperationException(
-            "EE RAMの指定範囲に512バイトの空き領域が見つかりません。\n" +
-            "安全確認のため、コードを書き込みませんでした。");
+            "EE RAMに必要サイズ " + requiredSize +
+            " バイトの連続した空き領域が見つかりません。\n" +
+            "512バイト固定ではなく、設定種族数に応じたサイズで探索しました。");
     }
 
-    private void WriteDispatcherCode(uint address)
+    private void WriteDispatcherCode(
+        uint address,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
     {
-        uint tableAddress = address + TableOffset;
-        uint traceAddress = address + 0xD4u;
+        uint[] stub = BuildDispatcherStub(address);
+        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
+        byte[] data = BuildActionData(entries);
 
-        uint[] code =
+        // メインディスパッチャー
+        for (int i = 0; i < stub.Length; i++)
         {
-            // lbu t0,6(v0) : 種族ID
-            0x90480006u,
+            _pine.Write32(
+                address + (uint)(i * 4),
+                stub[i]);
+        }
 
-            // 記録領域のアドレスをt3へ設定
-            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
-            0x356B0000u | (traceAddress & 0xFFFFu),
+        // +0x58までの未使用部分を初期化
+        for (uint offset = (uint)(stub.Length * 4);
+             offset < 0x58u;
+             offset += 4u)
+        {
+            _pine.Write32(address + offset, 0u);
+        }
 
-            // 元の特技ID s1 と種族ID t0 を保存
-            0xAD710000u,
-            0xAD680004u,
+        // 種族別検索コード
+        uint lookupAddress = address + 0xE4u;
 
-            // 記録回数を1増やす
-            0x8D6C0008u,
-            0x258C0001u,
-            0xAD6C0008u,
+        for (int i = 0; i < lookup.Length; i++)
+        {
+            _pine.Write32(
+                lookupAddress + (uint)(i * 4),
+                lookup[i]);
+        }
 
-            // 特技テーブルのアドレス
-            0x3C090000u | ((tableAddress >> 16) & 0xFFFFu),
-            0x35290000u | (tableAddress & 0xFFFFu),
+        // 種族別データ。1種族につき3バイトのみ。
+        uint dataAddress = address + 0x12Cu;
+        uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
-            // 種族IDを使って特技テーブルを検索
-            0x01284821u,
-            0x912A0000u,
+        for (uint offset = 0; offset < paddedLength; offset += 4u)
+        {
+            uint value = 0u;
 
-            // 設定値をtrace[3]に保存
-            0xAD6A000Cu,
+            for (int b = 0; b < 4; b++)
+            {
+                uint index = offset + (uint)b;
 
-            // 0なら元の特技IDを維持
-            0x11400006u,
-            0x00000000u,
+                if (index < (uint)data.Length)
+                    value |= (uint)data[index] << (b * 8);
+            }
 
-            // 0xFFかどうか判定
-            0x240B00FFu,
-            0x154B0002u,
-            0x00000000u,
+            _pine.Write32(dataAddress + offset, value);
+        }
 
-            // 0xFFなら実際の特技ID 0xBFへ変換
-            0x240A00BFu,
-
-            // s1 = t2
-            0x01408821u,
-
-            // 元の敵特技処理へ戻る
-            0x0808F1D4u,
-            0x00000000u
-        };
-
-        for (int i = 0; i < code.Length; i++)
-            _pine.Write32(address + (uint)(i * 4), code[i]);
+        // trace領域
+        uint traceAddress = address + 0xD4u;
 
         _pine.Write32(traceAddress, 0u);
         _pine.Write32(traceAddress + 4u, 0u);
         _pine.Write32(traceAddress + 8u, 0u);
         _pine.Write32(traceAddress + 12u, 0u);
 
-        if (!IsDispatcherCode(address))
+        if (!IsDispatcherCode(address, entries))
         {
             throw new InvalidOperationException(
-                "MIPSディスパッチャーの書き込み検証に失敗しました。");
+                "コンパクト型MIPSディスパッチャーの検証に失敗しました。");
         }
     }
-    private void WriteActionTable(uint address, byte[] table)
-    {
-        for (int i = 0; i < table.Length; i += 4)
-        {
-            uint value =
-                (uint)table[i] |
-                ((uint)table[i + 1] << 8) |
-                ((uint)table[i + 2] << 16) |
-                ((uint)table[i + 3] << 24);
-
-            _pine.Write32(address + (uint)i, value);
-        }
-
-        for (int i = 0; i < table.Length; i += 4)
-        {
-            uint expected =
-                (uint)table[i] |
-                ((uint)table[i + 1] << 8) |
-                ((uint)table[i + 2] << 16) |
-                ((uint)table[i + 3] << 24);
-
-            uint actual = _pine.Read32(address + (uint)i);
-
-            if (actual != expected)
-            {
-                throw new InvalidOperationException(
-                    "種族別特技テーブルの検証に失敗しました。位置: 0x" +
-                    (address + (uint)i).ToString("X8"));
-            }
-        }
-    }
-
     private void RestoreCallInstruction()
     {
         uint current = _pine.Read32(PatchAddress);
@@ -1047,6 +1154,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private void ApplyRuntime(Dictionary<int, ushort> actions)
     {
+        var entries = BuildActionEntries(actions);
+
         uint currentCall = _pine.Read32(PatchAddress);
 
         bool currentIsDispatcher = IsDispatcherCall(currentCall);
@@ -1081,16 +1190,20 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             uint detectedCave = DecodeDispatcherAddress(currentCall);
 
-            if (!IsDispatcherCode(detectedCave))
+            if (IsDispatcherCode(detectedCave, entries))
             {
+                _codeCaveAddress = detectedCave;
+            }
+            else
+            {
+                // 旧版ディスパッチャー、または設定変更前のコード。
+                // 先にイオナズンフックを復元してから旧呼び出しを解除する。
+                RestoreIonazunRepeatPatch();
                 RestoreCallInstruction();
 
-                throw new InvalidOperationException(
-                    "既存ディスパッチャーのコード検証に失敗しました。\n" +
-                    "安全のため元の呼び出し命令へ戻しました。");
+                _codeCaveAddress = 0u;
+                currentIsDispatcher = false;
             }
-
-            _codeCaveAddress = detectedCave;
         }
 
         if (actions.Count == 0)
@@ -1100,36 +1213,28 @@ internal sealed class ActionAutoRestoreService : IDisposable
             if (currentIsDispatcher)
                 RestoreCallInstruction();
 
+            _codeCaveAddress = 0u;
             return;
         }
 
-        byte[] table = BuildActionTable(actions);
-
-        if (currentIsDispatcher && TablesEqual(_lastTable, table))
+        if (_codeCaveAddress != 0u &&
+            !IsDispatcherCode(_codeCaveAddress, entries))
         {
-            ApplyIonazunRepeatPatch(actions);
-            return;
+            RestoreIonazunRepeatPatch();
+
+            if (currentIsDispatcher)
+                RestoreCallInstruction();
+
+            _codeCaveAddress = 0u;
         }
 
-        if (currentIsDispatcher)
-            RestoreCallInstruction();
-
-        bool newCave = false;
-
-        if (_codeCaveAddress == 0 ||
-            !IsDispatcherCode(_codeCaveAddress))
+        if (_codeCaveAddress == 0u)
         {
-            _codeCaveAddress = FindCodeCave();
-            WriteDispatcherCode(_codeCaveAddress);
-            newCave = true;
-        }
+            uint requiredSize = GetRequiredCaveSize(entries);
 
-        uint tableAddress = _codeCaveAddress + TableOffset;
+            _codeCaveAddress = FindCodeCave(requiredSize);
 
-        if (newCave || !TablesEqual(_lastTable, table))
-        {
-            WriteActionTable(tableAddress, table);
-            _lastTable = (byte[])table.Clone();
+            WriteDispatcherCode(_codeCaveAddress, entries);
         }
 
         uint newCall = EncodeJal(_codeCaveAddress);
@@ -1148,7 +1253,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         ApplyIonazunRepeatPatch(actions);
     }
-
     internal static string ReadActionTrace()
     {
         lock (SharedPineAccessSync)
