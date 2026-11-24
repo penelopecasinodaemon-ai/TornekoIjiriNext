@@ -253,36 +253,76 @@ internal static class Torneko4GanirasuBarrierRuntime
         try
         {
             uint cave = FindExistingCave();
+
             if (cave == 0)
-                return "";
+                return "ガニラスバリア診断: 専用コード領域が見つかりません。";
 
             uint trace = cave + TraceOffset;
             uint count = ActionAutoRestoreService.ReadShared32(trace + 12u);
 
-            if (count == 0)
-                return "ガニラスバリア診断: 呼出回数=0 / フック未到達";
+            var lines = new List<string>();
 
-            uint argument =
-                ActionAutoRestoreService.ReadShared32(trace);
+            lines.Add("ガニラスバリア診断");
+            lines.Add("コード領域=0x" + cave.ToString("X8"));
+            lines.Add("呼出回数=" + count);
 
-            uint returnAddress =
-                ActionAutoRestoreService.ReadShared32(trace + 4u);
+            uint activePointer =
+                ActionAutoRestoreService.ReadShared32(cave + ActivePointerOffset);
 
-            uint result =
-                ActionAutoRestoreService.ReadShared32(trace + 8u);
+            lines.Add("テーブル参照先=0x" + activePointer.ToString("X8"));
 
-            return
-                "ガニラスバリア診断: 呼出回数=" + count +
-                " / a0=" + argument +
-                " (0x" + argument.ToString("X8") + ")" +
-                " / 戻り値=" + result +
-                " / RA=0x" + returnAddress.ToString("X8");
+            for (int i = 0; i < CallAddresses.Length; i++)
+            {
+                uint address = CallAddresses[i];
+
+                uint instruction =
+                    ActionAutoRestoreService.ReadShared32(address);
+
+                uint target = 0;
+
+                bool isJal =
+                    (instruction & 0xFC000000u) == 0x0C000000u;
+
+                if (isJal)
+                    target = DecodeJal(address, instruction);
+
+                lines.Add(
+                    "呼出箇所[" + i + "] 0x" + address.ToString("X8") +
+                    " 命令=0x" + instruction.ToString("X8") +
+                    " JAL=" + isJal +
+                    " 呼出先=0x" + target.ToString("X8"));
+            }
+
+            if (count > 0)
+            {
+                uint argument =
+                    ActionAutoRestoreService.ReadShared32(trace);
+
+                uint returnAddress =
+                    ActionAutoRestoreService.ReadShared32(trace + 4u);
+
+                uint result =
+                    ActionAutoRestoreService.ReadShared32(trace + 8u);
+
+                lines.Add("最後のa0=" + argument + " (0x" +
+                    argument.ToString("X8") + ")");
+
+                lines.Add("最後の戻り値=" + result);
+                lines.Add("最後のRA=0x" + returnAddress.ToString("X8"));
+            }
+            else
+            {
+                lines.Add("判定: フック呼出回数が0です。");
+            }
+
+            return string.Join(Environment.NewLine, lines);
         }
         catch (Exception ex)
         {
             return "ガニラスバリア診断読取エラー: " + ex.Message;
         }
     }
+
     private static void RestoreKnownTestPatch()
     {
         uint current =
