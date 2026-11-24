@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -7,7 +7,7 @@ namespace TornekoIjiriPort;
 /// <summary>
 /// スライムの指輪のレベルアップ効果。
 ///
-/// ・仲間4枠のレベルを個別に監視
+/// ・仲間10枠のレベルを個別に監視
 /// ・仲間レコードの種族IDからモンスター基本データを参照
 /// ・SystemFamily の bit 5 (0x20) が立っている仲間だけを対象にする
 /// ・スライムの指輪のアイテムIDと装備フラグを確認
@@ -24,10 +24,16 @@ internal sealed class SlimeRingLevelUpService : IDisposable
 
     private static readonly uint[] AllyPointerSlotAddresses =
     {
-        0x00396808u,
-        0x00396818u,
-        0x00396828u,
-        0x00396838u
+        0x00396808u, // 1番目
+        0x00396818u, // 2番目
+        0x00396828u, // 3番目
+        0x00396838u, // 4番目
+        0x00396848u, // 5番目
+        0x00396858u, // 6番目
+        0x00396868u, // 7番目
+        0x00396878u, // 8番目
+        0x00396888u, // 9番目
+        0x00396898u  // 10番目
     };
 
     // 仲間レコードの有効範囲確認用
@@ -36,7 +42,7 @@ internal sealed class SlimeRingLevelUpService : IDisposable
     private const uint AllyRecordRequiredSize = 0x90u;
 
     // 仲間レコード内のフィールド
-    private const uint SpeciesIdOffset = 0x0Cu;
+    private const uint SpeciesIdOffset = 0x04u;
     private const uint CurrentHpOffset = 0x78u;
     private const uint MaxHpOffset = 0x7Cu;
     private const uint AttackOffset = 0x88u;
@@ -199,25 +205,37 @@ internal sealed class SlimeRingLevelUpService : IDisposable
                     continue;
                 }
 
-                uint speciesId =
+                uint packedSpeciesId =
                     ActionAutoRestoreService.ReadShared32(
                         recordAddress + SpeciesIdOffset);
 
+                // 空き枠は+0x04がゼロなのでスキップ
+                if (packedSpeciesId == 0)
+                {
+                    _lastAllies.Remove(slotIndex);
+                    continue;
+                }
+
+                // +0x04の下位16bitが種族ID
+                uint speciesId = packedSpeciesId & 0xFFFFu;
+                uint duplicatedSpeciesId = packedSpeciesId >> 16;
+
+                // 上位16bitと下位16bitの一致も確認
                 if (speciesId == 0 ||
-                    speciesId > MonsterRecordCount)
+                    speciesId > MonsterRecordCount ||
+                    duplicatedSpeciesId != speciesId)
                 {
                     _lastAllies.Remove(slotIndex);
 
                     RaiseStatus(
                         "スライムの指輪：仲間" +
                         (slotIndex + 1) +
-                        "の種族IDが範囲外です。" +
-                        " / ID=" + speciesId +
-                        " / 仲間データ+0x0C");
+                        "の種族IDが不正です。" +
+                        " / 値=0x" +
+                        packedSpeciesId.ToString("X8"));
 
                     continue;
                 }
-
                 uint packedLevelDefense =
                     ActionAutoRestoreService.ReadShared32(
                         recordAddress + DefenseAndLevelOffset);
