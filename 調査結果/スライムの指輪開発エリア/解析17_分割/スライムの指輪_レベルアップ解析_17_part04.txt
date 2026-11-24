@@ -1,0 +1,3243 @@
+o rd=zero
+  0x0038F240: SRL t3,a2,0
+  0x0038F244: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038F248: JALR zero,t7
+  0x0038F24C: SPECIAL fn=60 rs=t7 rt=a2 rd=t4
+  0x0038F250: SLL zero,t8,15
+  0x0038F254: SPECIAL fn=61 rs=t7 rt=a2 rd=t5
+0x0038F440: JALR zero,t7
+  0x0038F434: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038F438: SPECIAL fn=40 rs=t7 rt=t2 rd=zero
+  0x0038F43C: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038F440: JALR zero,t7
+  0x0038F444: SRL t1,t0,9
+  0x0038F448: OP=16 rs=zero rt=zero imm=0
+  0x0038F44C: LB k1,-12709(t6)
+0x0038FB50: JALR zero,t7
+  0x0038FB44: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038FB48: ADDI zero,s0,0
+  0x0038FB4C: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038FB50: JALR zero,t7
+  0x0038FB54: SPECIAL fn=60 rs=t7 rt=a2 rd=t4
+  0x0038FB58: SLL zero,t8,15
+  0x0038FB5C: SPECIAL fn=61 rs=t7 rt=a2 rd=t5
+0x0038FCF0: JALR zero,t7
+  0x0038FCE4: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038FCE8: SRL t3,a2,0
+  0x0038FCEC: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038FCF0: JALR zero,t7
+  0x0038FCF4: SPECIAL fn=60 rs=t7 rt=a2 rd=t4
+  0x0038FCF8: SLL zero,t8,15
+  0x0038FCFC: SPECIAL fn=61 rs=t7 rt=a2 rd=t5
+0x0038FE98: JALR zero,t7
+  0x0038FE8C: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038FE90: SRL t3,a2,0
+  0x0038FE94: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x0038FE98: JALR zero,t7
+  0x0038FE9C: SPECIAL fn=60 rs=t7 rt=a2 rd=t4
+  0x0038FEA0: SLL zero,t8,15
+  0x0038FEA4: SPECIAL fn=61 rs=t7 rt=a2 rd=t5
+0x00390090: JALR zero,t7
+  0x00390084: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x00390088: SPECIAL fn=40 rs=t7 rt=t2 rd=zero
+  0x0039008C: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x00390090: JALR zero,t7
+  0x00390094: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x00390098: OP=16 rs=zero rt=zero imm=0
+  0x0039009C: LB k1,-12709(t6)
+0x003906F0: JALR zero,t7
+  0x003906E4: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x003906E8: JR t7
+  0x003906EC: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x003906F0: JALR zero,t7
+  0x003906F4: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x003906F8: SPECIAL fn=10 rs=t7 rt=s2 rd=zero
+  0x003906FC: SPECIAL fn=63 rs=zero rt=zero rd=zero
+0x00399B68: JALR t0,t0
+  0x00399B5C: SH at,367(s0)
+  0x00399B60: ORI at,s0,0x02CD
+  0x00399B64: J 0x066F3734
+  0x00399B68: JALR t0,t0
+  0x00399B6C: OP=39 rs=t4 rt=sp imm=-9873
+  0x00399B70: OP=39 rs=t4 rt=sp imm=-25187
+  0x00399B74: OP=39 rs=t4 rt=sp imm=-25187
+0x0039CD64: JALR s0,a1
+  0x0039CD58: OP=34 rs=s5 rt=s1 imm=-5770
+  0x0039CD5C: OP=49 rs=t9 rt=t5 imm=-29577
+  0x0039CD60: OP=58 rs=t8 rt=v0 imm=7489
+  0x0039CD64: JALR s0,a1
+  0x0039CD68: SPECIAL fn=24 rs=s1 rt=a2 rd=s2
+  0x0039CD6C: OP=29 rs=s6 rt=t0 imm=-6529
+  0x0039CD70: BGTZ t8,0x0038E338
+0x0039CF4C: JALR zero,t8
+  0x0039CF40: BGTZ t8,0x003A0FE4
+  0x0039CF44: OP=59 rs=t3 rt=t3 imm=-26138
+  0x0039CF48: ADDIU k1,t8,14071
+  0x0039CF4C: JALR zero,t8
+  0x0039CF50: SRA zero,v1,12
+  0x0039CF54: OP=22 rs=t7 rt=sp imm=-628
+  0x0039CF58: OP=59 rs=t7 rt=s7 imm=13331
+0x003A3A18: JALR a3,s0
+  0x003A3A0C: OP=56 rs=at rt=s0 imm=10789
+  0x003A3A10: OP=56 rs=a0 rt=k0 imm=19098
+  0x003A3A14: BEQ zero,s0,0x003A7D00
+  0x003A3A18: JALR a3,s0
+  0x003A3A1C: SB t1,-734(t6)
+  0x003A3A20: SD s0,4189(zero)
+  0x003A3A24: OP=44 rs=v0 rt=k1 imm=-20237
+0x003A6F04: JALR v0,s1
+  0x003A6EF8: OP=22 rs=s2 rt=s2 imm=15376
+  0x003A6EFC: OP=52 rs=t8 rt=a1 imm=5778
+  0x003A6F00: OP=56 rs=a0 rt=k0 imm=19155
+  0x003A6F04: JALR v0,s1
+  0x003A6F08: BEQ zero,a0,0x003B8F14
+  0x003A6F0C: BEQ zero,s0,0x003AAF50
+  0x003A6F10: OP=20 rs=t2 rt=s2 imm=4112
+0x003A824C: JALR t1,t0
+  0x003A8240: OP=53 rs=v0 rt=ra imm=518
+  0x003A8244: OP=39 rs=t4 rt=sp imm=-25132
+  0x003A8248: OP=45 rs=gp rt=sp imm=-25187
+  0x003A824C: JALR t1,t0
+  0x003A8250: ORI s4,t8,0x1462
+  0x003A8254: SPECIAL fn=55 rs=t0 rt=at rd=a1
+  0x003A8258: OP=16 rs=s0 rt=at imm=5205
+0x003AF6CC: JALR s3,zero
+  0x003AF6C0: OP=51 rs=a2 rt=sp imm=-23484
+  0x003AF6C4: OP=51 rs=a2 rt=t4 imm=-12852
+  0x003AF6C8: OP=25 rs=v0 rt=a0 imm=19403
+  0x003AF6CC: JALR s3,zero
+  0x003AF6D0: OP=47 rs=a2 rt=t4 imm=-5308
+  0x003AF6D4: OP=49 rs=zero rt=zero imm=5276
+  0x003AF6D8: OP=16 rs=t9 rt=t5 imm=-14738
+0x003B7DBC: JALR ra,ra
+  0x003B7DB0: REGIMM a3,k0,0039862C
+  0x003B7DB4: OP=22 rs=t7 rt=k0 imm=-1534
+  0x003B7DB8: LH a2,-12787(s4)
+  0x003B7DBC: JALR ra,ra
+  0x003B7DC0: OP=44 rs=s5 rt=sp imm=-16957
+  0x003B7DC4: OP=62 rs=s3 rt=s4 imm=6178
+  0x003B7DC8: SLTIU a3,s1,30714
+0x0067BDA8: JALR k0,v0
+  0x0067BD9C: SLL zero,zero,0
+  0x0067BDA0: SPECIAL fn=38 rs=zero rt=zero rd=zero
+  0x0067BDA4: BLEZ t0,0x0067BE64
+  0x0067BDA8: JALR k0,v0
+  0x0067BDAC: ADDU zero,v0,s6
+  0x0067BDB0: SPECIAL fn=20 rs=a1 rt=at rd=zero
+  0x0067BDB4: SPECIAL fn=59 rs=a2 rt=sp rd=zero
+0x0070C2FC: JALR zero,zero
+  0x0070C2F0: SUBU zero,zero,zero
+  0x0070C2F4: SUBU zero,zero,zero
+  0x0070C2F8: JR zero
+  0x0070C2FC: JALR zero,zero
+  0x0070C300: SPECIAL fn=12 rs=zero rt=zero rd=zero
+  0x0070C304: SPECIAL fn=12 rs=zero rt=zero rd=zero
+  0x0070C308: SPECIAL fn=13 rs=zero rt=zero rd=zero
+0x00727BF8: JALR zero,zero
+  0x00727BEC: SLL zero,zero,0
+  0x00727BF0: JR zero
+  0x00727BF4: SLL zero,zero,0
+  0x00727BF8: JALR zero,zero
+  0x00727BFC: SLL zero,zero,0
+  0x00727C00: SPECIAL fn=10 rs=zero rt=zero rd=zero
+  0x00727C04: SLL zero,zero,0
+0x00727DE0: JALR zero,zero
+  0x00727DD4: SLL zero,zero,0
+  0x00727DD8: JR zero
+  0x00727DDC: SLL zero,zero,0
+  0x00727DE0: JALR zero,zero
+  0x00727DE4: SLL zero,zero,0
+  0x00727DE8: SPECIAL fn=10 rs=zero rt=zero rd=zero
+  0x00727DEC: SLL zero,zero,0
+0x0072844C: JALR zero,zero
+  0x00728440: JR zero
+  0x00728444: SLL zero,zero,0
+  0x00728448: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x0072844C: JALR zero,zero
+  0x00728450: SLL zero,zero,0
+  0x00728454: SLL zero,zero,0
+  0x00728458: SLL zero,zero,0
+0x00728E6C: JALR zero,zero
+  0x00728E60: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x00728E64: SLL zero,zero,0
+  0x00728E68: SLL zero,zero,0
+  0x00728E6C: JALR zero,zero
+  0x00728E70: SLL zero,zero,0
+  0x00728E74: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x00728E78: SLL zero,zero,0
+0x0073B068: JALR zero,zero
+  0x0073B05C: OP=26 rs=t6 rt=a2 imm=-31595
+  0x0073B060: BGTZ a2,0x0071C3F8
+  0x0073B064: OP=46 rs=t6 rt=t5 imm=-26444
+  0x0073B068: JALR zero,zero
+  0x0073B06C: SPECIAL fn=57 rs=zero rt=zero rd=zero
+  0x0073B070: SPECIAL fn=49 rs=zero rt=zero rd=zero
+  0x0073B074: SPECIAL fn=29 rs=zero rt=zero rd=zero
+0x0073B1AC: JALR zero,zero
+  0x0073B1A0: SUBU zero,zero,zero
+  0x0073B1A4: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x0073B1A8: SPECIAL fn=32 rs=zero rt=zero rd=zero
+  0x0073B1AC: JALR zero,zero
+  0x0073B1B0: SPECIAL fn=23 rs=zero rt=zero rd=zero
+  0x0073B1B4: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x0073B1B8: ADDU zero,zero,zero
+0x0073B24C: JALR zero,zero
+  0x0073B240: SPECIAL fn=4 rs=zero rt=a1 rd=zero
+  0x0073B244: SPECIAL fn=7 rs=zero rt=a2 rd=zero
+  0x0073B248: SPECIAL fn=6 rs=zero rt=a3 rd=zero
+  0x0073B24C: JALR zero,zero
+  0x0073B250: SPECIAL fn=48 rs=a0 rt=s0 rd=s1
+  0x0073B254: SPECIAL fn=32 rs=a0 rt=s0 rd=s1
+  0x0073B258: SPECIAL fn=16 rs=a0 rt=s0 rd=s1
+0x0073B430: JALR zero,a1
+  0x0073B424: SPECIAL fn=16 rs=zero rt=t1 rd=zero
+  0x0073B428: JR a0
+  0x0073B42C: SPECIAL fn=16 rs=zero rt=t2 rd=zero
+  0x0073B430: JALR zero,a1
+  0x0073B434: SPECIAL fn=16 rs=zero rt=a0 rd=zero
+  0x0073B438: SPECIAL fn=10 rs=a1 rt=s0 rd=zero
+  0x0073B43C: SPECIAL fn=16 rs=zero rt=t1 rd=zero
+0x0073B620: JALR s0,a0
+  0x0073B614: SPECIAL fn=48 rs=zero rt=t0 rd=zero
+  0x0073B618: JR v1
+  0x0073B61C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073B620: JALR s0,a0
+  0x0073B624: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073B628: SPECIAL fn=10 rs=a0 rt=s0 rd=s0
+  0x0073B62C: SPECIAL fn=48 rs=zero rt=t0 rd=zero
+0x0073B910: JALR s0,v1
+  0x0073B904: SPECIAL fn=32 rs=zero rt=t6 rd=zero
+  0x0073B908: JR v0
+  0x0073B90C: SPECIAL fn=32 rs=zero rt=t6 rd=zero
+  0x0073B910: JALR s0,v1
+  0x0073B914: SPECIAL fn=32 rs=zero rt=t6 rd=zero
+  0x0073B918: SPECIAL fn=10 rs=v1 rt=s0 rd=s0
+  0x0073B91C: SPECIAL fn=32 rs=zero rt=t6 rd=zero
+0x0073BBB8: JALR s0,t2
+  0x0073BBAC: SPECIAL fn=48 rs=zero rt=t6 rd=zero
+  0x0073BBB0: JR t2
+  0x0073BBB4: SPECIAL fn=48 rs=zero rt=t2 rd=zero
+  0x0073BBB8: JALR s0,t2
+  0x0073BBBC: SPECIAL fn=48 rs=zero rt=t6 rd=zero
+  0x0073BBC0: SPECIAL fn=10 rs=t3 rt=zero rd=s0
+  0x0073BBC4: SPECIAL fn=48 rs=zero rt=t5 rd=zero
+0x0073BDB0: JALR s0,t2
+  0x0073BDA4: SPECIAL fn=16 rs=zero rt=t1 rd=zero
+  0x0073BDA8: JR t1
+  0x0073BDAC: SPECIAL fn=16 rs=zero rt=t4 rd=zero
+  0x0073BDB0: JALR s0,t2
+  0x0073BDB4: SPECIAL fn=16 rs=zero rt=t6 rd=zero
+  0x0073BDB8: SPECIAL fn=10 rs=t2 rt=s0 rd=s0
+  0x0073BDBC: SPECIAL fn=16 rs=zero rt=t3 rd=zero
+0x0073BE48: JALR s0,v1
+  0x0073BE3C: SPECIAL fn=32 rs=zero rt=t0 rd=zero
+  0x0073BE40: JR v1
+  0x0073BE44: SPECIAL fn=32 rs=zero rt=t0 rd=zero
+  0x0073BE48: JALR s0,v1
+  0x0073BE4C: SPECIAL fn=32 rs=zero rt=t0 rd=zero
+  0x0073BE50: SPECIAL fn=10 rs=a0 rt=zero rd=s0
+  0x0073BE54: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+0x0073C228: JALR s1,at
+  0x0073C21C: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C220: SPECIAL fn=5 rs=at rt=zero rd=s1
+  0x0073C224: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C228: JALR s1,at
+  0x0073C22C: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C230: SPECIAL fn=14 rs=v0 rt=zero rd=s1
+  0x0073C234: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+0x0073C3A0: JALR s1,a2
+  0x0073C394: SLL a2,t1,16
+  0x0073C398: SLL zero,t0,0
+  0x0073C39C: SLL zero,t0,0
+  0x0073C3A0: JALR s1,a2
+  0x0073C3A4: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C3A8: SPECIAL fn=31 rs=a2 rt=s0 rd=s1
+  0x0073C3AC: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+0x0073C4E0: JALR s1,t2
+  0x0073C4D4: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073C4D8: SPECIAL fn=7 rs=t1 rt=s0 rd=s1
+  0x0073C4DC: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073C4E0: JALR s1,t2
+  0x0073C4E4: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073C4E8: SUBU s1,t2,s0
+  0x0073C4EC: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+0x0073C818: JALR s1,t5
+  0x0073C80C: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C810: SPECIAL fn=5 rs=t5 rt=zero rd=s1
+  0x0073C814: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C818: JALR s1,t5
+  0x0073C81C: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+  0x0073C820: SPECIAL fn=23 rs=t6 rt=zero rd=s1
+  0x0073C824: SPECIAL fn=32 rs=zero rt=t7 rd=zero
+0x0073C880: JALR s1,a0
+  0x0073C874: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073C878: SPECIAL fn=7 rs=v1 rt=s0 rd=s1
+  0x0073C87C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073C880: JALR s1,a0
+  0x0073C884: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073C888: SPECIAL fn=10 rs=a0 rt=s0 rd=s1
+  0x0073C88C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+0x0073CB30: JALR s2,t7
+  0x0073CB24: SPECIAL fn=16 rs=zero rt=t7 rd=zero
+  0x0073CB28: SPECIAL fn=4 rs=t6 rt=s0 rd=s2
+  0x0073CB2C: SPECIAL fn=16 rs=zero rt=t7 rd=zero
+  0x0073CB30: JALR s2,t7
+  0x0073CB34: SPECIAL fn=16 rs=zero rt=t7 rd=zero
+  0x0073CB38: SPECIAL fn=14 rs=t7 rt=s0 rd=s2
+  0x0073CB3C: SPECIAL fn=16 rs=zero rt=t7 rd=zero
+0x0073CE60: JALR s2,t7
+  0x0073CE54: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073CE58: SPECIAL fn=7 rs=t6 rt=s0 rd=s2
+  0x0073CE5C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073CE60: JALR s2,t7
+  0x0073CE64: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073CE68: SPECIAL fn=12 rs=t7 rt=s0 rd=s2
+  0x0073CE6C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+0x0073CED0: JALR s2,a2
+  0x0073CEC4: SLL zero,t7,6
+  0x0073CEC8: SPECIAL fn=7 rs=a1 rt=s0 rd=s2
+  0x0073CECC: SLL zero,t7,6
+  0x0073CED0: JALR s2,a2
+  0x0073CED4: SLL zero,t7,6
+  0x0073CED8: SPECIAL fn=10 rs=a2 rt=s0 rd=s2
+  0x0073CEDC: SLL zero,t7,6
+0x0073CF18: JALR s2,t2
+  0x0073CF0C: SLL zero,t7,6
+  0x0073CF10: SPECIAL fn=7 rs=t2 rt=zero rd=s2
+  0x0073CF14: SLL zero,t7,6
+  0x0073CF18: JALR s2,t2
+  0x0073CF1C: SLL zero,t7,6
+  0x0073CF20: SPECIAL fn=10 rs=t3 rt=zero rd=s2
+  0x0073CF24: SLL zero,t7,6
+0x0073D240: JALR s2,t5
+  0x0073D234: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073D238: SRA s2,s0,22
+  0x0073D23C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073D240: JALR s2,t5
+  0x0073D244: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+  0x0073D248: SPECIAL fn=16 rs=t5 rt=s0 rd=s2
+  0x0073D24C: SPECIAL fn=48 rs=zero rt=t7 rd=zero
+0x0073E734: JALR at,s5
+  0x0073E728: SLL zero,zero,0
+  0x0073E72C: SLL zero,zero,0
+  0x0073E730: OP=57 rs=a1 rt=at imm=16348
+  0x0073E734: JALR at,s5
+  0x0073E738: OP=38 rs=gp rt=s3 imm=-31050
+  0x0073E73C: OP=25 rs=s7 rt=t3 imm=-20250
+  0x0073E740: OP=52 rs=a3 rt=t0 imm=-14871
+0x00757ECC: JALR at,t0
+  0x00757EC0: BEQ zero,zero,0x00767F1C
+  0x00757EC4: ADDI t6,zero,4337
+  0x00757EC8: ADDI t6,zero,8206
+  0x00757ECC: JALR at,t0
+  0x00757ED0: SPECIAL fn=16 rs=zero rt=s0 rd=fp
+  0x00757ED4: BNE t0,v0,0x0075FF10
+  0x00757ED8: BEQ a3,s1,0x0075BEEC
+0x00759AD4: JALR zero,zero
+  0x00759AC8: ADDI s4,v1,8193
+  0x00759ACC: ADDI s4,v1,8193
+  0x00759AD0: ADDI zero,s6,8705
+  0x00759AD4: JALR zero,zero
+  0x00759AD8: J 0x08002028
+  0x00759ADC: OR v0,t1,zero
+  0x00759AE0: SPECIAL fn=32 rs=t1 rt=zero rd=t2
+0x00759C10: JALR v0,t1
+  0x00759C04: ADDI s2,zero,-14066
+  0x00759C08: JAL 0x08488004
+  0x00759C0C: JAL 0x0ABC3B24
+  0x00759C10: JALR v0,t1
+  0x00759C14: OP=50 rs=t0 rt=t6 imm=4640
+  0x00759C18: OP=50 rs=t0 rt=t6 imm=-14066
+  0x00759C1C: ADDI at,zero,8210
+0x0076362C: JALR zero,zero
+  0x00763620: SPECIAL fn=32 rs=s1 rt=at rd=zero
+  0x00763624: SPECIAL fn=5 rs=s1 rt=v1 rd=zero
+  0x00763628: JR s1
+  0x0076362C: JALR zero,zero
+  0x00763630: SPECIAL fn=16 rs=s1 rt=a3 rd=zero
+  0x00763634: SPECIAL fn=40 rs=s1 rt=t1 rd=zero
+  0x00763638: SLT zero,s1,t3
+0x00763670: JALR zero,v0
+  0x00763664: SPECIAL fn=1 rs=s1 rt=s7 rd=zero
+  0x00763668: SRL zero,a0,1
+  0x0076366C: SPECIAL fn=5 rs=v0 rt=t0 rd=zero
+  0x00763670: JALR zero,v0
+  0x00763674: SPECIAL fn=16 rs=s1 rt=t9 rd=zero
+  0x00763678: SPECIAL fn=17 rs=v0 rt=s2 rd=zero
+  0x0076367C: SPECIAL fn=20 rs=v0 rt=s5 rd=zero
+0x00773248: JALR zero,zero
+  0x0077323C: SPECIAL fn=62 rs=zero rt=zero rd=zero
+  0x00773240: SPECIAL fn=56 rs=zero rt=zero rd=zero
+  0x00773244: SPECIAL fn=48 rs=zero rt=zero rd=zero
+  0x00773248: JALR zero,zero
+  0x0077324C: SPECIAL fn=15 rs=zero rt=zero rd=zero
+  0x00773250: SPECIAL fn=10 rs=zero rt=zero rd=zero
+  0x00773254: SPECIAL fn=24 rs=zero rt=zero rd=zero
+0x007736AC: JALR zero,zero
+  0x007736A0: SPECIAL fn=32 rs=zero rt=zero rd=zero
+  0x007736A4: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x007736A8: SPECIAL fn=32 rs=zero rt=zero rd=zero
+  0x007736AC: JALR zero,zero
+  0x007736B0: SPECIAL fn=32 rs=zero rt=zero rd=zero
+  0x007736B4: SPECIAL fn=17 rs=zero rt=zero rd=zero
+  0x007736B8: SPECIAL fn=32 rs=zero rt=zero rd=zero
+0x007736CC: JALR zero,zero
+  0x007736C0: SPECIAL fn=40 rs=zero rt=zero rd=zero
+  0x007736C4: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x007736C8: SPECIAL fn=40 rs=zero rt=zero rd=zero
+  0x007736CC: JALR zero,zero
+  0x007736D0: SPECIAL fn=40 rs=zero rt=zero rd=zero
+  0x007736D4: SPECIAL fn=17 rs=zero rt=zero rd=zero
+  0x007736D8: SPECIAL fn=40 rs=zero rt=zero rd=zero
+0x00773DD8: JALR zero,v0
+  0x00773DCC: SPECIAL fn=49 rs=a2 rt=s3 rd=zero
+  0x00773DD0: JR v1
+  0x00773DD4: SPECIAL fn=25 rs=v0 rt=v0 rd=zero
+  0x00773DD8: JALR zero,v0
+  0x00773DDC: SPECIAL fn=63 rs=a3 rt=t6 rd=zero
+  0x00773DE0: SPECIAL fn=20 rs=a2 rt=t3 rd=zero
+  0x00773DE4: SPECIAL fn=59 rs=v0 rt=a3 rd=zero
+0x00774700: JALR zero,at
+  0x007746F4: SPECIAL fn=61 rs=at rt=k0 rd=zero
+  0x007746F8: SPECIAL fn=45 rs=a1 rt=s3 rd=zero
+  0x007746FC: SPECIAL fn=25 rs=v1 rt=t6 rd=zero
+  0x00774700: JALR zero,at
+  0x00774704: SPECIAL fn=19 rs=zero rt=sp rd=zero
+  0x00774708: SPECIAL fn=63 rs=v1 rt=sp rd=zero
+  0x0077470C: ADDU zero,at,k0
+0x0077593C: JALR zero,zero
+  0x00775930: OP=16 rs=a3 rt=t4 imm=-10257
+  0x00775934: SPECIAL fn=50 rs=zero rt=s4 rd=zero
+  0x00775938: SPECIAL fn=52 rs=v1 rt=t2 rd=zero
+  0x0077593C: JALR zero,zero
+  0x00775940: JALR zero,at
+  0x00775944: SPECIAL fn=47 rs=at rt=t8 rd=zero
+  0x00775948: SPECIAL fn=19 rs=v1 rt=s6 rd=zero
+0x00775940: JALR zero,at
+  0x00775934: SPECIAL fn=50 rs=zero rt=s4 rd=zero
+  0x00775938: SPECIAL fn=52 rs=v1 rt=t2 rd=zero
+  0x0077593C: JALR zero,zero
+  0x00775940: JALR zero,at
+  0x00775944: SPECIAL fn=47 rs=at rt=t8 rd=zero
+  0x00775948: SPECIAL fn=19 rs=v1 rt=s6 rd=zero
+  0x0077594C: SLT zero,zero,t7
+0x00776940: JALR zero,zero
+  0x00776934: JR at
+  0x00776938: SLL zero,zero,0
+  0x0077693C: SPECIAL fn=48 rs=at rt=t2 rd=a0
+  0x00776940: JALR zero,zero
+  0x00776944: SLL zero,zero,0
+  0x00776948: SPECIAL fn=16 rs=zero rt=zero rd=zero
+  0x0077694C: SPECIAL fn=16 rs=zero rt=zero rd=zero
+0x00776960: JALR zero,zero
+  0x00776954: SPECIAL fn=20 rs=at rt=t2 rd=a0
+  0x00776958: SLL zero,zero,0
+  0x0077695C: SPECIAL fn=60 rs=at rt=t2 rd=a0
+  0x00776960: JALR zero,zero
+  0x00776964: SLL zero,zero,0
+  0x00776968: SPECIAL fn=16 rs=zero rt=zero rd=zero
+  0x0077696C: SPECIAL fn=16 rs=zero rt=zero rd=zero
+0x0077A1D0: JALR s0,zero
+  0x0077A1C4: SLL zero,zero,0
+  0x0077A1C8: SLL zero,zero,0
+  0x0077A1CC: SLL zero,zero,0
+  0x0077A1D0: JALR s0,zero
+  0x0077A1D4: BEQ zero,zero,0x0077A1D8
+  0x0077A1D8: SD ra,-2(ra)
+  0x0077A1DC: SD ra,-1(ra)
+0x0077A238: JALR zero,zero
+  0x0077A22C: SLL zero,zero,0
+  0x0077A230: SLL zero,zero,0
+  0x0077A234: SLL zero,zero,0
+  0x0077A238: JALR zero,zero
+  0x0077A23C: SLL zero,zero,0
+  0x0077A240: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x0077A244: SLL zero,zero,0
+0x0077A2EC: JALR zero,t8
+  0x0077A2E0: BEQ t2,gp,0x007918F8
+  0x0077A2E4: LB s4,11429(zero)
+  0x0077A2E8: LHU t8,19(a0)
+  0x0077A2EC: JALR zero,t8
+  0x0077A2F0: SLTIU fp,k0,170
+  0x0077A2F4: OP=53 rs=s3 rt=t6 imm=-10877
+  0x0077A2F8: LW zero,6914(v0)
+0x0077C3B8: JALR v1,t4
+  0x0077C3AC: SLL zero,zero,0
+  0x0077C3B0: SPECIAL fn=48 rs=a0 rt=t9 rd=s3
+  0x0077C3B4: SPECIAL fn=23 rs=zero rt=s1 rd=s3
+  0x0077C3B8: JALR v1,t4
+  0x0077C3BC: SPECIAL fn=16 rs=zero rt=s1 rd=v0
+  0x0077C3C0: SLL v1,zero,4
+  0x0077C3C4: SLL s2,at,0
+0x0077CD28: JALR ra,a1
+  0x0077CD1C: SRA ra,t7,30
+  0x0077CD20: SLL zero,s2,0
+  0x0077CD24: SD t5,-215(k0)
+  0x0077CD28: JALR ra,a1
+  0x0077CD2C: SPECIAL fn=41 rs=a1 rt=s1 rd=zero
+  0x0077CD30: SD t5,-215(k0)
+  0x0077CD34: JALR ra,a1
+0x0077CD34: JALR ra,a1
+  0x0077CD28: JALR ra,a1
+  0x0077CD2C: SPECIAL fn=41 rs=a1 rt=s1 rd=zero
+  0x0077CD30: SD t5,-215(k0)
+  0x0077CD34: JALR ra,a1
+  0x0077CD38: SPECIAL fn=41 rs=a1 rt=s1 rd=zero
+  0x0077CD3C: SD t8,-54(s7)
+  0x0077CD40: SPECIAL fn=57 rs=a0 rt=s1 rd=ra
+0x0077CF14: JALR ra,a0
+  0x0077CF08: SPECIAL fn=21 rs=a0 rt=s6 rd=ra
+  0x0077CF0C: SLL zero,v1,0
+  0x0077CF10: SD a0,-146(s5)
+  0x0077CF14: JALR ra,a0
+  0x0077CF18: SPECIAL fn=5 rs=a0 rt=at rd=ra
+  0x0077CF1C: SD a0,-146(s5)
+  0x0077CF20: JALR ra,a0
+0x0077CF20: JALR ra,a0
+  0x0077CF14: JALR ra,a0
+  0x0077CF18: SPECIAL fn=5 rs=a0 rt=at rd=ra
+  0x0077CF1C: SD a0,-146(s5)
+  0x0077CF20: JALR ra,a0
+  0x0077CF24: SPECIAL fn=5 rs=a0 rt=at rd=ra
+  0x0077CF28: SD a0,-146(s5)
+  0x0077CF2C: JALR ra,a0
+0x0077CF2C: JALR ra,a0
+  0x0077CF20: JALR ra,a0
+  0x0077CF24: SPECIAL fn=5 rs=a0 rt=at rd=ra
+  0x0077CF28: SD a0,-146(s5)
+  0x0077CF2C: JALR ra,a0
+  0x0077CF30: SPECIAL fn=5 rs=a0 rt=at rd=ra
+  0x0077CF34: SD s2,-136(s5)
+  0x0077CF38: SPECIAL fn=54 rs=a0 rt=s5 rd=ra
+0x00793DC0: JALR zero,a3
+  0x00793DB4: SLL zero,zero,0
+  0x00793DB8: JR t0
+  0x00793DBC: J 0x07700370
+  0x00793DC0: JALR zero,a3
+  0x00793DC4: SPECIAL fn=22 rs=t0 rt=t2 rd=at
+  0x00793DC8: SPECIAL fn=63 rs=zero rt=zero rd=zero
+  0x00793DCC: SLL zero,zero,0
+0x00793DF8: JALR zero,a3
+  0x00793DEC: SLL zero,zero,0
+  0x00793DF0: SPECIAL fn=48 rs=t0 rt=t7 rd=at
+  0x00793DF4: J 0x07C0233C
+  0x00793DF8: JALR zero,a3
+  0x00793DFC: SPECIAL fn=48 rs=t0 rt=t0 rd=at
+  0x00793E00: REGIMM fp,t0,00793A08
+  0x00793E04: SD at,263(t8)
+0x00793E18: JALR zero,zero
+  0x00793E0C: SLL zero,zero,0
+  0x00793E10: J 0x00202000
+  0x00793E14: J 0x07FC0000
+  0x00793E18: JALR zero,zero
+  0x00793E1C: SLL zero,zero,0
+  0x00793E20: SLL zero,zero,0
+  0x00793E24: SLL zero,zero,0
+0x00794508: JALR zero,zero
+  0x007944FC: SPECIAL fn=6 rs=zero rt=zero rd=zero
+  0x00794500: SPECIAL fn=17 rs=zero rt=zero rd=zero
+  0x00794504: SPECIAL fn=40 rs=zero rt=zero rd=zero
+  0x00794508: JALR zero,zero
+  0x0079450C: SPECIAL fn=17 rs=zero rt=zero rd=zero
+  0x00794510: SPECIAL fn=41 rs=zero rt=zero rd=zero
+  0x00794514: SPECIAL fn=32 rs=zero rt=zero rd=zero
+0x00794618: JALR zero,zero
+  0x0079460C: SPECIAL fn=6 rs=t0 rt=s7 rd=zero
+  0x00794610: JR zero
+  0x00794614: JR zero
+  0x00794618: JALR zero,zero
+  0x0079461C: JALR zero,zero
+  0x00794620: SPECIAL fn=5 rs=s0 rt=a1 rd=zero
+  0x00794624: SPECIAL fn=15 rs=t0 rt=s4 rd=zero
+0x0079461C: JALR zero,zero
+  0x00794610: JR zero
+  0x00794614: JR zero
+  0x00794618: JALR zero,zero
+  0x0079461C: JALR zero,zero
+  0x00794620: SPECIAL fn=5 rs=s0 rt=a1 rd=zero
+  0x00794624: SPECIAL fn=15 rs=t0 rt=s4 rd=zero
+  0x00794628: J 0x00382038
+0x00794728: JALR zero,zero
+  0x0079471C: SPECIAL fn=4 rs=zero rt=a0 rd=zero
+  0x00794720: SPECIAL fn=7 rs=zero rt=a3 rd=zero
+  0x00794724: SPECIAL fn=7 rs=zero rt=a3 rd=zero
+  0x00794728: JALR zero,zero
+  0x0079472C: JALR zero,zero
+  0x00794730: SPECIAL fn=5 rs=s0 rt=a1 rd=zero
+  0x00794734: SPECIAL fn=15 rs=t0 rt=s4 rd=zero
+0x0079472C: JALR zero,zero
+  0x00794720: SPECIAL fn=7 rs=zero rt=a3 rd=zero
+  0x00794724: SPECIAL fn=7 rs=zero rt=a3 rd=zero
+  0x00794728: JALR zero,zero
+  0x0079472C: JALR zero,zero
+  0x00794730: SPECIAL fn=5 rs=s0 rt=a1 rd=zero
+  0x00794734: SPECIAL fn=15 rs=t0 rt=s4 rd=zero
+  0x00794738: REGIMM zero,t4,0079576C
+0x00794750: JALR zero,zero
+  0x00794744: SPECIAL fn=10 rs=zero rt=t2 rd=zero
+  0x00794748: SPECIAL fn=11 rs=t0 rt=t3 rd=zero
+  0x0079474C: SPECIAL fn=11 rs=t0 rt=t3 rd=zero
+  0x00794750: JALR zero,zero
+  0x00794754: JALR zero,zero
+  0x00794758: SPECIAL fn=26 rs=zero rt=k0 rd=zero
+  0x0079475C: SPECIAL fn=26 rs=zero rt=k0 rd=zero
+0x00794754: JALR zero,zero
+  0x00794748: SPECIAL fn=11 rs=t0 rt=t3 rd=zero
+  0x0079474C: SPECIAL fn=11 rs=t0 rt=t3 rd=zero
+  0x00794750: JALR zero,zero
+  0x00794754: JALR zero,zero
+  0x00794758: SPECIAL fn=26 rs=zero rt=k0 rd=zero
+  0x0079475C: SPECIAL fn=26 rs=zero rt=k0 rd=zero
+  0x00794760: SPECIAL fn=13 rs=zero rt=t5 rd=zero
+0x00794AFC: JALR zero,zero
+  0x00794AF0: SPECIAL fn=1 rs=zero rt=v0 rd=zero
+  0x00794AF4: SPECIAL fn=1 rs=t0 rt=v1 rd=zero
+  0x00794AF8: SPECIAL fn=4 rs=zero rt=zero rd=zero
+  0x00794AFC: JALR zero,zero
+  0x00794B00: SPECIAL fn=13 rs=t0 rt=t1 rd=zero
+  0x00794B04: SPECIAL fn=12 rs=t0 rt=v1 rd=zero
+  0x00794B08: SPECIAL fn=1 rs=zero rt=a0 rd=zero
+0x00795270: JALR v0,zero
+  0x00795264: SLL zero,zero,0
+  0x00795268: REGIMM zero,a3,00796288
+  0x0079526C: SPECIAL fn=7 rs=zero rt=zero rd=zero
+  0x00795270: JALR v0,zero
+  0x00795274: SLL zero,zero,0
+  0x00795278: JR zero
+  0x0079527C: SLL zero,zero,0
+0x00799C8C: JALR s7,at
+  0x00799C80: OP=25 rs=t7 rt=s6 imm=3727
+  0x00799C84: SPECIAL fn=46 rs=a1 rt=t6 rd=ra
+  0x00799C88: SPECIAL fn=55 rs=a1 rt=t6 rd=s5
+  0x00799C8C: JALR s7,at
+  0x00799C90: SLL t5,zero,0
+  0x00799C94: REGIMM s4,s0,007A7C28
+  0x00799C98: OP=30 rs=sp rt=fp imm=6051
+0x007A6C7C: JALR zero,zero
+  0x007A6C70: SLL zero,zero,0
+  0x007A6C74: OP=47 rs=s6 rt=t4 imm=-13108
+  0x007A6C78: SRA zero,t4,0
+  0x007A6C7C: JALR zero,zero
+  0x007A6C80: SLL zero,zero,0
+  0x007A6C84: OP=16 rs=zero rt=zero imm=0
+  0x007A6C88: OP=16 rs=s3 rt=s0 imm=0
+0x007A7084: JALR zero,zero
+  0x007A7078: SLL zero,t0,0
+  0x007A707C: SLL zero,t0,0
+  0x007A7080: J 0x04380040
+  0x007A7084: JALR zero,zero
+  0x007A7088: JAL 0x05A40094
+  0x007A708C: SLL zero,zero,0
+  0x007A7090: JAL 0x05A40094
+0x007A71C4: JALR at,zero
+  0x007A71B8: J 0x01E821E0
+  0x007A71BC: JAL 0x009C0014
+  0x007A71C0: SLL zero,t1,0
+  0x007A71C4: JALR at,zero
+  0x007A71C8: J 0x010C0018
+  0x007A71CC: JR zero
+  0x007A71D0: J 0x04BC24B4
+0x007A72A0: JALR zero,zero
+  0x007A7294: SRL zero,at,0
+  0x007A7298: SRA zero,at,0
+  0x007A729C: SPECIAL fn=5 rs=zero rt=at rd=zero
+  0x007A72A0: JALR zero,zero
+  0x007A72A4: SPECIAL fn=10 rs=zero rt=at rd=zero
+  0x007A72A8: SPECIAL fn=11 rs=zero rt=at rd=zero
+  0x007A72AC: SPECIAL fn=13 rs=zero rt=at rd=zero
+0x007A7C20: JALR zero,zero
+  0x007A7C14: SLL zero,zero,0
+  0x007A7C18: JR zero
+  0x007A7C1C: SLL zero,zero,0
+  0x007A7C20: JALR zero,zero
+  0x007A7C24: SLL zero,zero,0
+  0x007A7C28: SPECIAL fn=6 rs=zero rt=at rd=zero
+  0x007A7C2C: SLL zero,zero,0
+0x007A8348: JALR zero,zero
+  0x007A833C: SPECIAL fn=6 rs=zero rt=t3 rd=zero
+  0x007A8340: SPECIAL fn=7 rs=zero rt=t4 rd=zero
+  0x007A8344: JR zero
+  0x007A8348: JALR zero,zero
+  0x007A834C: SPECIAL fn=10 rs=zero rt=t5 rd=zero
+  0x007A8350: SPECIAL fn=11 rs=zero rt=t6 rd=zero
+  0x007A8354: SPECIAL fn=12 rs=zero rt=t6 rd=zero
+0x007A84B0: JALR zero,zero
+  0x007A84A4: SRA zero,v1,0
+  0x007A84A8: SPECIAL fn=6 rs=zero rt=at rd=zero
+  0x007A84AC: SPECIAL fn=7 rs=zero rt=v0 rd=zero
+  0x007A84B0: JALR zero,zero
+  0x007A84B4: SPECIAL fn=14 rs=zero rt=v1 rd=zero
+  0x007A84B8: SPECIAL fn=17 rs=zero rt=at rd=zero
+  0x007A84BC: SPECIAL fn=13 rs=zero rt=at rd=zero
+0x007A84E8: JALR zero,zero
+  0x007A84DC: SPECIAL fn=11 rs=zero rt=v0 rd=zero
+  0x007A84E0: SPECIAL fn=13 rs=zero rt=at rd=zero
+  0x007A84E4: SPECIAL fn=10 rs=zero rt=at rd=zero
+  0x007A84E8: JALR zero,zero
+  0x007A84EC: SLL zero,zero,0
+  0x007A84F0: SUBU at,zero,fp
+  0x007A84F4: SLL zero,zero,0
+0x007A8D14: JALR zero,zero
+  0x007A8D08: SPECIAL fn=53 rs=zero rt=t1 rd=at
+  0x007A8D0C: SD ra,1(ra)
+  0x007A8D10: JAL 0x06D80000
+  0x007A8D14: JALR zero,zero
+  0x007A8D18: SPECIAL fn=63 rs=zero rt=zero rd=ra
+  0x007A8D1C: SPECIAL fn=55 rs=zero rt=t1 rd=at
+  0x007A8D20: SRA zero,a1,0
+0x007A8D28: JALR zero,zero
+  0x007A8D1C: SPECIAL fn=55 rs=zero rt=t1 rd=at
+  0x007A8D20: SRA zero,a1,0
+  0x007A8D24: JAL 0x06E00000
+  0x007A8D28: JALR zero,zero
+  0x007A8D2C: SPECIAL fn=63 rs=zero rt=zero rd=ra
+  0x007A8D30: SPECIAL fn=57 rs=zero rt=t1 rd=at
+  0x007A8D34: SPECIAL fn=5 rs=zero rt=v1 rd=zero
+0x007A9000: JALR zero,zero
+  0x007A8FF4: OP=16 rs=a0 rt=at imm=27011
+  0x007A8FF8: SLL zero,zero,0
+  0x007A8FFC: SPECIAL fn=52 rs=zero rt=zero rd=v0
+  0x007A9000: JALR zero,zero
+  0x007A9004: OP=26 rs=t4 rt=v1 imm=23427
+  0x007A9008: OP=16 rs=a0 rt=at imm=16513
+  0x007A900C: SLL zero,zero,0
+0x007A9028: JALR zero,zero
+  0x007A901C: OP=16 rs=t4 rt=v1 imm=-30077
+  0x007A9020: SLL zero,zero,0
+  0x007A9024: SPECIAL fn=1 rs=zero rt=zero rd=v0
+  0x007A9028: JALR zero,zero
+  0x007A902C: OP=22 rs=gp rt=at imm=30083
+  0x007A9030: OP=16 rs=a0 rt=at imm=24451
+  0x007A9034: SLL zero,zero,0
+0x007AC01C: JALR ra,v0
+  0x007AC010: LUI v1,0x8007
+  0x007AC014: SW a0,0(v0)
+  0x007AC018: LW v0,18272(v1)
+  0x007AC01C: JALR ra,v0
+  0x007AC020: SLL zero,zero,0
+  0x007AC024: LUI v0,0x8007
+  0x007AC028: ADDIU a1,zero,2
+0x007AC034: JALR ra,v1
+  0x007AC028: ADDIU a1,zero,2
+  0x007AC02C: LW v1,18276(v0)
+  0x007AC030: ADDIU a2,zero,1
+  0x007AC034: JALR ra,v1
+  0x007AC038: ADDIU a0,zero,1
+  0x007AC03C: LUI v0,0x8007
+  0x007AC040: LW v1,18252(v0)
+0x007AC044: JALR ra,v1
+  0x007AC038: ADDIU a0,zero,1
+  0x007AC03C: LUI v0,0x8007
+  0x007AC040: LW v1,18252(v0)
+  0x007AC044: JALR ra,v1
+  0x007AC048: ORI a0,zero,0xDFFD
+  0x007AC04C: LUI v0,0x8007
+  0x007AC050: LW v1,18256(v0)
+0x007AC054: JALR ra,v1
+  0x007AC048: ORI a0,zero,0xDFFD
+  0x007AC04C: LUI v0,0x8007
+  0x007AC050: LW v1,18256(v0)
+  0x007AC054: JALR ra,v1
+  0x007AC058: SLL zero,zero,0
+  0x007AC05C: LUI v0,0x8007
+  0x007AC060: LW v1,18268(v0)
+0x007AC064: JALR ra,v1
+  0x007AC058: SLL zero,zero,0
+  0x007AC05C: LUI v0,0x8007
+  0x007AC060: LW v1,18268(v0)
+  0x007AC064: JALR ra,v1
+  0x007AC068: ADDIU a0,zero,127
+  0x007AC06C: LUI v0,0x8007
+  0x007AC070: LW v1,18260(v0)
+0x007AC074: JALR ra,v1
+  0x007AC068: ADDIU a0,zero,127
+  0x007AC06C: LUI v0,0x8007
+  0x007AC070: LW v1,18260(v0)
+  0x007AC074: JALR ra,v1
+  0x007AC078: SLL zero,zero,0
+  0x007AC07C: LUI v0,0x8007
+  0x007AC080: LW v1,18264(v0)
+0x007AC084: JALR ra,v1
+  0x007AC078: SLL zero,zero,0
+  0x007AC07C: LUI v0,0x8007
+  0x007AC080: LW v1,18264(v0)
+  0x007AC084: JALR ra,v1
+  0x007AC088: SLL zero,zero,0
+  0x007AC08C: LD ra,0(sp)
+  0x007AC090: JR ra
+0x007AC100: JALR ra,v0
+  0x007AC0F4: LW s3,0(t0)
+  0x007AC0F8: LW v0,18224(v1)
+  0x007AC0FC: SW a3,4(sp)
+  0x007AC100: JALR ra,v0
+  0x007AC104: SPECIAL fn=45 rs=s3 rt=zero rd=a0
+  0x007AC108: LUI v1,0x8007
+  0x007AC10C: SPECIAL fn=45 rs=s3 rt=zero rd=a0
+0x007AC114: JALR ra,v0
+  0x007AC108: LUI v1,0x8007
+  0x007AC10C: SPECIAL fn=45 rs=s3 rt=zero rd=a0
+  0x007AC110: LW v0,18228(v1)
+  0x007AC114: JALR ra,v0
+  0x007AC118: SPECIAL fn=45 rs=zero rt=zero rd=a1
+  0x007AC11C: SLL zero,zero,0
+  0x007AC120: LW v0,18248(s6)
+0x007AC148: JALR ra,v0
+  0x007AC13C: BNE v0,fp,0x007AC158
+  0x007AC140: LW v0,18244(s7)
+  0x007AC144: LW v0,18240(s2)
+  0x007AC148: JALR ra,v0
+  0x007AC14C: SPECIAL fn=45 rs=s0 rt=zero rd=a0
+  0x007AC150: BEQ zero,zero,0x007AC170
+  0x007AC154: ADDIU s0,s0,1
+0x007AC158: JALR ra,v0
+  0x007AC14C: SPECIAL fn=45 rs=s0 rt=zero rd=a0
+  0x007AC150: BEQ zero,zero,0x007AC170
+  0x007AC154: ADDIU s0,s0,1
+  0x007AC158: JALR ra,v0
+  0x007AC15C: SPECIAL fn=45 rs=s0 rt=zero rd=a0
+  0x007AC160: LW v0,18240(s2)
+  0x007AC164: JALR ra,v0
+0x007AC164: JALR ra,v0
+  0x007AC158: JALR ra,v0
+  0x007AC15C: SPECIAL fn=45 rs=s0 rt=zero rd=a0
+  0x007AC160: LW v0,18240(s2)
+  0x007AC164: JALR ra,v0
+  0x007AC168: SPECIAL fn=45 rs=s0 rt=zero rd=a0
+  0x007AC16C: ADDIU s0,s0,1
+  0x007AC170: SLTI v0,s0,256
+0x007AC184: JALR ra,v0
+  0x007AC178: ADDIU s1,s1,76
+  0x007AC17C: LUI v1,0x8007
+  0x007AC180: LW v0,18236(v1)
+  0x007AC184: JALR ra,v0
+  0x007AC188: SPECIAL fn=45 rs=zero rt=zero rd=s0
+  0x007AC18C: LUI v1,0x8007
+  0x007AC190: LW v0,18232(v1)
+0x007AC194: JALR ra,v0
+  0x007AC188: SPECIAL fn=45 rs=zero rt=zero rd=s0
+  0x007AC18C: LUI v1,0x8007
+  0x007AC190: LW v0,18232(v1)
+  0x007AC194: JALR ra,v0
+  0x007AC198: SLL zero,zero,0
+  0x007AC19C: LUI v1,0x8007
+  0x007AC1A0: LW v0,18220(v1)
+0x007AC1D0: JALR ra,v0
+  0x007AC1C4: LW v0,18288(s1)
+  0x007AC1C8: ADDIU s0,s0,1
+  0x007AC1CC: ADDU v1,v1,a1
+  0x007AC1D0: JALR ra,v0
+  0x007AC1D4: LW a1,0(v1)
+  0x007AC1D8: SPECIAL fn=45 rs=v0 rt=zero rd=a0
+  0x007AC1DC: SLT v0,s0,s4
+0x007AC360: JALR ra,a2
+  0x007AC354: SH zero,24(v0)
+  0x007AC358: SW zero,36(v0)
+  0x007AC35C: SW zero,28(v0)
+  0x007AC360: JALR ra,a2
+  0x007AC364: SW zero,32(v0)
+  0x007AC368: LUI v0,0x8007
+  0x007AC36C: LW v1,18280(v0)
+0x007AC370: JALR ra,v1
+  0x007AC364: SW zero,32(v0)
+  0x007AC368: LUI v0,0x8007
+  0x007AC36C: LW v1,18280(v0)
+  0x007AC370: JALR ra,v1
+  0x007AC374: SLL zero,zero,0
+  0x007AC378: SPECIAL fn=45 rs=s5 rt=zero rd=v0
+  0x007AC37C: LD ra,160(sp)
+0x007ACD6C: JALR ra,v1
+  0x007ACD60: JR zero
+  0x007ACD64: LB a3,26304(zero)
+  0x007ACD68: LUI sp,0x0008
+  0x007ACD6C: JALR ra,v1
+  0x007ACD70: ADDIU sp,sp,8128
+  0x007ACD74: ADDIU v1,zero,-8
+  0x007ACD78: SPECIAL fn=12 rs=zero rt=zero rd=zero
+--- JR ---
+0x00200018: JR at
+  0x0020000C: SLL zero,zero,0
+  0x00200010: SRL zero,t0,0
+  0x00200014: SPECIAL fn=1 rs=zero rt=zero rd=zero
+  0x00200018: JR at
+  0x0020001C: SPECIAL fn=52 rs=zero rt=zero rd=zero
+  0x00200020: SPECIAL fn=24 rs=v1 rt=s2 rd=k0
+  0x00200024: ADDI s2,a0,16385
+0x0020068C: JR v0
+  0x00200680: LUI at,0x008E
+  0x00200684: ADDU at,at,v0
+  0x00200688: LW v0,-21888(at)
+  0x0020068C: JR v0
+  0x00200690: SLL zero,zero,0
+  0x00200694: ADDIU v0,s0,-13944
+  0x00200698: ADDIU v1,zero,888
+0x00200A14: JR ra
+  0x00200A08: J 0x002FF698
+  0x00200A0C: ADDIU sp,sp,16
+  0x00200A10: LD ra,0(sp)
+  0x00200A14: JR ra
+  0x00200A18: ADDIU sp,sp,16
+  0x00200A1C: LUI a0,0x0039
+  0x00200A20: ADDIU sp,sp,-16
+0x00200AD0: JR ra
+  0x00200AC4: ADDIU v1,v1,1
+  0x00200AC8: SW v0,-29012(gp)
+  0x00200ACC: SW v1,-29008(gp)
+  0x00200AD0: JR ra
+  0x00200AD4: ADDIU sp,sp,16
+  0x00200AD8: ADDIU sp,sp,-80
+  0x00200ADC: SD s5,40(sp)
+0x00201058: JR ra
+  0x0020104C: LD s6,48(sp)
+  0x00201050: LD s7,56(sp)
+  0x00201054: LD ra,64(sp)
+  0x00201058: JR ra
+  0x0020105C: ADDIU sp,sp,80
+  0x00201060: ADDIU sp,sp,-32
+  0x00201064: ANDI a1,a1,0x00FF
+0x00201460: JR ra
+  0x00201454: LD ra,24(sp)
+  0x00201458: SB v1,401(v0)
+  0x0020145C: SB v1,45(v0)
+  0x00201460: JR ra
+  0x00201464: ADDIU sp,sp,32
+  0x00201468: LW a0,-20552(gp)
+  0x0020146C: ADDIU sp,sp,-16
+0x002015C0: JR ra
+  0x002015B4: SB v0,-29016(gp)
+  0x002015B8: SB zero,-29016(gp)
+  0x002015BC: LD ra,0(sp)
+  0x002015C0: JR ra
+  0x002015C4: ADDIU sp,sp,16
+  0x002015C8: JR ra
+  0x002015CC: SLL zero,zero,0
+0x002015C8: JR ra
+  0x002015BC: LD ra,0(sp)
+  0x002015C0: JR ra
+  0x002015C4: ADDIU sp,sp,16
+  0x002015C8: JR ra
+  0x002015CC: SLL zero,zero,0
+  0x002015D0: LBU v1,-28921(gp)
+  0x002015D4: ADDIU sp,sp,-144
+0x0020172C: JR ra
+  0x00201720: LD ra,128(sp)
+  0x00201724: SLTIU v0,v0,1
+  0x00201728: SB v0,-17648(gp)
+  0x0020172C: JR ra
+  0x00201730: ADDIU sp,sp,144
+  0x00201734: LBU v0,-29162(gp)
+  0x00201738: ADDIU sp,sp,-144
+0x002017C8: JR ra
+  0x002017BC: JAL 0x002FF25C
+  0x002017C0: SW v1,4(sp)
+  0x002017C4: LD ra,128(sp)
+  0x002017C8: JR ra
+  0x002017CC: ADDIU sp,sp,144
+  0x002017D0: ADDIU sp,sp,-144
+  0x002017D4: ADDIU v0,zero,50
+0x002017F0: JR ra
+  0x002017E4: JAL 0x002FF25C
+  0x002017E8: SB v0,0(sp)
+  0x002017EC: LD ra,128(sp)
+  0x002017F0: JR ra
+  0x002017F4: ADDIU sp,sp,144
+  0x002017F8: LW a0,-20552(gp)
+  0x002017FC: ADDIU sp,sp,-16
+0x00202050: JR ra
+  0x00202044: LD ra,16(sp)
+  0x00202048: LD s0,0(sp)
+  0x0020204C: LD s1,8(sp)
+  0x00202050: JR ra
+  0x00202054: ADDIU sp,sp,32
+  0x00202058: ADDIU v0,zero,1
+  0x0020205C: JR ra
+0x0020205C: JR ra
+  0x00202050: JR ra
+  0x00202054: ADDIU sp,sp,32
+  0x00202058: ADDIU v0,zero,1
+  0x0020205C: JR ra
+  0x00202060: SB v0,-29162(gp)
+  0x00202064: ADDIU v0,zero,1
+  0x00202068: JR ra
+0x00202068: JR ra
+  0x0020205C: JR ra
+  0x00202060: SB v0,-29162(gp)
+  0x00202064: ADDIU v0,zero,1
+  0x00202068: JR ra
+  0x0020206C: SB v0,-29161(gp)
+  0x00202070: ADDIU v0,zero,1
+  0x00202074: JR ra
+0x00202074: JR ra
+  0x00202068: JR ra
+  0x0020206C: SB v0,-29161(gp)
+  0x00202070: ADDIU v0,zero,1
+  0x00202074: JR ra
+  0x00202078: SB v0,-29160(gp)
+  0x0020207C: ADDIU v0,zero,1
+  0x00202080: JR ra
+0x00202080: JR ra
+  0x00202074: JR ra
+  0x00202078: SB v0,-29160(gp)
+  0x0020207C: ADDIU v0,zero,1
+  0x00202080: JR ra
+  0x00202084: SB v0,-29159(gp)
+  0x00202088: ADDIU sp,sp,-16
+  0x0020208C: ADDIU a1,zero,40
+0x002020C4: JR ra
+  0x002020B8: SLTI v1,a0,0
+  0x002020BC: SPECIAL fn=11 rs=a1 rt=v1 rd=a0
+  0x002020C0: SRA v0,a0,8
+  0x002020C4: JR ra
+  0x002020C8: ADDIU v0,v0,1
+  0x002020CC: SPECIAL fn=11 rs=a1 rt=v1 rd=a0
+  0x002020D0: JR ra
+0x002020D0: JR ra
+  0x002020C4: JR ra
+  0x002020C8: ADDIU v0,v0,1
+  0x002020CC: SPECIAL fn=11 rs=a1 rt=v1 rd=a0
+  0x002020D0: JR ra
+  0x002020D4: SRA v0,a0,8
+  0x002020D8: ANDI v0,a0,0x00FF
+  0x002020DC: ADDIU a1,a0,255
+0x002020F0: JR ra
+  0x002020E4: SLTI v1,a0,0
+  0x002020E8: SPECIAL fn=11 rs=a1 rt=v1 rd=a0
+  0x002020EC: SRA v0,a0,8
+  0x002020F0: JR ra
+  0x002020F4: ADDIU v0,v0,1
+  0x002020F8: SPECIAL fn=11 rs=a1 rt=v1 rd=a0
+  0x002020FC: JR ra
+0x002020FC: JR ra
+  0x002020F0: JR ra
+  0x002020F4: ADDIU v0,v0,1
+  0x002020F8: SPECIAL fn=11 rs=a1 rt=v1 rd=a0
+  0x002020FC: JR ra
+  0x00202100: SRA v0,a0,8
+  0x00202104: ADDIU sp,sp,-80
+  0x00202108: ANDI a2,a2,0x00FF
+0x002027A0: JR ra
+  0x00202794: LD s5,56(sp)
+  0x00202798: LD s6,64(sp)
+  0x0020279C: LD ra,72(sp)
+  0x002027A0: JR ra
+  0x002027A4: ADDIU sp,sp,80
+  0x002027A8: ADDIU v0,zero,1
+  0x002027AC: ADDIU a1,zero,8
+0x00202828: JR ra
+  0x0020281C: SB v0,-28921(gp)
+  0x00202820: SH a1,-28918(gp)
+  0x00202824: SH a1,-28916(gp)
+  0x00202828: JR ra
+  0x0020282C: SH a1,-28908(gp)
+  0x00202830: ADDIU sp,sp,-16
+  0x00202834: SPECIAL fn=45 rs=zero rt=zero rd=a2
+0x00202B58: JR ra
+  0x00202B4C: SH zero,416(v0)
+  0x00202B50: SH zero,414(v0)
+  0x00202B54: SH zero,412(v0)
+  0x00202B58: JR ra
+  0x00202B5C: ADDIU sp,sp,16
+  0x00202B60: ADDIU sp,sp,-16
+  0x00202B64: SPECIAL fn=45 rs=a0 rt=zero rd=a1
+0x00202C34: JR ra
+  0x00202C28: ADDIU v1,zero,69
+  0x00202C2C: SD zero,0(v0)
+  0x00202C30: SD v1,8(v0)
+  0x00202C34: JR ra
+  0x00202C38: ADDIU v0,v0,16
+  0x00202C3C: ADDIU sp,sp,-80
+  0x00202C40: LW v0,-20500(gp)
+0x00202F28: JR ra
+  0x00202F1C: LD s2,64(sp)
+  0x00202F20: LD ra,72(sp)
+  0x00202F24: SW zero,-17644(gp)
+  0x00202F28: JR ra
+  0x00202F2C: ADDIU sp,sp,80
+  0x00202F30: LBU v0,-29016(gp)
+  0x00202F34: ADDIU sp,sp,-160
+0x002030A8: JR ra
+  0x0020309C: LD s1,136(sp)
+  0x002030A0: LD s2,144(sp)
+  0x002030A4: LD ra,152(sp)
+  0x002030A8: JR ra
+  0x002030AC: ADDIU sp,sp,160
+  0x002030B0: LW a0,-20552(gp)
+  0x002030B4: ADDIU sp,sp,-16
+0x002033A8: JR ra
+  0x0020339C: LW a0,-20552(gp)
+  0x002033A0: J 0x002DEA94
+  0x002033A4: ADDIU sp,sp,16
+  0x002033A8: JR ra
+  0x002033AC: SLL zero,zero,0
+  0x002033B0: LUI t0,0x00FF
+  0x002033B4: ORI t0,t0,0xFFFF
+0x002033CC: JR ra
+  0x002033C0: BEQ t1,t2,0x002033CC
+  0x002033C4: ORI v0,v0,0x0001
+  0x002033C8: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x002033CC: JR ra
+  0x002033D0: SLL zero,zero,0
+  0x002033D4: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x002033D8: LUI t0,0x03FF
+0x00203414: JR ra
+  0x00203408: SPECIAL fn=18 rs=zero rt=zero rd=t0
+  0x0020340C: SLTU at,a0,t0
+  0x00203410: SPECIAL fn=11 rs=t0 rt=at rd=v0
+  0x00203414: JR ra
+  0x00203418: SLL zero,zero,0
+  0x0020341C: BEQ t3,zero,0x00203648
+  0x00203420: SLL zero,zero,0
+0x0020377C: JR ra
+  0x00203770: BNE t3,zero,0x00203584
+  0x00203774: SLL zero,zero,0
+  0x00203778: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x0020377C: JR ra
+  0x00203780: SLL zero,zero,0
+  0x00203784: BEQ t3,zero,0x00203A70
+  0x00203788: SLL zero,zero,0
+0x00203A74: JR ra
+  0x00203A68: BNE t3,zero,0x002037BC
+  0x00203A6C: SLL zero,zero,0
+  0x00203A70: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x00203A74: JR ra
+  0x00203A78: SLL zero,zero,0
+  0x00203A7C: BEQ t3,zero,0x00203E08
+  0x00203A80: SLL zero,zero,0
+0x00203E0C: JR ra
+  0x00203E00: BNE t3,zero,0x00203AB4
+  0x00203E04: SLL zero,zero,0
+  0x00203E08: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x00203E0C: JR ra
+  0x00203E10: SLL zero,zero,0
+  0x00203E14: BEQ t3,zero,0x002041F0
+  0x00203E18: SLL zero,zero,0
+0x00204324: JR ra
+  0x00204318: BNE t3,zero,0x00203F7C
+  0x0020431C: SLL zero,zero,0
+  0x00204320: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x00204324: JR ra
+  0x00204328: SLL zero,zero,0
+  0x0020432C: ADDIU sp,sp,-160
+  0x00204330: SD s0,0(sp)
+0x00204A4C: JR ra
+  0x00204A40: LD s6,96(sp)
+  0x00204A44: LD s7,112(sp)
+  0x00204A48: LD fp,128(sp)
+  0x00204A4C: JR ra
+  0x00204A50: ADDIU sp,sp,160
+  0x00204A54: ORI t8,zero,0x0200
+  0x00204A58: ADDIU t0,a0,16
+0x00204A9C: JR ra
+  0x00204A90: SW zero,4(a0)
+  0x00204A94: SD zero,8(a0)
+  0x00204A98: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x00204A9C: JR ra
+  0x00204AA0: SLL zero,zero,0
+  0x00204AA4: LW a1,48(a1)
+  0x00204AA8: OP=30 rs=a1 rt=t0 imm=0
+0x00204AD8: JR ra
+  0x00204ACC: OP=31 rs=a0 rt=t3 imm=48
+  0x00204AD0: OP=31 rs=a0 rt=t4 imm=64
+  0x00204AD4: OP=31 rs=a0 rt=t5 imm=80
+  0x00204AD8: JR ra
+  0x00204ADC: SW a2,96(a0)
+  0x00204AE0: LBU t0,15(a0)
+  0x00204AE4: ORI at,zero,0x00AA
+0x00204B64: JR ra
+  0x00204B58: ADDIU t3,t3,-1
+  0x00204B5C: BNE t3,zero,0x00204B48
+  0x00204B60: ADDIU t2,t2,4
+  0x00204B64: JR ra
+  0x00204B68: SLL zero,zero,0
+  0x00204B6C: SLL zero,zero,0
+  0x00204B70: SLL zero,zero,0
+0x00204F1C: JR ra
+  0x00204F10: BNE t3,zero,0x00204BB4
+  0x00204F14: SLL zero,zero,0
+  0x00204F18: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x00204F1C: JR ra
+  0x00204F20: SLL zero,zero,0
+  0x00204F24: BEQ t3,zero,0x00205160
+  0x00204F28: SLL zero,zero,0
+0x00205164: JR ra
+  0x00205158: BNE t3,zero,0x00204F5C
+  0x0020515C: SLL zero,zero,0
+  0x00205160: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x00205164: JR ra
+  0x00205168: SLL zero,zero,0
+  0x0020516C: SLL zero,zero,0
+  0x00205170: SLL zero,zero,0
+0x002058C4: JR ra
+  0x002058B8: LD s6,96(sp)
+  0x002058BC: LD s7,112(sp)
+  0x002058C0: LD fp,128(sp)
+  0x002058C4: JR ra
+  0x002058C8: ADDIU sp,sp,160
+  0x002058CC: SLL zero,zero,0
+  0x002058D0: SLL zero,zero,0
+0x00205984: JR ra
+  0x00205978: SW v1,-28764(gp)
+  0x0020597C: SB zero,2(v1)
+  0x00205980: LD ra,0(sp)
+  0x00205984: JR ra
+  0x00205988: ADDIU sp,sp,16
+  0x0020598C: ADDIU sp,sp,-32
+  0x00205990: LW v1,-28764(gp)
+0x002059FC: JR ra
+  0x002059F0: LD ra,16(sp)
+  0x002059F4: J 0x00204F54
+  0x002059F8: ADDIU sp,sp,32
+  0x002059FC: JR ra
+  0x00205A00: ADDIU sp,sp,32
+  0x00205A04: ADDIU sp,sp,-16
+  0x00205A08: LW a2,-28760(gp)
+0x00205A5C: JR ra
+  0x00205A50: JAL 0x002FF830
+  0x00205A54: SLL zero,zero,0
+  0x00205A58: LD ra,0(sp)
+  0x00205A5C: JR ra
+  0x00205A60: ADDIU sp,sp,16
+  0x00205A64: ADDIU sp,sp,-16
+  0x00205A68: SPECIAL fn=45 rs=zero rt=zero rd=a0
+0x00205D84: JR ra
+  0x00205D78: LD s4,1232(sp)
+  0x00205D7C: LD s5,1240(sp)
+  0x00205D80: LD ra,1248(sp)
+  0x00205D84: JR ra
+  0x00205D88: ADDIU sp,sp,1264
+  0x00205D8C: ADDIU sp,sp,-592
+  0x00205D90: ADDIU v0,zero,92
+0x00205EBC: JR ra
+  0x00205EB0: LD s0,560(sp)
+  0x00205EB4: LD ra,584(sp)
+  0x00205EB8: SW v0,-17636(gp)
+  0x00205EBC: JR ra
+  0x00205EC0: ADDIU sp,sp,592
+  0x00205EC4: ADDIU sp,sp,-48
+  0x00205EC8: SD s0,0(sp)
+0x00205F2C: JR ra
+  0x00205F20: LD s2,16(sp)
+  0x00205F24: LD s3,24(sp)
+  0x00205F28: LD ra,32(sp)
+  0x00205F2C: JR ra
+  0x00205F30: ADDIU sp,sp,48
+  0x00205F34: ADDIU sp,sp,-16
+  0x00205F38: SD ra,0(sp)
+0x00205F48: JR ra
+  0x00205F3C: JAL 0x00205370
+  0x00205F40: SPECIAL fn=45 rs=zero rt=zero rd=t0
+  0x00205F44: LD ra,0(sp)
+  0x00205F48: JR ra
+  0x00205F4C: ADDIU sp,sp,16
+  0x00205F50: ADDIU sp,sp,-1104
+  0x00205F54: SD s0,1024(sp)
+0x00206218: JR ra
+  0x0020620C: LD s7,1080(sp)
+  0x00206210: LD fp,1088(sp)
+  0x00206214: LD ra,1096(sp)
+  0x00206218: JR ra
+  0x0020621C: ADDIU sp,sp,1104
+  0x00206220: ADDIU sp,sp,-48
+  0x00206224: SD ra,40(sp)
+0x00206288: JR ra
+  0x0020627C: LD s3,24(sp)
+  0x00206280: LD s4,32(sp)
+  0x00206284: LD ra,40(sp)
+  0x00206288: JR ra
+  0x0020628C: ADDIU sp,sp,48
+  0x00206290: ADDIU sp,sp,-336
+  0x00206294: SD s0,256(sp)
+0x0020658C: JR ra
+  0x00206580: LD s6,304(sp)
+  0x00206584: LD s7,312(sp)
+  0x00206588: LD ra,320(sp)
+  0x0020658C: JR ra
+  0x00206590: ADDIU sp,sp,336
+  0x00206594: ADDIU sp,sp,-32
+  0x00206598: SPECIAL fn=45 rs=a0 rt=zero rd=t1
+0x00206664: JR ra
+  0x00206658: LD s0,0(sp)
+  0x0020665C: LD s1,8(sp)
+  0x00206660: LD ra,16(sp)
+  0x00206664: JR ra
+  0x00206668: ADDIU sp,sp,32
+  0x0020666C: ANDI a0,a0,0x00FF
+  0x00206670: SLL v0,a0,1
+0x00206690: JR ra
+  0x00206684: LUI at,0x005E
+  0x00206688: ADDU at,at,v0
+  0x0020668C: LW v0,28240(at)
+  0x00206690: JR ra
+  0x00206694: SLTU v0,zero,v0
+  0x00206698: LW v1,-20524(gp)
+  0x0020669C: ADDIU sp,sp,-64
+0x002069BC: JR ra
+  0x002069B0: LD s2,32(sp)
+  0x002069B4: LD s3,40(sp)
+  0x002069B8: LD ra,48(sp)
+  0x002069BC: JR ra
+  0x002069C0: ADDIU sp,sp,64
+  0x002069C4: LW a0,-20552(gp)
+  0x002069C8: ADDIU sp,sp,-48
+0x00206BD4: JR ra
+  0x00206BC8: LD s3,24(sp)
+  0x00206BCC: LD s4,32(sp)
+  0x00206BD0: LD ra,40(sp)
+  0x00206BD4: JR ra
+  0x00206BD8: ADDIU sp,sp,48
+  0x00206BDC: ADDIU sp,sp,-48
+  0x00206BE0: SD s0,0(sp)
+0x00206C78: JR ra
+  0x00206C6C: LD s3,24(sp)
+  0x00206C70: LD s4,32(sp)
+  0x00206C74: LD ra,40(sp)
+  0x00206C78: JR ra
+  0x00206C7C: ADDIU sp,sp,48
+  0x00206C80: ADDIU sp,sp,-64
+  0x00206C84: SD s0,0(sp)
+0x00206EC0: JR ra
+  0x00206EB4: LD s4,32(sp)
+  0x00206EB8: LD s5,40(sp)
+  0x00206EBC: LD ra,48(sp)
+  0x00206EC0: JR ra
+  0x00206EC4: ADDIU sp,sp,64
+  0x00206EC8: ADDIU sp,sp,-16
+  0x00206ECC: SD s0,0(sp)
+0x00206F68: JR ra
+  0x00206F5C: SPECIAL fn=56 rs=zero rt=v1 rd=v1
+  0x00206F60: AND v0,v0,a0
+  0x00206F64: OR v0,v1,v0
+  0x00206F68: JR ra
+  0x00206F6C: ADDIU sp,sp,32
+  0x00206F70: ADDIU sp,sp,-32
+  0x00206F74: SW a0,0(sp)
+0x00206FF4: JR ra
+  0x00206FE8: SPECIAL fn=56 rs=zero rt=v1 rd=v1
+  0x00206FEC: AND v0,v0,a0
+  0x00206FF0: OR v0,v1,v0
+  0x00206FF4: JR ra
+  0x00206FF8: ADDIU sp,sp,32
+  0x00206FFC: ADDIU sp,sp,-32
+  0x00207000: SW a0,0(sp)
+0x002070A0: JR ra
+  0x00207094: AND v0,v0,a0
+  0x00207098: SPECIAL fn=56 rs=zero rt=v1 rd=v1
+  0x0020709C: OR v0,v1,v0
+  0x002070A0: JR ra
+  0x002070A4: ADDIU sp,sp,32
+  0x002070A8: ADDIU sp,sp,-32
+  0x002070AC: SW a0,0(sp)
+0x0020714C: JR ra
+  0x00207140: AND v0,v0,a0
+  0x00207144: SPECIAL fn=56 rs=zero rt=v1 rd=v1
+  0x00207148: OR v0,v1,v0
+  0x0020714C: JR ra
+  0x00207150: ADDIU sp,sp,32
+  0x00207154: LUI at,0x447A
+  0x00207158: OP=17 rs=a0 rt=at imm=0
+0x002071BC: JR ra
+  0x002071B0: SPECIAL fn=56 rs=zero rt=v0 rd=v0
+  0x002071B4: LD ra,16(sp)
+  0x002071B8: OR v0,v0,a1
+  0x002071BC: JR ra
+  0x002071C0: ADDIU sp,sp,32
+  0x002071C4: ADDIU sp,sp,-32
+  0x002071C8: OP=57 rs=sp rt=s4 imm=24
+0x00207244: JR ra
+  0x00207238: LD ra,16(sp)
+  0x0020723C: OR v0,v0,a2
+  0x00207240: OP=49 rs=sp rt=s4 imm=24
+  0x00207244: JR ra
+  0x00207248: ADDIU sp,sp,32
+  0x0020724C: ADDIU sp,sp,-16
+  0x00207250: LUI v1,0xFFFF
+0x00207268: JR ra
+  0x0020725C: AND v0,v0,v1
+  0x00207260: OR v0,v0,a0
+  0x00207264: ANDI v0,v0,0xFFFF
+  0x00207268: JR ra
+  0x0020726C: ADDIU sp,sp,16
+  0x00207270: ADDIU sp,sp,-48
+  0x00207274: SW a0,0(sp)
+0x00207330: JR ra
+  0x00207324: SPECIAL fn=56 rs=zero rt=v1 rd=v1
+  0x00207328: LD ra,40(sp)
+  0x0020732C: OR v0,v1,v0
+  0x00207330: JR ra
+  0x00207334: ADDIU sp,sp,48
+  0x00207338: ADDIU sp,sp,-16
+  0x0020733C: SW a0,0(sp)
+0x0020735C: JR ra
+  0x00207350: SLTU v0,zero,a0
+  0x00207354: SPECIAL fn=45 rs=v1 rt=zero rd=v0
+  0x00207358: SPECIAL fn=11 rs=a1 rt=a0 rd=v0
+  0x0020735C: JR ra
+  0x00207360: ADDIU sp,sp,16
+  0x00207364: LH a1,6(a0)
+  0x00207368: LH a2,4(a0)
+0x00207394: JR ra
+  0x00207388: SLL v1,v1,2
+  0x0020738C: SLL v0,v0,4
+  0x00207390: ADDU v0,v0,v1
+  0x00207394: JR ra
+  0x00207398: ADDU v0,v0,a0
+  0x0020739C: SPECIAL fn=45 rs=a1 rt=zero rd=t0
+  0x002073A0: SPECIAL fn=45 rs=a0 rt=zero rd=a2
+0x00207470: JR ra
+  0x00207464: ADDU a1,v0,a3
+  0x00207468: SLTI v0,a1,10000
+  0x0020746C: SPECIAL fn=10 rs=a0 rt=v0 rd=a1
+  0x00207470: JR ra
+  0x00207474: SH a1,6(a2)
+  0x00207478: LHU v0,0(a0)
+  0x0020747C: ADDIU v0,v0,1
+0x002074FC: JR ra
+  0x002074F0: SH v1,6(a0)
+  0x002074F4: ADDIU v0,zero,9999
+  0x002074F8: SH v0,6(a0)
+  0x002074FC: JR ra
+  0x00207500: SLL zero,zero,0
+  0x00207504: SPECIAL fn=45 rs=a0 rt=zero rd=a2
+  0x00207508: LH v1,6(a1)
+0x00207568: JR ra
+  0x0020755C: SLT v1,v1,a0
+  0x00207560: ADDIU v0,zero,-1
+  0x00207564: SPECIAL fn=10 rs=zero rt=v1 rd=v0
+  0x00207568: JR ra
+  0x0020756C: SLL zero,zero,0
+  0x00207570: ADDIU sp,sp,-16
+  0x00207574: LUI a0,0x005E
+0x002075A8: JR ra
+  0x0020759C: SH zero,4(s0)
+  0x002075A0: SH zero,2(s0)
+  0x002075A4: LD s0,0(sp)
+  0x002075A8: JR ra
+  0x002075AC: ADDIU sp,sp,16
+  0x002075B0: LUI v0,0x0081
+  0x002075B4: SPECIAL fn=45 rs=a2 rt=zero rd=t1
+0x002075F4: JR ra
+  0x002075E8: ADDIU a2,a2,14592
+  0x002075EC: LD ra,0(sp)
+  0x002075F0: SW v0,-28736(gp)
+  0x002075F4: JR ra
+  0x002075F8: ADDIU sp,sp,16
+  0x002075FC: LUI v0,0x0081
+  0x00207600: SPECIAL fn=45 rs=a2 rt=zero rd=t1
+0x00207770: JR ra
+  0x00207764: SLL zero,s3,12
+  0x00207768: SLL zero,t0,0
+  0x0020776C: SLL zero,t0,0
+  0x00207770: JR ra
+  0x00207774: ADDIU sp,sp,16
+  0x00207778: LUI v0,0x0088
+  0x0020777C: SPECIAL fn=45 rs=a2 rt=zero rd=t1
+0x002077BC: JR ra
+  0x002077B0: ADDIU a2,a2,14592
+  0x002077B4: LD ra,0(sp)
+  0x002077B8: SW v0,-28732(gp)
+  0x002077BC: JR ra
+  0x002077C0: ADDIU sp,sp,16
+  0x002077C4: LUI v0,0x0089
+  0x002077C8: SPECIAL fn=45 rs=a2 rt=zero rd=t1
+0x00207808: JR ra
+  0x002077FC: ADDIU a2,a2,14592
+  0x00207800: LD ra,0(sp)
+  0x00207804: SW v0,-28728(gp)
+  0x00207808: JR ra
+  0x0020780C: ADDIU sp,sp,16
+  0x00207810: LUI v0,0x0089
+  0x00207814: SPECIAL fn=45 rs=a2 rt=zero rd=t1
+0x00207854: JR ra
+  0x00207848: ADDIU a2,a2,14592
+  0x0020784C: LD ra,0(sp)
+  0x00207850: SW v0,-28728(gp)
+  0x00207854: JR ra
+  0x00207858: ADDIU sp,sp,16
+  0x0020785C: LUI v0,0x0089
+  0x00207860: SPECIAL fn=45 rs=a2 rt=zero rd=t1
+0x002078A0: JR ra
+  0x00207894: ADDIU a2,a2,14592
+  0x00207898: LD ra,0(sp)
+  0x0020789C: SW v0,-28728(gp)
+  0x002078A0: JR ra
+  0x002078A4: ADDIU sp,sp,16
+  0x002078A8: LUI v0,0x0088
+  0x002078AC: SPECIAL fn=45 rs=a1 rt=zero rd=t1
+0x002078EC: JR ra
+  0x002078E0: ADDIU a2,a2,14592
+  0x002078E4: LD ra,0(sp)
+  0x002078E8: SW v0,-28732(gp)
+  0x002078EC: JR ra
+  0x002078F0: ADDIU sp,sp,16
+  0x002078F4: LUI v0,0x0088
+  0x002078F8: SPECIAL fn=45 rs=a1 rt=zero rd=t1
+0x00207938: JR ra
+  0x0020792C: ADDIU a2,a2,14592
+  0x00207930: LD ra,0(sp)
+  0x00207934: SW v0,-28732(gp)
+  0x00207938: JR ra
+  0x0020793C: ADDIU sp,sp,16
+  0x00207940: LUI v1,0x007D
+  0x00207944: LW t4,-28752(gp)
+0x002079E8: JR ra
+  0x002079DC: SD t2,72(t4)
+  0x002079E0: SD t3,88(t4)
+  0x002079E4: SW t6,-28752(gp)
+  0x002079E8: JR ra
+  0x002079EC: SLL zero,zero,0
+  0x002079F0: LUI v1,0x007E
+  0x002079F4: LW t4,-28748(gp)
+0x00207A98: JR ra
+  0x00207A8C: SD t2,72(t4)
+  0x00207A90: SD t3,88(t4)
+  0x00207A94: SW t6,-28748(gp)
+  0x00207A98: JR ra
+  0x00207A9C: SLL zero,zero,0
+  0x00207AA0: LUI v1,0x007F
+  0x00207AA4: LW t7,-28744(gp)
+0x00207B90: JR ra
+  0x00207B84: SW s1,-28744(gp)
+  0x00207B88: LD s0,0(sp)
+  0x00207B8C: LD s1,8(sp)
+  0x00207B90: JR ra
+  0x00207B94: ADDIU sp,sp,16
+  0x00207B98: LUI v1,0x007F
+  0x00207B9C: LW t7,-28740(gp)
+0x00207C84: JR ra
+  0x00207C78: SW s1,-28740(gp)
+  0x00207C7C: LD s0,0(sp)
+  0x00207C80: LD s1,8(sp)
+  0x00207C84: JR ra
+  0x00207C88: ADDIU sp,sp,16
+  0x00207C8C: ADDIU v1,a3,63
+  0x00207C90: SLTI v0,a3,0
+0x00207D34: JR ra
+  0x00207D28: SD a1,48(a0)
+  0x00207D2C: SD a2,64(a0)
+  0x00207D30: SD a3,80(a0)
+  0x00207D34: JR ra
+  0x00207D38: SD zero,96(a0)
+  0x00207D3C: ADDIU v1,a3,63
+  0x00207D40: SLTI v0,a3,0
+0x00207DE4: JR ra
+  0x00207DD8: SD a1,48(a0)
+  0x00207DDC: SD a2,64(a0)
+  0x00207DE0: SD a3,80(a0)
+  0x00207DE4: JR ra
+  0x00207DE8: SD zero,96(a0)
+  0x00207DEC: ADDIU v1,a3,63
+  0x00207DF0: SLTI v0,a3,0
+0x00207E94: JR ra
+  0x00207E88: SD a1,32(a0)
+  0x00207E8C: SD a2,48(a0)
+  0x00207E90: SD a3,64(a0)
+  0x00207E94: JR ra
+  0x00207E98: SD zero,80(a0)
+  0x00207E9C: ADDIU sp,sp,-160
+  0x00207EA0: SPECIAL fn=45 rs=a1 rt=zero rd=v0
+0x00207F18: JR ra
+  0x00207F0C: LD s0,128(sp)
+  0x00207F10: LD s1,136(sp)
+  0x00207F14: LD ra,144(sp)
+  0x00207F18: JR ra
+  0x00207F1C: ADDIU sp,sp,160
+  0x00207F20: ADDIU sp,sp,-16
+  0x00207F24: SD ra,0(sp)
+0x002080C8: JR ra
+  0x002080BC: LD ra,0(sp)
+  0x002080C0: J 0x002588C0
+  0x002080C4: ADDIU sp,sp,16
+  0x002080C8: JR ra
+  0x002080CC: ADDIU sp,sp,16
+  0x002080D0: ADDIU sp,sp,-16
+  0x002080D4: SD ra,0(sp)
+0x00208578: JR v0
+  0x0020856C: LUI at,0x008E
+  0x00208570: ADDU at,at,v0
+  0x00208574: LW v0,272(at)
+  0x00208578: JR v0
+  0x0020857C: SLL zero,zero,0
+  0x00208580: LW a1,-26212(gp)
+  0x00208584: LUI v1,0xFFF7
+0x00208E28: JR ra
+  0x00208E1C: LD s3,40(sp)
+  0x00208E20: LD s4,48(sp)
+  0x00208E24: LD ra,56(sp)
+  0x00208E28: JR ra
+  0x00208E2C: ADDIU sp,sp,64
+  0x00208E30: ADDIU sp,sp,-16
+  0x00208E34: ADDIU a1,zero,1
+0x00208E7C: JR ra
+  0x00208E70: ADDIU sp,sp,16
+  0x00208E74: LD s0,0(sp)
+  0x00208E78: LD ra,8(sp)
+  0x00208E7C: JR ra
+  0x00208E80: ADDIU sp,sp,16
+  0x00208E84: ADDIU sp,sp,-128
+  0x00208E88: LW v1,-26212(gp)
+0x0020931C: JR ra
+  0x00209310: LD s7,104(sp)
+  0x00209314: LD fp,112(sp)
+  0x00209318: LD ra,120(sp)
+  0x0020931C: JR ra
+  0x00209320: ADDIU sp,sp,128
+  0x00209324: ADDIU sp,sp,-1152
+  0x00209328: ADDIU a0,zero,1
+0x0020977C: JR ra
+  0x00209770: LD s7,1128(sp)
+  0x00209774: LD fp,1136(sp)
+  0x00209778: LD ra,1144(sp)
+  0x0020977C: JR ra
+  0x00209780: ADDIU sp,sp,1152
+  0x00209784: ADDIU sp,sp,-1120
+  0x00209788: ADDIU a0,zero,1
+0x00209D9C: JR ra
+  0x00209D90: LD s5,1096(sp)
+  0x00209D94: LD s6,1104(sp)
+  0x00209D98: LD ra,1112(sp)
+  0x00209D9C: JR ra
+  0x00209DA0: ADDIU sp,sp,1120
+  0x00209DA4: ADDIU a2,zero,1
+  0x00209DA8: SLL v0,a2,2
+0x00209E1C: JR ra
+  0x00209E10: SH v1,30(a1)
+  0x00209E14: BNE a3,zero,0x00209DAC
+  0x00209E18: SLL v0,a2,2
+  0x00209E1C: JR ra
+  0x00209E20: SLL zero,zero,0
+  0x00209E24: ADDIU sp,sp,-224
+  0x00209E28: SD s0,144(sp)
+0x00209F28: JR ra
+  0x00209F1C: LD s7,200(sp)
+  0x00209F20: LD fp,208(sp)
+  0x00209F24: LD ra,216(sp)
+  0x00209F28: JR ra
+  0x00209F2C: ADDIU sp,sp,224
+  0x00209F30: ADDIU sp,sp,-288
+  0x00209F34: LBU v0,368(sp)
+0x0020A904: JR ra
+  0x0020A8F8: LD s7,264(sp)
+  0x0020A8FC: LD fp,272(sp)
+  0x0020A900: LD ra,280(sp)
+  0x0020A904: JR ra
+  0x0020A908: ADDIU sp,sp,288
+  0x0020A90C: ADDIU sp,sp,-32
+  0x0020A910: ANDI a3,a3,0x00FF
+0x0020A9DC: JR ra
+  0x0020A9D0: LD s1,8(sp)
+  0x0020A9D4: LD s2,16(sp)
+  0x0020A9D8: LD ra,24(sp)
+  0x0020A9DC: JR ra
+  0x0020A9E0: ADDIU sp,sp,32
+  0x0020A9E4: ADDIU sp,sp,-16
+  0x0020A9E8: SD ra,0(sp)
+0x0020A9FC: JR ra
+  0x0020A9F0: SLL zero,zero,0
+  0x0020A9F4: LD ra,0(sp)
+  0x0020A9F8: SH v0,-28504(gp)
+  0x0020A9FC: JR ra
+  0x0020AA00: ADDIU sp,sp,16
+  0x0020AA04: ADDIU sp,sp,-208
+  0x0020AA08: SD s1,136(sp)
+0x0020B38C: JR ra
+  0x0020B380: LD s7,184(sp)
+  0x0020B384: LD fp,192(sp)
+  0x0020B388: LD ra,200(sp)
+  0x0020B38C: JR ra
+  0x0020B390: ADDIU sp,sp,208
+  0x0020B394: ADDIU sp,sp,-80
+  0x0020B398: LUI v0,0x005D
+0x0020B5F0: JR ra
+  0x0020B5E4: LD s6,48(sp)
+  0x0020B5E8: LD s7,56(sp)
+  0x0020B5EC: LD ra,64(sp)
+  0x0020B5F0: JR ra
+  0x0020B5F4: ADDIU sp,sp,80
+  0x0020B5F8: ADDIU sp,sp,-80
+  0x0020B5FC: SD s4,32(sp)
+0x0020B960: JR ra
+  0x0020B954: LD s7,56(sp)
+  0x0020B958: LD fp,64(sp)
+  0x0020B95C: LD ra,72(sp)
+  0x0020B960: JR ra
+  0x0020B964: ADDIU sp,sp,80
+  0x0020B968: ADDIU sp,sp,-32
+  0x0020B96C: SD s1,8(sp)
+0x0020B9E8: JR ra
+  0x0020B9DC: LD s0,0(sp)
+  0x0020B9E0: LD s1,8(sp)
+  0x0020B9E4: LD ra,16(sp)
+  0x0020B9E8: JR ra
+  0x0020B9EC: ADDIU sp,sp,32
+  0x0020B9F0: ADDIU sp,sp,-160
+  0x0020B9F4: SD s0,128(sp)
+0x0020BB08: JR ra
+  0x0020BAFC: LD s1,136(sp)
+  0x0020BB00: LD s2,144(sp)
+  0x0020BB04: LD ra,152(sp)
+  0x0020BB08: JR ra
+  0x0020BB0C: ADDIU sp,sp,160
+  0x0020BB10: ADDIU sp,sp,-176
+  0x0020BB14: SD s1,104(sp)
+0x0020BDB4: JR ra
+  0x0020BDA8: LD s7,152(sp)
+  0x0020BDAC: LD fp,160(sp)
+  0x0020BDB0: LD ra,168(sp)
+  0x0020BDB4: JR ra
+  0x0020BDB8: ADDIU sp,sp,176
+  0x0020BDBC: ADDIU sp,sp,-32
+  0x0020BDC0: SD s1,8(sp)
+0x0020BED0: JR ra
+  0x0020BEC4: LD s1,8(sp)
+  0x0020BEC8: LD s2,16(sp)
+  0x0020BECC: LD ra,24(sp)
+  0x0020BED0: JR ra
+  0x0020BED4: ADDIU sp,sp,32
+  0x0020BED8: ADDIU sp,sp,-32
+  0x0020BEDC: SD s0,0(sp)
+0x0020BF78: JR ra
+  0x0020BF6C: LD s0,0(sp)
+  0x0020BF70: LD s1,8(sp)
+  0x0020BF74: LD ra,16(sp)
+  0x0020BF78: JR ra
+  0x0020BF7C: ADDIU sp,sp,32
+  0x0020BF80: ADDIU sp,sp,-32
+  0x0020BF84: SD s0,0(sp)
+0x0020C130: JR ra
+  0x0020C124: LD s1,8(sp)
+  0x0020C128: LD s2,16(sp)
+  0x0020C12C: LD ra,24(sp)
+  0x0020C130: JR ra
+  0x0020C134: ADDIU sp,sp,32
+  0x0020C138: ADDIU sp,sp,-96
+  0x0020C13C: SD s1,40(sp)
+0x0020C298: JR ra
+  0x0020C28C: LD s5,72(sp)
+  0x0020C290: LD s6,80(sp)
+  0x0020C294: LD ra,88(sp)
+  0x0020C298: JR ra
+  0x0020C29C: ADDIU sp,sp,96
+  0x0020C2A0: ADDIU sp,sp,-80
+  0x0020C2A4: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020C3CC: JR ra
+  0x0020C3C0: LD s4,48(sp)
+  0x0020C3C4: LD s5,56(sp)
+  0x0020C3C8: LD ra,64(sp)
+  0x0020C3CC: JR ra
+  0x0020C3D0: ADDIU sp,sp,80
+  0x0020C3D4: ADDIU sp,sp,-80
+  0x0020C3D8: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020C4F4: JR ra
+  0x0020C4E8: LD s4,48(sp)
+  0x0020C4EC: LD s5,56(sp)
+  0x0020C4F0: LD ra,64(sp)
+  0x0020C4F4: JR ra
+  0x0020C4F8: ADDIU sp,sp,80
+  0x0020C4FC: ADDIU sp,sp,-80
+  0x0020C500: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020C624: JR ra
+  0x0020C618: LD s4,48(sp)
+  0x0020C61C: LD s5,56(sp)
+  0x0020C620: LD ra,64(sp)
+  0x0020C624: JR ra
+  0x0020C628: ADDIU sp,sp,80
+  0x0020C62C: ADDIU sp,sp,-80
+  0x0020C630: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020C748: JR ra
+  0x0020C73C: LD s4,48(sp)
+  0x0020C740: LD s5,56(sp)
+  0x0020C744: LD ra,64(sp)
+  0x0020C748: JR ra
+  0x0020C74C: ADDIU sp,sp,80
+  0x0020C750: ADDIU sp,sp,-80
+  0x0020C754: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020C870: JR ra
+  0x0020C864: LD s4,48(sp)
+  0x0020C868: LD s5,56(sp)
+  0x0020C86C: LD ra,64(sp)
+  0x0020C870: JR ra
+  0x0020C874: ADDIU sp,sp,80
+  0x0020C878: ADDIU sp,sp,-96
+  0x0020C87C: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020CADC: JR ra
+  0x0020CAD0: LD s4,64(sp)
+  0x0020CAD4: LD s5,72(sp)
+  0x0020CAD8: LD ra,80(sp)
+  0x0020CADC: JR ra
+  0x0020CAE0: ADDIU sp,sp,96
+  0x0020CAE4: ADDIU sp,sp,-80
+  0x0020CAE8: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020CC08: JR ra
+  0x0020CBFC: LD s4,48(sp)
+  0x0020CC00: LD s5,56(sp)
+  0x0020CC04: LD ra,64(sp)
+  0x0020CC08: JR ra
+  0x0020CC0C: ADDIU sp,sp,80
+  0x0020CC10: ADDIU sp,sp,-480
+  0x0020CC14: SW a0,340(sp)
+0x0020E160: JR ra
+  0x0020E154: LD s7,456(sp)
+  0x0020E158: LD fp,464(sp)
+  0x0020E15C: LD ra,472(sp)
+  0x0020E160: JR ra
+  0x0020E164: ADDIU sp,sp,480
+  0x0020E168: ADDIU sp,sp,-48
+  0x0020E16C: SD s0,0(sp)
+0x0020E284: JR ra
+  0x0020E278: LD s3,24(sp)
+  0x0020E27C: LD s4,32(sp)
+  0x0020E280: LD ra,40(sp)
+  0x0020E284: JR ra
+  0x0020E288: ADDIU sp,sp,48
+  0x0020E28C: ADDIU sp,sp,-192
+  0x0020E290: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0020E950: JR ra
+  0x0020E944: LD fp,160(sp)
+  0x0020E948: LD ra,168(sp)
+  0x0020E94C: OP=49 rs=sp rt=s4 imm=176
+  0x0020E950: JR ra
+  0x0020E954: ADDIU sp,sp,192
+  0x0020E958: ADDIU sp,sp,-112
+  0x0020E95C: SD s1,40(sp)
+0x0020EFB8: JR ra
+  0x0020EFAC: LD s7,88(sp)
+  0x0020EFB0: LD fp,96(sp)
+  0x0020EFB4: LD ra,104(sp)
+  0x0020EFB8: JR ra
+  0x0020EFBC: ADDIU sp,sp,112
+  0x0020EFC0: ADDIU sp,sp,-128
+  0x0020EFC4: ANDI t3,t3,0x00FF
+0x0020F100: JR ra
+  0x0020F0F4: LD s2,96(sp)
+  0x0020F0F8: LD s3,104(sp)
+  0x0020F0FC: LD ra,112(sp)
+  0x0020F100: JR ra
+  0x0020F104: ADDIU sp,sp,128
+  0x0020F108: ADDIU sp,sp,-32
+  0x0020F10C: LW v0,-26212(gp)
+0x0020F2AC: JR ra
+  0x0020F2A0: SLL zero,zero,0
+  0x0020F2A4: LD ra,0(sp)
+  0x0020F2A8: SLTU v0,zero,v0
+  0x0020F2AC: JR ra
+  0x0020F2B0: ADDIU sp,sp,16
+  0x0020F2B4: ADDIU sp,sp,-256
+  0x0020F2B8: ANDI t0,t0,0x00FF
+0x002102BC: JR ra
+  0x002102B0: OP=49 rs=sp rt=s6 imm=240
+  0x002102B4: OP=49 rs=sp rt=s5 imm=232
+  0x002102B8: OP=49 rs=sp rt=s4 imm=224
+  0x002102BC: JR ra
+  0x002102C0: ADDIU sp,sp,256
+  0x002102C4: ADDIU sp,sp,-64
+  0x002102C8: ANDI t1,t1,0x00FF
+0x0021043C: JR ra
+  0x00210430: LD s5,40(sp)
+  0x00210434: LD s6,48(sp)
+  0x00210438: LD ra,56(sp)
+  0x0021043C: JR ra
+  0x00210440: ADDIU sp,sp,64
+  0x00210444: ADDIU sp,sp,-48
+  0x00210448: SD s1,8(sp)
+0x002105E4: JR ra
+  0x002105D8: LD s2,16(sp)
+  0x002105DC: LD s3,24(sp)
+  0x002105E0: LD ra,32(sp)
+  0x002105E4: JR ra
+  0x002105E8: ADDIU sp,sp,48
+  0x002105EC: ADDIU sp,sp,-160
+  0x002105F0: LUI a1,0x8000
+0x00210B08: JR ra
+  0x00210AFC: LD s2,128(sp)
+  0x00210B00: LD s3,136(sp)
+  0x00210B04: LD ra,144(sp)
+  0x00210B08: JR ra
+  0x00210B0C: ADDIU sp,sp,160
+  0x00210B10: ADDIU sp,sp,-32
+  0x00210B14: SD s0,0(sp)
+0x00210B7C: JR ra
+  0x00210B70: LD s0,0(sp)
+  0x00210B74: LD ra,8(sp)
+  0x00210B78: OP=49 rs=sp rt=s4 imm=16
+  0x00210B7C: JR ra
+  0x00210B80: ADDIU sp,sp,32
+  0x00210B84: ADDIU sp,sp,-16
+  0x00210B88: SD s0,0(sp)
+0x00210BC4: JR ra
+  0x00210BB8: SH v0,14(s0)
+  0x00210BBC: LD s0,0(sp)
+  0x00210BC0: LD ra,8(sp)
+  0x00210BC4: JR ra
+  0x00210BC8: ADDIU sp,sp,16
+  0x00210BCC: ADDIU sp,sp,-240
+  0x00210BD0: ADDIU v0,sp,96
+0x00211610: JR ra
+  0x00211604: LD ra,216(sp)
+  0x00211608: OP=49 rs=sp rt=s5 imm=232
+  0x0021160C: OP=49 rs=sp rt=s4 imm=224
+  0x00211610: JR ra
+  0x00211614: ADDIU sp,sp,240
+  0x00211618: ADDIU sp,sp,-48
+  0x0021161C: SD s1,8(sp)
+0x002116A0: JR ra
+  0x00211694: LD s2,16(sp)
+  0x00211698: LD s3,24(sp)
+  0x0021169C: LD ra,32(sp)
+  0x002116A0: JR ra
+  0x002116A4: ADDIU sp,sp,48
+  0x002116A8: ADDIU sp,sp,-128
+  0x002116AC: ANDI a1,a1,0x00FF
+0x00211E74: JR ra
+  0x00211E68: LD ra,104(sp)
+  0x00211E6C: OP=49 rs=sp rt=s5 imm=120
+  0x00211E70: OP=49 rs=sp rt=s4 imm=112
+  0x00211E74: JR ra
+  0x00211E78: ADDIU sp,sp,128
+  0x00211E7C: ADDIU sp,sp,-48
+  0x00211E80: SD s0,0(sp)
+0x002120A4: JR ra
+  0x00212098: LD s4,32(sp)
+  0x0021209C: LD s5,40(sp)
+  0x002120A0: LD ra,48(sp)
+  0x002120A4: JR ra
+  0x002120A8: ADDIU sp,sp,64
+  0x002120AC: ADDIU sp,sp,-112
+  0x002120B0: ANDI a1,a1,0x00FF
+0x00212294: JR ra
+  0x00212288: LD s2,80(sp)
+  0x0021228C: LD s3,88(sp)
+  0x00212290: LD ra,96(sp)
+  0x00212294: JR ra
+  0x00212298: ADDIU sp,sp,112
+  0x0021229C: ADDIU sp,sp,-144
+  0x002122A0: LW v1,-26212(gp)
+0x002123F0: JR ra
+  0x002123E4: LD s4,112(sp)
+  0x002123E8: LD s5,120(sp)
+  0x002123EC: LD ra,128(sp)
+  0x002123F0: JR ra
+  0x002123F4: ADDIU sp,sp,144
+  0x002123F8: ADDIU sp,sp,-64
+  0x002123FC: LW v0,-26212(gp)
+0x00212640: JR ra
+  0x00212634: LD s1,40(sp)
+  0x00212638: LD s2,48(sp)
+  0x0021263C: LD ra,56(sp)
+  0x00212640: JR ra
+  0x00212644: ADDIU sp,sp,64
+  0x00212648: LUI at,0x3F00
+  0x0021264C: OP=17 rs=a0 rt=at imm=0
+0x002126E4: JR ra
+  0x002126D8: LD ra,8(sp)
+  0x002126DC: OP=17 rs=s0 rt=at imm=-24574
+  0x002126E0: OP=49 rs=sp rt=s4 imm=16
+  0x002126E4: JR ra
+  0x002126E8: ADDIU sp,sp,32
+  0x002126EC: ADDIU sp,sp,-48
+  0x002126F0: SD s0,0(sp)
+0x00212798: JR ra
+  0x0021278C: LD ra,24(sp)
+  0x00212790: OP=17 rs=s0 rt=at imm=-24574
+  0x00212794: OP=49 rs=sp rt=s4 imm=32
+  0x00212798: JR ra
+  0x0021279C: ADDIU sp,sp,48
+  0x002127A0: ADDIU sp,sp,-32
+  0x002127A4: OP=57 rs=sp rt=s5 imm=16
+0x00212828: JR ra
+  0x0021281C: LD ra,0(sp)
+  0x00212820: OP=49 rs=sp rt=s5 imm=16
+  0x00212824: OP=49 rs=sp rt=s4 imm=8
+  0x00212828: JR ra
+  0x0021282C: ADDIU sp,sp,32
+  0x00212830: ADDIU sp,sp,-32
+  0x00212834: OP=57 rs=sp rt=s5 imm=16
+0x002128C0: JR ra
+  0x002128B4: LD ra,0(sp)
+  0x002128B8: OP=49 rs=sp rt=s5 imm=16
+  0x002128BC: OP=49 rs=sp rt=s4 imm=8
+  0x002128C0: JR ra
+  0x002128C4: ADDIU sp,sp,32
+  0x002128C8: ADDIU sp,sp,-32
+  0x002128CC: OP=57 rs=sp rt=s5 imm=16
+0x00212958: JR ra
+  0x0021294C: LD ra,0(sp)
+  0x00212950: OP=49 rs=sp rt=s5 imm=16
+  0x00212954: OP=49 rs=sp rt=s4 imm=8
+  0x00212958: JR ra
+  0x0021295C: ADDIU sp,sp,32
+  0x00212960: ADDIU sp,sp,-32
+  0x00212964: LW v0,-26212(gp)
+0x00212AD0: JR ra
+  0x00212AC4: LD s1,8(sp)
+  0x00212AC8: LD ra,16(sp)
+  0x00212ACC: OP=49 rs=sp rt=s4 imm=24
+  0x00212AD0: JR ra
+  0x00212AD4: ADDIU sp,sp,32
+  0x00212AD8: ADDIU sp,sp,-32
+  0x00212ADC: SD s0,0(sp)
+0x00212B44: JR ra
+  0x00212B38: SPECIAL fn=26 rs=v1 rt=a0 rd=zero
+  0x00212B3C: SPECIAL fn=18 rs=zero rt=zero rd=v1
+  0x00212B40: SPECIAL fn=45 rs=v1 rt=zero rd=v0
+  0x00212B44: JR ra
+  0x00212B48: ADDIU sp,sp,32
+  0x00212B4C: ADDIU sp,sp,-112
+  0x00212B50: SD s1,88(sp)
+0x00213050: JR ra
+  0x00213044: LD s1,88(sp)
+  0x00213048: LD s2,96(sp)
+  0x0021304C: LD ra,104(sp)
+  0x00213050: JR ra
+  0x00213054: ADDIU sp,sp,112
+  0x00213058: LUI v0,0x006F
+  0x0021305C: LH a2,-28020(gp)
+0x00213430: JR ra
+  0x00213424: LD s0,0(sp)
+  0x00213428: LD s1,8(sp)
+  0x0021342C: LD ra,16(sp)
+  0x00213430: JR ra
+  0x00213434: ADDIU sp,sp,32
+  0x00213438: SLL t0,t0,4
+  0x0021343C: SLL t3,t3,15
+0x00213558: JR ra
+  0x0021354C: ADDIU t4,t4,16
+  0x00213550: SD v1,0(t4)
+  0x00213554: ADDIU v0,t4,16
+  0x00213558: JR ra
+  0x0021355C: SD a3,8(t4)
+  0x00213560: LBU v0,-26124(gp)
+  0x00213564: ADDIU sp,sp,-16
+0x002135C0: JR ra
+  0x002135B4: ADDIU a0,zero,123
+  0x002135B8: LD s0,0(sp)
+  0x002135BC: LD ra,8(sp)
+  0x002135C0: JR ra
+  0x002135C4: ADDIU sp,sp,16
+  0x002135C8: LBU v0,-26124(gp)
+  0x002135CC: ADDIU sp,sp,-16
+0x002135F8: JR ra
+  0x002135EC: J 0x00210E30
+  0x002135F0: ADDIU sp,sp,16
+  0x002135F4: LD ra,0(sp)
+  0x002135F8: JR ra
+  0x002135FC: ADDIU sp,sp,16
+  0x00213600: ADDIU sp,sp,-16
+  0x00213604: SD s0,0(sp)
+0x00213624: JR ra
+  0x00213618: LD ra,8(sp)
+  0x0021361C: SB s0,-20668(gp)
+  0x00213620: LD s0,0(sp)
+  0x00213624: JR ra
+  0x00213628: ADDIU sp,sp,16
+  0x0021362C: ADDIU sp,sp,-128
+  0x00213630: LW v1,-26212(gp)
+0x00213D48: JR ra
+  0x00213D3C: LD s7,104(sp)
+  0x00213D40: LD fp,112(sp)
+  0x00213D44: LD ra,120(sp)
+  0x00213D48: JR ra
+  0x00213D4C: ADDIU sp,sp,128
+  0x00213D50: LUI at,0x4120
+  0x00213D54: OP=17 rs=a0 rt=at imm=2048
+0x00213D7C: JR ra
+  0x00213D70: OP=57 rs=gp rt=at imm=-26268
+  0x00213D74: OP=17 rs=s0 rt=v1 imm=2
+  0x00213D78: OP=17 rs=s0 rt=v0 imm=0
+  0x00213D7C: JR ra
+  0x00213D80: OP=57 rs=gp rt=zero imm=-26272
+  0x00213D84: ADDIU sp,sp,-16
+  0x00213D88: ANDI a0,a0,0x00FF
+0x00213DD0: JR ra
+  0x00213DC4: LUI at,0x4500
+  0x00213DC8: OP=17 rs=a0 rt=at imm=0
+  0x00213DCC: LD ra,0(sp)
+  0x00213DD0: JR ra
+  0x00213DD4: ADDIU sp,sp,16
+  0x00213DD8: ADDIU sp,sp,-192
+  0x00213DDC: SD s2,160(sp)
+0x00213F4C: JR ra
+  0x00213F40: LD ra,168(sp)
+  0x00213F44: OP=49 rs=sp rt=s5 imm=184
+  0x00213F48: OP=49 rs=sp rt=s4 imm=176
+  0x00213F4C: JR ra
+  0x00213F50: ADDIU sp,sp,192
+  0x00213F54: ADDIU sp,sp,-256
+  0x00213F58: SD s4,176(sp)
+0x00214D08: JR ra
+  0x00214CFC: OP=49 rs=sp rt=s6 imm=240
+  0x00214D00: OP=49 rs=sp rt=s5 imm=232
+  0x00214D04: OP=49 rs=sp rt=s4 imm=224
+  0x00214D08: JR ra
+  0x00214D0C: ADDIU sp,sp,256
+  0x00214D10: LUI v0,0x005F
+  0x00214D14: ADDIU a0,zero,128
+0x00214DB8: JR ra
+  0x00214DAC: SD zero,128(v0)
+  0x00214DB0: SW a0,208(v0)
+  0x00214DB4: SW a0,212(v0)
+  0x00214DB8: JR ra
+  0x00214DBC: SW a0,216(v0)
+  0x00214DC0: ADDIU sp,sp,-128
+  0x00214DC4: SD s0,80(sp)
+0x00214EC8: JR ra
+  0x00214EBC: LD s2,96(sp)
+  0x00214EC0: LD ra,104(sp)
+  0x00214EC4: OP=49 rs=sp rt=s4 imm=112
+  0x00214EC8: JR ra
+  0x00214ECC: ADDIU sp,sp,128
+  0x00214ED0: ADDIU sp,sp,-112
+  0x00214ED4: SD s0,64(sp)
+0x00214FB4: JR ra
+  0x00214FA8: LD s2,80(sp)
+  0x00214FAC: LD ra,88(sp)
+  0x00214FB0: OP=49 rs=sp rt=s4 imm=96
+  0x00214FB4: JR ra
+  0x00214FB8: ADDIU sp,sp,112
+  0x00214FBC: ADDIU sp,sp,-96
+  0x00214FC0: SD s0,64(sp)
+0x00215088: JR ra
+  0x0021507C: LD s0,64(sp)
+  0x00215080: LD s1,72(sp)
+  0x00215084: LD ra,80(sp)
+  0x00215088: JR ra
+  0x0021508C: ADDIU sp,sp,96
+  0x00215090: JR ra
+  0x00215094: SW zero,-28348(gp)
+0x00215090: JR ra
+  0x00215084: LD ra,80(sp)
+  0x00215088: JR ra
+  0x0021508C: ADDIU sp,sp,96
+  0x00215090: JR ra
+  0x00215094: SW zero,-28348(gp)
+  0x00215098: LW a3,-28348(gp)
+  0x0021509C: ADDIU sp,sp,-48
+0x00215194: JR ra
+  0x00215188: LD s0,16(sp)
+  0x0021518C: LD s1,24(sp)
+  0x00215190: LD ra,32(sp)
+  0x00215194: JR ra
+  0x00215198: ADDIU sp,sp,48
+  0x0021519C: LW v0,-28348(gp)
+  0x002151A0: ADDIU sp,sp,-144
+0x00215500: JR ra
+  0x002154F4: LD s1,8(sp)
+  0x002154F8: LD s2,16(sp)
+  0x002154FC: LD ra,24(sp)
+  0x00215500: JR ra
+  0x00215504: ADDIU sp,sp,32
+  0x00215508: ADDIU sp,sp,-160
+  0x0021550C: SD s1,104(sp)
+0x0021561C: JR ra
+  0x00215610: LD s4,128(sp)
+  0x00215614: LD s5,136(sp)
+  0x00215618: LD ra,144(sp)
+  0x0021561C: JR ra
+  0x00215620: ADDIU sp,sp,160
+  0x00215624: LW a0,0(a0)
+  0x00215628: LUI v0,0x0004
+0x00215654: JR ra
+  0x00215648: BEQ a1,zero,0x0021565C
+  0x0021564C: SLL zero,zero,0
+  0x00215650: LUI v0,0x008E
+  0x00215654: JR ra
+  0x00215658: ADDIU v0,v0,2952
+  0x0021565C: JR ra
+  0x00215660: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0021565C: JR ra
+  0x00215650: LUI v0,0x008E
+  0x00215654: JR ra
+  0x00215658: ADDIU v0,v0,2952
+  0x0021565C: JR ra
+  0x00215660: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00215664: LUI v0,0x008E
+  0x00215668: JR ra
+0x00215668: JR ra
+  0x0021565C: JR ra
+  0x00215660: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00215664: LUI v0,0x008E
+  0x00215668: JR ra
+  0x0021566C: ADDIU v0,v0,2976
+  0x00215670: ADDIU sp,sp,-624
+  0x00215674: OP=49 rs=gp rt=zero imm=-32644
+0x00215F24: JR ra
+  0x00215F18: LD ra,600(sp)
+  0x00215F1C: OP=49 rs=sp rt=s5 imm=616
+  0x00215F20: OP=49 rs=sp rt=s4 imm=608
+  0x00215F24: JR ra
+  0x00215F28: ADDIU sp,sp,624
+  0x00215F2C: ADDIU sp,sp,-16
+  0x00215F30: SW a0,-29084(gp)
+0x00216168: JR ra
+  0x0021615C: SLL zero,zero,0
+  0x00216160: REGIMM v0,at,00216144
+  0x00216164: ADDIU v1,v1,28
+  0x00216168: JR ra
+  0x0021616C: SLL zero,zero,0
+  0x00216170: SLL v0,a0,3
+  0x00216174: SUBU v0,v0,a0
+0x00216188: JR ra
+  0x0021617C: LUI at,0x0093
+  0x00216180: ADDU at,at,v0
+  0x00216184: SB zero,-22751(at)
+  0x00216188: JR ra
+  0x0021618C: SLL zero,zero,0
+  0x00216190: ANDI t4,t0,0x00FF
+  0x00216194: SPECIAL fn=45 rs=zero rt=zero rd=t0
+0x00216228: JR ra
+  0x0021621C: SW zero,0(v0)
+  0x00216220: OP=49 rs=gp rt=zero imm=-32628
+  0x00216224: OP=57 rs=v0 rt=zero imm=0
+  0x00216228: JR ra
+  0x0021622C: SPECIAL fn=45 rs=t3 rt=zero rd=v0
+  0x00216230: SLTI v0,t3,48
+  0x00216234: BNE v0,zero,0x002161AC
+0x0021623C: JR ra
+  0x00216230: SLTI v0,t3,48
+  0x00216234: BNE v0,zero,0x002161AC
+  0x00216238: ADDIU t0,t0,28
+  0x0021623C: JR ra
+  0x00216240: ADDIU v0,zero,-1
+  0x00216244: ADDIU sp,sp,-16
+  0x00216248: SPECIAL fn=45 rs=a1 rt=zero rd=v0
+0x002162C8: JR ra
+  0x002162BC: ADDIU a2,a2,-1
+  0x002162C0: REGIMM a2,at,00216294
+  0x002162C4: SPECIAL fn=45 rs=a1 rt=zero rd=v0
+  0x002162C8: JR ra
+  0x002162CC: SLL zero,zero,0
+  0x002162D0: SPECIAL fn=45 rs=a0 rt=zero rd=t2
+  0x002162D4: SPECIAL fn=45 rs=a1 rt=zero rd=a2
+0x00216350: JR ra
+  0x00216344: SLTI v0,t0,48
+  0x00216348: BNE v0,zero,0x002162E4
+  0x0021634C: ADDIU a3,a3,28
+  0x00216350: JR ra
+  0x00216354: SPECIAL fn=45 rs=t1 rt=zero rd=v0
+  0x00216358: SLL t7,a0,3
+  0x0021635C: LUI v1,0x0093
+0x00216408: JR ra
+  0x002163FC: ADDIU v1,v1,-22752
+  0x00216400: SLL v0,v0,2
+  0x00216404: ADDU v0,v0,v1
+  0x00216408: JR ra
+  0x0021640C: OP=57 rs=v0 rt=t4 imm=24
+  0x00216410: LUI v0,0x006F
+  0x00216414: LW a0,-20552(gp)
+0x002166A4: JR ra
+  0x00216698: SLL zero,zero,0
+  0x0021669C: REGIMM v0,at,00216680
+  0x002166A0: ADDIU v1,v1,92
+  0x002166A4: JR ra
+  0x002166A8: SLL zero,zero,0
+  0x002166AC: ADDIU sp,sp,-48
+  0x002166B0: SPECIAL fn=45 rs=a1 rt=zero rd=t6
+0x00216788: JR ra
+  0x0021677C: LD s2,16(sp)
+  0x00216780: LD s3,24(sp)
+  0x00216784: LD ra,32(sp)
+  0x00216788: JR ra
+  0x0021678C: ADDIU sp,sp,48
+  0x00216790: SLL v0,a0,1
+  0x00216794: ADDU v0,v0,a0
+0x002167B0: JR ra
+  0x002167A4: LUI at,0x0093
+  0x002167A8: ADDU at,at,v0
+  0x002167AC: SB zero,-21407(at)
+  0x002167B0: JR ra
+  0x002167B4: SLL zero,zero,0
+  0x002167B8: ADDIU sp,sp,-48
+  0x002167BC: LUI v1,0x0093
+0x00216870: JR ra
+  0x00216864: LD s2,16(sp)
+  0x00216868: LD s3,24(sp)
+  0x0021686C: LD ra,32(sp)
+  0x00216870: JR ra
+  0x00216874: ADDIU sp,sp,48
+  0x00216878: ADDIU sp,sp,-48
+  0x0021687C: LUI v1,0x0093
+0x00216928: JR ra
+  0x0021691C: LD s2,16(sp)
+  0x00216920: LD s3,24(sp)
+  0x00216924: LD ra,32(sp)
+  0x00216928: JR ra
+  0x0021692C: ADDIU sp,sp,48
+  0x00216930: LUI v0,0x006F
+  0x00216934: LW a0,-20552(gp)
+0x00216A1C: JR ra
+  0x00216A10: ADDIU v0,a0,16
+  0x00216A14: SW v1,8(a0)
+  0x00216A18: SW a1,0(a0)
+  0x00216A1C: JR ra
+  0x00216A20: SW zero,12(a0)
+  0x00216A24: SLL v1,t2,4
+  0x00216A28: SLL t6,t1,4
+0x00216B5C: JR ra
+  0x00216B50: ADDU t0,t0,v1
+  0x00216B54: SPECIAL fn=60 rs=zero rt=t0 rd=t0
+  0x00216B58: OR a1,a1,t0
+  0x00216B5C: JR ra
+  0x00216B60: SD a1,0(a0)
+  0x00216B64: ADDIU sp,sp,-176
+  0x00216B68: SPECIAL fn=45 rs=t2 rt=zero rd=t5
+0x00217430: JR ra
+  0x00217424: LD s7,152(sp)
+  0x00217428: LD fp,160(sp)
+  0x0021742C: LD ra,168(sp)
+  0x00217430: JR ra
+  0x00217434: ADDIU sp,sp,176
+  0x00217438: LW a0,-20552(gp)
+  0x0021743C: LUI v0,0x006F
+0x00217604: JR ra
+  0x002175F8: ADDIU sp,sp,16
+  0x002175FC: LD s0,0(sp)
+  0x00217600: LD ra,8(sp)
+  0x00217604: JR ra
+  0x00217608: ADDIU sp,sp,16
+  0x0021760C: ADDIU sp,sp,-64
+  0x00217610: SPECIAL fn=45 rs=zero rt=zero rd=t5
+0x00217D00: JR ra
+  0x00217CF4: SPECIAL fn=11 rs=a1 rt=v0 rd=t5
+  0x00217CF8: SPECIAL fn=45 rs=t5 rt=zero rd=v0
+  0x00217CFC: LD s0,48(sp)
+  0x00217D00: JR ra
+  0x00217D04: ADDIU sp,sp,64
+  0x00217D08: ADDIU sp,sp,-16
+  0x00217D0C: SD ra,0(sp)
+0x0021803C: JR v0
+  0x00218030: LUI at,0x008E
+  0x00218034: ADDU at,at,v0
+  0x00218038: LW v0,4480(at)
+  0x0021803C: JR v0
+  0x00218040: SLL zero,zero,0
+  0x00218044: LD s0,16(sp)
+  0x00218048: SPECIAL fn=45 rs=zero rt=zero rd=a1
+0x002184D8: JR ra
+  0x002184CC: LD ra,40(sp)
+  0x002184D0: J 0x0021D57C
+  0x002184D4: ADDIU sp,sp,48
+  0x002184D8: JR ra
+  0x002184DC: SLL zero,zero,0
+  0x002184E0: ADDIU sp,sp,-16
+  0x002184E4: LUI a3,0x0069
+0x002185AC: JR ra
+  0x002185A0: LD s0,0(sp)
+  0x002185A4: LD s1,8(sp)
+  0x002185A8: LD ra,16(sp)
+  0x002185AC: JR ra
+  0x002185B0: ADDIU sp,sp,32
+  0x002185B4: LHU v1,-28904(gp)
+  0x002185B8: SLTIU v0,v1,2
+0x0021863C: JR ra
+  0x00218630: LD v1,0(a1)
+  0x00218634: LD a0,8(a1)
+  0x00218638: SD v1,0(v0)
+  0x0021863C: JR ra
+  0x00218640: SD a0,8(v0)
+  0x00218644: SRA v0,v0,16
+  0x00218648: ADDIU a0,a2,-2448
+0x002186B0: JR ra
+  0x002186A4: LD v1,8(v0)
+  0x002186A8: SD t0,0(a1)
+  0x002186AC: SD v1,8(a1)
+  0x002186B0: JR ra
+  0x002186B4: SLL zero,zero,0
+  0x002186B8: LUI v0,0x005E
+  0x002186BC: LBU v0,-19248(v0)
+0x002186C0: JR ra
+  0x002186B4: SLL zero,zero,0
+  0x002186B8: LUI v0,0x005E
+  0x002186BC: LBU v0,-19248(v0)
+  0x002186C0: JR ra
+  0x002186C4: SLTU v0,zero,v0
+  0x002186C8: SPECIAL fn=45 rs=zero rt=zero rd=a3
+  0x002186CC: SPECIAL fn=45 rs=zero rt=zero rd=t3
+0x00218814: JR ra
+  0x00218808: SLTI v0,t3,20
+  0x0021880C: BNE v0,zero,0x002186D4
+  0x00218810: ADDIU a2,a2,4
+  0x00218814: JR ra
+  0x00218818: SPECIAL fn=45 rs=a3 rt=zero rd=v0
+  0x0021881C: ADDIU sp,sp,-32
+  0x00218820: SD ra,24(sp)
+0x00218B48: JR ra
+  0x00218B3C: LD s1,8(sp)
+  0x00218B40: LD s2,16(sp)
+  0x00218B44: LD ra,24(sp)
+  0x00218B48: JR ra
+  0x00218B4C: ADDIU sp,sp,32
+  0x00218B50: LW v0,-28868(gp)
+  0x00218B54: BEQ a0,zero,0x00218B64
+0x00218B64: JR ra
+  0x00218B58: ADDU v1,v0,a0
+  0x00218B5C: SW v1,-28868(gp)
+  0x00218B60: SPECIAL fn=45 rs=v1 rt=zero rd=v0
+  0x00218B64: JR ra
+  0x00218B68: SLL zero,zero,0
+  0x00218B6C: SPECIAL fn=45 rs=a0 rt=zero rd=t4
+  0x00218B70: SPECIAL fn=45 rs=zero rt=zero rd=a3
+0x00218CB0: JR ra
+  0x00218CA4: SLTI v0,t3,20
+  0x00218CA8: BNE v0,zero,0x00218B7C
+  0x00218CAC: ADDIU a2,a2,4
+  0x00218CB0: JR ra
+  0x00218CB4: SPECIAL fn=45 rs=a3 rt=zero rd=v0
+  0x00218CB8: JR ra
+  0x00218CBC: LBU v0,-28832(gp)
+0x00218CB8: JR ra
+  0x00218CAC: ADDIU a2,a2,4
+  0x00218CB0: JR ra
+  0x00218CB4: SPECIAL fn=45 rs=a3 rt=zero rd=v0
+  0x00218CB8: JR ra
+  0x00218CBC: LBU v0,-28832(gp)
+  0x00218CC0: ANDI a0,a0,0x00FF
+  0x00218CC4: LBU a1,-28832(gp)
+0x00218CDC: JR ra
+  0x00218CD0: LUI v1,0x005E
+  0x00218CD4: ADDIU v0,zero,1
+  0x00218CD8: SB v0,-20084(v1)
+  0x00218CDC: JR ra
+  0x00218CE0: SPECIAL fn=45 rs=a1 rt=zero rd=v0
+  0x00218CE4: SPECIAL fn=45 rs=zero rt=zero rd=a1
+  0x00218CE8: SPECIAL fn=45 rs=zero rt=zero rd=a0
+0x00218D1C: JR ra
+  0x00218D10: SRL v0,v0,31
+  0x00218D14: BNE a2,zero,0x00218CEC
+  0x00218D18: ADDU a1,v0,a1
+  0x00218D1C: JR ra
+  0x00218D20: SPECIAL fn=45 rs=a1 rt=zero rd=v0
+  0x00218D24: SPECIAL fn=45 rs=zero rt=zero rd=a2
+  0x00218D28: SPECIAL fn=45 rs=zero rt=zero rd=a1
+0x00218D60: JR ra
+  0x00218D54: REGIMM a0,at,00218D30
+  0x00218D58: ADDU a2,v1,a2
+  0x00218D5C: ADDIU v0,zero,100
+  0x00218D60: JR ra
+  0x00218D64: SUBU v0,v0,a2
+  0x00218D68: ADDIU sp,sp,-592
+  0x00218D6C: SPECIAL fn=45 rs=a0 rt=zero rd=a1
+0x00218D88: JR ra
+  0x00218D7C: JAL 0x00215A80
+  0x00218D80: SPECIAL fn=45 rs=sp rt=zero rd=a0
+  0x00218D84: LD ra,576(sp)
+  0x00218D88: JR ra
+  0x00218D8C: ADDIU sp,sp,592
+  0x00218D90: ADDIU sp,sp,-32
+  0x00218D94: SD s1,8(sp)
+0x00218F74: JR ra
+  0x00218F68: LD s0,0(sp)
+  0x00218F6C: LD s1,8(sp)
+  0x00218F70: LD ra,16(sp)
+  0x00218F74: JR ra
+  0x00218F78: ADDIU sp,sp,32
+  0x00218F7C: SPECIAL fn=45 rs=zero rt=zero rd=a1
+  0x00218F80: SLL v0,a1,2
+0x00218FB4: JR ra
+  0x00218FA8: ADDIU v0,a0,-1
+  0x00218FAC: BNE a2,zero,0x00218F80
+  0x00218FB0: SPECIAL fn=10 rs=v0 rt=v1 rd=a0
+  0x00218FB4: JR ra
+  0x00218FB8: SLTI v0,a0,1
+  0x00218FBC: ADDIU sp,sp,-16
+  0x00218FC0: SPECIAL fn=45 rs=zero rt=zero rd=a1
+0x00219004: JR ra
+  0x00218FF8: SLL v0,a1,2
+  0x00218FFC: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00219000: LD ra,0(sp)
+  0x00219004: JR ra
+  0x00219008: ADDIU sp,sp,16
+  0x0021900C: SPECIAL fn=45 rs=zero rt=zero rd=a1
+  0x00219010: SLL v0,a1,2
+0x00219030: JR ra
+  0x00219024: BNE a0,v0,0x00219038
+  0x00219028: SLTI v1,a1,20
+  0x0021902C: SW zero,0(a0)
+  0x00219030: JR ra
+  0x00219034: ADDIU v0,zero,1
+  0x00219038: OP=21 rs=v1 rt=zero imm=-10
+  0x0021903C: SLL v0,a1,2
+0x00219040: JR ra
+  0x00219034: ADDIU v0,zero,1
+  0x00219038: OP=21 rs=v1 rt=zero imm=-10
+  0x0021903C: SLL v0,a1,2
+  0x00219040: JR ra
+  0x00219044: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00219048: ADDIU sp,sp,-16
+  0x0021904C: SD ra,0(sp)
+0x002191B8: JR ra
+  0x002191AC: LD s1,8(sp)
+  0x002191B0: LD s2,16(sp)
+  0x002191B4: LD ra,24(sp)
+  0x002191B8: JR ra
+  0x002191BC: ADDIU sp,sp,32
+  0x002191C0: SPECIAL fn=45 rs=zero rt=zero rd=a2
+  0x002191C4: ADDIU a1,zero,99
+0x002191F8: JR ra
+  0x002191EC: ADDIU a1,a1,-1
+  0x002191F0: REGIMM a1,at,002191C8
+  0x002191F4: SPECIAL fn=10 rs=v0 rt=v1 rd=a0
+  0x002191F8: JR ra
+  0x002191FC: SLTI v0,a0,1
+  0x00219200: ADDIU sp,sp,-32
+  0x00219204: SPECIAL fn=45 rs=zero rt=zero rd=a2
+0x00219298: JR ra
+  0x0021928C: LD s0,0(sp)
+  0x00219290: LD s1,8(sp)
+  0x00219294: LD ra,16(sp)
+  0x00219298: JR ra
+  0x0021929C: ADDIU sp,sp,32
+  0x002192A0: SPECIAL fn=45 rs=a0 rt=zero rd=v1
+  0x002192A4: BEQ v1,zero,0x002192CC
+0x002192CC: JR ra
+  0x002192C0: SLT v1,a0,v0
+  0x002192C4: SPECIAL fn=11 rs=a0 rt=v1 rd=v0
+  0x002192C8: SW v0,-28888(gp)
+  0x002192CC: JR ra
+  0x002192D0: LW v0,-28888(gp)
+  0x002192D4: SPECIAL fn=45 rs=a0 rt=zero rd=v1
+  0x002192D8: BEQ v1,zero,0x00219300
+0x00219300: JR ra
+  0x002192F4: SLT v1,a0,v0
+  0x002192F8: SPECIAL fn=11 rs=a0 rt=v1 rd=v0
+  0x002192FC: SW v0,-28884(gp)
+  0x00219300: JR ra
+  0x00219304: LW v0,-28884(gp)
+  0x00219308: ADDIU sp,sp,-32
+  0x0021930C: SPECIAL fn=45 rs=zero rt=zero rd=v0
+0x0021932C: JR s4
+  0x00219320: OP=31 rs=s6 rt=zero imm=2814
+  0x00219324: BLEZ s2,0x002218EC
+  0x00219328: SW ra,25548(v1)
+  0x0021932C: JR s4
+  0x00219330: OP=23 rs=a1 rt=a2 imm=20811
+  0x00219334: LHU a3,-18477(s0)
+  0x00219338: OP=26 rs=s3 rt=ra imm=-24451
+0x00219540: JR ra
+  0x00219534: LD s1,8(sp)
+  0x00219538: LD s2,16(sp)
+  0x0021953C: LD ra,24(sp)
+  0x00219540: JR ra
+  0x00219544: ADDIU sp,sp,32
+  0x00219548: ADDIU sp,sp,-592
+  0x0021954C: SPECIAL fn=45 rs=a0 rt=zero rd=a1
+0x00219570: JR ra
+  0x00219564: JAL 0x00258808
+  0x00219568: ADDIU a2,zero,1
+  0x0021956C: LD ra,576(sp)
+  0x00219570: JR ra
+  0x00219574: ADDIU sp,sp,592
+  0x00219578: ADDIU sp,sp,-64
+  0x0021957C: LW v0,-26212(gp)
+0x00219660: JR v0
+  0x00219654: LUI at,0x008E
+  0x00219658: ADDU at,at,v0
+  0x0021965C: LW v0,5168(at)
+  0x00219660: JR v0
+  0x00219664: SLL zero,zero,0
+  0x00219668: JAL 0x00201CD4
+  0x0021966C: ADDIU s2,zero,-1
+0x002197A0: JR ra
+  0x00219794: LD s4,32(sp)
+  0x00219798: LD s5,40(sp)
+  0x0021979C: LD ra,48(sp)
+  0x002197A0: JR ra
+  0x002197A4: ADDIU sp,sp,64
+  0x002197A8: ADDIU sp,sp,-304
+  0x002197AC: LUI v0,0x0092
+0x0021980C: JR ra
+  0x00219800: SW v0,0(sp)
+  0x00219804: LD s0,288(sp)
+  0x00219808: LD ra,296(sp)
+  0x0021980C: JR ra
+  0x00219810: ADDIU sp,sp,304
+  0x00219814: ADDIU sp,sp,-48
+  0x00219818: SD s2,16(sp)
+0x00219B84: JR ra
+  0x00219B78: SPECIAL fn=45 rs=zero rt=zero rd=a2
+  0x00219B7C: LD s0,576(sp)
+  0x00219B80: LD ra,584(sp)
+  0x00219B84: JR ra
+  0x00219B88: ADDIU sp,sp,592
+  0x00219B8C: SPECIAL fn=45 rs=zero rt=zero rd=a1
+  0x00219B90: SLL v0,a1,2
+0x00219C00: JR ra
+  0x00219BF4: ADDIU v0,zero,2
+  0x00219BF8: OP=21 rs=a0 rt=v0 imm=3
+  0x00219BFC: ADDIU a1,a1,1
+  0x00219C00: JR ra
+  0x00219C04: ADDIU v0,zero,1
+  0x00219C08: SLTI v0,a1,20
+  0x00219C0C: OP=21 rs=v0 rt=zero imm=-31
+0x00219C14: JR ra
+  0x00219C08: SLTI v0,a1,20
+  0x00219C0C: OP=21 rs=v0 rt=zero imm=-31
+  0x00219C10: SLL v0,a1,2
+  0x00219C14: JR ra
+  0x00219C18: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00219C1C: ADDIU sp,sp,-32
+  0x00219C20: SPECIAL fn=45 rs=zero rt=zero rd=v1
+0x00219E94: JR ra
+  0x00219E88: LD s0,0(sp)
+  0x00219E8C: LD s1,8(sp)
+  0x00219E90: LD ra,16(sp)
+  0x00219E94: JR ra
+  0x00219E98: ADDIU sp,sp,32
+  0x00219E9C: JR ra
+  0x00219EA0: ADDIU v0,zero,1000
+0x00219E9C: JR ra
+  0x00219E90: LD ra,16(sp)
+  0x00219E94: JR ra
+  0x00219E98: ADDIU sp,sp,32
+  0x00219E9C: JR ra
+  0x00219EA0: ADDIU v0,zero,1000
+  0x00219EA4: ADDIU sp,sp,-1104
+  0x00219EA8: ADDIU v0,zero,22
+0x0021A0BC: JR ra
+  0x0021A0B0: LD s2,1072(sp)
+  0x0021A0B4: LD s3,1080(sp)
+  0x0021A0B8: LD ra,1088(sp)
+  0x0021A0BC: JR ra
+  0x0021A0C0: ADDIU sp,sp,1104
+  0x0021A0C4: SLL v1,a0,2
+  0x0021A0C8: SLTI a0,a0,20
+0x0021A0F8: JR ra
+  0x0021A0EC: SRL v0,v0,31
+  0x0021A0F0: SPECIAL fn=10 rs=zero rt=v0 rd=a0
+  0x0021A0F4: SPECIAL fn=45 rs=a0 rt=zero rd=v0
+  0x0021A0F8: JR ra
+  0x0021A0FC: SLL zero,zero,0
+  0x0021A100: ADDIU sp,sp,-608
+  0x0021A104: SPECIAL fn=45 rs=zero rt=zero rd=a2
+0x0021A178: JR ra
+  0x0021A16C: LD s1,584(sp)
+  0x0021A170: LD s2,592(sp)
+  0x0021A174: LD ra,600(sp)
+  0x0021A178: JR ra
+  0x0021A17C: ADDIU sp,sp,608
+  0x0021A180: ADDIU sp,sp,-1264
+  0x0021A184: ADDIU v0,zero,6
+0x0021A46C: JR ra
+  0x0021A460: LD s4,1232(sp)
+  0x0021A464: LD s5,1240(sp)
+  0x0021A468: LD ra,1248(sp)
+  0x0021A46C: JR ra
+  0x0021A470: ADDIU sp,sp,1264
+  0x0021A474: LW v0,-29008(gp)
+  0x0021A478: ADDIU sp,sp,-48
+0x0021A720: JR ra
+  0x0021A714: LD s2,16(sp)
+  0x0021A718: LD s3,24(sp)
+  0x0021A71C: LD ra,32(sp)
+  0x0021A720: JR ra
+  0x0021A724: ADDIU sp,sp,48
+  0x0021A728: ADDIU sp,sp,-32
+  0x0021A72C: SD ra,16(sp)
+0x0021A7B0: JR ra
+  0x0021A7A4: LD ra,16(sp)
+  0x0021A7A8: ADDIU v0,s0,120
+  0x0021A7AC: LD s0,0(sp)
+  0x0021A7B0: JR ra
+  0x0021A7B4: ADDIU sp,sp,32
+  0x0021A7B8: LUI v0,0x005E
+  0x0021A7BC: ADDIU v1,v0,-20480
+0x0021A7D0: JR ra
+  0x0021A7C4: SLT v0,v0,a0
+  0x0021A7C8: OP=21 rs=v0 rt=zero imm=1
+  0x0021A7CC: SW a0,172(v1)
+  0x0021A7D0: JR ra
+  0x0021A7D4: SLL zero,zero,0
+  0x0021A7D8: ADDIU sp,sp,-32
+  0x0021A7DC: LUI v0,0x005E
+0x0021A9AC: JR ra
+  0x0021A9A0: LD s0,0(sp)
+  0x0021A9A4: LD s1,8(sp)
+  0x0021A9A8: LD ra,16(sp)
+  0x0021A9AC: JR ra
+  0x0021A9B0: ADDIU sp,sp,32
+  0x0021A9B4: ADDIU sp,sp,-64
+  0x0021A9B8: ADDIU v1,zero,1
+0x0021AD2C: JR ra
+  0x0021AD20: LD ra,40(sp)
+  0x0021AD24: OP=49 rs=sp rt=s5 imm=56
+  0x0021AD28: OP=49 rs=sp rt=s4 imm=48
+  0x0021AD2C: JR ra
+  0x0021AD30: ADDIU sp,sp,64
+  0x0021AD34: JR ra
+  0x0021AD38: SLL zero,zero,0
+0x0021AD34: JR ra
+  0x0021AD28: OP=49 rs=sp rt=s4 imm=48
+  0x0021AD2C: JR ra
+  0x0021AD30: ADDIU sp,sp,64
+  0x0021AD34: JR ra
+  0x0021AD38: SLL zero,zero,0
+  0x0021AD3C: ADDIU sp,sp,-560
+  0x0021AD40: LW t2,-24040(gp)
+0x0021ADB4: JR ra
+  0x0021ADA8: JAL 0x0026424C
+  0x0021ADAC: SW v0,0(sp)
+  0x0021ADB0: LD ra,544(sp)
+  0x0021ADB4: JR ra
+  0x0021ADB8: ADDIU sp,sp,560
+  0x0021ADBC: LBU v1,-26096(gp)
+  0x0021ADC0: ADDIU sp,sp,-560
+0x0021AE48: JR ra
+  0x0021AE3C: JAL 0x0026424C
+  0x0021AE40: SW v0,0(sp)
+  0x0021AE44: LD ra,544(sp)
+  0x0021AE48: JR ra
+  0x0021AE4C: ADDIU sp,sp,560
+  0x0021AE50: LUI v0,0x005D
+  0x0021AE54: ADDIU a0,zero,20
+0x0021AF88: JR t6
+  0x0021AF7C: OP=49 rs=v1 rt=zero imm=-26957
+  0x0021AF80: OP=39 rs=s0 rt=s7 imm=-2421
+  0x0021AF84: J 0x04E50088
+  0x0021AF88: JR t6
+  0x0021AF8C: SB s5,11385(t6)
+  0x0021AF90: OP=25 rs=v1 rt=sp imm=-572
+  0x0021AF94: OP=18 rs=sp rt=k1 imm=17608
+0x0021B030: JR ra
+  0x0021B024: BNE v1,zero,0x0021B030
+  0x0021B028: ADDIU v0,zero,4
+  0x0021B02C: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x0021B030: JR ra
+  0x0021B034: SLL zero,zero,0
+  0x0021B038: LBU v1,-26091(gp)
+  0x0021B03C: ADDIU sp,sp,-16
+0x0021B0E8: JR ra
+  0x0021B0DC: SB a0,-26090(gp)
+  0x0021B0E0: ADDIU v0,zero,1
+  0x0021B0E4: LD ra,0(sp)
+  0x0021B0E8: JR ra
+  0x0021B0EC: ADDIU sp,sp,16
+  0x0021B0F0: ADDIU sp,sp,-16
+  0x0021B0F4: LW a0,-26212(gp)
+0x0021B250: JR ra
+  0x0021B244: ADDIU v0,zero,1
+  0x0021B248: LD s0,0(sp)
+  0x0021B24C: LD ra,8(sp)
+  0x0021B250: JR ra
+  0x0021B254: ADDIU sp,sp,16
+  0x0021B258: LW a0,-26212(gp)
+  0x0021B25C: ADDIU sp,sp,-16
+0x0021B3BC: JR ra
+  0x0021B3B0: SPECIAL fn=45 rs=zero rt=zero rd=a0
+  0x0021B3B4: ADDIU v0,zero,1
+  0x0021B3B8: LD ra,0(sp)
+  0x0021B3BC: JR ra
+  0x0021B3C0: ADDIU sp,sp,16
+  0x0021B3C4: LW a0,-26212(gp)
+  0x0021B3C8: ADDIU sp,sp,-16
+0x0021B514: JR ra
+  0x0021B508: SPECIAL fn=45 rs=zero rt=zero rd=a0
+  0x0021B50C: ADDIU v0,zero,1
+  0x0021B510: LD ra,0(sp)
+  0x0021B514: JR ra
+  0x0021B518: ADDIU sp,sp,16
+  0x0021B51C: LW a0,-26212(gp)
+  0x0021B520: ADDIU sp,sp,-16
+0x0021B680: JR ra
+  0x0021B674: SPECIAL fn=45 rs=zero rt=zero rd=a0
+  0x0021B678: ADDIU v0,zero,1
+  0x0021B67C: LD ra,0(sp)
+  0x0021B680: JR ra
+  0x0021B684: ADDIU sp,sp,16
+  0x0021B688: ADDIU sp,sp,-880
+  0x0021B68C: SD s5,840(sp)
+0x0021B7B8: JR v0
+  0x0021B7AC: LUI at,0x008E
+  0x0021B7B0: ADDU at,at,v0
+  0x0021B7B4: LW v0,5408(at)
+  0x0021B7B8: JR v0
+  0x0021B7BC: SLL zero,zero,0
+  0x0021B7C0: ADDU v0,v1,s1
+  0x0021B7C4: ADDU v1,sp,s1
+0x0021BAD8: JR ra
+  0x0021BACC: LD s6,848(sp)
+  0x0021BAD0: LD s7,856(sp)
+  0x0021BAD4: LD ra,864(sp)
+  0x0021BAD8: JR ra
+  0x0021BADC: ADDIU sp,sp,880
+  0x0021BAE0: ADDIU sp,sp,-880
+  0x0021BAE4: SD s5,840(sp)
+0x0021BC10: JR v0
+  0x0021BC04: LUI at,0x008E
+  0x0021BC08: ADDU at,at,v0
+  0x0021BC0C: LW v0,5440(at)
+  0x0021BC10: JR v0
+  0x0021BC14: SLL zero,zero,0
+  0x0021BC18: ADDU v0,v1,s1
+  0x0021BC1C: ADDU v1,sp,s1
+0x0021BE00: JR ra
+  0x0021BDF4: LD s6,848(sp)
+  0x0021BDF8: LD s7,856(sp)
+  0x0021BDFC: LD ra,864(sp)
+  0x0021BE00: JR ra
+  0x0021BE04: ADDIU sp,sp,880
+  0x0021BE08: ADDIU sp,sp,-880
+  0x0021BE0C: SD s5,840(sp)
+0x0021BF48: JR v0
+  0x0021BF3C: LUI at,0x008E
+  0x0021BF40: ADDU at,at,v0
+  0x0021BF44: LW v0,5472(at)
+  0x0021BF48: JR v0
+  0x0021BF4C: SLL zero,zero,0
+  0x0021BF50: ADDU v0,v1,s1
+  0x0021BF54: ADDU v1,sp,s1
+0x0021C268: JR ra
+  0x0021C25C: LD s6,848(sp)
+  0x0021C260: LD s7,856(sp)
+  0x0021C264: LD ra,864(sp)
+  0x0021C268: JR ra
+  0x0021C26C: ADDIU sp,sp,880
+  0x0021C270: ADDIU sp,sp,-880
+  0x0021C274: SD s5,840(sp)
+0x0021C3A0: JR v0
+  0x0021C394: LUI at,0x008E
+  0x0021C398: ADDU at,at,v0
+  0x0021C39C: LW v0,5504(at)
+  0x0021C3A0: JR v0
+  0x0021C3A4: SLL zero,zero,0
+  0x0021C3A8: ADDU v0,v1,s1
+  0x0021C3AC: ADDU v1,sp,s1
+0x0021C590: JR ra
+  0x0021C584: LD s6,848(sp)
+  0x0021C588: LD s7,856(sp)
+  0x0021C58C: LD ra,864(sp)
+  0x0021C590: JR ra
+  0x0021C594: ADDIU sp,sp,880
+  0x0021C598: ADDIU sp,sp,-16
+  0x0021C59C: SPECIAL fn=45 rs=zero rt=zero rd=a2
+0x0021C610: JR ra
+  0x0021C604: BNE t0,zero,0x0021C5A8
+  0x0021C608: SLL v0,a2,2
+  0x0021C60C: LD ra,0(sp)
+  0x0021C610: JR ra
+  0x0021C614: ADDIU sp,sp,16
+  0x0021C618: SPECIAL fn=45 rs=zero rt=zero rd=a1
+  0x0021C61C: SLL v0,a1,2
+0x0021C67C: JR ra
+  0x0021C670: SLL zero,zero,0
+  0x0021C674: REGIMM v1,v1,0021C660
+  0x0021C678: ADDIU v1,v1,-1
+  0x0021C67C: JR ra
+  0x0021C680: SW zero,20(v0)
+  0x0021C684: BNE a2,zero,0x0021C620
+  0x0021C688: SLL v0,a1,2
+0x0021C68C: JR ra
+  0x0021C680: SW zero,20(v0)
+  0x0021C684: BNE a2,zero,0x0021C620
+  0x0021C688: SLL v0,a1,2
+  0x0021C68C: JR ra
+  0x0021C690: SLL zero,zero,0
+  0x0021C694: ADDIU sp,sp,-16
+  0x0021C698: SPECIAL fn=45 rs=zero rt=zero rd=v1
+0x0021C718: JR ra
+  0x0021C70C: SLL v0,v1,2
+  0x0021C710: LD s0,0(sp)
+  0x0021C714: LD ra,8(sp)
+  0x0021C718: JR ra
+  0x0021C71C: ADDIU sp,sp,16
+  0x0021C720: LW a0,-26212(gp)
+  0x0021C724: ADDIU sp,sp,-32
+0x0021C8A4: JR ra
+  0x0021C898: LW v0,-28968(gp)
+  0x0021C89C: LD s0,0(sp)
+  0x0021C8A0: LD ra,8(sp)
+  0x0021C8A4: JR ra
+  0x0021C8A8: ADDIU sp,sp,16
+  0x0021C8AC: LW v1,-21316(gp)
+  0x0021C8B0: ADDIU sp,sp,-32
+0x0021C9A0: JR ra
+  0x0021C994: LD s1,8(sp)
+  0x0021C998: LD s2,16(sp)
+  0x0021C99C: LD ra,24(sp)
+  0x0021C9A0: JR ra
+  0x0021C9A4: ADDIU sp,sp,32
+  0x0021C9A8: LUI t1,0x0065
+  0x0021C9AC: SPECIAL fn=45 rs=a0 rt=zero rd=t0
+0x0021CC0C: JR ra
+  0x0021CC00: LHU v1,6(t0)
+  0x0021CC04: LUI v0,0x0065
+  0x0021CC08: SH v1,-19906(v0)
+  0x0021CC0C: JR ra
+  0x0021CC10: SLL zero,zero,0
+  0x0021CC14: ADDIU sp,sp,-32
+  0x0021CC18: LUI t6,0x005D
+0x0021D004: JR ra
+  0x0021CFF8: LD s0,0(sp)
+  0x0021CFFC: LD s1,8(sp)
+  0x0021D000: LD ra,16(sp)
+  0x0021D004: JR ra
+  0x0021D008: ADDIU sp,sp,32
+  0x0021D00C: ADDIU sp,sp,-64
+  0x0021D010: ADDIU v1,zero,26
+0x0021D314: JR ra
+  0x0021D308: LD s4,32(sp)
+  0x0021D30C: LD s5,40(sp)
+  0x0021D310: LD ra,48(sp)
+  0x0021D314: JR ra
+  0x0021D318: ADDIU sp,sp,64
+  0x0021D31C: ADDIU sp,sp,-1472
+  0x0021D320: LBU v0,1480(sp)
+0x0021E714: JR ra
+  0x0021E708: LD fp,1440(sp)
+  0x0021E70C: LD ra,1448(sp)
+  0x0021E710: OP=49 rs=sp rt=s4 imm=1456
+  0x0021E714: JR ra
+  0x0021E718: ADDIU sp,sp,1472
+  0x0021E71C: SLL v0,a1,1
+  0x0021E720: ADDIU sp,sp,-96
+0x0021E85C: JR ra
+  0x0021E850: LD s7,72(sp)
+  0x0021E854: LD fp,80(sp)
+  0x0021E858: LD ra,88(sp)
+  0x0021E85C: JR ra
+  0x0021E860: ADDIU sp,sp,96
+  0x0021E864: SLL v0,a1,1
+  0x0021E868: ADDIU sp,sp,-80
+0x0021E988: JR ra
+  0x0021E97C: LD s7,56(sp)
+  0x0021E980: LD fp,64(sp)
+  0x0021E984: LD ra,72(sp)
+  0x0021E988: JR ra
+  0x0021E98C: ADDIU sp,sp,80
+  0x0021E990: ADDIU v0,zero,-1
+  0x0021E994: SPECIAL fn=45 rs=a0 rt=zero rd=t2
+0x0021E9CC: JR ra
+  0x0021E9C0: SLTIU v0,v0,21
+  0x0021E9C4: BEQ v0,zero,0x0021EA44
+  0x0021E9C8: SLL zero,zero,0
+  0x0021E9CC: JR ra
+  0x0021E9D0: ADDIU v0,zero,1
+  0x0021E9D4: SLL v0,t0,1
+  0x0021E9D8: LUI v1,0x008E
+0x0021EA44: JR ra
+  0x0021EA38: ADDIU v0,zero,99
+  0x0021EA3C: OP=21 rs=v1 rt=v0 imm=-12
+  0x0021EA40: LW v0,0(a0)
+  0x0021EA44: JR ra
+  0x0021EA48: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x0021EA4C: ADDIU sp,sp,-816
+  0x0021EA50: LW v0,-26212(gp)
+0x0021EC44: JR ra
+  0x0021EC38: LD s2,784(sp)
+  0x0021EC3C: LD s3,792(sp)
+  0x0021EC40: LD ra,800(sp)
+  0x0021EC44: JR ra
+  0x0021EC48: ADDIU sp,sp,816
+  0x0021EC4C: LW v0,-26212(gp)
+  0x0021EC50: LUI t4,0x0060
+0x0021ED04: JR ra
+  0x0021ECF8: SW a3,8(v1)
+  0x0021ECFC: SW v0,12(a1)
+  0x0021ED00: SW v1,160(t5)
+  0x0021ED04: JR ra
+  0x0021ED08: SW a2,8(a1)
+  0x0021ED0C: ADDIU sp,sp,-416
+  0x0021ED10: ORI v0,zero,0xFFFF
+0x00220954: JR ra
+  0x00220948: LD s7,392(sp)
+  0x0022094C: LD fp,400(sp)
+  0x00220950: LD ra,408(sp)
+  0x00220954: JR ra
+  0x00220958: ADDIU sp,sp,416
+  0x0022095C: LBU v0,-26091(gp)
+  0x00220960: ADDIU sp,sp,-48
+0x00220D84: JR ra
+  0x00220D78: LD s1,24(sp)
+  0x00220D7C: LD s2,32(sp)
+  0x00220D80: LD ra,40(sp)
+  0x00220D84: JR ra
+  0x00220D88: ADDIU sp,sp,48
+  0x00220D8C: ADDIU sp,sp,-16
+  0x00220D90: ADDIU a1,zero,1
+0x00220DFC: JR ra
+  0x00220DF0: LW v0,-28968(gp)
+  0x00220DF4: LD s0,0(sp)
+  0x00220DF8: LD ra,8(sp)
+  0x00220DFC: JR ra
+  0x00220E00: ADDIU sp,sp,16
+  0x00220E04: LUI v0,0x005D
+  0x00220E08: ADDIU v1,zero,26
+0x00220E28: JR ra
+  0x00220E1C: BEQ v1,zero,0x00220E28
+  0x00220E20: ADDIU v0,zero,1
+  0x00220E24: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00220E28: JR ra
+  0x00220E2C: SLL zero,zero,0
+  0x00220E30: LUI v0,0x005D
+  0x00220E34: ADDIU sp,sp,-16
+0x00220E58: JR ra
+  0x00220E4C: LUI v0,0x006C
+  0x00220E50: LD ra,0(sp)
+  0x00220E54: ADDIU v0,v0,15664
+  0x00220E58: JR ra
+  0x00220E5C: ADDIU sp,sp,16
+  0x00220E60: LH a1,-26208(gp)
+  0x00220E64: LD ra,0(sp)
+0x00220E70: JR ra
+  0x00220E64: LD ra,0(sp)
+  0x00220E68: J 0x0021D6A0
+  0x00220E6C: ADDIU sp,sp,16
+  0x00220E70: JR ra
+  0x00220E74: SLL zero,zero,0
+  0x00220E78: ADDIU sp,sp,-16
+  0x00220E7C: SD ra,0(sp)
+0x00220EC8: JR ra
+  0x00220EBC: XORI v0,v0,0x0064
+  0x00220EC0: SLTU v0,zero,v0
+  0x00220EC4: LD ra,0(sp)
+  0x00220EC8: JR ra
+  0x00220ECC: ADDIU sp,sp,16
+  0x00220ED0: LH a0,-29018(gp)
+  0x00220ED4: ADDIU sp,sp,-16
+0x00220F08: JR ra
+  0x00220EFC: XORI v0,v0,0x0067
+  0x00220F00: SLTIU v0,v0,1
+  0x00220F04: LD ra,0(sp)
+  0x00220F08: JR ra
+  0x00220F0C: ADDIU sp,sp,16
+  0x00220F10: LBU v1,-26091(gp)
+  0x00220F14: BNE v1,zero,0x00220F30
+0x00220F30: JR ra
+  0x00220F24: ADDIU v0,zero,2
+  0x00220F28: LBU v0,-26064(gp)
+  0x00220F2C: SLTU v0,zero,v0
+  0x00220F30: JR ra
+  0x00220F34: SLL zero,zero,0
+  0x00220F38: ADDIU sp,sp,-16
+  0x00220F3C: SD s0,0(sp)
+0x00220F64: JR ra
+  0x00220F58: LD s0,0(sp)
+  0x00220F5C: LW v0,0(v0)
+  0x00220F60: LD ra,8(sp)
+  0x00220F64: JR ra
+  0x00220F68: ADDIU sp,sp,16
+  0x00220F6C: LUI v0,0x0065
+  0x00220F70: ADDIU v1,zero,2797
+0x00220F80: JR ra
+  0x00220F74: ADDIU v0,v0,-19936
+  0x00220F78: SH v1,14(v0)
+  0x00220F7C: SH zero,18(v0)
+  0x00220F80: JR ra
+  0x00220F84: SH zero,16(v0)
+  0x00220F88: ADDIU sp,sp,-32
+  0x00220F8C: ADDIU a1,zero,4
+0x00221520: JR ra
+  0x00221514: LW v0,20(v1)
+  0x00221518: ADDIU v0,v0,1
+  0x0022151C: SW v0,7936(a3)
+  0x00221520: JR ra
+  0x00221524: ADDIU sp,sp,64
+  0x00221528: ADDIU sp,sp,-48
+  0x0022152C: SPECIAL fn=45 rs=zero rt=zero rd=a0
+0x002216C4: JR ra
+  0x002216B8: LD s3,24(sp)
+  0x002216BC: LD s4,32(sp)
+  0x002216C0: LD ra,40(sp)
+  0x002216C4: JR ra
+  0x002216C8: ADDIU sp,sp,48
+  0x002216CC: ADDIU sp,sp,-16
+  0x002216D0: SD ra,8(sp)
+0x00221710: JR ra
+  0x00221704: LD s0,0(sp)
+  0x00221708: LD ra,8(sp)
+  0x0022170C: SW zero,-24124(gp)
+  0x00221710: JR ra
+  0x00221714: ADDIU sp,sp,16
+  0x00221718: ADDIU sp,sp,-16
+  0x0022171C: SPECIAL fn=45 rs=a0 rt=zero rd=a1
+0x00221834: JR ra
+  0x00221828: XORI v0,v1,0x0003
+  0x0022182C: SLTU v0,zero,v0
+  0x00221830: LD ra,0(sp)
+  0x00221834: JR ra
+  0x00221838: ADDIU sp,sp,16
+  0x0022183C: LUI v1,0x0065
+  0x00221840: ADDIU sp,sp,-16
+0x00221894: JR ra
+  0x00221888: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x0022188C: ADDIU v0,zero,1
+  0x00221890: LD ra,0(sp)
+  0x00221894: JR ra
+  0x00221898: ADDIU sp,sp,16
+  0x0022189C: LUI a2,0x005D
+  0x002218A0: ADDIU a1,a2,-13944
+0x00221924: JR ra
+  0x00221918: BNE v1,zero,0x00221924
+  0x0022191C: ADDIU v0,zero,1
+  0x00221920: SPECIAL fn=45 rs=zero rt=zero rd=v0
+  0x00221924: JR ra
+  0x00221928: SLL zero,zero,0
+  0x0022192C: ADDIU sp,sp,-16
+  0x00221930: SD ra,0(sp)
+0x0022194C: JR ra
+  0x00221940: LD ra,0(sp)
+  0x00221944: LH v0,-26208(gp)
+  0x00221948: SLTI v0,v0,100
+  0x0022194C: JR ra
+  0x00221950: ADDIU sp,sp,16
+  0x00221954: LUI v0,0x005D
+  0x00221958: ADDIU v1,zero,27
+0x00221974: JR ra
+  0x00221968: XORI v1,a0,0x0019
+  0x0022196C: ADDIU v0,zero,2
+  0x00221970: SPECIAL fn=11 rs=zero rt=v1 rd=v0
+  0x00221974: JR ra
+  0x00221978: SLL zero,zero,0
+  0x0022197C: LW v0,-24052(gp)
+  0x00221980: ADDIU sp,sp,-16
+0x002219AC: JR ra
+  0x002219A0: BEQ v0,zero,0x00221990
+  0x002219A4: SLL zero,zero,0
+  0x002219A8: LD ra,0(sp)
+  0x002219AC: JR ra
+  0x002219B0: ADDIU sp,sp,16
+  0x002219B4: ADDIU sp,sp,-32
+  0x002219B8: LUI v1,0x0065
+0x00221A54: JR ra
+  0x00221A48: LD s0,0(sp)
+  0x00221A4C: LD s1,8(sp)
+  0x00221A50: LD ra,16(sp)
+  0x00221A54: JR ra
+  0x00221A58: ADDIU sp,sp,32
+  0x00221A5C: SLL a2,a2,16
+  0x00221A60: SRA a2,a2,16
+0x00221A70: JR ra
+  0x00221A64: BEQ a2,zero,0x00221A70
+  0x00221A68: SB a1,1(a0)
+  0x00221A6C: SH a2,6(a0)
+  0x00221A70: JR ra
+  0x00221A74: SLL zero,zero,0
+  0x00221A78: LUI v0,0x005D
+  0x00221A7C: ADDIU a0,zero,26
+0x00221A98: JR ra
+  0x00221A8C: LUI v0,0x0065
+  0x00221A90: LBU v0,-11920(v0)
+  0x00221A94: SLTU v0,zero,v0
+  0x00221A98: JR ra
+  0x00221A9C: SLL zero,zero,0
+  0x00221AA0: ADDIU sp,sp,-16
+  0x00221AA4: ADDIU a0,zero,1
+0x00221B20: JR ra
+  0x00221B14: SPECIAL fn=45 rs=zero rt=zero rd=a0
+  0x00221B18: LD s0,0(sp)
+  0x00221B1C: LD ra,8(sp)
+  0x00221B20: JR ra
+  0x00221B24: ADDIU sp,sp,16
+  0x00221B28: LUI t0,0x0018
+  0x00221B2C: LW t0,0(t0)
+0x00221B58: JR ra
+  0x00221B4C: ADDU at,t1,t2
+  0x00221B50: ADDU at,at,t3
+  0x00221B54: ADDU v0,at,t0
+  0x00221B58: JR ra
+  0x00221B5C: SLL zero,zero,0
+  0x00221B60: LUI t0,0x0018
+  0x00221B64: LW t0,0(t0)
+0x00221B78: JR ra
+  0x00221B6C: ADDU at,at,t0
+  0x00221B70: LW t0,0(at)
+  0x00221B74: LW v0,0(t0)
+  0x00221B78: JR ra
+  0x00221B7C: SLL zero,zero,0
+  0x00221B80: LUI t0,0x0018
+  0x00221B84: LW t0,4(t0)
+0x00221BA0: JR ra
+  0x00221B94: SLL at,a1,2
+  0x00221B98: ADDU at,at,t0
+  0x00221B9C: LW v0,0(at)
+  0x00221BA0: JR ra
+  0x00221BA4: SLL zero,zero,0
+  0x00221BA8: LUI t0,0x0018
+  0x00221BAC: LW t0,16(t0)
+0x00221BC0: JR ra
+  0x00221BB4: SLL t1,a0,3
+  0x00221BB8: ADDU v0,at,t0
+  0x00221BBC: ADDU v0,v0,t1
+  0x00221BC0: JR ra
+  0x00221BC4: SLL zero,zero,0
+  0x00221BC8: LUI t0,0x0018
+  0x00221BCC: LW t0,0(t0)
+0x00221BF8: JR ra
+  0x00221BEC: ADDU at,t1,t2
+  0x00221BF0: ADDU at,at,t3
+  0x00221BF4: ADDU v0,at,t0
+  0x00221BF8: JR ra
+  0x00221BFC: ADDIU v0,v0,60
+  0x00221C00: LUI t0,0x0018
+  0x00221C04: LW t0,8(t0)
+0x00221C14: JR ra
+  0x00221C08: SLL at,a0,2
+  0x00221C0C: ADDU at,at,t0
+  0x00221C10: LW v0,0(at)
+  0x00221C14: JR ra
+  0x00221C18: SLL zero,zero,0
+  0x00221C1C: SPECIAL fn=25 rs=a0 rt=a1 rd=zero
+  0x00221C20: SPECIAL fn=18 rs=zero rt=zero rd=t0
+0x00221C30: JR ra
+  0x00221C24: SPECIAL fn=25 rs=a2 rt=a3 rd=zero
+  0x00221C28: SPECIAL fn=18 rs=zero rt=zero rd=t1
+  0x00221C2C: ADDU v0,t0,t1
+  0x00221C30: JR ra
+  0x00221C34: SLL zero,zero,0
+  0x00221C38: LW t0,60(a0)
+  0x00221C3C: BEQ t0,zero,0x00221C4C
+0x00221C4C: JR ra
+  0x00221C40: SLL zero,zero,0
+  0x00221C44: ADDU t0,t0,a0
+  0x00221C48: SW t0,60(a0)
+  0x00221C4C: JR ra
+  0x00221C50: SLL zero,zero,0
+  0x00221C54: LW s6,32(a0)
+  0x00221C58: ADDU s6,s6,a1
+0x00222124: JR ra
+  0x00222118: OP=31 rs=t0 rt=t5 imm=80
+  0x0022211C: OP=31 rs=t0 rt=t6 imm=96
+  0x00222120: OP=31 rs=t0 rt=t7 imm=112
+  0x00222124: JR ra
+  0x00222128: SLL zero,zero,0
+  0x0022212C: LUI t0,0x0200
+  0x00222130: LUI t1,0x05C0
+0x00222170: JR ra
+  0x00222164: ADDIU t1,t1,-4
+  0x00222168: BNE t1,zero,0x0022213C
+  0x0022216C: SLL zero,zero,0
+  0x00222170: JR ra
+  0x00222174: SLL zero,zero,0
+  0x00222178: ADDIU sp,sp,-160
+  0x0022217C: SD s0,0(sp)
+0x002228E0: JR ra
+  0x002228D4: LD s6,96(sp)
+  0x002228D8: LD s7,112(sp)
+  0x002228DC: LD fp,128(sp)
+  0x002228E0: JR ra
+  0x002228E4: ADDIU sp,sp,160
+  0x002228E8: SUBU v0,a0,a1
+  0x002228EC: SRL v0,v0,4
+0x002228F0: JR ra
+  0x002228E4: ADDIU sp,sp,160
+  0x002228E8: SUBU v0,a0,a1
+  0x002228EC: SRL v0,v0,4
+  0x002228F0: JR ra
+  0x002228F4: SLL zero,zero,0
+  0x002228F8: SLTU at,a0,a1
+  0x002228FC: BNE at,zero,0x0022291C
+0x00222914: JR ra
+  0x00222908: BEQ at,zero,0x0022291C
+  0x0022290C: SLL zero,zero,0
+  0x00222910: ORI v0,zero,0x0001
+  0x00222914: JR ra
+  0x00222918: SLL zero,zero,0
+  0x0022291C: ORI v0,zero,0x0000
+  0x00222920: JR ra
+0x00222920: JR ra
+  0x00222914: JR ra
+  0x00222918: SLL zero,zero,0
+  0x0022291C: ORI v0,zero,0x0000
+  0x00222920: JR ra
+  0x00222924: SLL zero,zero,0
+  0x00222928: OP=54 rs=a0 rt=at imm=0
+  0x0022292C: OP=54 rs=a1 rt=v0 imm=0
+0x0022294C: JR ra
+  0x00222940: OP=18 rs=s0 rt=zero imm=959
+  0x00222944: OP=18 rs=v0 rt=t0 imm=-20480
