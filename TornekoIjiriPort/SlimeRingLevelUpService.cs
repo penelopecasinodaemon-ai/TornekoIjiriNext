@@ -217,13 +217,14 @@ internal sealed class SlimeRingLevelUpService : IDisposable
         if (offset < 0 || requiredEnd > bin.Length)
             throw new InvalidOperationException("モンスターテーブルが取得済みBINの範囲外です。");
 
-        uint tableBase = checked(physicalAddress + MonsterRecordSize);
+        // 種族IDは1始まり。ID 0の未使用レコードを含む先頭アドレスを返す。
+        uint tableBase = physicalAddress;
 
         // BIN上の199レコードとPCSX2 RAM上の同じ位置を照合し、
         // テーブル基点の取り違えがあればフックを設置しない。
         for (int id = 1; id <= MonsterRecordCount; id++)
         {
-            uint recordAddress = tableBase + (uint)((id - 1) * MonsterRecordSize);
+            uint recordAddress = tableBase + (uint)(id * MonsterRecordSize);
             uint flagsWord = ActionAutoRestoreService.ReadShared32(recordAddress + 4u);
             byte liveFlags = (byte)(flagsWord >> 16);
             byte binFlags = bin[checked((int)offset) + (id - 1) * MonsterRecordSize + 6];
