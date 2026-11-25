@@ -189,37 +189,35 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         SlimeRingSettings settings = SlimeRingSettings.Load(SlimeRingEditorForm.TargetMonsterIds);
         byte[] work = (byte[])source.Clone();
-        int recordTableOffset = ResolveMonsterRecordTableOffset(work);
         var writes = new List<Tuple<int, byte[], string>>();
 
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
-            int rangeOffset = checked(SkillRangeDataOffset + (speciesId + 1) * 20);
             int allyOffset = checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
-            int recordOffset = checked(recordTableOffset + speciesId * MonsterRecordSize);
-            CheckRange(work, rangeOffset, 20);
             CheckRange(work, allyOffset, 8);
-            CheckRange(work, recordOffset + 22, 1);
 
-            WriteUInt16(work, rangeOffset + 6, (ushort)Clamp(item.SkillRange, 0, 7));
-            int messageIndex = Clamp(item.SkillMessage, 0, 41);
-            uint messagePointer = messageIndex == 0 ? 0u : checked(SkillMessagePointerBase + (uint)(messageIndex - 1) * 16u);
-            WriteUInt32(work, rangeOffset + 10, messagePointer);
-            WriteUInt32(work, rangeOffset + 14, messagePointer);
-            WriteUInt16(work, rangeOffset + 18, (ushort)Clamp(item.EnemyThrowItem, 0, 65535));
+            // 味方専用データだけを変更する。
+            // 敵と共有される特技範囲・メッセージ・敵投擲アイテム・使用率は
+            // モンスタークリエイター側の設定を優先するため、一切書き換えない。
             WriteUInt16(work, allyOffset, (ushort)Clamp(item.AllyThrowItem1, 0, 65535));
             WriteUInt16(work, allyOffset + 2, (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
-            work[recordOffset + 22] = (byte)Clamp(item.SkillRate, 0, 255);
 
+            writes.Add(Tuple.Create(
+                allyOffset,
+                Slice(work, allyOffset, 8),
+                "指輪・味方専用投擲データ ID=" + speciesId));
         }
 
-        // 実験パッチ：共通特技データ領域への書き込みを停止する。
-        // 敵側のモンスタークリエイター設定を維持する。
+        Pcsx2BinApplier.ApplyRanges(
+            Pcsx2LiveSession.ProcessId,
+            Pcsx2LiveSession.MemoryLayout!,
+            writes);
+
         string applyResult =
-            "共通特技データの書き込みを停止しました。" +
+            "味方専用投擲データのみ適用しました。" +
             Environment.NewLine +
-            "敵側の基準設定を維持します。";
+            "敵側の特技設定はモンスタークリエイターの値を維持します。";
 
         string runtimeResult = ApplyActionAndExtraSettings(settings);
         RaiseStatus(
@@ -378,21 +376,20 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         if (source == null || source.Length != 524288) source = Pcsx2LiveSession.VanillaBin;
         if (source == null || source.Length != 524288 || Pcsx2LiveSession.MemoryLayout == null || Pcsx2LiveSession.ProcessId <= 0) return;
 
-        int recordTableOffset = ResolveMonsterRecordTableOffset(source);
         var writes = new List<Tuple<int, byte[], string>>();
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
-            int rangeOffset = SkillRangeDataOffset + (speciesId + 1) * 20;
             int allyOffset = SkillAllyItemDataOffset + (speciesId + 1) * 8;
-            int recordOffset = recordTableOffset + speciesId * MonsterRecordSize;
-            CheckRange(source, rangeOffset, 20);
             CheckRange(source, allyOffset, 8);
-            CheckRange(source, recordOffset + 22, 1);
-            writes.Add(Tuple.Create(rangeOffset, Slice(source, rangeOffset, 20), "指輪解除・特技データ ID=" + speciesId));
-            writes.Add(Tuple.Create(allyOffset, Slice(source, allyOffset, 8), "指輪解除・味方投擲データ ID=" + speciesId));
-            writes.Add(Tuple.Create(recordOffset + 22, Slice(source, recordOffset + 22, 1), "指輪解除・特技使用率 ID=" + speciesId));
+            writes.Add(Tuple.Create(
+                allyOffset,
+                Slice(source, allyOffset, 8),
+                "指輪解除・味方専用投擲データ ID=" + speciesId));
         }
-        Pcsx2BinApplier.ApplyRanges(Pcsx2LiveSession.ProcessId, Pcsx2LiveSession.MemoryLayout, writes);
+        Pcsx2BinApplier.ApplyRanges(
+            Pcsx2LiveSession.ProcessId,
+            Pcsx2LiveSession.MemoryLayout,
+            writes);
     }
 
     private static int ResolveMonsterRecordTableOffset(byte[] bin)
