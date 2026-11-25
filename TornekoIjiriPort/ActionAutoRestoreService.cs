@@ -584,56 +584,179 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         if (_codeCaveAddress == 0 ||
             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
-            throw new InvalidOperationException("既存ディスパッチャーを検証できません。");
+        {
+            throw new InvalidOperationException(
+                "既存ディスパッチャーを検証できません。");
+        }
 
         uint usedJump = EncodeIonazunRepeatJump(
-            IonazunUsedBranchAddress, _codeCaveAddress + 0x58u);
+            IonazunUsedBranchAddress,
+            _codeCaveAddress + 0x58u);
+
         uint compareJump = EncodeIonazunRepeatJump(
-            IonazunCompareAddress, _codeCaveAddress + 0x90u);
+            IonazunCompareAddress,
+            _codeCaveAddress + 0x90u);
 
-        uint currentUsed = _pine.Read32(IonazunUsedBranchAddress);
-        uint currentUsedDelay = _pine.Read32(IonazunUsedBranchDelayAddress);
-        uint currentCompare = _pine.Read32(IonazunCompareAddress);
+        uint currentUsed =
+            _pine.Read32(IonazunUsedBranchAddress);
 
+        uint currentUsedDelay =
+            _pine.Read32(IonazunUsedBranchDelayAddress);
+
+        uint currentCompare =
+            _pine.Read32(IonazunCompareAddress);
+
+        // 前回の処理で比較フック位置に残った強制成功命令を復旧する
         if (currentCompare == 0x24020001u)
         {
-            _pine.Write32(IonazunCompareAddress, IonazunCompareOriginal);
-            currentCompare = _pine.Read32(IonazunCompareAddress);
+            _pine.Write32(
+                IonazunCompareAddress,
+                IonazunCompareOriginal);
+
+            currentCompare =
+                _pine.Read32(IonazunCompareAddress);
+
             if (currentCompare != IonazunCompareOriginal)
-                throw new InvalidOperationException("確率判定命令の復旧に失敗しました。");
+            {
+                throw new InvalidOperationException(
+                    "確率判定命令の復旧に失敗しました。");
+            }
         }
 
-        uint currentCompareBranch = _pine.Read32(IonazunCompareBranchAddress);
-        uint currentCompareDelay = _pine.Read32(IonazunCompareBranchDelayAddress);
+        uint currentCompareBranch =
+            _pine.Read32(IonazunCompareBranchAddress);
+
+        uint currentCompareDelay =
+            _pine.Read32(IonazunCompareBranchDelayAddress);
 
         if (currentUsedDelay != IonazunUsedBranchDelayOriginal)
-            throw new InvalidOperationException("使用済み判定フックの遅延スロットが想定外です。");
+        {
+            throw new InvalidOperationException(
+                "使用済み判定フックの遅延スロットが想定外です。");
+        }
+
         if (currentCompareDelay != IonazunCompareBranchDelayOriginal)
-            throw new InvalidOperationException("確率判定フックの遅延スロットが想定外です。");
-
-        if (currentUsed != usedJump)
         {
-            if (currentUsed != IonazunUsedBranchOriginal)
-                throw new InvalidOperationException("使用済み判定フック命令が想定外です。");
-            _pine.Write32(IonazunUsedBranchAddress, usedJump);
+            throw new InvalidOperationException(
+                "確率判定フックの遅延スロットが想定外です。" +
+                "\nアドレス: 0x" + IonazunCompareBranchDelayAddress.ToString("X8") +
+                "\n実際の値: 0x" + currentCompareDelay.ToString("X8") +
+                "\n期待値: 0x" + IonazunCompareBranchDelayOriginal.ToString("X8"));
         }
 
-        if (currentCompare != compareJump)
+        if (currentUsed != IonazunUsedBranchOriginal &&
+            currentUsed != usedJump)
         {
-            if (currentCompare != IonazunCompareOriginal)
-                throw new InvalidOperationException("確率判定フック命令が想定外です。");
+            throw new InvalidOperationException(
+                "使用済み判定命令が想定外です: 0x" +
+                currentUsed.ToString("X8"));
+        }
+
+        bool compareOriginal =
+            currentCompare == IonazunCompareOriginal &&
+            currentCompareBranch == IonazunCompareBranchOriginal;
+
+        bool compareInstalled =
+            currentCompare == compareJump &&
+            currentCompareBranch == 0u;
+
+        // 分岐命令だけNOPになった中間状態も復旧可能にする
+        bool compareHalfInstalled =
+            currentCompare == IonazunCompareOriginal &&
+            currentCompareBranch == 0u;
+
+        if (!compareOriginal &&
+            !compareInstalled &&
+            !compareHalfInstalled)
+        {
+            throw new InvalidOperationException(
+                "確率判定フックの命令ペアが想定外です。\n" +
+                "DE8: 0x" + currentCompare.ToString("X8") + "\n" +
+                "DEC: 0x" + currentCompareBranch.ToString("X8"));
+        }
+
+        uint[] repeatCode =
+            BuildIonazunRepeatCode(_codeCaveAddress);
+
+        uint[] compareCode =
+            BuildIonazunCompareCode(_codeCaveAddress);
+
+        uint repeatAddress = _codeCaveAddress + 0x58u;
+        uint compareAddress = _codeCaveAddress + 0x90u;
+
+        for (int i = 0; i < repeatCode.Length; i++)
+        {
+            _pine.Write32(
+                repeatAddress + (uint)(i * 4),
+                repeatCode[i]);
+        }
+
+        for (int i = 0; i < compareCode.Length; i++)
+        {
+            _pine.Write32(
+                compareAddress + (uint)(i * 4),
+                compareCode[i]);
+        }
+
+        for (int i = 0; i < repeatCode.Length; i++)
+        {
+            if (_pine.Read32(
+                repeatAddress + (uint)(i * 4)) != repeatCode[i])
+            {
+                throw new InvalidOperationException(
+                    "イオナズン連発コードの検証に失敗しました。");
+            }
+        }
+
+        for (int i = 0; i < compareCode.Length; i++)
+        {
+            if (_pine.Read32(
+                compareAddress + (uint)(i * 4)) != compareCode[i])
+            {
+                throw new InvalidOperationException(
+                    "イオナズン確率判定コードの検証に失敗しました。");
+            }
+        }
+
+        // 比較命令の次の命令を先にNOPにする。
+        // これによりJ命令の遅延スロットで元のbeqが実行されない。
+        if (currentCompareBranch == IonazunCompareBranchOriginal)
+        {
+            _pine.Write32(IonazunCompareBranchAddress, 0u);
+
+            if (_pine.Read32(IonazunCompareBranchAddress) != 0u)
+            {
+                throw new InvalidOperationException(
+                    "確率判定の分岐命令をNOPにできませんでした。");
+            }
+        }
+
+        if (currentCompare == IonazunCompareOriginal)
+        {
             _pine.Write32(IonazunCompareAddress, compareJump);
+
+            if (_pine.Read32(IonazunCompareAddress) != compareJump)
+            {
+                throw new InvalidOperationException(
+                    "確率判定フックの設置に失敗しました。");
+            }
         }
 
-        if (_pine.Read32(IonazunUsedBranchAddress) != usedJump ||
-            _pine.Read32(IonazunCompareAddress) != compareJump)
-            throw new InvalidOperationException("イオナズン確定フックの設置検証に失敗しました。");
+        if (currentUsed == IonazunUsedBranchOriginal)
+        {
+            _pine.Write32(IonazunUsedBranchAddress, usedJump);
 
-        if (currentCompareBranch != IonazunCompareBranchOriginal)
-            throw new InvalidOperationException("確率判定分岐命令が想定外です。");
+            if (_pine.Read32(IonazunUsedBranchAddress) != usedJump)
+            {
+                throw new InvalidOperationException(
+                    "使用済み判定フックの設置に失敗しました。");
+            }
+        }
+
+        _ionazunRepeatCaveAddress = _codeCaveAddress;
     }
 
-        private void RestoreIonazunRepeatPatch()
+    private void RestoreIonazunRepeatPatch()
     {
         uint currentUsed =
             _pine.Read32(IonazunUsedBranchAddress);
