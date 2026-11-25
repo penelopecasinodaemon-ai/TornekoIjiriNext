@@ -163,6 +163,14 @@ internal static class AllyRuntimeMemorySnapshot
             0x002D48A0u, 0x002D5530u,
             "味方特技実行パラメータの後続処理・使用箇所"),
 
+        new MemoryRange(
+            0x002D3D80u, 0x002D3E80u,
+            "味方特技パラメータ計算ヘルパー 0x002D3DAC / 0x002D3DF4"),
+
+        new MemoryRange(
+            0x002D5560u, 0x002D5600u,
+            "味方特技パラメータ参照ヘルパー 0x002D5560"),
+
     };
 
     private static void RequirePaused()
