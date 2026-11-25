@@ -56,8 +56,14 @@ internal sealed class AllyActionTraceForm : Form
             () => InvokeTraceMethod("AllySkillRouteTraceService", "Read"));
         AddButton(buttons, "分岐フック解除", 140,
             () => InvokeTraceMethod("AllySkillRouteTraceService", "Restore"));
+        AddButton(buttons, "入口フック設置", 140,
+            () => InvokeTraceMethod("AllySkillEntryTraceService", "Install"));
+        AddButton(buttons, "入口記録読み取り", 150,
+            () => InvokeTraceMethod("AllySkillEntryTraceService", "Read"));
+        AddButton(buttons, "入口フック解除", 140,
+            () => InvokeTraceMethod("AllySkillEntryTraceService", "Restore"));
 
-        AddButton(buttons, "多点観測設置（17地点）", 190,
+        AddButton(buttons, "多点観測設置（24地点）", 190,
             () => InvokeTraceMethod("AllyMultiPointTraceService", "Install"));
         AddButton(buttons, "多点記録読み取り", 160,
             () => InvokeTraceMethod("AllyMultiPointTraceService", "Read"));

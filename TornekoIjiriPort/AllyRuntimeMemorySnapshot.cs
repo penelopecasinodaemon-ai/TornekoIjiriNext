@@ -22,6 +22,27 @@ internal static class AllyRuntimeMemorySnapshot
 
     private static readonly MemoryRange[] Ranges =
     {
+
+        // 敵側の特技呼び出し元
+        new MemoryRange(
+            0x00243580u, 0x00243620u,
+            "敵特技呼び出し元 0x002435C4"),
+
+        // dgEnemyAttack本体
+        new MemoryRange(
+            0x0023C600u, 0x0023C900u,
+            "敵特技処理 dgEnemyAttack 0x0023C750"),
+
+        // 特技使用率の読み込み候補
+        new MemoryRange(
+            0x0020F880u, 0x0020F900u,
+            "特技使用率読み込み候補"),
+
+        // 使用率読み込み先の関数候補
+        new MemoryRange(
+            0x0021D600u, 0x0021D720u,
+            "特技使用率参照関数候補"),
+
         new MemoryRange(
             0x002B3B00u, 0x002B4800u,
             "S4関連・間接呼び出し候補"),
@@ -129,6 +150,10 @@ internal static class AllyRuntimeMemorySnapshot
         new MemoryRange(
     0x00918EE0u, 0x00918F20u,
     "味方特技ルート候補5の分岐テーブル"),
+
+        new MemoryRange(
+    0x002D3B00u, 0x002D3D80u,
+    "味方特技呼び出し先 0x002D3C10 の関数本体"),
 
     };
 
@@ -252,7 +277,7 @@ internal static class AllyRuntimeMemorySnapshot
                 Environment.SpecialFolder.DesktopDirectory);
 
         string fileName =
-            "味方特技_実行時メモリ採取_" +
+            "特技_実行時メモリ採取_" +
             DateTime.Now.ToString("yyyyMMdd_HHmmss") +
             ".txt";
 
@@ -266,7 +291,7 @@ internal static class AllyRuntimeMemorySnapshot
             false,
             new UTF8Encoding(false)))
         {
-            writer.WriteLine("TORNEKO ALLY RUNTIME MEMORY SNAPSHOT");
+            writer.WriteLine("TORNEKO SKILL RUNTIME MEMORY SNAPSHOT");
             writer.WriteLine("READ ONLY - NO MEMORY WRITES");
             writer.WriteLine(
                 "Date: " +

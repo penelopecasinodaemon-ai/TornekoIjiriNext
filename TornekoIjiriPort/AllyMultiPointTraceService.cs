@@ -5,7 +5,7 @@ using System.Text;
 namespace TornekoIjiriPort;
 
 /// <summary>
-/// 味方特技処理候補17地点を同時に観測する。
+/// 味方側既存16地点と敵側候補6地点、共通ディスパッチャーを観測する。
 /// 16個のJAL呼び出し地点と、共通ディスパッチャーのJR v0を記録する。
 /// 各地点は独立したコードケーブと最終レジスタ記録を持つ。
 /// </summary>
@@ -71,7 +71,16 @@ internal static class AllyMultiPointTraceService
         new Site(0x002CF6ECu, 0x002D0424u, "handler-12"),
         new Site(0x002CF70Cu, 0x002D08A4u, "handler-13"),
         new Site(0x002CF728u, 0x002D1070u, "handler-14"),
-        new Site(0x002CF73Cu, 0x002D0320u, "handler-15")
+        new Site(0x002CF73Cu, 0x002D0320u, "handler-15"),
+        new Site(0x002D4528u, 0x002D3C10u, "skill-call-4528"),
+        new Site(0x002D46E0u, 0x002D3C10u, "skill-call-46E0"),
+
+        // 敵側特技処理候補
+        new Site(0x0023C7ACu, 0x0021E644u, "enemy-call-01"),
+        new Site(0x0020F8C4u, 0x002CE924u, "enemy-call-02"),
+        new Site(0x002D016Cu, 0x0021D680u, "enemy-call-03"),
+        new Site(0x002D01F4u, 0x0021D680u, "enemy-call-04"),
+        new Site(0x002D0B8Cu, 0x002CE924u, "enemy-call-05")
     };
 
     private static uint I(int opcode, int rs, int rt, int immediate)
@@ -272,7 +281,7 @@ internal static class AllyMultiPointTraceService
         }
 
         throw new InvalidOperationException(
-            "17地点分の空きコード領域を確保できませんでした。\n" +
+            "24地点分の空きコード領域を確保できませんでした。\n" +
             "ゲームメモリは変更せずに中止しました。");
     }
 
@@ -383,7 +392,7 @@ internal static class AllyMultiPointTraceService
                 }
             }
 
-            // Reserve 17 independent 4-KiB pages.
+            // Reserve 24 independent 4-KiB pages.
             foreach (Site site in sites)
             {
                 site.Cave = FindCave(reserved);
@@ -427,8 +436,8 @@ internal static class AllyMultiPointTraceService
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine("味方特技候補17地点の同時観測フックを設置しました。");
-            sb.AppendLine("観測地点: 16 JAL + 1 JR v0");
+            sb.AppendLine("特技処理候補24地点の同時観測フックを設置しました。");
+            sb.AppendLine("観測地点: 23 JAL + 1 JR v0");
             sb.AppendLine("各地点で全32 GPRを記録し、呼び出し回数を別々に集計します。");
             sb.AppendLine("記録は各地点の最新状態を保持します。");
             sb.AppendLine();
@@ -440,7 +449,7 @@ internal static class AllyMultiPointTraceService
                   .Append(" / ").AppendLine(site.Name);
             }
             sb.AppendLine();
-            sb.AppendLine("PCSX2を再開して味方スライムに特技を使わせ、停止後に記録を読み取ってください。");
+            sb.AppendLine("PCSX2を再開して敵スライムに特技を使わせ、停止後に記録を読み取ってください。");
             return sb.ToString();
         }
     }
@@ -529,9 +538,9 @@ internal static class AllyMultiPointTraceService
                     "多点観測フックが見つかりません。先に設置してください。");
 
             var sb = new StringBuilder();
-            sb.AppendLine("ALLY MULTI-POINT ACTION TRACE");
+            sb.AppendLine("ENEMY SKILL CANDIDATE MULTI-POINT TRACE");
             sb.AppendLine("Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            sb.AppendLine("Installed points: " + sites.Length + " / 17");
+            sb.AppendLine("Installed points: " + sites.Length + " / 24");
             sb.AppendLine("Read only: YES");
             sb.AppendLine();
 
@@ -635,7 +644,7 @@ internal static class AllyMultiPointTraceService
 
             return
                 "多点観測フックを " + sites.Length + " 地点解除しました。\n" +
-                "16か所のJALと共通ディスパッチャーの元の命令・遅延スロットを復元しました。\n" +
+                "23か所のJALと共通ディスパッチャーの元の命令・遅延スロットを復元しました。\n" +
                 "コードケーブは記録確認用に残しています。";
         }
     }

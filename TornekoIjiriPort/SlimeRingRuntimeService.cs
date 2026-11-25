@@ -212,12 +212,15 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             WriteUInt16(work, allyOffset + 2, (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
             work[recordOffset + 22] = (byte)Clamp(item.SkillRate, 0, 255);
 
-            writes.Add(Tuple.Create(rangeOffset, Slice(work, rangeOffset, 20), "指輪・特技データ ID=" + speciesId));
-            writes.Add(Tuple.Create(allyOffset, Slice(work, allyOffset, 8), "指輪・味方投擲データ ID=" + speciesId));
-            writes.Add(Tuple.Create(recordOffset + 22, Slice(work, recordOffset + 22, 1), "指輪・特技使用率 ID=" + speciesId));
         }
 
-        string applyResult = Pcsx2BinApplier.ApplyRanges(Pcsx2LiveSession.ProcessId, Pcsx2LiveSession.MemoryLayout!, writes);
+        // 実験パッチ：共通特技データ領域への書き込みを停止する。
+        // 敵側のモンスタークリエイター設定を維持する。
+        string applyResult =
+            "共通特技データの書き込みを停止しました。" +
+            Environment.NewLine +
+            "敵側の基準設定を維持します。";
+
         string runtimeResult = ApplyActionAndExtraSettings(settings);
         RaiseStatus(
             "スライムの指輪：17種の個別設定を適用中" +
