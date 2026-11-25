@@ -1930,18 +1930,18 @@ right.Controls.Add(_count, 0, 0);
 
                 int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
                 int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
-                if (!ringOverlayActive)
+                // 特技範囲・メッセージ・敵投擲アイテムは敵側の設定。
+                // 指輪装備中でも必ずPCSX2から読み込み、クリエイター表示を維持する。
+                if (_skillDataReady)
                 {
-                    if (_skillDataReady)
-                    {
-                        requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
+                    requested.Add(Tuple.Create(liveRangeOffset, 20, "クリエイター管理・敵側特技データ"));
+                    if (!ringOverlayActive)
                         requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
-                    }
-                    else
-                    {
-                        // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
-                        requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
-                    }
+                }
+                else
+                {
+                    // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
+                    requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
                 }
 
                 var liveData = Pcsx2BinApplier.ReadRanges(
@@ -2204,28 +2204,31 @@ right.Controls.Add(_count, 0, 0);
                     }
                 }
 
-                if (!ringOverlayActive)
+                // 敵側の特技範囲・メッセージ・投擲アイテムは
+                // 指輪装備中でもクリエイター設定を常にゲームへ反映する。
+                if (_skillDataReady)
                 {
-                    if (_skillDataReady)
-                    {
-                        writes.Add(Tuple.Create(
-                            rangeOffset,
-                            CopyRange(rangeOffset, 20),
-                            "特技範囲データ"));
+                    writes.Add(Tuple.Create(
+                        rangeOffset,
+                        CopyRange(rangeOffset, 20),
+                        "クリエイター管理・敵側特技データ"));
 
+                    // 味方専用データは指輪装備中に触らない。
+                    if (!ringOverlayActive)
+                    {
                         writes.Add(Tuple.Create(
                             allyOffset,
                             CopyRange(allyOffset, 8),
                             "仲間投げアイテムデータ"));
                     }
-                    else
-                    {
-                        // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
-                        writes.Add(Tuple.Create(
-                            enemyItemOffset,
-                            CopyRange(enemyItemOffset, 2),
-                            "var_411 敵投擲アイテム"));
-                    }
+                }
+                else
+                {
+                    // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
+                    writes.Add(Tuple.Create(
+                        enemyItemOffset,
+                        CopyRange(enemyItemOffset, 2),
+                        "var_411 敵投擲アイテム"));
                 }
 
                 string resultText = Pcsx2BinApplier.ApplyRanges(
