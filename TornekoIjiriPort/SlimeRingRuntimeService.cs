@@ -238,12 +238,30 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             barriers = new Dictionary<int, bool>(_baseBarrier ?? global::Torneko4GanirasuBarrierStore.GetDefaultCopy());
         }
 
-        // 指輪の特技変更・イオナズン確定は敵用ディスパッチャーへ渡さない。
-        // 敵側の特技設定はモンスタークリエイターの基準設定を維持する。
-        // ガニラスバリアだけは指輪専用設定として適用する。
+        // スライムの指輪専用ActionIdを既存ディスパッチャーへ渡す実験版。
+        // 新規コード領域・新規フックは使用しない。
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
+
+            // -1は未設定。それ以外は既存ディスパッチャーに登録する。
+            if (item.ActionId >= 0 && item.ActionId <= ushort.MaxValue)
+            {
+                actions[id] = (ushort)item.ActionId;
+            }
+            else
+            {
+                // 未設定なら基準設定を維持する。
+                if (_baseActions != null &&
+                    _baseActions.TryGetValue(id, out ushort baseAction))
+                {
+                    actions[id] = baseAction;
+                }
+                else
+                {
+                    actions.Remove(id);
+                }
+            }
 
             int barrierStoreId = id;
 

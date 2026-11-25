@@ -935,15 +935,59 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint address,
         int entryCount)
     {
-        uint dataAddress = address + 0x12Cu;
+        // 陣営判定を行う前にa0とraを退避する。
+        // dgEnemyCheckSide:
+        //   0 = 味方
+        //   1 = 敵
+        //
+        // 味方の場合は従来の種族別設定検索へ進む。
+        // 敵の場合は元のdgEnemyAttackへ戻す。
+
+        uint lookupJump =
+            0x08000000u |
+            (((address + 0x11Cu) >> 2) & 0x03FFFFFFu);
+
+        uint dataAddress = address + 0x164u;
 
         return new uint[]
         {
-            // t1 = コンパクトな種族別設定データ
+            // stack確保
+            0x27BDFFF0u,
+
+            // raとa0を保存
+            0xAFBF000Cu,
+            0xAFA40008u,
+
+            // dgEnemyCheckSide(a0)
+            0x0C08DBD4u,
+            0x00000000u,
+
+            // a0とraを復元
+            0x8FA40008u,
+            0x8FBF000Cu,
+
+            // stack解放
+            0x27BD0010u,
+
+            // v0 != 0なら敵
+            // 敵は元の敵特技処理へ
+            0x14400003u,
+            0x00000000u,
+
+            // 味方は検索処理へジャンプ
+            // delay slotで種族IDを再取得
+            lookupJump,
+            0x90480004u,
+
+            // 敵：元のdgEnemyAttackへ
+            0x0808F1D4u,
+            0x00000000u,
+
+            // 以下、従来の種族別設定検索
             0x3C090000u | ((dataAddress >> 16) & 0xFFFFu),
             0x35290000u | (dataAddress & 0xFFFFu),
 
-            // t4 = 登録種族数
+            // 登録種族数
             0x240C0000u | ((uint)entryCount & 0xFFFFu),
 
             // 検索ループ
@@ -983,16 +1027,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x00000000u
         };
     }
-
     private static uint GetRequiredCaveSize(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
     {
-        // +0x12C までが固定コード領域。
+        // +0x150 までが固定コード領域。
         // その後に種族ごと3バイトの設定を置く。
         uint dataLength = (uint)entries.Count * 3u;
         uint paddedDataLength = (dataLength + 3u) & ~3u;
 
-        return 0x12Cu + paddedDataLength;
+        return 0x150u + paddedDataLength;
     }
 
     private bool IsDispatcherCode(
@@ -1025,7 +1068,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 return false;
         }
 
-        uint dataAddress = address + 0x12Cu;
+        uint dataAddress = address + 0x150u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
         for (uint offset = 0; offset < paddedLength; offset += 4u)
@@ -1116,7 +1159,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         // 種族別データ。1種族につき3バイトのみ。
-        uint dataAddress = address + 0x12Cu;
+        uint dataAddress = address + 0x150u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
         for (uint offset = 0; offset < paddedLength; offset += 4u)
