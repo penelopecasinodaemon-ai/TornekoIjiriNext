@@ -23,7 +23,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     // EE RAMの高位領域から512バイトの空き領域を探す
     private const uint CaveSearchStart = 0x01FF0000u;
-    private const uint CaveSearchEnd = 0x01F00000u;
+    private const uint CaveSearchEnd = 0x01E00000u;
     private const uint CaveSearchStep = 0x00001000u;
     // コロマージ呪文分岐調査フック
     private const uint SpellDispatchAddress = 0x002CF600u;
