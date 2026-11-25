@@ -13,8 +13,8 @@ internal sealed class AllyActionTraceForm : Form
     internal AllyActionTraceForm()
     {
         Text = "味方側特技呼び出しトレース";
-        Width = 760;
-        Height = 520;
+        Width = 1080;
+        Height = 650;
         StartPosition = FormStartPosition.CenterParent;
 
         var root = new TableLayoutPanel
@@ -24,46 +24,22 @@ internal sealed class AllyActionTraceForm : Form
             RowCount = 2,
             Padding = new Padding(10)
         };
-
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 126));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var buttons = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
             AutoSize = false,
-            WrapContents = false
+            WrapContents = true
         };
 
-        var install = new Button
-        {
-            Text = "味方トレース設置",
-            Width = 140,
-            Height = 34
-        };
-
-        install.Click += (_, _) =>
-            InvokeTraceMethod("Install", "味方側トレースを設置しました。");
-
-        var read = new Button
-        {
-            Text = "トレース読み取り",
-            Width = 140,
-            Height = 34
-        };
-
-        read.Click += (_, _) =>
-            InvokeTraceMethod("Read", "トレースを読み取りました。");
-
-        var restore = new Button
-        {
-            Text = "元の命令に復元",
-            Width = 140,
-            Height = 34
-        };
-
-        restore.Click += (_, _) =>
-            InvokeTraceMethod("Restore", "元の命令に復元しました。");
+        AddButton(buttons, "味方トレース設置", 140,
+            () => InvokeTraceMethod("AllyActionTraceService", "Install"));
+        AddButton(buttons, "トレース読み取り", 140,
+            () => InvokeTraceMethod("AllyActionTraceService", "Read"));
+        AddButton(buttons, "元の命令に復元", 140,
+            () => InvokeTraceMethod("AllyActionTraceService", "Restore"));
 
         _snapshotButton = new Button
         {
@@ -71,14 +47,22 @@ internal sealed class AllyActionTraceForm : Form
             Width = 160,
             Height = 34
         };
-
-        _snapshotButton.Click += async (_, _) =>
-            await CaptureSnapshotAsync();
-
-        buttons.Controls.Add(install);
-        buttons.Controls.Add(read);
-        buttons.Controls.Add(restore);
+        _snapshotButton.Click += async (_, _) => await CaptureSnapshotAsync();
         buttons.Controls.Add(_snapshotButton);
+
+        AddButton(buttons, "分岐トレース設置", 140,
+            () => InvokeTraceMethod("AllySkillRouteTraceService", "Install"));
+        AddButton(buttons, "分岐記録読み取り", 140,
+            () => InvokeTraceMethod("AllySkillRouteTraceService", "Read"));
+        AddButton(buttons, "分岐フック解除", 140,
+            () => InvokeTraceMethod("AllySkillRouteTraceService", "Restore"));
+
+        AddButton(buttons, "多点観測設置（17地点）", 190,
+            () => InvokeTraceMethod("AllyMultiPointTraceService", "Install"));
+        AddButton(buttons, "多点記録読み取り", 160,
+            () => InvokeTraceMethod("AllyMultiPointTraceService", "Read"));
+        AddButton(buttons, "多点フック一括解除", 170,
+            () => InvokeTraceMethod("AllyMultiPointTraceService", "Restore"));
 
         _output = new TextBox
         {
@@ -87,7 +71,7 @@ internal sealed class AllyActionTraceForm : Form
             ReadOnly = true,
             ScrollBars = ScrollBars.Both,
             WordWrap = false,
-            Font = new System.Drawing.Font("Consolas", 10)
+            Font = new System.Drawing.Font("Consolas", 9.5f)
         };
 
         root.Controls.Add(buttons, 0, 0);
@@ -95,38 +79,36 @@ internal sealed class AllyActionTraceForm : Form
         Controls.Add(root);
     }
 
+    private static void AddButton(
+        FlowLayoutPanel panel,
+        string text,
+        int width,
+        Action action)
+    {
+        var button = new Button
+        {
+            Text = text,
+            Width = width,
+            Height = 34
+        };
+        button.Click += (_, _) => action();
+        panel.Controls.Add(button);
+    }
+
     private async Task CaptureSnapshotAsync()
     {
         _snapshotButton.Enabled = false;
-
-        _output.AppendText(
-            Environment.NewLine +
-            "========================================" +
-            Environment.NewLine +
-            DateTime.Now.ToString("HH:mm:ss") +
-            "  実行時コード採取開始" +
-            Environment.NewLine +
-            "PCSX2を一時停止している必要があります。" +
-            Environment.NewLine);
+        Append("実行時コード採取開始。PCSX2を一時停止してください。");
 
         try
         {
             string result = await Task.Run(
                 () => AllyRuntimeMemorySnapshot.Capture());
-
-            _output.AppendText(
-                Environment.NewLine +
-                result +
-                Environment.NewLine);
+            Append(result);
         }
         catch (Exception ex)
         {
-            _output.AppendText(
-                Environment.NewLine +
-                "===== 採取エラー =====" +
-                Environment.NewLine +
-                ex.ToString() +
-                Environment.NewLine);
+            Append("===== 採取エラー =====\r\n" + ex);
         }
         finally
         {
@@ -134,68 +116,46 @@ internal sealed class AllyActionTraceForm : Form
         }
     }
 
-    private void InvokeTraceMethod(
-        string methodName,
-        string successMessage)
+    private void InvokeTraceMethod(string serviceName, string methodName)
     {
         try
         {
             Type serviceType =
                 typeof(AllyActionTraceForm).Assembly.GetType(
-                    "TornekoIjiriPort.AllyActionTraceService",
-                    true);
+                    "TornekoIjiriPort." + serviceName, true);
 
             BindingFlags flags =
-                BindingFlags.Static |
-                BindingFlags.NonPublic |
-                BindingFlags.Public;
+                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
             MethodInfo method = serviceType.GetMethod(
-                methodName,
-                flags,
-                null,
-                Type.EmptyTypes,
-                null);
+                methodName, flags, null, Type.EmptyTypes, null);
 
             if (method == null)
-            {
                 throw new MissingMethodException(
-                    "AllyActionTraceService." + methodName +
-                    "() が見つかりません。");
-            }
+                    serviceName + "." + methodName + "() が見つかりません。");
 
             object result = method.Invoke(null, null);
-
-            string output = result == null
-                ? successMessage
-                : result.ToString();
-
-            _output.AppendText(
-                Environment.NewLine +
-                "========================================" +
-                Environment.NewLine +
-                DateTime.Now.ToString("HH:mm:ss") +
-                "  " + methodName +
-                Environment.NewLine +
-                output +
-                Environment.NewLine);
+            Append(result == null ? "完了しました。" : result.ToString());
         }
         catch (Exception ex)
         {
             Exception actual = ex;
-
-            if (ex is TargetInvocationException tie &&
-                tie.InnerException != null)
-            {
+            if (ex is TargetInvocationException tie && tie.InnerException != null)
                 actual = tie.InnerException;
-            }
 
-            _output.AppendText(
-                Environment.NewLine +
-                "===== エラー =====" +
-                Environment.NewLine +
-                actual.ToString() +
-                Environment.NewLine);
+            Append("===== エラー =====\r\n" + actual);
         }
+    }
+
+    private void Append(string message)
+    {
+        _output.AppendText(
+            Environment.NewLine +
+            "========================================" +
+            Environment.NewLine +
+            DateTime.Now.ToString("HH:mm:ss") +
+            Environment.NewLine +
+            message +
+            Environment.NewLine);
     }
 }

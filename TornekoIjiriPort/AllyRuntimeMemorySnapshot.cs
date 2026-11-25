@@ -56,7 +56,79 @@ internal static class AllyRuntimeMemorySnapshot
 
         new MemoryRange(0x002D08A0u, 0x002D1100u, "特技処理分岐の追加候補"),
 
-        new MemoryRange(0x002D76A0u, 0x002D8B00u, "追加ディスパッチ・特技処理候補")
+        new MemoryRange(0x002D76A0u, 0x002D8B00u, "追加ディスパッチ・特技処理候補"),
+
+        new MemoryRange(
+        0x002B3B00u, 0x002B4800u,
+        "S4関連・間接呼び出し候補"),
+
+        new MemoryRange(
+        0x002B8800u, 0x002B8B00u,
+        "追加の呼び出し元"),
+
+        new MemoryRange(
+        0x0029ABD0u, 0x0029AD20u,
+        "共通ヘルパー"),
+
+        new MemoryRange(
+        0x002CF000u, 0x002CF5C0u,
+        "特技ディスパッチャー入口・分岐条件"),
+
+        new MemoryRange(
+        0x002CF5C0u, 0x002CF800u,
+        "特技ディスパッチ分岐"),
+
+        new MemoryRange(
+        0x002CF800u, 0x002CFC00u,
+        "特技ディスパッチ後半"),
+
+        new MemoryRange(
+        0x002CFC00u, 0x002D0000u,
+        "特技ディスパッチ先"),
+
+        new MemoryRange(
+        0x002D0000u, 0x002D0480u,
+        "特技処理周辺"),
+
+        new MemoryRange(
+        0x002D0480u, 0x002D1200u,
+        "追加の特技ハンドラ"),
+
+        new MemoryRange(
+        0x002D72C0u, 0x002D7420u,
+        "JALR候補"),
+
+        new MemoryRange(
+        0x002DF7D0u, 0x002DF900u,
+        "行動候補処理"),
+
+        new MemoryRange(
+        0x002F7100u, 0x002F7500u,
+        "行動選択処理"),
+
+        new MemoryRange(
+        0x002D76A0u, 0x002D8B00u,
+        "追加ディスパッチ・特技処理候補"),
+
+        new MemoryRange(
+        0x00918C70u, 0x00919670u,
+        "味方特技ルート関数テーブル"),
+
+        new MemoryRange(
+    0x002D4800u, 0x002D4900u,
+    "味方特技ルート候補5の処理"),
+
+        new MemoryRange(
+    0x002D4700u, 0x002D4900u,
+    "味方特技ルート候補5の関数全体"),
+
+        new MemoryRange(
+    0x002D4400u, 0x002D4720u,
+    "味方特技ルート候補5の呼び出し元"),
+
+        new MemoryRange(
+    0x00918EE0u, 0x00918F20u,
+    "味方特技ルート候補5の分岐テーブル"),
 
     };
 
