@@ -936,9 +936,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
         int entryCount)
     {
         // dgEnemyCheckSideの戻り値で陣営を判定する。
-        // 実機確認結果に合わせて、
-        // 0     = 敵：元の敵特技処理へ戻す
-        // 0以外 = 味方：指輪設定を検索する
+        // 実機確認結果：
+        // 1     = 敵：元の敵特技処理へ戻す
+        // 0     = 味方：種族別設定を検索する
 
         uint dataAddress = address + 0x170u;
 
@@ -969,8 +969,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
             // stack解放
             0x27BD0010u,
 
-            // 0以外なら味方検索へ
-            0x11A00003u,
+            // 0以外（敵）なら元の敵処理へ戻す
+            0x15A00003u,
             0x00000000u,
 
             // 0なら敵：元の敵特技処理へ
