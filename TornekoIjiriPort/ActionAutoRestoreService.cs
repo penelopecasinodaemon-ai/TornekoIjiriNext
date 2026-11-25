@@ -161,6 +161,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private Dictionary<int, ushort> _actions =
         new Dictionary<int, ushort>();
 
+    // 指輪装備中に限り、味方の対象17種へ優先適用する別テーブル。
+    private Dictionary<int, ushort> _allyRingActions =
+        new Dictionary<int, ushort>();
+
+    private HashSet<int> _allyRingIonazunForce =
+        new HashSet<int>();
+
     // nullなら通常のモンスタークリエイター設定を使用する。
     // 指輪適用中は専用のイオナズン確定設定を使用する。
     private HashSet<int>? _ionazunForceOverride;
@@ -366,6 +373,68 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 
+    // 指輪専用の味方上書きだけを更新する。通常のモンスタークリエイター設定は変更しない。
+    internal bool TryApplyAllyRingOverrides(
+        IEnumerable<KeyValuePair<int, ushort>> ringActions,
+        ISet<int>? ionazunForce,
+        out string message)
+    {
+        message = "";
+
+        var copy = new Dictionary<int, ushort>();
+        if (ringActions != null)
+        {
+            foreach (var pair in ringActions)
+                copy[pair.Key] = pair.Value;
+        }
+
+        var forceCopy = ionazunForce == null
+            ? new HashSet<int>()
+            : new HashSet<int>(ionazunForce);
+
+        lock (_stateSync)
+        {
+            _allyRingActions = copy;
+            _allyRingIonazunForce = forceCopy;
+        }
+
+        lock (_operationSync)
+        {
+            try
+            {
+                if (!_pine.TryConnect())
+                {
+                    message = "指輪設定は保持しました。PCSX2接続後に反映します。";
+                    return false;
+                }
+
+                uint status = _pine.GetStatus();
+                if (status != 0)
+                {
+                    message = "指輪設定は保持しました。PCSX2をゲーム実行状態にしてください。";
+                    return false;
+                }
+
+                Dictionary<int, ushort> normal;
+                lock (_stateSync)
+                    normal = new Dictionary<int, ushort>(_actions);
+
+                ApplyRuntime(normal);
+
+                message =
+                    "指輪専用の味方特技上書きを更新しました。\n" +
+                    "対象種族数: " + copy.Count + "\n" +
+                    "敵は通常のモンスタークリエイター設定を使用します。";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                message = "指輪専用特技上書きの適用に失敗しました: " + ex.Message;
+                return false;
+            }
+        }
+    }
+
     internal bool IsIonazunForceEnabled(int monsterId)
     {
         return Torneko4ActionStore.GetIonazunForce(monsterId);
@@ -500,12 +569,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
     }
 
     private void ApplyIonazunRepeatPatch(
-        Dictionary<int, ushort> actions)
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
-        var entries = BuildActionEntries(actions);
-
         bool shouldPatch =
-            entries.Exists(x => x.Marker == 0xFF);
+            normalEntries.Exists(x => x.Marker == 0xFF) ||
+            allyOverrideEntries.Exists(x => x.Marker == 0xFF);
 
         if (!shouldPatch)
         {
@@ -514,180 +583,57 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         if (_codeCaveAddress == 0 ||
-            !IsDispatcherCode(_codeCaveAddress, entries))
-        {
-            throw new InvalidOperationException(
-                "既存ディスパッチャーを検証できません。");
-        }
+            !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+            throw new InvalidOperationException("既存ディスパッチャーを検証できません。");
 
         uint usedJump = EncodeIonazunRepeatJump(
-            IonazunUsedBranchAddress,
-            _codeCaveAddress + 0x58u);
-
+            IonazunUsedBranchAddress, _codeCaveAddress + 0x58u);
         uint compareJump = EncodeIonazunRepeatJump(
-            IonazunCompareAddress,
-            _codeCaveAddress + 0x90u);
+            IonazunCompareAddress, _codeCaveAddress + 0x90u);
 
-        uint currentUsed =
-            _pine.Read32(IonazunUsedBranchAddress);
+        uint currentUsed = _pine.Read32(IonazunUsedBranchAddress);
+        uint currentUsedDelay = _pine.Read32(IonazunUsedBranchDelayAddress);
+        uint currentCompare = _pine.Read32(IonazunCompareAddress);
 
-        uint currentUsedDelay =
-            _pine.Read32(IonazunUsedBranchDelayAddress);
-
-        uint currentCompare =
-            _pine.Read32(IonazunCompareAddress);
-
-        // 前回の処理で比較フック位置に残った強制成功命令を復旧する
         if (currentCompare == 0x24020001u)
         {
-            _pine.Write32(
-                IonazunCompareAddress,
-                IonazunCompareOriginal);
-
-            currentCompare =
-                _pine.Read32(IonazunCompareAddress);
-
+            _pine.Write32(IonazunCompareAddress, IonazunCompareOriginal);
+            currentCompare = _pine.Read32(IonazunCompareAddress);
             if (currentCompare != IonazunCompareOriginal)
-            {
-                throw new InvalidOperationException(
-                    "確率判定命令の復旧に失敗しました。");
-            }
+                throw new InvalidOperationException("確率判定命令の復旧に失敗しました。");
         }
 
-        uint currentCompareBranch =
-            _pine.Read32(IonazunCompareBranchAddress);
-
-        uint currentCompareDelay =
-            _pine.Read32(IonazunCompareBranchDelayAddress);
+        uint currentCompareBranch = _pine.Read32(IonazunCompareBranchAddress);
+        uint currentCompareDelay = _pine.Read32(IonazunCompareBranchDelayAddress);
 
         if (currentUsedDelay != IonazunUsedBranchDelayOriginal)
-        {
-            throw new InvalidOperationException(
-                "使用済み判定フックの遅延スロットが想定外です。");
-        }
-
+            throw new InvalidOperationException("使用済み判定フックの遅延スロットが想定外です。");
         if (currentCompareDelay != IonazunCompareBranchDelayOriginal)
+            throw new InvalidOperationException("確率判定フックの遅延スロットが想定外です。");
+
+        if (currentUsed != usedJump)
         {
-            throw new InvalidOperationException(
-                "確率判定フックの遅延スロットが想定外です。" +
-                "\nアドレス: 0x" + IonazunCompareBranchDelayAddress.ToString("X8") +
-                "\n実際の値: 0x" + currentCompareDelay.ToString("X8") +
-                "\n期待値: 0x" + IonazunCompareBranchDelayOriginal.ToString("X8"));
-        }
-
-        if (currentUsed != IonazunUsedBranchOriginal &&
-            currentUsed != usedJump)
-        {
-            throw new InvalidOperationException(
-                "使用済み判定命令が想定外です: 0x" +
-                currentUsed.ToString("X8"));
-        }
-
-        bool compareOriginal =
-            currentCompare == IonazunCompareOriginal &&
-            currentCompareBranch == IonazunCompareBranchOriginal;
-
-        bool compareInstalled =
-            currentCompare == compareJump &&
-            currentCompareBranch == 0u;
-
-        // 分岐命令だけNOPになった中間状態も復旧可能にする
-        bool compareHalfInstalled =
-            currentCompare == IonazunCompareOriginal &&
-            currentCompareBranch == 0u;
-
-        if (!compareOriginal &&
-            !compareInstalled &&
-            !compareHalfInstalled)
-        {
-            throw new InvalidOperationException(
-                "確率判定フックの命令ペアが想定外です。\n" +
-                "DE8: 0x" + currentCompare.ToString("X8") + "\n" +
-                "DEC: 0x" + currentCompareBranch.ToString("X8"));
-        }
-
-        uint[] repeatCode =
-            BuildIonazunRepeatCode(_codeCaveAddress);
-
-        uint[] compareCode =
-            BuildIonazunCompareCode(_codeCaveAddress);
-
-        uint repeatAddress = _codeCaveAddress + 0x58u;
-        uint compareAddress = _codeCaveAddress + 0x90u;
-
-        for (int i = 0; i < repeatCode.Length; i++)
-        {
-            _pine.Write32(
-                repeatAddress + (uint)(i * 4),
-                repeatCode[i]);
-        }
-
-        for (int i = 0; i < compareCode.Length; i++)
-        {
-            _pine.Write32(
-                compareAddress + (uint)(i * 4),
-                compareCode[i]);
-        }
-
-        for (int i = 0; i < repeatCode.Length; i++)
-        {
-            if (_pine.Read32(
-                repeatAddress + (uint)(i * 4)) != repeatCode[i])
-            {
-                throw new InvalidOperationException(
-                    "イオナズン連発コードの検証に失敗しました。");
-            }
-        }
-
-        for (int i = 0; i < compareCode.Length; i++)
-        {
-            if (_pine.Read32(
-                compareAddress + (uint)(i * 4)) != compareCode[i])
-            {
-                throw new InvalidOperationException(
-                    "イオナズン確率判定コードの検証に失敗しました。");
-            }
-        }
-
-        // 比較命令の次の命令を先にNOPにする。
-        // これによりJ命令の遅延スロットで元のbeqが実行されない。
-        if (currentCompareBranch == IonazunCompareBranchOriginal)
-        {
-            _pine.Write32(IonazunCompareBranchAddress, 0u);
-
-            if (_pine.Read32(IonazunCompareBranchAddress) != 0u)
-            {
-                throw new InvalidOperationException(
-                    "確率判定の分岐命令をNOPにできませんでした。");
-            }
-        }
-
-        if (currentCompare == IonazunCompareOriginal)
-        {
-            _pine.Write32(IonazunCompareAddress, compareJump);
-
-            if (_pine.Read32(IonazunCompareAddress) != compareJump)
-            {
-                throw new InvalidOperationException(
-                    "確率判定フックの設置に失敗しました。");
-            }
-        }
-
-        if (currentUsed == IonazunUsedBranchOriginal)
-        {
+            if (currentUsed != IonazunUsedBranchOriginal)
+                throw new InvalidOperationException("使用済み判定フック命令が想定外です。");
             _pine.Write32(IonazunUsedBranchAddress, usedJump);
-
-            if (_pine.Read32(IonazunUsedBranchAddress) != usedJump)
-            {
-                throw new InvalidOperationException(
-                    "使用済み判定フックの設置に失敗しました。");
-            }
         }
 
-        _ionazunRepeatCaveAddress = _codeCaveAddress;
+        if (currentCompare != compareJump)
+        {
+            if (currentCompare != IonazunCompareOriginal)
+                throw new InvalidOperationException("確率判定フック命令が想定外です。");
+            _pine.Write32(IonazunCompareAddress, compareJump);
+        }
+
+        if (_pine.Read32(IonazunUsedBranchAddress) != usedJump ||
+            _pine.Read32(IonazunCompareAddress) != compareJump)
+            throw new InvalidOperationException("イオナズン確定フックの設置検証に失敗しました。");
+
+        if (currentCompareBranch != IonazunCompareBranchOriginal)
+            throw new InvalidOperationException("確率判定分岐命令が想定外です。");
     }
 
-    private void RestoreIonazunRepeatPatch()
+        private void RestoreIonazunRepeatPatch()
     {
         uint currentUsed =
             _pine.Read32(IonazunUsedBranchAddress);
@@ -830,64 +776,43 @@ internal sealed class ActionAutoRestoreService : IDisposable
     }
 
     private List<(byte SpeciesId, byte Marker, byte ActualAction)>
-        BuildActionEntries(Dictionary<int, ushort> actions)
+        BuildActionEntries(
+            Dictionary<int, ushort> actions,
+            ISet<int>? forceOverride = null)
     {
         var entries =
             new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
 
-        var enabled = _ionazunForceOverride != null
-            ? new HashSet<int>(_ionazunForceOverride)
-            : Torneko4ActionStore.GetIonazunForceCopy();
+        var enabled = forceOverride != null
+            ? new HashSet<int>(forceOverride)
+            : _ionazunForceOverride != null
+                ? new HashSet<int>(_ionazunForceOverride)
+                : Torneko4ActionStore.GetIonazunForceCopy();
 
         foreach (var pair in actions)
         {
             if (pair.Key < 0 || pair.Key >= 255)
-            {
-                throw new InvalidOperationException(
-                    "モンスター一覧番号が範囲外です: " + pair.Key);
-            }
+                throw new InvalidOperationException("モンスター一覧番号が範囲外です: " + pair.Key);
 
             if (pair.Value == 0 || pair.Value > 0xFF)
-            {
-                throw new InvalidOperationException(
-                    "特技IDが範囲外です: " + pair.Value);
-            }
+                throw new InvalidOperationException("特技IDが範囲外です: " + pair.Value);
 
-            bool knownAction = Array.Exists(
-                ActionChoices,
-                x => x.Id == pair.Value);
-
+            bool knownAction = Array.Exists(ActionChoices, x => x.Id == pair.Value);
             if (!knownAction)
-            {
-                throw new InvalidOperationException(
-                    "未登録の特技IDです: 0x" +
-                    pair.Value.ToString("X2"));
-            }
+                throw new InvalidOperationException("未登録の特技IDです: 0x" + pair.Value.ToString("X2"));
 
-            bool forceIonazun =
-                pair.Value == 0x00BF && enabled.Contains(pair.Key);
+            bool forceIonazun = pair.Value == 0x00BF && enabled.Contains(pair.Key);
+            byte marker = forceIonazun ? (byte)0xFF : (byte)pair.Value;
+            byte actualAction = forceIonazun ? (byte)0xBF : (byte)pair.Value;
 
-            byte marker = forceIonazun
-                ? (byte)0xFF
-                : (byte)pair.Value;
-
-            byte actualAction = forceIonazun
-                ? (byte)0xBF
-                : (byte)pair.Value;
-
-            entries.Add((
-                (byte)(pair.Key + 1),
-                marker,
-                actualAction
-            ));
+            entries.Add(((byte)(pair.Key + 1), marker, actualAction));
         }
 
         entries.Sort((a, b) => a.SpeciesId.CompareTo(b.SpeciesId));
-
         return entries;
     }
 
-    private static byte[] BuildActionData(
+        private static byte[] BuildActionData(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
     {
         byte[] data = new byte[entries.Count * 3];
@@ -933,147 +858,178 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private static uint[] BuildSparseLookupCode(
         uint address,
-        int entryCount)
+        int normalEntryCount,
+        int allyOverrideEntryCount)
     {
-        // 敵・味方の両方にモンスタークリエイターの種族別特技設定を適用する。
-        // スライムの指輪専用の味方側処理は SlimeRingAllyActionOverride 側で行う。
+        uint dataAddress = address + 0x200u;
+        uint normalDataAddress =
+            dataAddress + (uint)allyOverrideEntryCount * 3u;
+        uint traceAddress = address + 0xD4u;
 
-        uint dataAddress = address + 0x170u;
+        var code = new List<uint>();
 
-        return new uint[]
+        void Emit(uint instruction) => code.Add(instruction);
+
+        int EmitBranch(uint opcode, int targetIndex)
         {
-            // stack確保
-            0x27BDFFF0u,
+            int index = code.Count;
+            code.Add(opcode);
+            code.Add(0u);
+            int displacement = targetIndex - (index + 1);
+            code[index] = opcode | (uint)(ushort)displacement;
+            return index;
+        }
 
-            // ra, a0, v0, t0を保存
-            0xAFBF000Cu,
-            0xAFA40008u,
-            0xAFA20004u,
-            0xAFA80000u,
+        // dgEnemyCheckSideの戻り値：1=敵、0=味方。
+        // 味方だけ指輪テーブルを先に検索し、該当なしなら通常テーブルへ進む。
+        // 敵は指輪テーブルを飛ばして通常テーブルだけを検索する。
 
-            // dgEnemyCheckSide(a0)
-            0x0C08DBD4u,
-            0x00000000u,
+        // stack確保
+        Emit(0x27BDFFF0u);
+        // ra, a0, v0, t0を保存
+        Emit(0xAFBF000Cu);
+        Emit(0xAFA40008u);
+        Emit(0xAFA20004u);
+        Emit(0xAFA80000u);
 
-            // 陣営判定結果をt5へ退避
-            0x00406821u,
+        // dgEnemyCheckSide(a0)
+        Emit(0x0C08DBD4u);
+        Emit(0x00000000u);
+        // 陣営判定結果をt5へ退避
+        Emit(0x00406821u);
 
-            // 元のレジスタを復元
-            0x8FA40008u,
-            0x8FA20004u,
-            0x8FA80000u,
-            0x8FBF000Cu,
+        // 元のレジスタを復元
+        Emit(0x8FA40008u);
+        Emit(0x8FA20004u);
+        Emit(0x8FA80000u);
+        Emit(0x8FBF000Cu);
+        // stack解放
+        Emit(0x27BD0010u);
 
-            // stack解放
-            0x27BD0010u,
+        // dgEnemyCheckSideがcaller-savedのt3を変更してもよいようtraceアドレスを再設定。
+        Emit(0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu));
+        Emit(0x356B0000u | (traceAddress & 0xFFFFu));
 
-            // 敵・味方とも種族別設定検索へ進む。
-            // 分岐と元処理へのジャンプをNOP化し、後続の検索処理を共通化する。
-            0x00000000u,
-            0x00000000u,
-            0x00000000u,
-            0x00000000u,
+        // 敵（t5 != 0）は通常設定へ。味方（t5 == 0）は指輪設定を先に検索。
+        int enemyToNormalBranch = EmitBranch(0x15A00000u, 0);
 
-            // 種族別設定検索
-            0x3C090000u | ((dataAddress >> 16) & 0xFFFFu),
-            0x35290000u | (dataAddress & 0xFFFFu),
+        // 指輪上書きテーブル
+        Emit(0x3C090000u | ((dataAddress >> 16) & 0xFFFFu));
+        Emit(0x35290000u | (dataAddress & 0xFFFFu));
+        Emit(0x240C0000u | ((uint)allyOverrideEntryCount & 0xFFFFu));
+        int noAllyOverridesBranch = EmitBranch(0x11800000u, 0);
 
-            // 登録種族数
-            0x240C0000u | ((uint)entryCount & 0xFFFFu),
+        int allyLoop = code.Count;
+        Emit(0x912A0000u);                         // lbu t2,0(t1)
+        int allyMatchBranch = EmitBranch(0x110A0000u, 0);
+        Emit(0x25290003u);                         // addiu t1,t1,3
+        Emit(0x258CFFFFu);                         // addiu t4,t4,-1
+        int allyRepeatBranch = EmitBranch(0x15800000u, allyLoop);
 
-            // 検索ループ
-            0x912A0000u,
+        // 通常設定テーブル
+        int normalSetup = code.Count;
+        Emit(0x3C090000u | ((normalDataAddress >> 16) & 0xFFFFu));
+        Emit(0x35290000u | (normalDataAddress & 0xFFFFu));
+        Emit(0x240C0000u | ((uint)normalEntryCount & 0xFFFFu));
+        int noNormalEntriesBranch = EmitBranch(0x11800000u, 0);
 
-            // beq t0,t2,match
-            0x110A0007u,
-            0x00000000u,
+        int normalLoop = code.Count;
+        Emit(0x912A0000u);                         // lbu t2,0(t1)
+        int normalMatchBranch = EmitBranch(0x110A0000u, 0);
+        Emit(0x25290003u);                         // addiu t1,t1,3
+        Emit(0x258CFFFFu);                         // addiu t4,t4,-1
+        int normalRepeatBranch = EmitBranch(0x15800000u, normalLoop);
 
-            // 次の3バイトレコードへ
-            0x25290003u,
-            0x258CFFFFu,
+        // どちらのテーブルにも該当しない場合は元の処理へ。
+        int noMatch = code.Count;
+        Emit(0x0808F1D4u);
+        Emit(0x00000000u);
 
-            // bne t4,zero,loop
-            0x1580FFFAu,
-            0x00000000u,
+        // 指輪設定に一致した場合。
+        int allyMatch = code.Count;
+        Emit(0x912C0001u);                         // lbu t4,1(t1): marker
+        Emit(0x912A0002u);                         // lbu t2,2(t1): action
+        Emit(0xAD6C000Cu);                         // sw t4,12(t3): trace marker
+        Emit(0x01408821u);                         // addu s1,t2,zero
+        Emit(0x0808F1D4u);
+        Emit(0x00000000u);
 
-            // 該当なし：元の処理へ
-            0x0808F1D4u,
-            0x00000000u,
+        // 通常設定に一致した場合。
+        int normalMatch = code.Count;
+        Emit(0x912C0001u);
+        Emit(0x912A0002u);
+        Emit(0xAD6C000Cu);
+        Emit(0x01408821u);
+        Emit(0x0808F1D4u);
+        Emit(0x00000000u);
 
-            // match:
-            // t4 = 設定マーカー
-            0x912C0001u,
+        // 分岐先を確定。
+        void PatchBranch(int index, int targetIndex, uint opcode)
+        {
+            int displacement = targetIndex - (index + 1);
+            code[index] = opcode | (uint)(ushort)displacement;
+        }
 
-            // t2 = 実際に渡す特技ID
-            0x912A0002u,
+        PatchBranch(enemyToNormalBranch, normalSetup, 0x15A00000u);
+        PatchBranch(noAllyOverridesBranch, normalSetup, 0x11800000u);
+        PatchBranch(allyMatchBranch, allyMatch, 0x110A0000u);
+        PatchBranch(allyRepeatBranch, allyLoop, 0x15800000u);
+        PatchBranch(noNormalEntriesBranch, noMatch, 0x11800000u);
+        PatchBranch(normalMatchBranch, normalMatch, 0x110A0000u);
+        PatchBranch(normalRepeatBranch, normalLoop, 0x15800000u);
 
-            // trace[3] = 設定マーカー
-            0xAD6C000Cu,
-
-            // s1 = 実際の特技ID
-            0x01408821u,
-
-            // 元の敵特技処理へ
-            0x0808F1D4u,
-            0x00000000u
-        };
+        return code.ToArray();
     }
-    private static uint GetRequiredCaveSize(
-        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+
+        private static uint GetRequiredCaveSize(
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
-        // +0x164 までが固定コード領域。
-        // その後に種族ごと3バイトの設定を置く。
-        uint dataLength = (uint)entries.Count * 3u;
+        uint dataLength =
+            (uint)(normalEntries.Count + allyOverrideEntries.Count) * 3u;
         uint paddedDataLength = (dataLength + 3u) & ~3u;
-
-        return 0x170u + paddedDataLength;
+        return 0x200u + paddedDataLength;
     }
 
-    private bool IsDispatcherCode(
+        private bool IsDispatcherCode(
         uint address,
-        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
         uint[] stub = BuildDispatcherStub(address);
-        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
-        byte[] data = BuildActionData(entries);
+        uint[] lookup = BuildSparseLookupCode(
+            address, normalEntries.Count, allyOverrideEntries.Count);
+
+        var allEntries = new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+        allEntries.AddRange(allyOverrideEntries);
+        allEntries.AddRange(normalEntries);
+        byte[] data = BuildActionData(allEntries);
 
         for (int i = 0; i < stub.Length; i++)
-        {
             if (_pine.Read32(address + (uint)(i * 4)) != stub[i])
                 return false;
-        }
 
-        for (uint offset = (uint)(stub.Length * 4);
-             offset < 0x58u;
-             offset += 4u)
-        {
+        for (uint offset = (uint)(stub.Length * 4); offset < 0x58u; offset += 4u)
             if (_pine.Read32(address + offset) != 0u)
                 return false;
-        }
 
         uint lookupAddress = address + 0xE4u;
-
         for (int i = 0; i < lookup.Length; i++)
-        {
             if (_pine.Read32(lookupAddress + (uint)(i * 4)) != lookup[i])
                 return false;
-        }
 
-        uint dataAddress = address + 0x170u;
+        uint dataAddress = address + 0x200u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
         for (uint offset = 0; offset < paddedLength; offset += 4u)
         {
             uint expected = 0u;
-
             for (int b = 0; b < 4; b++)
             {
                 uint index = offset + (uint)b;
-
                 if (index < (uint)data.Length)
                     expected |= (uint)data[index] << (b * 8);
             }
-
             if (_pine.Read32(dataAddress + offset) != expected)
                 return false;
         }
@@ -1081,9 +1037,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return true;
     }
 
-    private uint FindCodeCave(uint requiredSize)
+        private uint FindCodeCave(uint requiredSize)
     {
-        if (requiredSize < 0x130u || requiredSize > 0x10000u)
+        if (requiredSize < 0x200u || requiredSize > 0x10000u)
         {
             throw new InvalidOperationException(
                 "必要なコード領域サイズが不正です: " + requiredSize);
@@ -1117,72 +1073,53 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private void WriteDispatcherCode(
         uint address,
-        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
         uint[] stub = BuildDispatcherStub(address);
-        uint[] lookup = BuildSparseLookupCode(address, entries.Count);
-        byte[] data = BuildActionData(entries);
+        uint[] lookup = BuildSparseLookupCode(
+            address, normalEntries.Count, allyOverrideEntries.Count);
 
-        // メインディスパッチャー
+        var allEntries = new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+        allEntries.AddRange(allyOverrideEntries);
+        allEntries.AddRange(normalEntries);
+        byte[] data = BuildActionData(allEntries);
+
         for (int i = 0; i < stub.Length; i++)
-        {
-            _pine.Write32(
-                address + (uint)(i * 4),
-                stub[i]);
-        }
+            _pine.Write32(address + (uint)(i * 4), stub[i]);
 
-        // +0x58までの未使用部分を初期化
-        for (uint offset = (uint)(stub.Length * 4);
-             offset < 0x58u;
-             offset += 4u)
-        {
+        for (uint offset = (uint)(stub.Length * 4); offset < 0x58u; offset += 4u)
             _pine.Write32(address + offset, 0u);
-        }
 
-        // 種族別検索コード
         uint lookupAddress = address + 0xE4u;
-
         for (int i = 0; i < lookup.Length; i++)
-        {
-            _pine.Write32(
-                lookupAddress + (uint)(i * 4),
-                lookup[i]);
-        }
+            _pine.Write32(lookupAddress + (uint)(i * 4), lookup[i]);
 
-        // 種族別データ。1種族につき3バイトのみ。
-        uint dataAddress = address + 0x170u;
+        uint dataAddress = address + 0x200u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
-
         for (uint offset = 0; offset < paddedLength; offset += 4u)
         {
             uint value = 0u;
-
             for (int b = 0; b < 4; b++)
             {
                 uint index = offset + (uint)b;
-
                 if (index < (uint)data.Length)
                     value |= (uint)data[index] << (b * 8);
             }
-
             _pine.Write32(dataAddress + offset, value);
         }
 
-        // trace領域
         uint traceAddress = address + 0xD4u;
-
         _pine.Write32(traceAddress, 0u);
         _pine.Write32(traceAddress + 4u, 0u);
         _pine.Write32(traceAddress + 8u, 0u);
         _pine.Write32(traceAddress + 12u, 0u);
 
-        if (!IsDispatcherCode(address, entries))
-        {
-            throw new InvalidOperationException(
-                "コンパクト型MIPSディスパッチャーの検証に失敗しました。");
-        }
+        if (!IsDispatcherCode(address, normalEntries, allyOverrideEntries))
+            throw new InvalidOperationException("敵味方別特技ディスパッチャーの検証に失敗しました。");
     }
-    private void RestoreCallInstruction()
+
+        private void RestoreCallInstruction()
     {
         uint current = _pine.Read32(PatchAddress);
 
@@ -1209,106 +1146,96 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private void ApplyRuntime(Dictionary<int, ushort> actions)
     {
-        var entries = BuildActionEntries(actions);
+        Dictionary<int, ushort> allyRingActions;
+        HashSet<int> allyRingIonazunForce;
 
-        uint currentCall = _pine.Read32(PatchAddress);
-
-        bool currentIsDispatcher = IsDispatcherCall(currentCall);
-
-        if (currentCall != OriginalCallInstruction &&
-            !currentIsDispatcher)
+        lock (_stateSync)
         {
-            throw new InvalidOperationException(
-                "敵特技呼び出し命令が想定外です。\n" +
-                "現在値: 0x" + currentCall.ToString("X8"));
+            allyRingActions = new Dictionary<int, ushort>(_allyRingActions);
+            allyRingIonazunForce = new HashSet<int>(_allyRingIonazunForce);
         }
 
-        uint delayInstruction = _pine.Read32(DelaySlotAddress);
+        var normalEntries = BuildActionEntries(actions);
+        var allyOverrideEntries =
+            BuildActionEntries(allyRingActions, allyRingIonazunForce);
 
+        var allEntries =
+            new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+        allEntries.AddRange(allyOverrideEntries);
+        allEntries.AddRange(normalEntries);
+
+        uint currentCall = _pine.Read32(PatchAddress);
+        bool currentIsDispatcher = IsDispatcherCall(currentCall);
+
+        if (currentCall != OriginalCallInstruction && !currentIsDispatcher)
+            throw new InvalidOperationException(
+                "敵特技呼び出し命令が想定外です。現在値: 0x" + currentCall.ToString("X8"));
+
+        uint delayInstruction = _pine.Read32(DelaySlotAddress);
         if (IsLegacyPatch(delayInstruction))
         {
-            _pine.Write32(
-                DelaySlotAddress,
-                OriginalDelayInstruction);
-
+            _pine.Write32(DelaySlotAddress, OriginalDelayInstruction);
             delayInstruction = _pine.Read32(DelaySlotAddress);
         }
 
         if (delayInstruction != OriginalDelayInstruction)
-        {
             throw new InvalidOperationException(
-                "遅延スロットが想定外です。\n" +
-                "現在値: 0x" + delayInstruction.ToString("X8"));
-        }
+                "遅延スロットが想定外です。現在値: 0x" + delayInstruction.ToString("X8"));
 
         if (currentIsDispatcher)
         {
             uint detectedCave = DecodeDispatcherAddress(currentCall);
-
-            if (IsDispatcherCode(detectedCave, entries))
+            if (IsDispatcherCode(detectedCave, normalEntries, allyOverrideEntries))
             {
                 _codeCaveAddress = detectedCave;
             }
             else
             {
-                // 旧版ディスパッチャー、または設定変更前のコード。
-                // 先にイオナズンフックを復元してから旧呼び出しを解除する。
                 RestoreIonazunRepeatPatch();
                 RestoreCallInstruction();
-
                 _codeCaveAddress = 0u;
                 currentIsDispatcher = false;
             }
         }
 
-        if (actions.Count == 0)
+        if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
         {
             RestoreIonazunRepeatPatch();
-
             if (currentIsDispatcher)
                 RestoreCallInstruction();
-
             _codeCaveAddress = 0u;
             return;
         }
 
         if (_codeCaveAddress != 0u &&
-            !IsDispatcherCode(_codeCaveAddress, entries))
+            !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
         {
             RestoreIonazunRepeatPatch();
-
             if (currentIsDispatcher)
                 RestoreCallInstruction();
-
             _codeCaveAddress = 0u;
         }
 
         if (_codeCaveAddress == 0u)
         {
-            uint requiredSize = GetRequiredCaveSize(entries);
-
+            uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
             _codeCaveAddress = FindCodeCave(requiredSize);
-
-            WriteDispatcherCode(_codeCaveAddress, entries);
+            WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
         }
 
         uint newCall = EncodeJal(_codeCaveAddress);
-
         _pine.Write32(PatchAddress, newCall);
 
         uint verifyCall = _pine.Read32(PatchAddress);
-
         if (verifyCall != newCall)
-        {
             throw new InvalidOperationException(
-                "ディスパッチャー呼び出し命令の検証に失敗しました。\n" +
-                "書き込み値: 0x" + newCall.ToString("X8") +
-                "\n読み戻し値: 0x" + verifyCall.ToString("X8"));
-        }
+                "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+                newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
 
-        ApplyIonazunRepeatPatch(actions);
+        ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
     }
-    internal static string ReadActionTrace()
+
+        internal static string ReadActionTrace()
     {
         lock (SharedPineAccessSync)
         {
@@ -1800,10 +1727,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
             lock (_operationSync)
             {
                 Dictionary<int, ushort> snapshot;
+                int ringOverrideCount;
 
                 lock (_stateSync)
                 {
                     snapshot = new Dictionary<int, ushort>(_actions);
+                    ringOverrideCount = _allyRingActions.Count;
                 }
 
                 if (snapshot.Count == 0)
@@ -1812,7 +1741,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
                         "種族別特技設定なし：元の命令を維持しています。");
                 }
 
-                if (snapshot.Count > 0 || _ionazunRepeatCaveAddress != 0)
+                if (snapshot.Count > 0 ||
+                    ringOverrideCount > 0 ||
+                    _codeCaveAddress != 0 ||
+                    _ionazunRepeatCaveAddress != 0)
                 {
                     bool connected = _pine.TryConnect();
 
@@ -1829,9 +1761,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
                         if (status == 0)
                         {
                             ApplyRuntime(snapshot);
-                            RaiseStatus(snapshot.Count > 0
-                                ? "種族別特技ディスパッチャー適用中：" + snapshot.Count + "種類"
-                                : "種族別特技設定なし：元の命令を維持しています。");
+                            RaiseStatus(snapshot.Count > 0 || ringOverrideCount > 0
+                                ? "種族別特技ディスパッチャー適用中：通常設定 " +
+                                  snapshot.Count + "種類 / 指輪上書き " +
+                                  ringOverrideCount + "種類"
+                                : "種族別特技設定なし：元の命令へ復元済みです。");
                         }
 
                         if (status == 1)
