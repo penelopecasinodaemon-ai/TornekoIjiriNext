@@ -951,7 +951,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return entries;
     }
 
-        private static byte[] BuildActionData(
+    private static byte[] BuildActionData(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
     {
         byte[] data = new byte[entries.Count * 3];
@@ -1120,7 +1120,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return code.ToArray();
     }
 
-        private static uint GetRequiredCaveSize(
+    private static uint GetRequiredCaveSize(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
@@ -1130,7 +1130,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return 0x200u + paddedDataLength;
     }
 
-        private bool IsDispatcherCode(
+    private bool IsDispatcherCode(
         uint address,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
@@ -1176,7 +1176,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return true;
     }
 
-        private uint FindCodeCave(uint requiredSize)
+    private uint FindCodeCave(uint requiredSize)
     {
         if (requiredSize < 0x200u || requiredSize > 0x10000u)
         {
@@ -1258,7 +1258,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException("敵味方別特技ディスパッチャーの検証に失敗しました。");
     }
 
-        private void RestoreCallInstruction()
+    private void RestoreCallInstruction()
     {
         uint current = _pine.Read32(PatchAddress);
 
@@ -1297,11 +1297,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
         var normalEntries = BuildActionEntries(actions);
         var allyOverrideEntries =
             BuildActionEntries(allyRingActions, allyRingIonazunForce);
-
-        var allEntries =
-            new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
-        allEntries.AddRange(allyOverrideEntries);
-        allEntries.AddRange(normalEntries);
 
         uint currentCall = _pine.Read32(PatchAddress);
         bool currentIsDispatcher = IsDispatcherCall(currentCall);
@@ -1374,7 +1369,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
     }
 
-        internal static string ReadActionTrace()
+    internal static string ReadActionTrace()
     {
         lock (SharedPineAccessSync)
         {
