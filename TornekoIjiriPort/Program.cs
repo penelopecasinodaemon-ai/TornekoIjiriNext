@@ -4876,6 +4876,12 @@ internal sealed class MainForm : Form
                 monsterForm.ShowDialog(this);
             }));
 buttons.Controls.Add(UiFactory.Button(
+            "味方特技トレース", (_, _) =>
+            {
+                using var traceForm = new AllyActionTraceForm();
+                traceForm.ShowDialog(this);
+            }));
+buttons.Controls.Add(UiFactory.Button(
             "モンスター名変更", (_, _) =>
             {
                 if (!Pcsx2LiveSession.IsConnected ||
@@ -9191,3 +9197,4 @@ private static string DecodeMonsterName(byte[] data, int offset, int count)
         }
     }
 }
+
