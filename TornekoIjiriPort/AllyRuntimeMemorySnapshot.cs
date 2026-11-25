@@ -155,6 +155,14 @@ internal static class AllyRuntimeMemorySnapshot
     0x002D3B00u, 0x002D3D80u,
     "味方特技呼び出し先 0x002D3C10 の関数本体"),
 
+        new MemoryRange(
+            0x002D3A80u, 0x002D3B00u,
+            "味方特技呼び出し先の前半ループ・初期化"),
+
+        new MemoryRange(
+            0x002D48A0u, 0x002D5530u,
+            "味方特技実行パラメータの後続処理・使用箇所"),
+
     };
 
     private static void RequirePaused()
