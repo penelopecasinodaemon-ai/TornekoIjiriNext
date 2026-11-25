@@ -24,6 +24,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private const uint SkillMessagePointerBase = 0x209126D0u;
 
     private readonly Func<byte[]?> _getCurrentBin;
+    private readonly ActionAutoRestoreService _actionRestore;
     private readonly System.Threading.Timer _timer;
     private readonly object _sync = new object();
     private Dictionary<int, bool>? _baseBarrier;
@@ -51,7 +52,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     internal SlimeRingRuntimeService(Func<byte[]?> getCurrentBin, ActionAutoRestoreService actionRestore)
     {
         _getCurrentBin = getCurrentBin ?? throw new ArgumentNullException(nameof(getCurrentBin));
-        _ = actionRestore ?? throw new ArgumentNullException(nameof(actionRestore));
+        _actionRestore = actionRestore ?? throw new ArgumentNullException(nameof(actionRestore));
         _timer = new System.Threading.Timer(Poll, null, 1200, 500);
     }
 
@@ -234,14 +235,38 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 global::Torneko4GanirasuBarrierStore.GetDefaultCopy());
         }
 
-        // 指輪の特技IDを敵側ディスパッチャーへ渡さない。
-        // 味方側の個別フック SlimeRingAllyActionOverride だけが担当する。
+        // 指輪の特技設定は独立テーブルへ渡す。
+        // ディスパッチャー側で「味方なら指輪設定を優先、敵なら通常設定」を行う。
+        var ringActions = new Dictionary<int, ushort>();
+        var ringIonazunForce = new HashSet<int>();
+
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
 
+            if (item.ActionId > 0 &&
+                item.ActionId <= byte.MaxValue &&
+                Array.Exists(
+                    ActionAutoRestoreService.ActionChoices,
+                    x => x.Id == item.ActionId))
+            {
+                ringActions[id] = (ushort)item.ActionId;
+
+                if (item.ActionId == 0x00BF && item.CoromageIonazunAlways)
+                    ringIonazunForce.Add(id);
+            }
+
             if (item.GanirasuBarrier)
                 barriers[id] = true;
+        }
+
+        if (!_actionRestore.TryApplyAllyRingOverrides(
+            ringActions,
+            ringIonazunForce,
+            out string actionMessage))
+        {
+            throw new InvalidOperationException(
+                "指輪専用の味方特技設定を反映できません: " + actionMessage);
         }
 
         if (!Torneko4GanirasuBarrierRuntime.TryApply(
@@ -254,9 +279,13 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         }
 
         return
-            "敵側の種族別特技設定には触れていません。" +
+            "通常設定：敵・味方共通でモンスタークリエイター設定を使用。" +
             Environment.NewLine +
-            "指輪の特技IDは味方側専用処理に限定しています。" +
+            "指輪装備中：対象17種の味方だけ指輪の特技設定を優先。" +
+            Environment.NewLine +
+            "敵は指輪設定の対象外です。" +
+            Environment.NewLine +
+            actionMessage +
             Environment.NewLine +
             barrierMessage;
     }
@@ -278,7 +307,12 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             _baseBarrier = null;
         }
 
-        // 敵側の特技ディスパッチャーは変更していないため、復元もしない。
+        // 指輪専用の味方上書きだけを解除し、通常設定へ戻す。
+        _actionRestore.TryApplyAllyRingOverrides(
+            new Dictionary<int, ushort>(),
+            new HashSet<int>(),
+            out _);
+
         try
         {
             if (baseBarrier != null)
