@@ -1900,6 +1900,12 @@ right.Controls.Add(_count, 0, 0);
 
         // HSP var_407 は先頭が空行。実モンスターのHSP IDはC# ID + 1。
         int hspMonsterIndex = id + 1;
+
+        // 指輪装備中の対象17種は、指輪による一時上書き値を
+        // 編集用BINへ取り込まない。
+        bool ringOverlayActive =
+            SlimeRingRuntimeService.IsOverlayActiveForMonster(id);
+
         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
 
@@ -1911,7 +1917,10 @@ right.Controls.Add(_count, 0, 0);
             {
                 var requested = new List<Tuple<int, int, string>>
                 {
-                    Tuple.Create(offset, MonsterRecordSize, "モンスターレコード"),
+                    Tuple.Create(
+                        offset,
+                        ringOverlayActive ? 22 : MonsterRecordSize,
+                        "モンスターレコード"),
                     Tuple.Create(recruitOffset, 2, "勧誘修正値"),
                     Tuple.Create(recoveryOffset, 2, "回復定数")
                 };
@@ -1921,15 +1930,18 @@ right.Controls.Add(_count, 0, 0);
 
                 int liveRangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
                 int liveAllyOffset = SkillAllyItemDataOffset + hspMonsterIndex * 8;
-                if (_skillDataReady)
+                if (!ringOverlayActive)
                 {
-                    requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
-                    requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
-                }
-                else
-                {
-                    // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
-                    requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
+                    if (_skillDataReady)
+                    {
+                        requested.Add(Tuple.Create(liveRangeOffset, 20, "特技範囲データ"));
+                        requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
+                    }
+                    else
+                    {
+                        // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
+                        requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
+                    }
                 }
 
                 var liveData = Pcsx2BinApplier.ReadRanges(
@@ -2069,6 +2081,13 @@ right.Controls.Add(_count, 0, 0);
 
         // HSP var_407 の先頭空行を含むIDに合わせる。
         int hspMonsterIndex = _selectedMonsterId + 1;
+
+        // 指輪の一時上書き中は、対象17種の特技データを
+        // クリエイターからゲームメモリへ書き戻さない。
+        bool ringOverlayActive =
+            SlimeRingRuntimeService.IsOverlayActiveForMonster(
+                _selectedMonsterId);
+
         int recruitOffset = RecruitModifierDataOffset + hspMonsterIndex * 2;
         int recoveryOffset = RecoveryConstantDataOffset + hspMonsterIndex * 2;
         int rangeOffset = SkillRangeDataOffset + hspMonsterIndex * 20;
@@ -2154,7 +2173,9 @@ right.Controls.Add(_count, 0, 0);
 
                 writes.Add(Tuple.Create(
                     offset,
-                    CopyRange(offset, MonsterRecordSize - 1),
+                    CopyRange(
+                        offset,
+                        ringOverlayActive ? 22 : MonsterRecordSize - 1),
                     "モンスターレコード"));
 
                 if (modifierChanged)
@@ -2183,25 +2204,28 @@ right.Controls.Add(_count, 0, 0);
                     }
                 }
 
-                if (_skillDataReady)
+                if (!ringOverlayActive)
                 {
-                    writes.Add(Tuple.Create(
-                        rangeOffset,
-                        CopyRange(rangeOffset, 20),
-                        "特技範囲データ"));
+                    if (_skillDataReady)
+                    {
+                        writes.Add(Tuple.Create(
+                            rangeOffset,
+                            CopyRange(rangeOffset, 20),
+                            "特技範囲データ"));
 
-                    writes.Add(Tuple.Create(
-                        allyOffset,
-                        CopyRange(allyOffset, 8),
-                        "仲間投げアイテムデータ"));
-                }
-                else
-                {
-                    // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
-                    writes.Add(Tuple.Create(
-                        enemyItemOffset,
-                        CopyRange(enemyItemOffset, 2),
-                        "var_411 敵投擲アイテム"));
+                        writes.Add(Tuple.Create(
+                            allyOffset,
+                            CopyRange(allyOffset, 8),
+                            "仲間投げアイテムデータ"));
+                    }
+                    else
+                    {
+                        // var_411 = var_646 + 20 * monsterId。+18位置の2バイトだけを書く。
+                        writes.Add(Tuple.Create(
+                            enemyItemOffset,
+                            CopyRange(enemyItemOffset, 2),
+                            "var_411 敵投擲アイテム"));
+                    }
                 }
 
                 string resultText = Pcsx2BinApplier.ApplyRanges(

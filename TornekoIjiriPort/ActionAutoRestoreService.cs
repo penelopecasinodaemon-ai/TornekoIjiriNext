@@ -160,6 +160,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private Dictionary<int, ushort> _actions =
         new Dictionary<int, ushort>();
+
+    // nullなら通常のモンスタークリエイター設定を使用する。
+    // 指輪適用中は専用のイオナズン確定設定を使用する。
+    private HashSet<int>? _ionazunForceOverride;
+
     private uint _codeCaveAddress;
 
     private int _pollBusy;
@@ -255,6 +260,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
         IEnumerable<KeyValuePair<int, ushort>> monsterActions,
         out string message)
     {
+        return TryApply(monsterActions, null, out message);
+    }
+
+    // 指輪専用設定を共通ストアに書き込まずに適用する。
+    internal bool TryApply(
+        IEnumerable<KeyValuePair<int, ushort>> monsterActions,
+        ISet<int>? ionazunForceOverride,
+        out string message)
+    {
         message = "";
 
         if (monsterActions == null)
@@ -275,6 +289,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
         {
             try
             {
+                _ionazunForceOverride =
+                    ionazunForceOverride == null
+                        ? null
+                        : new HashSet<int>(ionazunForceOverride);
+
                 if (!_pine.TryConnect())
                 {
                     message =
@@ -816,7 +835,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
         var entries =
             new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
 
-        var enabled = Torneko4ActionStore.GetIonazunForceCopy();
+        var enabled = _ionazunForceOverride != null
+            ? new HashSet<int>(_ionazunForceOverride)
+            : Torneko4ActionStore.GetIonazunForceCopy();
 
         foreach (var pair in actions)
         {

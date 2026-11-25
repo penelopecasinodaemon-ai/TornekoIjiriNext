@@ -31,6 +31,16 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private HashSet<int>? _baseIonazun;
     private Dictionary<int, bool>? _baseBarrier;
     private bool _ringActive;
+    private static volatile bool _overlayActive;
+
+    // 指輪が上書き中の対象モンスターかどうか。
+    internal static bool IsOverlayActiveForMonster(int speciesId)
+    {
+        return _overlayActive &&
+            Array.IndexOf(
+                SlimeRingEditorForm.TargetMonsterIds,
+                speciesId) >= 0;
+    }
     private bool _disposed;
     private int _processId;
     private DateTime _settingsWriteTime = DateTime.MinValue;
@@ -165,6 +175,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             _baseIonazun = Torneko4ActionStore.GetIonazunForceCopy();
             _baseBarrier = global::Torneko4GanirasuBarrierStore.GetCopy();
             _ringActive = true;
+            _overlayActive = true;
             _lastBarrierTrace = string.Empty;
         }
         RaiseStatus("スライムの指輪：装備を検出。17種の専用設定を適用します。");
@@ -260,48 +271,93 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             }
         }
 
-        Torneko4ActionStore.ReplaceAll(actions);
-        for (int i = 0; i < 199; i++) Torneko4ActionStore.SetIonazunForce(i, ionazun.Contains(i));
-        global::Torneko4GanirasuBarrierStore.ReplaceAll(barriers);
+        // 指輪専用設定をディスパッチャーへ直接渡す。
+        // モンスタークリエイターの共通ストアは変更しない。
+        if (!_actionRestore.TryApply(
+            actions,
+            ionazun,
+            out string actionMessage))
+        {
+            throw new InvalidOperationException(
+                "指輪専用特技の適用に失敗しました: " + actionMessage);
+        }
 
-        if (!_actionRestore.TryApply(actions, out string actionMessage))
-            throw new InvalidOperationException("特技変更の適用に失敗しました: " + actionMessage);
-
-        if (!Torneko4GanirasuBarrierRuntime.TryApply(barriers, out string barrierMessage))
-            throw new InvalidOperationException("ガニラスバリアの適用に失敗しました: " + barrierMessage);
+        // バリア設定も専用テーブルへ直接適用する。
+        // GanirasuBarrierStoreの画面設定は変更しない。
+        if (!Torneko4GanirasuBarrierRuntime.TryApply(
+            barriers,
+            out string barrierMessage))
+        {
+            throw new InvalidOperationException(
+                "指輪専用ガニラスバリアの適用に失敗しました: " + barrierMessage);
+        }
 
         return actionMessage + Environment.NewLine + barrierMessage;
     }
 
     private void Deactivate(string status)
     {
+        Dictionary<int, ushort>? baseActions;
+        HashSet<int>? baseIonazun;
+        Dictionary<int, bool>? baseBarrier;
+
         lock (_sync)
         {
             if (!_ringActive) return;
-            if (_baseActions != null) Torneko4ActionStore.ReplaceAll(_baseActions);
-            if (_baseIonazun != null)
-                for (int i = 0; i < 199; i++) Torneko4ActionStore.SetIonazunForce(i, _baseIonazun.Contains(i));
-            if (_baseBarrier != null) global::Torneko4GanirasuBarrierStore.ReplaceAll(_baseBarrier);
+
+            baseActions = _baseActions == null
+                ? null
+                : new Dictionary<int, ushort>(_baseActions);
+
+            baseIonazun = _baseIonazun == null
+                ? null
+                : new HashSet<int>(_baseIonazun);
+
+            baseBarrier = _baseBarrier == null
+                ? null
+                : new Dictionary<int, bool>(_baseBarrier);
+
             _ringActive = false;
+            _overlayActive = false;
             _lastBarrierTrace = string.Empty;
             _baseActions = null;
             _baseIonazun = null;
             _baseBarrier = null;
         }
 
+        // 共通ストアには触れず、ゲーム側だけ基準設定に戻す。
         try
         {
-            _actionRestore.TryApply(Torneko4ActionStore.GetCopy(), out _);
-            Torneko4GanirasuBarrierRuntime.TryApply(global::Torneko4GanirasuBarrierStore.GetCopy(), out _);
-        }
-        catch { }
+            if (baseActions != null)
+            {
+                _actionRestore.TryApply(
+                    baseActions,
+                    baseIonazun ?? new HashSet<int>(),
+                    out _);
+            }
 
-        try { ApplyBaselineSkillData(); }
+            if (baseBarrier != null)
+            {
+                Torneko4GanirasuBarrierRuntime.TryApply(
+                    baseBarrier,
+                    out _);
+            }
+        }
+        catch (Exception ex)
+        {
+            RaiseStatus(status + " / 実行時設定の復元エラー: " + ex.Message);
+        }
+
+        try
+        {
+            ApplyBaselineSkillData();
+        }
         catch (Exception ex)
         {
             RaiseStatus(status + " / 基準データ復元エラー: " + ex.Message);
             return;
         }
+
         _settingsWriteTime = DateTime.MinValue;
         RaiseStatus(status);
     }
