@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TornekoIjiriPort;
@@ -7,6 +8,7 @@ namespace TornekoIjiriPort;
 internal sealed class AllyActionTraceForm : Form
 {
     private readonly TextBox _output;
+    private readonly Button _snapshotButton;
 
     internal AllyActionTraceForm()
     {
@@ -36,33 +38,47 @@ internal sealed class AllyActionTraceForm : Form
         var install = new Button
         {
             Text = "味方トレース設置",
-            Width = 150,
+            Width = 140,
             Height = 34
         };
+
         install.Click += (_, _) =>
             InvokeTraceMethod("Install", "味方側トレースを設置しました。");
 
         var read = new Button
         {
             Text = "トレース読み取り",
-            Width = 150,
+            Width = 140,
             Height = 34
         };
+
         read.Click += (_, _) =>
             InvokeTraceMethod("Read", "トレースを読み取りました。");
 
         var restore = new Button
         {
             Text = "元の命令に復元",
-            Width = 150,
+            Width = 140,
             Height = 34
         };
+
         restore.Click += (_, _) =>
             InvokeTraceMethod("Restore", "元の命令に復元しました。");
+
+        _snapshotButton = new Button
+        {
+            Text = "実行時コード採取",
+            Width = 160,
+            Height = 34
+        };
+
+        _snapshotButton.Click += async (_, _) =>
+            await CaptureSnapshotAsync();
 
         buttons.Controls.Add(install);
         buttons.Controls.Add(read);
         buttons.Controls.Add(restore);
+        buttons.Controls.Add(_snapshotButton);
 
         _output = new TextBox
         {
@@ -79,7 +95,48 @@ internal sealed class AllyActionTraceForm : Form
         Controls.Add(root);
     }
 
-    private void InvokeTraceMethod(string methodName, string successMessage)
+    private async Task CaptureSnapshotAsync()
+    {
+        _snapshotButton.Enabled = false;
+
+        _output.AppendText(
+            Environment.NewLine +
+            "========================================" +
+            Environment.NewLine +
+            DateTime.Now.ToString("HH:mm:ss") +
+            "  実行時コード採取開始" +
+            Environment.NewLine +
+            "PCSX2を一時停止している必要があります。" +
+            Environment.NewLine);
+
+        try
+        {
+            string result = await Task.Run(
+                () => AllyRuntimeMemorySnapshot.Capture());
+
+            _output.AppendText(
+                Environment.NewLine +
+                result +
+                Environment.NewLine);
+        }
+        catch (Exception ex)
+        {
+            _output.AppendText(
+                Environment.NewLine +
+                "===== 採取エラー =====" +
+                Environment.NewLine +
+                ex.ToString() +
+                Environment.NewLine);
+        }
+        finally
+        {
+            _snapshotButton.Enabled = true;
+        }
+    }
+
+    private void InvokeTraceMethod(
+        string methodName,
+        string successMessage)
     {
         try
         {
