@@ -238,40 +238,22 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             barriers = new Dictionary<int, bool>(_baseBarrier ?? global::Torneko4GanirasuBarrierStore.GetDefaultCopy());
         }
 
+        // 指輪の特技変更・イオナズン確定は敵用ディスパッチャーへ渡さない。
+        // 敵側の特技設定はモンスタークリエイターの基準設定を維持する。
+        // ガニラスバリアだけは指輪専用設定として適用する。
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
-            // 特技ストアにはモンスター一覧番号を登録し、ディスパッチャー側で+1して照合する。
-            int actionStoreId = id;
 
-            // ガニラスバリアストアはモンスタークリエイターと同じ番号を使う。
             int barrierStoreId = id;
 
-            if (item.ActionId >= 0)
-                actions[actionStoreId] = checked((ushort)item.ActionId);
-            else
-                actions.Remove(actionStoreId);
-
-            if (item.CoromageIonazunAlways)
-            {
-                actions[actionStoreId] = 0xBF;
-                ionazun.Add(actionStoreId);
-            }
-            else
-            {
-                ionazun.Remove(actionStoreId);
-            }
-
-            // 指輪側でチェックしたモンスターだけ、
-            // モンスタークリエイター側の設定より優先して所持させる。
-            // チェックなしの場合は基準設定をそのまま維持する。
             if (item.GanirasuBarrier)
             {
                 barriers[barrierStoreId] = true;
             }
         }
 
-        // 指輪専用設定をディスパッチャーへ直接渡す。
+        // 敵用ディスパッチャーには基準設定だけを渡す。
         // モンスタークリエイターの共通ストアは変更しない。
         if (!_actionRestore.TryApply(
             actions,
