@@ -196,22 +196,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
             int rangeOffset = checked(SkillRangeDataOffset + (speciesId + 1) * 20);
             int allyOffset = checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
-            CheckRange(work, rangeOffset, 20);
+            // 特技範囲(+6)は敵味方共通テーブルなので、ここでは絶対に書き換えない。
+            // 味方専用の範囲反映は、仲間側ディスパッチャーの個別フックで行う。
             CheckRange(work, allyOffset, 8);
-
-            // 範囲(+6)だけは指輪の味方用設定を反映する。
-            // メッセージポインタ(+10/+14)と敵投擲アイテム(+18)は
-            // クリエイター側の値を維持し、他の領域には触れない。
-            WriteUInt16(
-                work,
-                rangeOffset + 6,
-                (ushort)Clamp(item.SkillRange, 0, 7));
-
-            writes.Add(Tuple.Create(
-                rangeOffset,
-                Slice(work, rangeOffset, 20),
-                "指輪・特技範囲 ID=" + speciesId +
-                " / 値=" + Clamp(item.SkillRange, 0, 7)));
 
             // 味方専用データだけを指輪設定で上書きする。
             WriteUInt16(work, allyOffset, (ushort)Clamp(item.AllyThrowItem1, 0, 65535));
@@ -229,9 +216,11 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             writes);
 
         string applyResult =
-            "味方専用投擲データのみ適用しました。" +
+            "味方専用投擲データを適用しました。" +
             Environment.NewLine +
-            "敵側の特技設定はモンスタークリエイターの値を維持します。";
+            "共通特技範囲データは変更していません（敵側への影響を防止）。" +
+            Environment.NewLine +
+            "指輪の範囲設定は仲間側専用フックの実装待ちです。";
 
         string runtimeResult = ApplyActionAndExtraSettings(settings);
         RaiseStatus(
