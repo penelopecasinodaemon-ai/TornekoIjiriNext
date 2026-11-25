@@ -1934,7 +1934,17 @@ right.Controls.Add(_count, 0, 0);
                 // 指輪装備中でも必ずPCSX2から読み込み、クリエイター表示を維持する。
                 if (_skillDataReady)
                 {
-                    requested.Add(Tuple.Create(liveRangeOffset, 20, "クリエイター管理・敵側特技データ"));
+                    if (ringOverlayActive)
+                    {
+                        // 指輪が上書きする範囲(+6)だけはライブ値をBINへ取り込まない。
+                        // 解除時にクリエイター本来の範囲設定を復元できるよう保持する。
+                        requested.Add(Tuple.Create(liveRangeOffset, 6, "クリエイター管理・敵側特技データ前半"));
+                        requested.Add(Tuple.Create(liveRangeOffset + 8, 12, "クリエイター管理・敵側特技データ後半"));
+                    }
+                    else
+                    {
+                        requested.Add(Tuple.Create(liveRangeOffset, 20, "クリエイター管理・敵側特技データ"));
+                    }
                     if (!ringOverlayActive)
                         requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
                 }
@@ -2208,10 +2218,27 @@ right.Controls.Add(_count, 0, 0);
                 // 指輪装備中でもクリエイター設定を常にゲームへ反映する。
                 if (_skillDataReady)
                 {
-                    writes.Add(Tuple.Create(
-                        rangeOffset,
-                        CopyRange(rangeOffset, 20),
-                        "クリエイター管理・敵側特技データ"));
+                    if (ringOverlayActive)
+                    {
+                        // +6は指輪ランタイムが味方用に使用中。
+                        // クリエイター編集では範囲フィールドを上書きしない。
+                        writes.Add(Tuple.Create(
+                            rangeOffset,
+                            CopyRange(rangeOffset, 6),
+                            "クリエイター管理・敵側特技データ前半"));
+
+                        writes.Add(Tuple.Create(
+                            rangeOffset + 8,
+                            CopyRange(rangeOffset + 8, 12),
+                            "クリエイター管理・敵側特技データ後半"));
+                    }
+                    else
+                    {
+                        writes.Add(Tuple.Create(
+                            rangeOffset,
+                            CopyRange(rangeOffset, 20),
+                            "クリエイター管理・敵側特技データ"));
+                    }
 
                     // 味方専用データは指輪装備中に触らない。
                     if (!ringOverlayActive)
