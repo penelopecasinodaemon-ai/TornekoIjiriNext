@@ -267,6 +267,17 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 }
             }
 
+            // 指輪設定のイオナズン強制を実行時オーバーライドへ反映する。
+            if (item.ActionId == 0x00BF &&
+                item.CoromageIonazunAlways)
+            {
+                ionazun.Add(id);
+            }
+            else
+            {
+                ionazun.Remove(id);
+            }
+
             if (item.GanirasuBarrier)
                 barriers[id] = true;
         }
