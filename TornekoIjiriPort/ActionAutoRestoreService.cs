@@ -935,10 +935,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint address,
         int entryCount)
     {
-        // dgEnemyCheckSideの戻り値で陣営を判定する。
-        // 実機確認結果：
-        // 1     = 敵：元の敵特技処理へ戻す
-        // 0     = 味方：種族別設定を検索する
+        // 敵・味方の両方にモンスタークリエイターの種族別特技設定を適用する。
+        // スライムの指輪専用の味方側処理は SlimeRingAllyActionOverride 側で行う。
 
         uint dataAddress = address + 0x170u;
 
@@ -969,15 +967,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
             // stack解放
             0x27BD0010u,
 
-            // 0以外（敵）なら元の敵処理へ戻す
-            0x15A00003u,
+            // 敵・味方とも種族別設定検索へ進む。
+            // 分岐と元処理へのジャンプをNOP化し、後続の検索処理を共通化する。
+            0x00000000u,
+            0x00000000u,
+            0x00000000u,
             0x00000000u,
 
-            // 0なら敵：元の敵特技処理へ
-            0x0808F1D4u,
-            0x00000000u,
-
-            // 味方専用の種族別設定検索
+            // 種族別設定検索
             0x3C090000u | ((dataAddress >> 16) & 0xFFFFu),
             0x35290000u | (dataAddress & 0xFFFFu),
 
