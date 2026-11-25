@@ -11,12 +11,16 @@ internal static class AllyRuntimeMemorySnapshot
         internal uint Start { get; }
         internal uint End { get; }
         internal string Name { get; }
+        internal bool DecodeInstructions { get; }
 
-        internal MemoryRange(uint start, uint end, string name)
+        internal MemoryRange(
+            uint start, uint end, string name,
+            bool decodeInstructions = true)
         {
             Start = start;
             End = end;
             Name = name;
+            DecodeInstructions = decodeInstructions;
         }
     }
 
@@ -170,6 +174,13 @@ internal static class AllyRuntimeMemorySnapshot
         new MemoryRange(
             0x002D5560u, 0x002D5600u,
             "味方特技パラメータ参照ヘルパー 0x002D5560"),
+
+        // 0x002D4D8C～0x002D4E2C が参照・更新する8バイト作業レコード候補。
+        // 0x005F4C40 はコード内で比較される境界値。前後を生データとして採取する。
+        new MemoryRange(
+            0x005F4B40u, 0x005F4D40u,
+            "味方特技8バイト作業レコード候補・境界0x005F4C40周辺（生データ）",
+            false),
 
     };
 
@@ -343,8 +354,9 @@ internal static class AllyRuntimeMemorySnapshot
                     uint word =
                         ActionAutoRestoreService.ReadShared32(address);
 
-                    string decoded =
-                        DecodeInstruction(address, word);
+                    string decoded = range.DecodeInstructions
+                        ? DecodeInstruction(address, word)
+                        : "";
 
                     writer.Write(
                         "0x" + address.ToString("X8") +
