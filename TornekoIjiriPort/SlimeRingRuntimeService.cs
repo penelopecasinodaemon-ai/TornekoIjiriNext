@@ -196,21 +196,33 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
-            int storeId = id - 1;
-            if (item.ActionId >= 0) actions[storeId] = checked((ushort)item.ActionId);
-            else actions.Remove(storeId);
+            // 特技ディスパッチャーは一覧番号+1でゲーム内種族IDと照合する。
+            int actionStoreId = id - 1;
+
+            // ガニラスバリアストアはモンスタークリエイターと同じ番号を使う。
+            int barrierStoreId = id;
+
+            if (item.ActionId >= 0)
+                actions[actionStoreId] = checked((ushort)item.ActionId);
+            else
+                actions.Remove(actionStoreId);
+
             if (item.CoromageIonazunAlways)
             {
-                actions[storeId] = 0xBF;
-                ionazun.Add(storeId);
+                actions[actionStoreId] = 0xBF;
+                ionazun.Add(actionStoreId);
             }
-            else ionazun.Remove(storeId);
+            else
+            {
+                ionazun.Remove(actionStoreId);
+            }
+
             // 指輪側でチェックしたモンスターだけ、
             // モンスタークリエイター側の設定より優先して所持させる。
             // チェックなしの場合は基準設定をそのまま維持する。
             if (item.GanirasuBarrier)
             {
-                barriers[storeId] = true;
+                barriers[barrierStoreId] = true;
             }
         }
 

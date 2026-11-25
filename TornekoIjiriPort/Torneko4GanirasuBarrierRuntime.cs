@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 
@@ -74,6 +75,7 @@ internal static class Torneko4GanirasuBarrierRuntime
                 RestoreKnownTestPatch();
 
                 byte[] desiredTable = BuildTable(settings);
+
                 uint cave = FindExistingCave();
                 bool newCave = cave == 0;
 
@@ -135,7 +137,8 @@ internal static class Torneko4GanirasuBarrierRuntime
                     WriteBytes(inactivePointer, desiredTable);
                     VerifyBytes(inactivePointer, desiredTable);
 
-                    if (ActionAutoRestoreService.ReadShared32(pointerCell) != activePointer)
+                    if (ActionAutoRestoreService.ReadShared32(pointerCell)
+                        != activePointer)
                     {
                         throw new InvalidOperationException(
                             "テーブル切り替え前に参照先が変化しました。");
@@ -145,7 +148,8 @@ internal static class Torneko4GanirasuBarrierRuntime
                         pointerCell,
                         inactivePointer);
 
-                    if (ActionAutoRestoreService.ReadShared32(pointerCell) != inactivePointer)
+                    if (ActionAutoRestoreService.ReadShared32(pointerCell)
+                        != inactivePointer)
                     {
                         throw new InvalidOperationException(
                             "テーブル参照先の切り替えに失敗しました。");
@@ -179,7 +183,8 @@ internal static class Torneko4GanirasuBarrierRuntime
                             address,
                             newCall);
 
-                        if (ActionAutoRestoreService.ReadShared32(address) != newCall)
+                        if (ActionAutoRestoreService.ReadShared32(address)
+                            != newCall)
                         {
                             throw new InvalidOperationException(
                                 "呼び出し命令の読み戻しに失敗しました。");
@@ -194,13 +199,15 @@ internal static class Torneko4GanirasuBarrierRuntime
                     {
                         uint newCall = EncodeJal(address, cave);
 
-                        if (ActionAutoRestoreService.ReadShared32(address) == newCall)
+                        if (ActionAutoRestoreService.ReadShared32(address)
+                            == newCall)
                         {
                             ActionAutoRestoreService.WriteShared32(
                                 address,
                                 OriginalCall);
 
-                            if (ActionAutoRestoreService.ReadShared32(address) != OriginalCall)
+                            if (ActionAutoRestoreService.ReadShared32(address)
+                                != OriginalCall)
                             {
                                 throw new InvalidOperationException(
                                     "呼び出し命令の復元検証に失敗しました。");
@@ -267,7 +274,8 @@ internal static class Torneko4GanirasuBarrierRuntime
             lines.Add("呼出回数=" + count);
 
             uint activePointer =
-                ActionAutoRestoreService.ReadShared32(cave + ActivePointerOffset);
+                ActionAutoRestoreService.ReadShared32(
+                    cave + ActivePointerOffset);
 
             lines.Add("テーブル参照先=0x" + activePointer.ToString("X8"));
 
@@ -304,7 +312,8 @@ internal static class Torneko4GanirasuBarrierRuntime
                 uint result =
                     ActionAutoRestoreService.ReadShared32(trace + 8u);
 
-                lines.Add("最後のa0=" + argument + " (0x" +
+                lines.Add(
+                    "最後のa0=" + argument + " (0x" +
                     argument.ToString("X8") + ")");
 
                 lines.Add("最後の戻り値=" + result);
@@ -337,7 +346,8 @@ internal static class Torneko4GanirasuBarrierRuntime
                 FunctionReturnAddress,
                 OriginalReturnInstruction);
 
-            if (ActionAutoRestoreService.ReadShared32(FunctionReturnAddress) != OriginalReturnInstruction)
+            if (ActionAutoRestoreService.ReadShared32(FunctionReturnAddress)
+                != OriginalReturnInstruction)
             {
                 throw new InvalidOperationException(
                     "既存の判定関数を復元できませんでした。");
@@ -354,8 +364,10 @@ internal static class Torneko4GanirasuBarrierRuntime
     private static byte[] BuildTable(IDictionary<int, bool> settings)
     {
         if (settings == null || settings.Count != 199)
+        {
             throw new InvalidOperationException(
                 "バリア設定が199種類そろっていません。");
+        }
 
         byte[] result = new byte[256];
 
@@ -384,22 +396,27 @@ internal static class Torneko4GanirasuBarrierRuntime
                 continue;
 
             if ((instruction & 0xFC000000u) != 0x0C000000u)
+            {
                 throw new InvalidOperationException(
                     "既存の呼び出し命令がJALではありません。");
+            }
 
-            uint target =
-                DecodeJal(address, instruction);
+            uint target = DecodeJal(address, instruction);
 
             if (target < 0x01E00000u || target > 0x01EF0000u)
+            {
                 throw new InvalidOperationException(
                     "既存の呼び出し先が専用領域外です。");
+            }
 
             if (found == 0)
                 found = target;
 
             if (target != found)
+            {
                 throw new InvalidOperationException(
                     "呼び出し先コード領域が一致しません。");
+            }
         }
 
         return found;
@@ -439,93 +456,72 @@ internal static class Torneko4GanirasuBarrierRuntime
         for (int i = 0; i < bytes.Length; i++)
         {
             if (bytes[i] != 0)
+            {
                 throw new InvalidOperationException(
                     "コード領域の事前確認に失敗しました。書き込みを中止します。");
+            }
         }
     }
 
-private static uint[] BuildCode(uint cave)
+    // フック本体の命令列をここだけで生成する。
+    // 呼び出し回数はフック進入直後に加算する。
+    private static uint[] BuildCode(uint cave)
     {
         uint pointerCell = cave + ActivePointerOffset;
         uint traceAddress = cave + TraceOffset;
 
         return new uint[]
         {
+            // 0-1: トレース領域のアドレス
             0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
             0x356B0000u | (traceAddress & 0xFFFFu),
 
-            // a0とraを記録
+            // 2-3: a0とraを記録
             0xAD640000u,
             0xAD7F0004u,
 
-            // a0 < 200 ?
+            // 4-6: フック進入回数を加算
+            0x8D68000Cu,
+            0x25080001u,
+            0xAD68000Cu,
+
+            // 7-8: a0 < 200 ?
             0x2C8800C8u,
-            0x1100000Cu,
+            0x11000009u,
+
+            // 9: 分岐遅延スロット
             0x00000000u,
 
-            // 有効テーブルのポインタを取得
+            // 10-12: 有効テーブルのポインタを取得
             0x3C090000u | ((pointerCell >> 16) & 0xFFFFu),
             0x35290000u | (pointerCell & 0xFFFFu),
             0x8D290000u,
 
-            // table[a0]
+            // 13-14: table[a0]
             0x01244821u,
             0x91220000u,
 
-            // 判定結果を記録
+            // 15: 判定結果を記録
             0xAD620008u,
 
-            // 呼び出し回数を加算
-            0x8D68000Cu,
-            0x25080001u,
-            0xAD68000Cu,
-
+            // 16-17: 元の呼び出し元へ戻る
             0x03E00008u,
             0x00000000u,
 
-            // 範囲外ならfalse
-            0x24020000u,
+            // 18-19: 範囲外ならfalse
+            0x00001021u,
             0xAD620008u,
-            0x8D68000Cu,
-            0x25080001u,
-            0xAD68000Cu,
+
+            // 20-21: 元の呼び出し元へ戻る
             0x03E00008u,
             0x00000000u
         };
     }
+
     private static void InstallCode(uint cave)
     {
-        uint pointerCell = cave + ActivePointerOffset;
         uint traceAddress = cave + TraceOffset;
-
-        uint[] words =
-        {
-            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
-            0x356B0000u | (traceAddress & 0xFFFFu),
-            0xAD640000u,
-            0xAD7F0004u,
-            0x2C8800C8u,
-            0x1100000Cu,
-            0x00000000u,
-            0x3C090000u | ((pointerCell >> 16) & 0xFFFFu),
-            0x35290000u | (pointerCell & 0xFFFFu),
-            0x8D290000u,
-            0x01244821u,
-            0x91220000u,
-            0xAD620008u,
-            0x8D68000Cu,
-            0x25080001u,
-            0xAD68000Cu,
-            0x03E00008u,
-            0x00000000u,
-            0x00001021u,
-            0xAD620008u,
-            0x8D68000Cu,
-            0x25080001u,
-            0xAD68000Cu,
-            0x03E00008u,
-            0x00000000u
-        };
+        uint[] words = BuildCode(cave);
 
         for (int i = 0; i < words.Length; i++)
         {
@@ -547,48 +543,23 @@ private static uint[] BuildCode(uint cave)
 
     private static void VerifyCode(uint cave)
     {
-        uint pointerCell = cave + ActivePointerOffset;
-        uint traceAddress = cave + TraceOffset;
-
-        uint[] expected =
-        {
-            0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
-            0x356B0000u | (traceAddress & 0xFFFFu),
-            0xAD640000u,
-            0xAD7F0004u,
-            0x2C8800C8u,
-            0x1100000Cu,
-            0x00000000u,
-            0x3C090000u | ((pointerCell >> 16) & 0xFFFFu),
-            0x35290000u | (pointerCell & 0xFFFFu),
-            0x8D290000u,
-            0x01244821u,
-            0x91220000u,
-            0xAD620008u,
-            0x8D68000Cu,
-            0x25080001u,
-            0xAD68000Cu,
-            0x03E00008u,
-            0x00000000u,
-            0x00001021u,
-            0xAD620008u,
-            0x8D68000Cu,
-            0x25080001u,
-            0xAD68000Cu,
-            0x03E00008u,
-            0x00000000u
-        };
+        uint[] expected = BuildCode(cave);
 
         for (int i = 0; i < expected.Length; i++)
         {
+            uint address = cave + (uint)(i * 4);
+
             uint actual =
-                ActionAutoRestoreService.ReadShared32(
-                    cave + (uint)(i * 4));
+                ActionAutoRestoreService.ReadShared32(address);
 
             if (actual != expected[i])
+            {
                 throw new InvalidOperationException(
-                    "トレース付き専用コードの検証に失敗しました。位置=0x" +
-                    (cave + (uint)(i * 4)).ToString("X8"));
+                    "トレース付き専用コードの検証に失敗しました。" +
+                    "位置=0x" + address.ToString("X8") +
+                    " 期待値=0x" + expected[i].ToString("X8") +
+                    " 現在値=0x" + actual.ToString("X8"));
+            }
         }
     }
 
@@ -652,8 +623,10 @@ private static uint[] BuildCode(uint cave)
         byte[] actual = ReadBytes(address, expected.Length);
 
         if (!Equal(actual, expected))
+        {
             throw new InvalidOperationException(
                 "メモリ書き込みの読み戻し検証に失敗しました。");
+        }
     }
 
     private static bool Equal(byte[] a, byte[] b)
