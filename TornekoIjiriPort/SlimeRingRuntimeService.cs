@@ -37,6 +37,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
     private int _busy;
+    private int _forceApplyRequested;
 
     internal event Action<string>? StatusChanged;
 
@@ -47,6 +48,23 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         _timer = new System.Threading.Timer(Poll, null, 1200, 500);
     }
 
+    // Torneko4読み込み後に基準設定を更新し、指輪設定の再適用を予約する。
+    internal void NotifyTorneko4Loaded()
+    {
+        lock (_sync)
+        {
+            if (_ringActive)
+            {
+                // Torneko4から読み込まれた設定を新しい基準値にする。
+                _baseActions = Torneko4ActionStore.GetCopy();
+                _baseIonazun = Torneko4ActionStore.GetIonazunForceCopy();
+                _baseBarrier = global::Torneko4GanirasuBarrierStore.GetCopy();
+            }
+        }
+
+        // 未装備の場合も要求を保持し、装備検出後に適用する。
+        Interlocked.Exchange(ref _forceApplyRequested, 1);
+    }
     private void Poll(object? state)
     {
         if (_disposed || Interlocked.Exchange(ref _busy, 1) != 0) return;
@@ -82,16 +100,32 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             DateTime writeTime = File.Exists(SlimeRingSettings.SettingsPath)
                 ? File.GetLastWriteTimeUtc(SlimeRingSettings.SettingsPath)
                 : DateTime.MinValue;
+            // Torneko4読み込み後の再適用要求を確認する。
+            bool forceApply =
+                Interlocked.Exchange(ref _forceApplyRequested, 0) != 0;
+
             bool settingsChanged = writeTime != _settingsWriteTime;
+
             if (!_ringActive)
             {
                 Activate();
                 settingsChanged = true;
             }
-            if (settingsChanged)
+
+            if (settingsChanged || forceApply)
             {
-                ApplyRingSettings();
-                _settingsWriteTime = writeTime;
+                try
+                {
+                    ApplyRingSettings();
+                    _settingsWriteTime = writeTime;
+                }
+                catch
+                {
+                    if (forceApply)
+                        Interlocked.Exchange(ref _forceApplyRequested, 1);
+
+                    throw;
+                }
             }
 
             if (_ringActive)
@@ -150,9 +184,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
-            int rangeOffset = checked(SkillRangeDataOffset + speciesId * 20);
-            int allyOffset = checked(SkillAllyItemDataOffset + speciesId * 8);
-            int recordOffset = checked(recordTableOffset + (speciesId - 1) * MonsterRecordSize);
+            int rangeOffset = checked(SkillRangeDataOffset + (speciesId + 1) * 20);
+            int allyOffset = checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
+            int recordOffset = checked(recordTableOffset + speciesId * MonsterRecordSize);
             CheckRange(work, rangeOffset, 20);
             CheckRange(work, allyOffset, 8);
             CheckRange(work, recordOffset + 22, 1);
@@ -196,8 +230,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
-            // 特技ディスパッチャーは一覧番号+1でゲーム内種族IDと照合する。
-            int actionStoreId = id - 1;
+            // 特技ストアにはモンスター一覧番号を登録し、ディスパッチャー側で+1して照合する。
+            int actionStoreId = id;
 
             // ガニラスバリアストアはモンスタークリエイターと同じ番号を使う。
             int barrierStoreId = id;
@@ -282,9 +316,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         var writes = new List<Tuple<int, byte[], string>>();
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
-            int rangeOffset = SkillRangeDataOffset + speciesId * 20;
-            int allyOffset = SkillAllyItemDataOffset + speciesId * 8;
-            int recordOffset = recordTableOffset + (speciesId - 1) * MonsterRecordSize;
+            int rangeOffset = SkillRangeDataOffset + (speciesId + 1) * 20;
+            int allyOffset = SkillAllyItemDataOffset + (speciesId + 1) * 8;
+            int recordOffset = recordTableOffset + speciesId * MonsterRecordSize;
             CheckRange(source, rangeOffset, 20);
             CheckRange(source, allyOffset, 8);
             CheckRange(source, recordOffset + 22, 1);

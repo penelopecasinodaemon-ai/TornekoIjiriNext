@@ -4114,6 +4114,7 @@ internal sealed class Torneko4Package
     public System.Collections.Generic.List<Torneko4MemoryPatch> Patches { get; }
     public System.Collections.Generic.Dictionary<int, ushort> MonsterActions { get; }
     public System.Collections.Generic.Dictionary<int, bool> GanirasuBarrier { get; }
+    public string SlimeRingSettingsJson { get; }
 
     public Torneko4Package(
         TornekoBinPreservationSnapshot snapshot,
@@ -4121,7 +4122,8 @@ internal sealed class Torneko4Package
         string originalSourcePath,
         System.Collections.Generic.List<Torneko4MemoryPatch> patches = null,
         System.Collections.Generic.Dictionary<int, ushort> monsterActions = null,
-        System.Collections.Generic.Dictionary<int, bool> ganirasuBarrier = null)
+        System.Collections.Generic.Dictionary<int, bool> ganirasuBarrier = null,
+        string slimeRingSettingsJson = null)
     {
         Snapshot = snapshot;
         EditedBase = (byte[])editedBase.Clone();
@@ -4138,6 +4140,8 @@ internal sealed class Torneko4Package
         GanirasuBarrier = ganirasuBarrier == null
             ? global::Torneko4GanirasuBarrierStore.GetDefaultCopy()
             : new System.Collections.Generic.Dictionary<int, bool>(ganirasuBarrier);
+
+        SlimeRingSettingsJson = slimeRingSettingsJson ?? "";
     }
 }
 
@@ -4146,7 +4150,7 @@ internal static class Torneko4FileService
     private static readonly byte[] Magic =
         System.Text.Encoding.ASCII.GetBytes("TORNEKO4");
 
-    private const int FormatVersion = 5;
+    private const int FormatVersion = 6;
     private const int BaseSize = 524288;
     private const int MaximumOriginalSize = 64 * 1024 * 1024;
 
@@ -4181,7 +4185,8 @@ internal static class Torneko4FileService
         byte[] editedBase,
         System.Collections.Generic.IEnumerable<Torneko4MemoryPatch> patches,
         System.Collections.Generic.IDictionary<int, ushort> monsterActions,
-        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null)
+        System.Collections.Generic.IDictionary<int, bool> ganirasuBarrier = null,
+        string slimeRingSettingsJson = null)
     {
         if (snapshot == null)
             throw new ArgumentNullException(nameof(snapshot));
@@ -4350,6 +4355,9 @@ internal static class Torneko4FileService
                     writer.Write(pair.Value);
                 }
 
+                // バージョン6追加領域：スライムの指輪17種別設定
+                writer.Write(slimeRingSettingsJson ?? "");
+
                 writer.Flush();
                 stream.Flush(true);
             }
@@ -4380,6 +4388,15 @@ internal static class Torneko4FileService
             if (check.GanirasuBarrier.Count != barrierList.Count)
                 throw new IOException(
                     "保存後のガニラスバリア設定数検証に失敗しました。");
+
+            if (!string.Equals(
+                check.SlimeRingSettingsJson,
+                slimeRingSettingsJson ?? "",
+                StringComparison.Ordinal))
+            {
+                throw new IOException(
+                    "保存後のスライムの指輪設定検証に失敗しました。");
+            }
 
             foreach (var pair in barrierList)
             {
@@ -4462,7 +4479,7 @@ internal static class Torneko4FileService
 
         int version = reader.ReadInt32();
 
-        if (version != 1 && version != 2 && version != 3 && version != 4 && version != FormatVersion)
+        if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != FormatVersion)
             throw new InvalidDataException(
                 "未対応のTorneko4バージョンです: " + version);
 
@@ -4644,6 +4661,18 @@ internal static class Torneko4FileService
             }
         }
 
+        // バージョン6追加領域：スライムの指輪17種別設定
+        string slimeRingSettingsJson = "";
+
+        if (version >= 6)
+        {
+            slimeRingSettingsJson = reader.ReadString();
+
+            if (string.IsNullOrWhiteSpace(slimeRingSettingsJson))
+                throw new InvalidDataException(
+                    "Torneko4内のスライムの指輪設定が空です。");
+        }
+
         if (stream.Position != stream.Length)
             throw new InvalidDataException(
                 "Torneko4の末尾に不明なデータがあります。");
@@ -4664,7 +4693,8 @@ internal static class Torneko4FileService
             originalSourcePath,
             patchList,
             monsterActions,
-            ganirasuBarrier);
+            ganirasuBarrier,
+            slimeRingSettingsJson);
     }
 }
 
@@ -5247,7 +5277,8 @@ buttons.Controls.Add(UiFactory.Button(
                 _bin,
                 Torneko4PatchStore.GetCopy(),
                 Torneko4ActionStore.GetCopy(),
-                global::Torneko4GanirasuBarrierStore.GetCopy());
+                global::Torneko4GanirasuBarrierStore.GetCopy(),
+                SlimeRingSettings.ExportJson());
 
             _binPath = dialog.FileName;
             UpdateStatus();
@@ -5326,6 +5357,18 @@ buttons.Controls.Add(UiFactory.Button(
                 Torneko4PatchStore.ReplaceAll(package.Patches);
                 Torneko4ActionStore.ReplaceAll(package.MonsterActions);
                 global::Torneko4GanirasuBarrierStore.ReplaceAll(package.GanirasuBarrier);
+
+                // バージョン6以降に保存された指輪設定を復元する。
+                // 旧バージョンのTorneko4では既存設定を維持する。
+                if (!string.IsNullOrWhiteSpace(package.SlimeRingSettingsJson))
+                {
+                    SlimeRingSettings.ImportJson(
+                        package.SlimeRingSettingsJson);
+                }
+
+                // Torneko4読み込み後、スライムの指輪設定をゲームへ再適用する。
+                _slimeRingRuntime?.NotifyTorneko4Loaded();
+
                 loaded = true;
             }
 
