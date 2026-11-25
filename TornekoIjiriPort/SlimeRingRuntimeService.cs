@@ -24,7 +24,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private const uint SkillMessagePointerBase = 0x209126D0u;
 
     private readonly Func<byte[]?> _getCurrentBin;
-    private readonly ActionAutoRestoreService _actionRestore;
     private readonly System.Threading.Timer _timer;
     private readonly object _sync = new object();
     private Dictionary<int, bool>? _baseBarrier;
@@ -52,7 +51,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     internal SlimeRingRuntimeService(Func<byte[]?> getCurrentBin, ActionAutoRestoreService actionRestore)
     {
         _getCurrentBin = getCurrentBin ?? throw new ArgumentNullException(nameof(getCurrentBin));
-        _actionRestore = actionRestore ?? throw new ArgumentNullException(nameof(actionRestore));
+        _ = actionRestore ?? throw new ArgumentNullException(nameof(actionRestore));
         _timer = new System.Threading.Timer(Poll, null, 1200, 500);
     }
 
@@ -189,7 +188,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
-            int rangeOffset = checked(SkillRangeDataOffset + (speciesId + 1) * 20);
             int allyOffset = checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
             // 特技範囲(+6)は敵味方共通テーブルなので、ここでは絶対に書き換えない。
             // 味方専用の範囲反映は、仲間側ディスパッチャーの個別フックで行う。
