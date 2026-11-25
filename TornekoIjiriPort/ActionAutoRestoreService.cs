@@ -1030,12 +1030,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private static uint GetRequiredCaveSize(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
     {
-        // +0x150 までが固定コード領域。
+        // +0x164 までが固定コード領域。
         // その後に種族ごと3バイトの設定を置く。
         uint dataLength = (uint)entries.Count * 3u;
         uint paddedDataLength = (dataLength + 3u) & ~3u;
 
-        return 0x150u + paddedDataLength;
+        return 0x164u + paddedDataLength;
     }
 
     private bool IsDispatcherCode(
@@ -1068,7 +1068,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 return false;
         }
 
-        uint dataAddress = address + 0x150u;
+        uint dataAddress = address + 0x164u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
         for (uint offset = 0; offset < paddedLength; offset += 4u)
@@ -1159,7 +1159,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         // 種族別データ。1種族につき3バイトのみ。
-        uint dataAddress = address + 0x150u;
+        uint dataAddress = address + 0x164u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
         for (uint offset = 0; offset < paddedLength; offset += 4u)
