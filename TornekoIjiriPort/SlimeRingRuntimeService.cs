@@ -194,12 +194,20 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
+            int rangeOffset = checked(SkillRangeDataOffset + (speciesId + 1) * 20);
             int allyOffset = checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
+            CheckRange(work, rangeOffset, 20);
             CheckRange(work, allyOffset, 8);
 
-            // 味方専用データだけを変更する。
-            // 敵と共有される特技範囲・メッセージ・敵投擲アイテム・使用率は
-            // モンスタークリエイター側の設定を優先するため、一切書き換えない。
+            // 特技範囲・メッセージ・敵投擲アイテムは共有領域なので、
+            // モンスタークリエイターの現在値をゲームメモリへ戻す。
+            // 指輪側の設定値では共有領域を上書きしない。
+            writes.Add(Tuple.Create(
+                rangeOffset,
+                Slice(work, rangeOffset, 20),
+                "クリエイター・敵側特技データ維持 ID=" + speciesId));
+
+            // 味方専用データだけを指輪設定で上書きする。
             WriteUInt16(work, allyOffset, (ushort)Clamp(item.AllyThrowItem1, 0, 65535));
             WriteUInt16(work, allyOffset + 2, (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
 
@@ -379,8 +387,18 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         var writes = new List<Tuple<int, byte[], string>>();
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
+            int rangeOffset = SkillRangeDataOffset + (speciesId + 1) * 20;
             int allyOffset = SkillAllyItemDataOffset + (speciesId + 1) * 8;
+            CheckRange(source, rangeOffset, 20);
             CheckRange(source, allyOffset, 8);
+
+            // 旧バージョンで指輪設定が共有領域へ残っていた場合も、
+            // クリエイターの基準値へ確実に復元する。
+            writes.Add(Tuple.Create(
+                rangeOffset,
+                Slice(source, rangeOffset, 20),
+                "指輪解除・クリエイター特技データ復元 ID=" + speciesId));
+
             writes.Add(Tuple.Create(
                 allyOffset,
                 Slice(source, allyOffset, 8),
