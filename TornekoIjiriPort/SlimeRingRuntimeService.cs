@@ -27,8 +27,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private readonly ActionAutoRestoreService _actionRestore;
     private readonly System.Threading.Timer _timer;
     private readonly object _sync = new object();
-    private Dictionary<int, ushort>? _baseActions;
-    private HashSet<int>? _baseIonazun;
     private Dictionary<int, bool>? _baseBarrier;
     private bool _ringActive;
     private static volatile bool _overlayActive;
@@ -66,8 +64,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             if (_ringActive)
             {
                 // Torneko4から読み込まれた設定を新しい基準値にする。
-                _baseActions = Torneko4ActionStore.GetCopy();
-                _baseIonazun = Torneko4ActionStore.GetIonazunForceCopy();
                 _baseBarrier = global::Torneko4GanirasuBarrierStore.GetCopy();
             }
         }
@@ -171,8 +167,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     {
         lock (_sync)
         {
-            _baseActions = Torneko4ActionStore.GetCopy();
-            _baseIonazun = Torneko4ActionStore.GetIonazunForceCopy();
+            // 敵用ディスパッチャーには触れない。ActionIdは味方側専用処理が担当する。
             _baseBarrier = global::Torneko4GanirasuBarrierStore.GetCopy();
             _ringActive = true;
             _overlayActive = true;
@@ -232,67 +227,23 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
     private string ApplyActionAndExtraSettings(SlimeRingSettings settings)
     {
-        Dictionary<int, ushort> actions;
-        HashSet<int> ionazun;
         Dictionary<int, bool> barriers;
 
         lock (_sync)
         {
-            actions = new Dictionary<int, ushort>(
-                _baseActions ?? new Dictionary<int, ushort>());
-
-            ionazun = new HashSet<int>(
-                _baseIonazun ?? new HashSet<int>());
-
             barriers = new Dictionary<int, bool>(
                 _baseBarrier ??
                 global::Torneko4GanirasuBarrierStore.GetDefaultCopy());
         }
 
-        // 指輪専用ActionIdを反映する。
+        // 指輪の特技IDを敵側ディスパッチャーへ渡さない。
+        // 味方側の個別フック SlimeRingAllyActionOverride だけが担当する。
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
 
-            if (item.ActionId >= 0 && item.ActionId <= ushort.MaxValue)
-            {
-                actions[id] = (ushort)item.ActionId;
-            }
-            else
-            {
-                if (_baseActions != null &&
-                    _baseActions.TryGetValue(id, out ushort baseAction))
-                {
-                    actions[id] = baseAction;
-                }
-                else
-                {
-                    actions.Remove(id);
-                }
-            }
-
-            // 指輪設定のイオナズン強制を実行時オーバーライドへ反映する。
-            if (item.ActionId == 0x00BF &&
-                item.CoromageIonazunAlways)
-            {
-                ionazun.Add(id);
-            }
-            else
-            {
-                ionazun.Remove(id);
-            }
-
             if (item.GanirasuBarrier)
                 barriers[id] = true;
-        }
-
-        if (!_actionRestore.TryApply(
-            actions,
-            ionazun,
-            out string actionMessage))
-        {
-            throw new InvalidOperationException(
-                "指輪専用特技の適用に失敗しました: " + actionMessage);
         }
 
         if (!Torneko4GanirasuBarrierRuntime.TryApply(
@@ -304,25 +255,20 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 barrierMessage);
         }
 
-        return actionMessage + Environment.NewLine + barrierMessage;
+        return
+            "敵側の種族別特技設定には触れていません。" +
+            Environment.NewLine +
+            "指輪の特技IDは味方側専用処理に限定しています。" +
+            Environment.NewLine +
+            barrierMessage;
     }
     private void Deactivate(string status)
     {
-        Dictionary<int, ushort>? baseActions;
-        HashSet<int>? baseIonazun;
         Dictionary<int, bool>? baseBarrier;
 
         lock (_sync)
         {
             if (!_ringActive) return;
-
-            baseActions = _baseActions == null
-                ? null
-                : new Dictionary<int, ushort>(_baseActions);
-
-            baseIonazun = _baseIonazun == null
-                ? null
-                : new HashSet<int>(_baseIonazun);
 
             baseBarrier = _baseBarrier == null
                 ? null
@@ -331,22 +277,12 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             _ringActive = false;
             _overlayActive = false;
             _lastBarrierTrace = string.Empty;
-            _baseActions = null;
-            _baseIonazun = null;
             _baseBarrier = null;
         }
 
-        // 共通ストアには触れず、ゲーム側だけ基準設定に戻す。
+        // 敵側の特技ディスパッチャーは変更していないため、復元もしない。
         try
         {
-            if (baseActions != null)
-            {
-                _actionRestore.TryApply(
-                    baseActions,
-                    baseIonazun ?? new HashSet<int>(),
-                    out _);
-            }
-
             if (baseBarrier != null)
             {
                 Torneko4GanirasuBarrierRuntime.TryApply(
