@@ -231,27 +231,31 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         Dictionary<int, ushort> actions;
         HashSet<int> ionazun;
         Dictionary<int, bool> barriers;
+
         lock (_sync)
         {
-            actions = new Dictionary<int, ushort>(_baseActions ?? new Dictionary<int, ushort>());
-            ionazun = new HashSet<int>(_baseIonazun ?? new HashSet<int>());
-            barriers = new Dictionary<int, bool>(_baseBarrier ?? global::Torneko4GanirasuBarrierStore.GetDefaultCopy());
+            actions = new Dictionary<int, ushort>(
+                _baseActions ?? new Dictionary<int, ushort>());
+
+            ionazun = new HashSet<int>(
+                _baseIonazun ?? new HashSet<int>());
+
+            barriers = new Dictionary<int, bool>(
+                _baseBarrier ??
+                global::Torneko4GanirasuBarrierStore.GetDefaultCopy());
         }
 
-        // スライムの指輪専用ActionIdを既存ディスパッチャーへ渡す実験版。
-        // 新規コード領域・新規フックは使用しない。
+        // 指輪専用ActionIdを反映する。
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(id);
 
-            // -1は未設定。それ以外は既存ディスパッチャーに登録する。
             if (item.ActionId >= 0 && item.ActionId <= ushort.MaxValue)
             {
                 actions[id] = (ushort)item.ActionId;
             }
             else
             {
-                // 未設定なら基準設定を維持する。
                 if (_baseActions != null &&
                     _baseActions.TryGetValue(id, out ushort baseAction))
                 {
@@ -263,16 +267,10 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 }
             }
 
-            int barrierStoreId = id;
-
             if (item.GanirasuBarrier)
-            {
-                barriers[barrierStoreId] = true;
-            }
+                barriers[id] = true;
         }
 
-        // 敵用ディスパッチャーには基準設定だけを渡す。
-        // モンスタークリエイターの共通ストアは変更しない。
         if (!_actionRestore.TryApply(
             actions,
             ionazun,
@@ -282,19 +280,17 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 "指輪専用特技の適用に失敗しました: " + actionMessage);
         }
 
-        // バリア設定も専用テーブルへ直接適用する。
-        // GanirasuBarrierStoreの画面設定は変更しない。
         if (!Torneko4GanirasuBarrierRuntime.TryApply(
             barriers,
             out string barrierMessage))
         {
             throw new InvalidOperationException(
-                "指輪専用ガニラスバリアの適用に失敗しました: " + barrierMessage);
+                "指輪専用ガニラスバリアの適用に失敗しました: " +
+                barrierMessage);
         }
 
         return actionMessage + Environment.NewLine + barrierMessage;
     }
-
     private void Deactivate(string status)
     {
         Dictionary<int, ushort>? baseActions;

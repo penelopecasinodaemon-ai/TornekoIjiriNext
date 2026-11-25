@@ -970,7 +970,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x27BD0010u,
 
             // 0以外なら味方検索へ
-            0x15A00003u,
+            0x11A00003u,
             0x00000000u,
 
             // 0なら敵：元の敵特技処理へ
