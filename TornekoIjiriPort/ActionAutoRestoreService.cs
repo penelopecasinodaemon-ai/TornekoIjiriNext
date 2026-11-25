@@ -323,10 +323,26 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
                 if (copy.Count == 0)
                 {
-                    message =
-                        "種族別特技設定をすべて解除しました。\n" +
-                        "元の特技処理命令へ復元しました。";
-                    RaiseStatus("種族別特技設定なし：元の命令へ復元済みです。");
+                    int ringOverrideCount;
+                    lock (_stateSync)
+                        ringOverrideCount = _allyRingActions.Count;
+
+                    if (ringOverrideCount == 0)
+                    {
+                        message =
+                            "種族別特技設定をすべて解除しました。\n" +
+                            "元の特技処理命令へ復元しました。";
+                        RaiseStatus("種族別特技設定なし：元の命令へ復元済みです。");
+                    }
+                    else
+                    {
+                        message =
+                            "モンスタークリエイターの通常設定を解除しました。\n" +
+                            "指輪装備中の味方専用上書き " + ringOverrideCount +
+                            "種類は引き続き有効です。";
+                        RaiseStatus("通常設定なし：指輪専用の味方上書き " +
+                            ringOverrideCount + "種類を適用中です。");
+                    }
                     return true;
                 }
 
