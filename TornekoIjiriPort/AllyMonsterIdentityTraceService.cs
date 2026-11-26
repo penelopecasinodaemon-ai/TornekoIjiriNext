@@ -25,7 +25,7 @@ internal static class AllyMonsterIdentityTraceService
     private const uint RecordOffset = 0x204u;
     private const uint RecordSize = 0x18u;
     private const uint RecordCapacity = 40u;
-    private const uint TraceBytes = 0x3E4u;
+    private const uint TraceBytes = 0x5C4u;
 
     private static readonly object Sync = new object();
 
