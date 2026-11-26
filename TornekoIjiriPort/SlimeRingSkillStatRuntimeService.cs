@@ -119,8 +119,8 @@ internal static class SlimeRingSkillStatRuntimeService
 
         void Emit(uint instruction) => code.Add(instruction);
 
-        // 元の関数が使用しない一時レジスタを保存する。
-        // t0/t1/at は元関数自身が破壊するため保存不要。
+        // 元の種族レコード取得関数が使用しない一時レジスタを保存する。
+        // t0/t1/at/v0 は元関数自身が使用する。
         Emit(I(0x09, 29, 29, -0x50)); // addiu sp,sp,-0x50
         Emit(I(0x3F, 29, 10, 0x00));  // sd t2,0(sp)
         Emit(I(0x3F, 29, 11, 0x08));  // sd t3,8(sp)
@@ -133,15 +133,43 @@ internal static class SlimeRingSkillStatRuntimeService
         Emit(I(0x3F, 29, 26, 0x40));  // sd k0,64(sp)
         Emit(I(0x3F, 29, 27, 0x48));  // sd k1,72(sp)
 
-        // 0x0021D6CC の元命令と、その後続3命令を再現。
+        // 0x0021D6CC の元命令以降を再現する。
         // LUI t0,0x0018 と SLL at,a0,4 はフックの遅延スロットまでに実行済み。
         Emit(I(0x23, 8, 8, 16));      // lw t0,16(t0)
         Emit(R(0, 4, 9, 3, 0));      // sll t1,a0,3
         Emit(R(1, 8, 2, 0, 0x21));   // addu v0,at,t0
         Emit(R(2, 9, 2, 0, 0x21));   // addu v0,v0,t1
 
-        // $ra は呼び出し元の JAL が設定した値のまま保持されている。
-        // 対象AI判定経路だけ個体ポインタを取得する。
+        // 最初に必ずBIN基準値へ戻す。
+        // 以前のAI個体が書き込んだ指輪値を、未対応呼び出し元へ持ち越さない。
+        EmitAddress(code, 14, dataAddress);       // t6 = entry table
+        Emit(I(0x09, 0, 15, entryCount));         // addiu t7,zero,entryCount
+
+        int loopLabel = code.Count;
+        Emit(I(0x24, 14, 26, 0));                 // lbu k0,0(t6): runtime species ID
+        int entryFoundBranch =
+            EmitBranch(code, I(0x04, 26, 4, 0));   // beq k0,a0,entryFound
+        Emit(0u);
+        Emit(I(0x09, 14, 14, EntrySize));         // addiu t6,t6,EntrySize
+        Emit(I(0x09, 15, 15, -1));                // addiu t7,t7,-1
+        int loopBranch =
+            EmitBranch(code, I(0x05, 15, 0, 0));   // bne t7,zero,loop
+        Emit(0u);
+        int entryNotFoundBranch =
+            EmitBranch(code, I(0x04, 0, 0, 0));    // beq zero,zero,restore
+        Emit(0u);
+
+        int entryFoundLabel = code.Count;
+
+        // 基準値をレコード+22と範囲テーブルへ反映する。
+        Emit(I(0x24, 14, 24, 8));                 // lbu t8,8(t6): baseRate
+        Emit(I(0x28, 2, 24, 22));                 // sb t8,22(v0)
+        Emit(I(0x25, 14, 24, 10));                // lhu t8,10(t6): baseRange
+        Emit(I(0x23, 14, 27, 12));                // lw k1,12(t6): range address
+        Emit(I(0x29, 27, 24, 0));                 // sh t8,0(k1)
+
+        // 対象AI判定の呼び出し元だけ、個体の陣営を追加判定する。
+        // それ以外の呼び出し元は、上で復元した基準値のまま戻る。
         var s2Branches = new List<int>();
         var s1Branches = new List<int>();
 
@@ -158,7 +186,6 @@ internal static class SlimeRingSkillStatRuntimeService
                 s1Branches.Add(branch);
         }
 
-        // 呼び出し元はアップロードされた ELF の命令列から確認した8箇所。
         AddReturnAddressBranch(0x0020A3A4u, true);
         AddReturnAddressBranch(0x0020D8A0u, true);
         AddReturnAddressBranch(0x002303A4u, false);
@@ -168,86 +195,53 @@ internal static class SlimeRingSkillStatRuntimeService
         AddReturnAddressBranch(0x0023D544u, false);
         AddReturnAddressBranch(0x0023DA18u, true);
 
-        int unrecognizedBranch =
-            EmitBranch(code, I(0x04, 0, 0, 0)); // beq zero,zero,restore
+        int unrecognizedCallerBranch =
+            EmitBranch(code, I(0x04, 0, 0, 0));   // beq zero,zero,restore
         Emit(0u);
 
         int actorS1Label = code.Count;
-        Emit(I(0x23, 17, 11, 8)); // lw t3,8(s1)
+        Emit(I(0x23, 17, 11, 8));                 // lw t3,8(s1)
         int actorS1NullBranch =
-            EmitBranch(code, I(0x04, 11, 0, 0));
+            EmitBranch(code, I(0x04, 11, 0, 0));   // beq t3,zero,restore
         Emit(0u);
         int actorS1CommonBranch =
-            EmitBranch(code, I(0x04, 0, 0, 0));
+            EmitBranch(code, I(0x04, 0, 0, 0));    // beq zero,zero,common
         Emit(0u);
 
         int actorS2Label = code.Count;
-        Emit(I(0x23, 18, 11, 8)); // lw t3,8(s2)
+        Emit(I(0x23, 18, 11, 8));                 // lw t3,8(s2)
         int actorS2NullBranch =
-            EmitBranch(code, I(0x04, 11, 0, 0));
+            EmitBranch(code, I(0x04, 11, 0, 0));   // beq t3,zero,restore
         Emit(0u);
         int actorS2CommonBranch =
-            EmitBranch(code, I(0x04, 0, 0, 0));
+            EmitBranch(code, I(0x04, 0, 0, 0));    // beq zero,zero,common
         Emit(0u);
 
         int commonLabel = code.Count;
+        Emit(I(0x24, 11, 12, 0x1D3));             // lbu t4,0x1D3(t3): faction
+        Emit(I(0x24, 11, 13, 4));                 // lbu t5,4(t3): runtime species ID
 
-        Emit(I(0x24, 11, 12, 0x1D3)); // lbu t4,0x1D3(t3): faction
-        Emit(I(0x24, 11, 13, 4));     // lbu t5,4(t3): runtime species ID
-
-        // 個体データの種族IDと getter 引数 a0 が一致する場合だけ変更。
         int speciesMismatchBranch =
-            EmitBranch(code, I(0x05, 13, 4, 0)); // bne t5,a0,restore
+            EmitBranch(code, I(0x05, 13, 4, 0));   // bne t5,a0,restore
         Emit(0u);
 
-        EmitAddress(code, 14, dataAddress);       // t6 = entry table
-        Emit(I(0x09, 0, 15, entryCount));         // t7 = entry count
-
-        int loopLabel = code.Count;
-        Emit(I(0x24, 14, 26, 0));                 // lbu k0,0(t6)
-
-        int foundBranch =
-            EmitBranch(code, I(0x04, 26, 13, 0)); // beq k0,t5,found
+        // 0=味方。敵・個体情報不一致・nullなら基準値のまま。
+        int enemyBranch =
+            EmitBranch(code, I(0x05, 12, 0, 0));   // bne t4,zero,restore
         Emit(0u);
 
-        Emit(I(0x09, 14, 14, EntrySize));         // addiu t6,t6,EntrySize
-        Emit(I(0x09, 15, 15, -1));                // addiu t7,t7,-1
-
-        int loopBranch =
-            EmitBranch(code, I(0x05, 15, 0, 0));  // bne t7,zero,loop
-        Emit(0u);
-
-        int notFoundBranch =
-            EmitBranch(code, I(0x04, 0, 0, 0));   // beq zero,zero,restore
-        Emit(0u);
-
-        int foundLabel = code.Count;
-
-        int allyBranch =
-            EmitBranch(code, I(0x04, 12, 0, 0));  // beq t4,zero,ally
-        Emit(0u);
-
-        // 敵: BIN基準値。レートは1 byte、範囲は2 bytesだけを書き換える。
-        Emit(I(0x24, 14, 24, 8));                 // lbu t8,8(t6): baseRate
-        Emit(I(0x28, 2, 24, 22));                 // sb t8,22(v0)
-        Emit(I(0x25, 14, 24, 10));                // lhu t8,10(t6): baseRange
-        Emit(I(0x23, 14, 27, 12));                // lw k1,12(t6): range address
-        Emit(I(0x29, 27, 24, 0));                 // sh t8,0(k1)
-
-        int enemyDoneBranch =
-            EmitBranch(code, I(0x04, 0, 0, 0));   // beq zero,zero,restore
-        Emit(0u);
-
-        int allyLabel = code.Count;
-
-        // 味方: スライムの指輪設定。
+        // 味方だけ指輪設定で上書きする。
         Emit(I(0x24, 14, 24, 4));                 // lbu t8,4(t6): allyRate
         Emit(I(0x28, 2, 24, 22));                 // sb t8,22(v0)
-        Emit(I(0x25, 14, 24, 6));                // lhu t8,6(t6): allyRange
+        Emit(I(0x25, 14, 24, 6));                 // lhu t8,6(t6): allyRange
         Emit(I(0x23, 14, 27, 12));                // lw k1,12(t6): range address
         Emit(I(0x29, 27, 24, 0));                 // sh t8,0(k1)
 
         int restoreLabel = code.Count;
+
+        PatchBranch(code, entryFoundBranch, entryFoundLabel, I(0x04, 26, 4, 0));
+        PatchBranch(code, loopBranch, loopLabel, I(0x05, 15, 0, 0));
+        PatchBranch(code, entryNotFoundBranch, restoreLabel, I(0x04, 0, 0, 0));
 
         foreach (int branch in s2Branches)
             PatchBranch(code, branch, actorS2Label, I(0x04, 31, 10, 0));
@@ -255,17 +249,13 @@ internal static class SlimeRingSkillStatRuntimeService
         foreach (int branch in s1Branches)
             PatchBranch(code, branch, actorS1Label, I(0x04, 31, 10, 0));
 
-        PatchBranch(code, unrecognizedBranch, restoreLabel, I(0x04, 0, 0, 0));
+        PatchBranch(code, unrecognizedCallerBranch, restoreLabel, I(0x04, 0, 0, 0));
         PatchBranch(code, actorS1NullBranch, restoreLabel, I(0x04, 11, 0, 0));
         PatchBranch(code, actorS1CommonBranch, commonLabel, I(0x04, 0, 0, 0));
         PatchBranch(code, actorS2NullBranch, restoreLabel, I(0x04, 11, 0, 0));
         PatchBranch(code, actorS2CommonBranch, commonLabel, I(0x04, 0, 0, 0));
         PatchBranch(code, speciesMismatchBranch, restoreLabel, I(0x05, 13, 4, 0));
-        PatchBranch(code, foundBranch, foundLabel, I(0x04, 26, 13, 0));
-        PatchBranch(code, loopBranch, loopLabel, I(0x05, 15, 0, 0));
-        PatchBranch(code, notFoundBranch, restoreLabel, I(0x04, 0, 0, 0));
-        PatchBranch(code, allyBranch, allyLabel, I(0x04, 12, 0, 0));
-        PatchBranch(code, enemyDoneBranch, restoreLabel, I(0x04, 0, 0, 0));
+        PatchBranch(code, enemyBranch, restoreLabel, I(0x05, 12, 0, 0));
 
         // 元関数が変更しない一時レジスタを元に戻し、元の呼び出し元へ戻る。
         Emit(I(0x37, 29, 27, 0x48)); // ld k1,72(sp)
