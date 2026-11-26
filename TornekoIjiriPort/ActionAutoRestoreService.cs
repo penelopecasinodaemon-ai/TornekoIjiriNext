@@ -47,6 +47,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint LegacyAllyTargetCheckStubOffset = 0x940u;
     private const uint AllyHookMarker = 0x534C4148u;
     private const uint AllyHookReservedSize = 0xA80u;
+    private const int MaxSpeciesActionEntries = 255;
 
     // 旧版の全敵共通パッチ ori s1,zero,actionId
     private const uint LegacyPatchBase = 0x34110000u;
@@ -1007,17 +1008,27 @@ internal sealed class ActionAutoRestoreService : IDisposable
     }
 
     private static byte[] BuildActionData(
-        List<(byte SpeciesId, byte Marker, byte ActualAction)> entries)
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> allyEntries,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries)
     {
-        byte[] data = new byte[entries.Count * 3];
-
-        for (int i = 0; i < entries.Count; i++)
+        if (allyEntries.Count > MaxSpeciesActionEntries || normalEntries.Count > MaxSpeciesActionEntries)
+            throw new InvalidOperationException("種族別特技テーブルの登録数が上限255件を超えています。");
+        byte[] data = new byte[MaxSpeciesActionEntries * 2 * 3];
+        for (int i = 0; i < allyEntries.Count; i++)
         {
-            data[i * 3] = entries[i].SpeciesId;
-            data[i * 3 + 1] = entries[i].Marker;
-            data[i * 3 + 2] = entries[i].ActualAction;
+            int p = i * 3;
+            data[p] = allyEntries[i].SpeciesId;
+            data[p + 1] = allyEntries[i].Marker;
+            data[p + 2] = allyEntries[i].ActualAction;
         }
-
+        int normalBase = MaxSpeciesActionEntries * 3;
+        for (int i = 0; i < normalEntries.Count; i++)
+        {
+            int p = normalBase + i * 3;
+            data[p] = normalEntries[i].SpeciesId;
+            data[p + 1] = normalEntries[i].Marker;
+            data[p + 2] = normalEntries[i].ActualAction;
+        }
         return data;
     }
 
@@ -1073,7 +1084,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     {
         uint dataAddress = address + 0x200u;
         uint normalDataAddress =
-            dataAddress + (uint)allyOverrideEntryCount * 3u;
+            dataAddress + (uint)MaxSpeciesActionEntries * 3u;
         uint traceAddress = address + 0xD4u;
 
         var code = new List<uint>();
@@ -1702,8 +1713,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
-        uint dataLength =
-            (uint)(normalEntries.Count + allyOverrideEntries.Count) * 3u;
+        uint dataLength = (uint)(MaxSpeciesActionEntries * 2 * 3);
         uint paddedDataLength = (dataLength + 3u) & ~3u;
         return Math.Max(AllyHookReservedSize, 0x200u + paddedDataLength);
     }
@@ -1736,12 +1746,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         uint[] stub = BuildDispatcherStub(address);
         uint[] lookup = BuildSparseLookupCode(
-            address, normalEntries.Count, allyOverrideEntries.Count);
+            address, MaxSpeciesActionEntries, MaxSpeciesActionEntries);
 
-        var allEntries = new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
-        allEntries.AddRange(allyOverrideEntries);
-        allEntries.AddRange(normalEntries);
-        byte[] data = BuildActionData(allEntries);
 
         for (int i = 0; i < stub.Length; i++)
             if (!DispatcherWordMatches(
@@ -1759,9 +1765,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 lookupAddress + (uint)(i * 4), lookup[i], "種族検索コード"))
                 return false;
 
-        uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
-        uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
-        uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, allyOverrideEntries.Count);
+        uint[] allyCheck = BuildAllySkillCheckStub(address, MaxSpeciesActionEntries);
+        uint[] allyLoad = BuildAllyActionLoadStub(address, MaxSpeciesActionEntries);
+        uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, MaxSpeciesActionEntries);
 
         for (int i = 0; i < allyCheck.Length; i++)
             if (!DispatcherWordMatches(
@@ -1785,23 +1791,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             "味方フック所有マーカー"))
             return false;
 
-        uint dataAddress = address + 0x200u;
-        uint paddedLength = ((uint)data.Length + 3u) & ~3u;
-
-        for (uint offset = 0; offset < paddedLength; offset += 4u)
-        {
-            uint expected = 0u;
-            for (int b = 0; b < 4; b++)
-            {
-                uint index = offset + (uint)b;
-                if (index < (uint)data.Length)
-                    expected |= (uint)data[index] << (b * 8);
-            }
-            if (!DispatcherWordMatches(
-                dataAddress + offset, expected, "種族別アクションデータ"))
-                return false;
-        }
-
+        // 設定データは実行コードの同一性判定から分離する。
         return true;
     }
 
@@ -1971,19 +1961,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         for (int i = 0; i < allyTargetCheck.Length; i++)
             _pine.Write32(address + AllyTargetCheckStubOffset + (uint)(i * 4), allyTargetCheck[i]);
 
-        uint dataAddress = address + 0x200u;
-        uint paddedLength = ((uint)data.Length + 3u) & ~3u;
-        for (uint offset = 0; offset < paddedLength; offset += 4u)
-        {
-            uint value = 0u;
-            for (int b = 0; b < 4; b++)
-            {
-                uint index = offset + (uint)b;
-                if (index < (uint)data.Length)
-                    value |= (uint)data[index] << (b * 8);
-            }
-            _pine.Write32(dataAddress + offset, value);
-        }
+        WriteDispatcherData(address, normalEntries, allyOverrideEntries);
 
         uint traceAddress = address + 0xD4u;
         _pine.Write32(traceAddress, 0u);
@@ -1996,6 +1974,33 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException(
                 "敵味方別特技ディスパッチャーの検証に失敗しました。\n" +
                 _lastDispatcherVerificationFailure);
+    }
+
+    private void WriteDispatcherData(
+        uint address,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
+        List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
+    {
+        byte[] data = BuildActionData(allyOverrideEntries, normalEntries);
+        uint dataAddress = address + 0x200u;
+        uint paddedLength = ((uint)data.Length + 3u) & ~3u;
+        for (uint offset = 0; offset < paddedLength; offset += 4u)
+        {
+            uint value = 0u;
+            for (int b = 0; b < 4; b++)
+            {
+                uint index = offset + (uint)b;
+                if (index < (uint)data.Length)
+                    value |= (uint)data[index] << (b * 8);
+            }
+            uint target = dataAddress + offset;
+            if (_pine.Read32(target) != value)
+                _pine.Write32(target, value);
+            if (_pine.Read32(target) != value)
+                throw new InvalidOperationException(
+                    "種族別アクションデータの更新検証に失敗しました。アドレス=0x" +
+                    target.ToString("X8"));
+        }
     }
 
     private void RestoreCallInstruction()
@@ -2064,21 +2069,21 @@ internal sealed class ActionAutoRestoreService : IDisposable
             }
             else
             {
-                RestoreAllyActionHooks(detectedCave);
-                RestoreIonazunRepeatPatch();
-                RestoreCallInstruction();
-                _codeCaveAddress = 0u;
-                currentIsDispatcher = false;
+                throw new InvalidOperationException(
+                    "既存の種族別特技ディスパッチャーが旧形式または不一致です。" +
+                    "実行中のコードは変更していません。PCSX2を完全に再起動し、" +
+                    "古いステートを読み込まずにゲームを起動してください。");
             }
         }
 
         if (_codeCaveAddress != 0u &&
             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
         {
+            if (currentIsDispatcher)
+                throw new InvalidOperationException(
+                    "稼働中のディスパッチャーコードが一致しません。安全のため変更を中止しました。");
             RestoreAllyActionHooks(_codeCaveAddress);
             RestoreIonazunRepeatPatch();
-            if (currentIsDispatcher)
-                RestoreCallInstruction();
             _codeCaveAddress = 0u;
         }
 
@@ -2097,6 +2102,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
             _codeCaveAddress = FindCodeCave(requiredSize);
             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+        }
+        else
+        {
+            WriteDispatcherData(_codeCaveAddress, normalEntries, allyOverrideEntries);
         }
 
         uint newCall = EncodeJal(_codeCaveAddress);
