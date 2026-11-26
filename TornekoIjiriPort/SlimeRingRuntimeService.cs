@@ -115,8 +115,26 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
             if (!equipped)
             {
-                if (_ringActive) Deactivate("スライムの指輪を外したため、モンスタークリエイター設定へ戻しました。");
-                else RaiseStatus("スライムの指輪：未装備");
+                if (_ringActive)
+                {
+                    Deactivate("スライムの指輪を外したため、モンスタークリエイター設定へ戻しました。");
+                }
+                else
+                {
+                    // アプリ再起動やsavestateロードで管理状態だけ初期化され、
+                    // EE RAMに指輪フックが残っているケースも解除する。
+                    try
+                    {
+                        SlimeRingSkillStatRuntimeService.RestoreHook();
+                    }
+                    catch (Exception ex)
+                    {
+                        RaiseStatus("スライムの指輪：未装備 / 残存フック解除エラー: " + ex.Message);
+                        return;
+                    }
+
+                    RaiseStatus("スライムの指輪：未装備");
+                }
                 return;
             }
 
