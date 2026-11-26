@@ -446,6 +446,143 @@ internal sealed class ActionAutoRestoreService : IDisposable
     }
 
     // 指輪専用の味方上書きだけを更新する。通常のモンスタークリエイター設定は変更しない。
+    // 指輪診断段階3専用。
+    // 敵ディスパッチャー(0x002435C4)・通常設定テーブル・イオナズン分岐には触れず、
+    // 味方側4箇所のフックと味方専用テーブルだけを設置／解除する。
+    internal bool TryApplyAllyRingOverridesIsolated(
+        IEnumerable<KeyValuePair<int, ushort>> ringActions,
+        out string message)
+    {
+        message = "";
+
+        var copy = new Dictionary<int, ushort>();
+        if (ringActions != null)
+        {
+            foreach (var pair in ringActions)
+                copy[pair.Key] = pair.Value;
+        }
+
+        lock (_operationSync)
+        {
+            try
+            {
+                if (!_pine.TryConnect())
+                {
+                    message = "PCSX2に接続できません。";
+                    return false;
+                }
+
+                if (_pine.GetStatus() != 0)
+                {
+                    message = "PCSX2をゲーム実行状態にしてください。";
+                    return false;
+                }
+
+                if (copy.Count == 0)
+                {
+                    RestoreAllyActionHooks();
+                    lock (_stateSync)
+                    {
+                        _allyRingActions.Clear();
+                        _allyRingIonazunForce.Clear();
+                    }
+
+                    message = "味方専用行動フックを解除しました。敵側処理は変更していません。";
+                    return true;
+                }
+
+                var entries = BuildActionEntries(
+                    copy,
+                    new HashSet<int>());
+
+                if (entries.Count == 0)
+                {
+                    RestoreAllyActionHooks();
+                    message = "味方専用行動設定が0件のためフックを設置しませんでした。";
+                    return true;
+                }
+
+                uint page = FindOrCreateSharedRuntimeCave();
+                uint address = page + SharedActionCaveOffset;
+
+                uint[] allyCheck = BuildAllySkillCheckStub(
+                    address, MaxSpeciesActionEntries);
+                uint[] allyLoad = BuildAllyActionLoadStub(
+                    address, MaxSpeciesActionEntries);
+                uint[] allyTarget = BuildAllyTargetCheckStub(
+                    address, MaxSpeciesActionEntries);
+
+                if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
+                    AllyActionLoadStubOffset + (uint)allyLoad.Length * 4u > AllyTargetCheckStubOffset ||
+                    AllyTargetCheckStubOffset + (uint)allyTarget.Length * 4u > AllyHookMarkerOffset)
+                {
+                    throw new InvalidOperationException(
+                        "味方専用スタブの配置領域が重複しています。");
+                }
+
+                // 実行コードを書き込む前に、既存フックの命令と遅延スロットを検査する。
+                if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
+                    _pine.Read32(AllySkillCheckDelay2Address) != OriginalAllySkillCheckDelay ||
+                    _pine.Read32(AllyActionLoadDelayAddress) != OriginalAllyActionLoadDelay ||
+                    _pine.Read32(AllyTargetCheckDelayAddress) != OriginalAllyTargetCheckDelay)
+                {
+                    throw new InvalidOperationException(
+                        "味方側AIの遅延スロットが想定値と異なります。");
+                }
+
+                uint expectedMarker = AllyHookMarker;
+                uint markerAddress = address + AllyHookMarkerOffset;
+                uint currentMarker = _pine.Read32(markerAddress);
+                if (currentMarker != 0u && currentMarker != expectedMarker)
+                {
+                    throw new InvalidOperationException(
+                        "味方専用フック領域の所有マーカーが不正です。");
+                }
+
+                for (int i = 0; i < allyCheck.Length; i++)
+                    _pine.Write32(address + AllySkillCheckStubOffset + (uint)(i * 4), allyCheck[i]);
+                for (int i = 0; i < allyLoad.Length; i++)
+                    _pine.Write32(address + AllyActionLoadStubOffset + (uint)(i * 4), allyLoad[i]);
+                for (int i = 0; i < allyTarget.Length; i++)
+                    _pine.Write32(address + AllyTargetCheckStubOffset + (uint)(i * 4), allyTarget[i]);
+
+                // 味方専用データ領域だけ更新。通常設定側255件は空のまま。
+                WriteDispatcherData(address, new List<(byte SpeciesId, byte Marker, byte ActualAction)>(), entries);
+                _pine.Write32(markerAddress, expectedMarker);
+
+                for (int i = 0; i < allyCheck.Length; i++)
+                    if (_pine.Read32(address + AllySkillCheckStubOffset + (uint)(i * 4)) != allyCheck[i])
+                        throw new InvalidOperationException("味方特技使用判定スタブの検証に失敗しました。");
+                for (int i = 0; i < allyLoad.Length; i++)
+                    if (_pine.Read32(address + AllyActionLoadStubOffset + (uint)(i * 4)) != allyLoad[i])
+                        throw new InvalidOperationException("味方特技ID読込スタブの検証に失敗しました。");
+                for (int i = 0; i < allyTarget.Length; i++)
+                    if (_pine.Read32(address + AllyTargetCheckStubOffset + (uint)(i * 4)) != allyTarget[i])
+                        throw new InvalidOperationException("味方対象判定スタブの検証に失敗しました。");
+
+                ApplyAllyActionHooks(address, entries.Count);
+
+                lock (_stateSync)
+                {
+                    _allyRingActions = copy;
+                    _allyRingIonazunForce.Clear();
+                }
+
+                message =
+                    "味方専用行動IDフックを適用しました。" + Environment.NewLine +
+                    "対象種族数: " + entries.Count + Environment.NewLine +
+                    "敵ディスパッチャー: 変更なし" + Environment.NewLine +
+                    "イオナズン分岐: 変更なし";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                message = "味方専用行動フックの適用に失敗しました: " + ex.Message;
+                return false;
+            }
+        }
+    }
+
     internal bool TryApplyAllyRingOverrides(
         IEnumerable<KeyValuePair<int, ushort>> ringActions,
         ISet<int>? ionazunForce,
