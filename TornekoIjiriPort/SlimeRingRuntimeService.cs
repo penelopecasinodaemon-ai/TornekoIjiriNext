@@ -60,6 +60,10 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private int _busy;
     private int _forceApplyRequested;
 
+    // モンスタークリエイターの特技使用率・範囲の変更検出用
+    private uint _creatorSkillSettingsFingerprint;
+    private bool _hasCreatorSkillSettingsFingerprint;
+
     internal event Action<string>? StatusChanged;
 
     internal SlimeRingRuntimeService(Func<byte[]?> getCurrentBin, ActionAutoRestoreService actionRestore)
@@ -131,8 +135,13 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 settingsChanged = true;
             }
 
-            // モンスタークリエイターの系統フラグ変更も検出する。
+            // モンスタークリエイターの系統フラグと
+            // 特技使用率・範囲の変更を検出する。
             bool familyFlagsChanged = false;
+            bool creatorSkillSettingsChanged = false;
+
+            uint currentCreatorSkillSettingsFingerprint = 0;
+            bool hasCurrentCreatorSkillSettingsFingerprint = false;
 
             if (_ringActive)
             {
@@ -151,15 +160,39 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                     familyFlagsChanged =
                         !OverlaySpeciesIdsMatch(currentFamilyIds);
+
+                    currentCreatorSkillSettingsFingerprint =
+                        CalculateCreatorSkillSettingsFingerprint(
+                            currentBin,
+                            tableOffset);
+
+                    hasCurrentCreatorSkillSettingsFingerprint = true;
+
+                    creatorSkillSettingsChanged =
+                        _hasCreatorSkillSettingsFingerprint &&
+                        currentCreatorSkillSettingsFingerprint !=
+                        _creatorSkillSettingsFingerprint;
                 }
             }
 
-            if (settingsChanged || forceApply || familyFlagsChanged)
+            if (settingsChanged ||
+                forceApply ||
+                familyFlagsChanged ||
+                creatorSkillSettingsChanged)
             {
                 try
                 {
                     ApplyRingSettings();
                     _settingsWriteTime = writeTime;
+
+                    // 再適用が成功した場合だけ最新値を監視基準にする。
+                    if (hasCurrentCreatorSkillSettingsFingerprint)
+                    {
+                        _creatorSkillSettingsFingerprint =
+                            currentCreatorSkillSettingsFingerprint;
+
+                        _hasCreatorSkillSettingsFingerprint = true;
+                    }
                 }
                 catch
                 {
@@ -185,6 +218,54 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         }
         catch (Exception ex) { RaiseStatus("スライムの指輪：反映エラー / " + ex.Message); }
         finally { Interlocked.Exchange(ref _busy, 0); }
+    }
+
+    private static uint CalculateCreatorSkillSettingsFingerprint(
+        byte[] bin,
+        int recordTableOffset)
+    {
+        if (bin == null || bin.Length != 524288)
+            throw new InvalidOperationException(
+                "特技設定の監視対象BINが不正です。");
+
+        // FNV-1a 32bit
+        uint hash = 2166136261u;
+
+        foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
+        {
+            int recordOffset =
+                checked(recordTableOffset + speciesId * MonsterRecordSize);
+
+            int rangeOffset =
+                checked(SkillRangeDataOffset + (speciesId + 1) * 20);
+
+            if (recordOffset < 0 ||
+                recordOffset + MonsterRecordSize > bin.Length)
+            {
+                throw new InvalidOperationException(
+                    "特技使用率の監視範囲が不正です。種族ID=" + speciesId);
+            }
+
+            if (rangeOffset < 0 ||
+                rangeOffset + 8 > bin.Length)
+            {
+                throw new InvalidOperationException(
+                    "特技範囲の監視範囲が不正です。種族ID=" + speciesId);
+            }
+
+            // モンスターレコード +22: 特技使用率
+            hash ^= bin[recordOffset + 22];
+            hash *= 16777619u;
+
+            // 特技範囲データ +6～+7: 特技使用範囲
+            hash ^= bin[rangeOffset + 6];
+            hash *= 16777619u;
+
+            hash ^= bin[rangeOffset + 7];
+            hash *= 16777619u;
+        }
+
+        return hash;
     }
 
     private static bool IsSlimeRingEquipped()
