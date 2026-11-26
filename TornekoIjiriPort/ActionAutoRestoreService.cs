@@ -1384,6 +1384,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private static uint[] BuildAllyTargetCheckStub(uint caveAddress, int entryCount)
     {
         uint dataAddress = caveAddress + 0x200u;
+        uint traceMarkerAddress = caveAddress + 0xE0u;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
@@ -1397,6 +1398,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x24, 5, 9, 0x1D3));     // lbu t1,0x1D3(a1): faction
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
         Emit(0u);
+
+        // 味方だけ連発判定マーカーを初期化する。敵側の状態は変更しない。
+        Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
+        Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
+        Emit(EncodeI(0x28, 10, 0, 0));        // sb zero,0(t2)
+
         Emit(EncodeI(0x24, 5, 10, 4));        // lbu t2,4(a1): runtime species ID
         Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
@@ -1419,6 +1426,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0u);
 
         int foundLabel = code.Count;
+        Emit(EncodeI(0x24, 11, 9, 1));       // lbu t1,1(t3): Ionazun force marker
+        Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
+        Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
+        Emit(EncodeI(0x28, 10, 9, 0));        // sb t1,0(t2)
         Emit(EncodeI(0x24, 11, 2, 2));       // lbu v0,2(t3): ring action ID
 
         int restore = code.Count;
