@@ -244,8 +244,6 @@ internal static class SlimeRingSkillStatRuntimeService
 
         int restoreLabel = code.Count;
 
-        int restoreLabel = code.Count;
-
         PatchBranch(code, entryFoundBranch, entryFoundLabel, I(0x04, 26, 4, 0));
         PatchBranch(code, loopBranch, loopLabel, I(0x05, 15, 0, 0));
         PatchBranch(code, entryNotFoundBranch, restoreLabel, I(0x04, 0, 0, 0));
