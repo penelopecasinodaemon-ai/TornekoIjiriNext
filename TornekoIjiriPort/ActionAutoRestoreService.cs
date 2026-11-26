@@ -973,16 +973,16 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         return new uint[]
         {
-            // EEの64ビットレジスタをスタックへ退避する。
-            // 0x40バイト確保し、t0～t5をそれぞれ8バイト保存する。
-            0x27BDFFC0u, // addiu sp,sp,-0x40
+            // EEの128ビット汎用レジスタを完全に退避する。
+            // 16バイト単位で6レジスタ分、0x80バイト確保。
+            0x27BDFF80u, // addiu sp,sp,-0x80
 
-            0xFFA80000u, // sd t0,0(sp)
-            0xFFA90008u, // sd t1,8(sp)
-            0xFFAA0010u, // sd t2,16(sp)
-            0xFFAB0018u, // sd t3,24(sp)
-            0xFFAC0020u, // sd t4,32(sp)
-            0xFFAD0028u, // sd t5,40(sp)
+            0x7FA80000u, // sq t0,0(sp)
+            0x7FA90010u, // sq t1,0x10(sp)
+            0x7FAA0020u, // sq t2,0x20(sp)
+            0x7FAB0030u, // sq t3,0x30(sp)
+            0x7FAC0040u, // sq t4,0x40(sp)
+            0x7FAD0050u, // sq t5,0x50(sp)
 
             // 実行時種族ID
             0x90480004u, // lbu t0,4(v0)
@@ -1004,7 +1004,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0xAD60000Cu,
 
             // 特技テーブル検索へ
-            // J命令は配列の16番目（0始まり）に配置されている。
             EncodeIonazunRepeatJump(
                 address + 16u * 4u,
                 lookupAddress),
@@ -1028,16 +1027,16 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         void EmitRestoreAndJump()
         {
-            // EEの64ビット一時レジスタを完全に復元する。
-            Emit(0xDFA80000u); // ld t0,0(sp)
-            Emit(0xDFA90008u); // ld t1,8(sp)
-            Emit(0xDFAA0010u); // ld t2,16(sp)
-            Emit(0xDFAB0018u); // ld t3,24(sp)
-            Emit(0xDFAC0020u); // ld t4,32(sp)
-            Emit(0xDFAD0028u); // ld t5,40(sp)
+            // EEの128ビット汎用レジスタを完全に復元する。
+            Emit(0x7BA80000u); // lq t0,0(sp)
+            Emit(0x7BA90010u); // lq t1,0x10(sp)
+            Emit(0x7BAA0020u); // lq t2,0x20(sp)
+            Emit(0x7BAB0030u); // lq t3,0x30(sp)
+            Emit(0x7BAC0040u); // lq t4,0x40(sp)
+            Emit(0x7BAD0050u); // lq t5,0x50(sp)
 
             // 元のスタック位置へ戻す
-            Emit(0x27BD0040u); // addiu sp,sp,0x40
+            Emit(0x27BD0080u); // addiu sp,sp,0x80
 
             // 元の特技処理関数へ戻る
             Emit(0x0808F1D4u); // j 0x0023C750
