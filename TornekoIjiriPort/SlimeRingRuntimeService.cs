@@ -95,6 +95,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             {
                 _processId = 0;
                 _lastObservedEquipped = null;
+                _diagnosticAllyItemDataApplied = false;
                 _overlayActive = false;
                 SetOverlaySpeciesIds(Array.Empty<int>());
                 RaiseStatus("スライムの指輪：PCSX2接続待ち（読み取り専用監視）");
@@ -106,6 +107,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             {
                 _processId = pid;
                 _lastObservedEquipped = null;
+                _diagnosticAllyItemDataApplied = false;
             }
 
             // ReadShared32による装備スロットの読み取りのみ。
@@ -120,11 +122,18 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                 // 診断段階1：味方専用投擲データだけを反映する。
                 // 特技使用率フック・行動フック・バリア処理は実行しない。
-                ApplyRingAllyItemDataOnly(equipped);
+                if (equipped)
+                {
+                    ApplyRingAllyItemDataOnly(true);
+                }
+                else if (_diagnosticAllyItemDataApplied)
+                {
+                    ApplyRingAllyItemDataOnly(false);
+                }
 
                 RaiseStatus(equipped
                     ? "スライムの指輪：診断段階1適用済み（味方専用データのみ／フック未設置）"
-                    : "スライムの指輪：未装備（診断段階1データを基準値へ復元）");
+                    : "スライムの指輪：未装備（診断段階1）");
             }
         }
         catch (Exception ex)
