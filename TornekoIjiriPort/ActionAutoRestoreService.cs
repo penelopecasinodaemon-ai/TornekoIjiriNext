@@ -46,10 +46,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
     // 旧版の全敵共通パッチ ori s1,zero,actionId
     private const uint LegacyPatchBase = 0x34110000u;
 
-    // EE RAMの高位領域から512バイトの空き領域を探す
+    // EE RAMの高位領域を16バイト境界で探索する
     private const uint CaveSearchStart = 0x01FF0000u;
     private const uint CaveSearchEnd = 0x01E00000u;
-    private const uint CaveSearchStep = 0x00001000u;
+    private const uint CaveSearchAlignment = 0x00000010u;
     // コロマージ呪文分岐調査フック
     private const uint SpellDispatchAddress = 0x002CF600u;
     // MOD版コロマージ呪文成功判定: slt v0,v0,v1 を li v0,1 に置換
@@ -1675,7 +1675,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         // 旧実装は4KB境界だけを候補にしていたため、4KBページの途中にある
         // 空き領域を見落としていた。候補を16バイト単位にし、使用中のDWORDを
         // 見つけた場合は、そのDWORDと重なる候補をまとめて飛ばす。
-        const uint alignment = 0x10u;
+        const uint alignment = CaveSearchAlignment;
         const uint ramEndExclusive = 0x02000000u;
 
         uint maxCandidate = Math.Min(
