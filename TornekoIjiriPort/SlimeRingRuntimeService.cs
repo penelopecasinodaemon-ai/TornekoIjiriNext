@@ -153,7 +153,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                     // 段階3：味方専用の特技判定・行動ID読込・対象判定を一括適用。
                     // 4か所のフックがすべて検証されるまで共有有効フラグは0のまま。
-                    ApplyRingAllyActionOnly(true);
+                    // 段階3は通常攻撃停止の原因が未解決のため無効化。行動フックは設置しない。
                 }
                 else
                 {
@@ -174,7 +174,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _lastObservedEquipped = equipped;
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：段階3適用済み（味方専用データ＋特技使用率・範囲＋行動ID）"
+                    ? "スライムの指輪：段階2適用済み（味方専用データ＋特技使用率・範囲／行動判定フック停止）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
