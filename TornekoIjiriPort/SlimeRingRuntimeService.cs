@@ -55,6 +55,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private bool _disposed;
     private int _processId;
     private bool? _lastObservedEquipped;
+    private bool _diagnosticAllyItemDataApplied;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
@@ -117,9 +118,13 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _overlayActive = false;
                 SetOverlaySpeciesIds(Array.Empty<int>());
 
+                // 診断段階1：味方専用投擲データだけを反映する。
+                // 特技使用率フック・行動フック・バリア処理は実行しない。
+                ApplyRingAllyItemDataOnly(equipped);
+
                 RaiseStatus(equipped
-                    ? "スライムの指輪：装備を検出（読み取り専用監視中・自動適用停止）"
-                    : "スライムの指輪：未装備（読み取り専用監視中）");
+                    ? "スライムの指輪：診断段階1適用済み（味方専用データのみ／フック未設置）"
+                    : "スライムの指輪：未装備（診断段階1データを基準値へ復元）");
             }
         }
         catch (Exception ex)
@@ -130,6 +135,75 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         {
             Interlocked.Exchange(ref _busy, 0);
         }
+    }
+
+    // 診断段階1専用。指輪の味方専用投擲データだけを更新する。
+    // 特技使用率フック、行動ディスパッチャー、イオナズン分岐、バリアには触れない。
+    private void ApplyRingAllyItemDataOnly(bool equipped)
+    {
+        byte[]? source = _getCurrentBin();
+        if (source == null || source.Length != 524288)
+            source = Pcsx2LiveSession.VanillaBin;
+
+        if (source == null || source.Length != 524288)
+            throw new InvalidOperationException(
+                "診断段階1：基準BINがありません。先にPCSX2からバニラBINを取得してください。");
+
+        if (Pcsx2LiveSession.MemoryLayout == null ||
+            Pcsx2LiveSession.ProcessId <= 0)
+        {
+            throw new InvalidOperationException(
+                "診断段階1：PCSX2のメモリ接続情報がありません。");
+        }
+
+        SlimeRingSettings settings =
+            SlimeRingSettings.Load(SlimeRingEditorForm.TargetMonsterIds);
+
+        byte[] work = (byte[])source.Clone();
+        int recordTableOffset = ResolveMonsterRecordTableOffset(source);
+
+        HashSet<int> slimeFamilyIds =
+            GetSlimeFamilySpeciesIds(source, recordTableOffset);
+
+        var writes = new List<Tuple<int, byte[], string>>();
+
+        foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
+        {
+            int allyOffset =
+                checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
+
+            CheckRange(work, allyOffset, 8);
+
+            // 装備中かつスライム系統フラグが有効な種族だけ指輪値を使う。
+            // 解除時・対象外種族はBIN基準値をそのまま書き戻す。
+            if (equipped && slimeFamilyIds.Contains(speciesId))
+            {
+                SlimeRingMonsterSettings item =
+                    settings.GetMonster(speciesId);
+
+                WriteUInt16(
+                    work,
+                    allyOffset,
+                    (ushort)Clamp(item.AllyThrowItem1, 0, 65535));
+
+                WriteUInt16(
+                    work,
+                    allyOffset + 2,
+                    (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
+            }
+
+            writes.Add(Tuple.Create(
+                allyOffset,
+                Slice(work, allyOffset, 8),
+                "診断段階1・味方専用投擲データ ID=" + speciesId));
+        }
+
+        Pcsx2BinApplier.ApplyRanges(
+            Pcsx2LiveSession.ProcessId,
+            Pcsx2LiveSession.MemoryLayout,
+            writes);
+
+        _diagnosticAllyItemDataApplied = equipped;
     }
 
     private static uint CalculateCreatorSkillSettingsFingerprint(
