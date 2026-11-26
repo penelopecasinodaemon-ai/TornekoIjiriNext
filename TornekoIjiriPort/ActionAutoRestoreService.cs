@@ -1556,11 +1556,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
             if (preferredCaveAddress != 0u &&
                 IsAllyHookMarker(preferredCaveAddress))
             {
-                uint activeAddress = preferredCaveAddress + AllyHookActiveOffset;
-                if (_pine.Read32(activeAddress) != 0u)
+                uint preferredActiveAddress = preferredCaveAddress + AllyHookActiveOffset;
+                if (_pine.Read32(preferredActiveAddress) != 0u)
                 {
-                    _pine.Write32(activeAddress, 0u);
-                    if (_pine.Read32(activeAddress) != 0u)
+                    _pine.Write32(preferredActiveAddress, 0u);
+                    if (_pine.Read32(preferredActiveAddress) != 0u)
                         throw new InvalidOperationException(
                             "味方行動フックの無効化に失敗しました。");
                 }
