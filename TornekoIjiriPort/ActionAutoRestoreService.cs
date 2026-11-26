@@ -1671,30 +1671,62 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 "必要なコード領域サイズが不正です: " + requiredSize);
         }
 
-        for (
-            uint candidate = CaveSearchStart;
-            candidate >= CaveSearchEnd;
-            candidate -= CaveSearchStep)
+        // EE RAMの検索範囲内で、16バイト境界から必要サイズ分の連続領域を探す。
+        // 旧実装は4KB境界だけを候補にしていたため、4KBページの途中にある
+        // 空き領域を見落としていた。候補を16バイト単位にし、使用中のDWORDを
+        // 見つけた場合は、そのDWORDと重なる候補をまとめて飛ばす。
+        const uint alignment = 0x10u;
+        const uint ramEndExclusive = 0x02000000u;
+
+        uint maxCandidate = Math.Min(
+            CaveSearchStart,
+            ramEndExclusive - requiredSize);
+
+        uint candidate = maxCandidate & ~(alignment - 1u);
+
+        while (candidate >= CaveSearchEnd)
         {
             bool free = true;
+            uint conflictAddress = 0u;
 
             for (uint offset = 0; offset < requiredSize; offset += 4u)
             {
-                if (_pine.Read32(candidate + offset) != 0u)
+                uint address = candidate + offset;
+
+                if (_pine.Read32(address) != 0u)
                 {
                     free = false;
+                    conflictAddress = address;
                     break;
                 }
             }
 
             if (free)
                 return candidate;
+
+            // conflictAddressを含む領域は空きではない。
+            // 次の候補の末尾がconflictAddress以下になる最大の16バイト境界へ移動。
+            if (conflictAddress < requiredSize)
+                break;
+
+            uint nextCandidate =
+                (conflictAddress - requiredSize) & ~(alignment - 1u);
+
+            if (nextCandidate >= candidate)
+            {
+                if (candidate < alignment)
+                    break;
+
+                nextCandidate = candidate - alignment;
+            }
+
+            candidate = nextCandidate;
         }
 
         throw new InvalidOperationException(
             "EE RAMに必要サイズ " + requiredSize +
             " バイトの連続した空き領域が見つかりません。\n" +
-            "512バイト固定ではなく、設定種族数に応じたサイズで探索しました。");
+            "16バイト境界で検索し、使用中領域を避けて探索しました。");
     }
 
     private void WriteDispatcherCode(
