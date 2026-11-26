@@ -1283,7 +1283,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         Emit(0x27BDFFF0u);                    // addiu sp,sp,-0x10
         Emit(0xAFBF0000u);                    // sw ra,0(sp)
-        Emit(EncodeI(0x23, 4, 8, 8));         // lw t0,8(a0)
+        // 元のJAL遅延スロット 0x9045003A は lbu a1,0x3A(v0)。\n        // したがって v0 が既に個体データポインタ。a0+8 を再参照しない。\n        Emit(0x0040402Du);                    // daddu t0,v0,zero
         int nullActor = EmitBranchWithDelay(code, EncodeI(0x04, 8, 0, 0));
         Emit(0u);
         Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
