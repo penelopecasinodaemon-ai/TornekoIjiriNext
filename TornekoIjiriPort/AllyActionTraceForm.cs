@@ -24,13 +24,14 @@ internal sealed class AllyActionTraceForm : Form
             RowCount = 2,
             Padding = new Padding(10)
         };
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 126));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 176));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var buttons = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
             AutoSize = false,
+            AutoScroll = true,
             WrapContents = true
         };
 
@@ -40,6 +41,13 @@ internal sealed class AllyActionTraceForm : Form
             () => InvokeTraceMethod("AllyActionTraceService", "Read"));
         AddButton(buttons, "元の命令に復元", 140,
             () => InvokeTraceMethod("AllyActionTraceService", "Restore"));
+
+        AddButton(buttons, "仲間/敵IDトレース設置", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Install"));
+        AddButton(buttons, "仲間/敵ID記録読み取り", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Read"));
+        AddButton(buttons, "仲間/敵IDトレース解除", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Restore"));
 
         _snapshotButton = new Button
         {
@@ -78,13 +86,6 @@ AddButton(buttons, "呼び出し地点記録読み取り", 190,
 
 AddButton(buttons, "呼び出し地点フック解除", 190,
     () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Restore"));
-
-        AddButton(buttons, "仲間/敵IDトレース設置", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Install"));
-        AddButton(buttons, "仲間/敵ID記録読み取り", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Read"));
-        AddButton(buttons, "仲間/敵IDトレース解除", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Restore"));
 
         _output = new TextBox
         {
