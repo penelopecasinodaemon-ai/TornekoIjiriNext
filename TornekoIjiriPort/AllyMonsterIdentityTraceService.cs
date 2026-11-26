@@ -265,6 +265,47 @@ internal static class AllyMonsterIdentityTraceService
         }
     }
 
+    internal static string DumpKnownStructures()
+    {
+        lock (Sync)
+        {
+            RequirePaused();
+
+            // 直近の実測トレースで確認した [s2+8] のポインタ。
+            uint[] pointers = { 0x00396A70u, 0x003974C0u, 0x00397830u };
+            string[] labels = { "エントリー s7=1", "エントリー s7=4", "エントリー s7=5" };
+            var lines = new List<string>
+            {
+                "MONSTER STRUCTURE DUMP",
+                "各ポインタの先頭から0x240バイトを4バイト単位で読み取ります。",
+                "PCSX2停止中の読み取り専用です。",
+                ""
+            };
+
+            for (int n = 0; n < pointers.Length; n++)
+            {
+                uint pointer = pointers[n];
+                lines.Add("===== " + labels[n] + "  pointer=0x" + pointer.ToString("X8") + " =====");
+                lines.Add("Offset  +00       +04       +08       +0C");
+
+                for (uint offset = 0; offset < 0x240u; offset += 0x10u)
+                {
+                    uint v0 = ActionAutoRestoreService.ReadShared32(pointer + offset);
+                    uint v1 = ActionAutoRestoreService.ReadShared32(pointer + offset + 4u);
+                    uint v2 = ActionAutoRestoreService.ReadShared32(pointer + offset + 8u);
+                    uint v3 = ActionAutoRestoreService.ReadShared32(pointer + offset + 12u);
+                    lines.Add(string.Format(
+                        "+{0:X3}    {1:X8}  {2:X8}  {3:X8}  {4:X8}",
+                        offset, v0, v1, v2, v3));
+                }
+                lines.Add("");
+            }
+
+            lines.Add("この3つのダンプを比較し、共通フィールドとエントリー固有フィールドを特定します。");
+            return string.Join(Environment.NewLine, lines);
+        }
+    }
+
     internal static string Restore()
     {
         lock (Sync)
