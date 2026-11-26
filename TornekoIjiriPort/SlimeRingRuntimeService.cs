@@ -186,6 +186,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         byte[] work = (byte[])source.Clone();
         var writes = new List<Tuple<int, byte[], string>>();
 
+        // 実験版・指輪特技使用率上書き
+        int recordTableOffset = ResolveMonsterRecordTableOffset(work);
+
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
             SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
@@ -202,6 +205,39 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 allyOffset,
                 Slice(work, allyOffset, 8),
                 "指輪・味方専用投擲データ ID=" + speciesId));
+
+            // 実験版・指輪特技使用範囲上書き
+            int rangeOffset =
+                SkillRangeDataOffset + (speciesId + 1) * 20;
+
+            CheckRange(work, rangeOffset + 6, 2);
+
+            WriteUInt16(
+                work,
+                rangeOffset + 6,
+                (ushort)Clamp(item.SkillRange, 0, 7));
+
+            writes.Add(Tuple.Create(
+                rangeOffset + 6,
+                Slice(work, rangeOffset + 6, 2),
+                "実験版・指輪特技使用範囲 ID=" + speciesId));
+
+            // 実験版・指輪特技使用率上書き
+            // +22=A、+23=B。Bは変更しない。
+            int recordOffset =
+                recordTableOffset + speciesId * MonsterRecordSize;
+
+            int rateOffset = recordOffset + 22;
+
+            CheckRange(work, rateOffset, 1);
+
+            work[rateOffset] =
+                (byte)Clamp(item.SkillRate, 0, 255);
+
+            writes.Add(Tuple.Create(
+                rateOffset,
+                Slice(work, rateOffset, 1),
+                "実験版・指輪特技使用率A ID=" + speciesId));
         }
 
         Pcsx2BinApplier.ApplyRanges(
@@ -348,6 +384,11 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         if (source == null || source.Length != 524288 || Pcsx2LiveSession.MemoryLayout == null || Pcsx2LiveSession.ProcessId <= 0) return;
 
         var writes = new List<Tuple<int, byte[], string>>();
+
+        // 実験版・使用率復元用モンスターレコード位置
+        int recordTableOffset =
+            ResolveMonsterRecordTableOffset(source);
+
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
             int rangeOffset = SkillRangeDataOffset + (speciesId + 1) * 20;
@@ -366,6 +407,19 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 allyOffset,
                 Slice(source, allyOffset, 8),
                 "指輪解除・味方専用投擲データ ID=" + speciesId));
+
+            // 実験版・指輪解除時の特技使用率A復元
+            int recordOffset =
+                recordTableOffset + speciesId * MonsterRecordSize;
+
+            int rateOffset = recordOffset + 22;
+
+            CheckRange(source, rateOffset, 1);
+
+            writes.Add(Tuple.Create(
+                rateOffset,
+                Slice(source, rateOffset, 1),
+                "実験版・指輪解除時の特技使用率A復元 ID=" + speciesId));
         }
         Pcsx2BinApplier.ApplyRanges(
             Pcsx2LiveSession.ProcessId,
