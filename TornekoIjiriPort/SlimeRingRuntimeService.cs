@@ -56,6 +56,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private int _processId;
     private bool? _lastObservedEquipped;
     private bool _diagnosticAllyItemDataApplied;
+    private bool _diagnosticSkillStatApplied;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
@@ -124,16 +125,29 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 // 特技使用率フック・行動フック・バリア処理は実行しない。
                 if (equipped)
                 {
+                    // 診断段階1：味方専用投擲データのみ。
                     ApplyRingAllyItemDataOnly(true);
+
+                    // 診断段階2：特技使用率・範囲フックのみ追加。
+                    // 行動IDディスパッチャーとイオナズン分岐には触れない。
+                    ApplyRingSkillStatOnly();
                 }
-                else if (_diagnosticAllyItemDataApplied)
+                else
                 {
-                    ApplyRingAllyItemDataOnly(false);
+                    // 先に特技フックを元へ戻し、その後に投擲データを復元する。
+                    if (_diagnosticSkillStatApplied)
+                    {
+                        SlimeRingSkillStatRuntimeService.RestoreHook();
+                        _diagnosticSkillStatApplied = false;
+                    }
+
+                    if (_diagnosticAllyItemDataApplied)
+                        ApplyRingAllyItemDataOnly(false);
                 }
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：診断段階1適用済み（味方専用データのみ／フック未設置）"
-                    : "スライムの指輪：未装備（診断段階1）");
+                    ? "スライムの指輪：診断段階2適用済み（味方専用データ＋特技使用率・範囲フック／行動変更なし）"
+                    : "スライムの指輪：未装備（診断段階2を解除）");
             }
         }
         catch (Exception ex)
@@ -144,6 +158,39 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         {
             Interlocked.Exchange(ref _busy, 0);
         }
+    }
+
+    // 診断段階2：特技使用率・範囲フックだけを設置する。
+    // 味方の特技率・範囲を指輪設定へ切り替えるが、行動IDは変更しない。
+    private void ApplyRingSkillStatOnly()
+    {
+        byte[]? source = _getCurrentBin();
+        if (source == null || source.Length != 524288)
+            source = Pcsx2LiveSession.VanillaBin;
+
+        if (source == null || source.Length != 524288)
+            throw new InvalidOperationException(
+                "診断段階2：基準BINがありません。");
+
+        int recordTableOffset = ResolveMonsterRecordTableOffset(source);
+        HashSet<int> slimeFamilyIds =
+            GetSlimeFamilySpeciesIds(source, recordTableOffset);
+        SlimeRingSettings settings =
+            SlimeRingSettings.Load(SlimeRingEditorForm.TargetMonsterIds);
+
+        string result = SlimeRingSkillStatRuntimeService.Apply(
+            source,
+            recordTableOffset,
+            settings,
+            slimeFamilyIds);
+
+        _diagnosticSkillStatApplied = true;
+        RaiseStatus(
+            "スライムの指輪：診断段階2・特技使用率／範囲フック適用済み" +
+            Environment.NewLine +
+            "行動IDディスパッチャー：未設置" +
+            Environment.NewLine +
+            result);
     }
 
     // 診断段階1専用。指輪の味方専用投擲データだけを更新する。
