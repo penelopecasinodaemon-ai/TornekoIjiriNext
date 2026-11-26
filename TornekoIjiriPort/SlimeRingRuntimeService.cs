@@ -130,9 +130,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
-                    // 診断段階3：修正済みの味方専用行動IDフックを適用する。
-                    // 敵ディスパッチャーとイオナズン分岐には触れない。
-                    ApplyRingAllyActionOnly(true);
+                    // 行動IDフックは通常攻撃の停止を招いたため無効化する。
+                    // 味方専用データと特技使用率・範囲のみ適用する。
                 }
                 else
                 {
