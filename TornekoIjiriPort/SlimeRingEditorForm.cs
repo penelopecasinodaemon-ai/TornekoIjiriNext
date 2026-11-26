@@ -77,23 +77,65 @@ internal sealed class SlimeRingSettings
             result = new SlimeRingSettings();
         }
 
-        result.Monsters ??= new Dictionary<int, SlimeRingMonsterSettings>();
+        result.NormalizeTargetMonsters(targetIds);
+        return result;
+    }
+
+    private void NormalizeTargetMonsters(IEnumerable<int> targetIds)
+    {
+        Monsters ??= new Dictionary<int, SlimeRingMonsterSettings>();
 
         // 旧形式（全モンスター共通の設定）しかない場合は、従来の設定を17種すべてへ引き継ぐ。
-        if (result.Monsters.Count == 0)
+        if (Monsters.Count == 0)
         {
-            var legacy = result.CreateLegacySettings();
+            SlimeRingMonsterSettings legacy = CreateLegacySettings();
             foreach (int id in targetIds)
-                result.Monsters[id] = legacy.Clone();
+                Monsters[id] = legacy.Clone();
         }
 
         foreach (int id in targetIds)
         {
-            if (!result.Monsters.TryGetValue(id, out var settings) || settings == null)
-                result.Monsters[id] = new SlimeRingMonsterSettings();
+            if (!Monsters.TryGetValue(id, out SlimeRingMonsterSettings? settings) ||
+                settings == null)
+            {
+                Monsters[id] = new SlimeRingMonsterSettings();
+            }
+        }
+    }
+
+    // .Torneko4への保存用。現在のローカル設定を正規化してJSON化する。
+    public static string ExportJson()
+    {
+        SlimeRingSettings settings =
+            Load(SlimeRingEditorForm.TargetMonsterIds);
+
+        return JsonSerializer.Serialize(
+            settings,
+            new JsonSerializerOptions { WriteIndented = false });
+    }
+
+    // .Torneko4からの復元用。壊れたJSONを空設定として黙って扱わず、呼び出し元へ通知する。
+    public static void ImportJson(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            throw new InvalidDataException("スライムの指輪設定JSONが空です。");
+
+        SlimeRingSettings imported;
+        try
+        {
+            imported = JsonSerializer.Deserialize<SlimeRingSettings>(json)
+                ?? throw new InvalidDataException(
+                    "スライムの指輪設定JSONを読み取れませんでした。");
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidDataException(
+                "スライムの指輪設定JSONの形式が不正です。", ex);
         }
 
-        return result;
+        imported.NormalizeTargetMonsters(
+            SlimeRingEditorForm.TargetMonsterIds);
+        imported.Save();
     }
 
     private SlimeRingMonsterSettings CreateLegacySettings()
