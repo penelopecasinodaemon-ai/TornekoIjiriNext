@@ -46,10 +46,22 @@ internal sealed class ActionAutoRestoreService : IDisposable
     // 旧版の全敵共通パッチ ori s1,zero,actionId
     private const uint LegacyPatchBase = 0x34110000u;
 
-    // EE RAMの高位領域を16バイト境界で探索する
+    // 共有ランタイム領域は4KBページ単位で一度だけ確保する。
+    // スライム指輪のコード・データはページ先頭から0x510まで使用し、
+    // 種族別アクションディスパッチャーは0x510以降を使用する。
     private const uint CaveSearchStart = 0x01FF0000u;
     private const uint CaveSearchEnd = 0x01E00000u;
-    private const uint CaveSearchAlignment = 0x00000010u;
+    private const uint SharedRuntimeCaveStep = 0x1000u;
+    private const uint SharedRuntimeCaveSize = 0x1000u;
+    internal const uint SharedActionCaveOffset = 0x510u;
+    private const uint SharedRuntimeCaveMarkerOffset = 0xFFCu;
+    private const uint SharedRuntimeCaveMarker = 0x54524E43u;
+    private const uint SharedRingCaveMarkerOffset = 0x3F0u;
+    private const uint SharedRingCaveMarker = 0x534C5254u;
+    private const uint SharedActionCaveMarkerOffset = SharedActionCaveOffset + 0xA7Cu;
+    private const uint SharedActionCaveMarker = 0x534C4148u;
+    private const uint SharedActionAddressMax = CaveSearchStart + SharedActionCaveOffset;
+    private static readonly object SharedRuntimeCaveSync = new object();
     // コロマージ呪文分岐調査フック
     private const uint SpellDispatchAddress = 0x002CF600u;
     // MOD版コロマージ呪文成功判定: slt v0,v0,v1 を li v0,1 に置換
@@ -268,7 +280,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint target = (instruction & 0x03FFFFFFu) << 2;
 
         return target >= CaveSearchEnd &&
-               target <= CaveSearchStart;
+               target <= SharedActionAddressMax;
     }
 
     private static uint DecodeDispatcherAddress(uint instruction)
@@ -856,7 +868,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             uint cave = target - 0x58u;
 
-            if (target != cave + 0x58u || cave < CaveSearchEnd || cave > CaveSearchStart)
+            if (target != cave + 0x58u || cave < CaveSearchEnd || cave > SharedActionAddressMax)
             {
                 throw new InvalidOperationException(
                     "使用済み判定フックの接続先を検証できません。");
@@ -901,7 +913,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             uint cave = target - 0x90u;
 
-            if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
+            if (target != cave + 0x90u || cave < CaveSearchEnd || cave > SharedActionAddressMax)
             {
                 throw new InvalidOperationException(
                     "確率判定フックの接続先を検証できません。");
@@ -1663,70 +1675,120 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return true;
     }
 
-    private uint FindCodeCave(uint requiredSize)
+    internal static uint FindSharedRuntimeCave()
     {
-        if (requiredSize < 0x200u || requiredSize > 0x10000u)
+        lock (SharedRuntimeCaveSync)
         {
-            throw new InvalidOperationException(
-                "必要なコード領域サイズが不正です: " + requiredSize);
+            return FindSharedRuntimeCaveCore(false);
+        }
+    }
+
+    internal static uint FindOrCreateSharedRuntimeCave()
+    {
+        lock (SharedRuntimeCaveSync)
+        {
+            return FindSharedRuntimeCaveCore(true);
+        }
+    }
+
+    private static uint FindSharedRuntimeCaveCore(bool createIfMissing)
+    {
+        // 現行版の共有マーカーに加え、旧版の指輪・味方フックのマーカーも
+        // 検出して既存の4KB領域を再利用する。
+        for (uint page = CaveSearchStart;
+             page >= CaveSearchEnd;
+             page -= SharedRuntimeCaveStep)
+        {
+            uint managerMarker = ReadShared32(
+                page + SharedRuntimeCaveMarkerOffset);
+
+            if (managerMarker == SharedRuntimeCaveMarker)
+                return page;
+
+            uint ringMarker = ReadShared32(
+                page + SharedRingCaveMarkerOffset);
+
+            uint actionMarker = ReadShared32(
+                page + SharedActionCaveMarkerOffset);
+
+            if (ringMarker == SharedRingCaveMarker ||
+                actionMarker == SharedActionCaveMarker)
+            {
+                if (managerMarker != 0u)
+                {
+                    throw new InvalidOperationException(
+                        "共有ランタイム領域の管理マーカー位置が他のデータで使用されています。" +
+                        "ページ: 0x" + page.ToString("X8"));
+                }
+
+                WriteShared32(
+                    page + SharedRuntimeCaveMarkerOffset,
+                    SharedRuntimeCaveMarker);
+
+                if (ReadShared32(page + SharedRuntimeCaveMarkerOffset) !=
+                    SharedRuntimeCaveMarker)
+                {
+                    throw new InvalidOperationException(
+                        "共有ランタイム領域の管理マーカーを書き込めませんでした。");
+                }
+
+                return page;
+            }
         }
 
-        // EE RAMの検索範囲内で、16バイト境界から必要サイズ分の連続領域を探す。
-        // 旧実装は4KB境界だけを候補にしていたため、4KBページの途中にある
-        // 空き領域を見落としていた。候補を16バイト単位にし、使用中のDWORDを
-        // 見つけた場合は、そのDWORDと重なる候補をまとめて飛ばす。
-        const uint alignment = CaveSearchAlignment;
-        const uint ramEndExclusive = 0x02000000u;
+        if (!createIfMissing)
+            return 0u;
 
-        uint maxCandidate = Math.Min(
-            CaveSearchStart,
-            ramEndExclusive - requiredSize);
-
-        uint candidate = maxCandidate & ~(alignment - 1u);
-
-        while (candidate >= CaveSearchEnd)
+        // 既存機能が使っているページを避け、4KB全体がゼロのページを一つだけ確保する。
+        for (uint page = CaveSearchStart;
+             page >= CaveSearchEnd;
+             page -= SharedRuntimeCaveStep)
         {
-            bool free = true;
-            uint conflictAddress = 0u;
+            bool empty = true;
 
-            for (uint offset = 0; offset < requiredSize; offset += 4u)
+            for (uint offset = 0; offset < SharedRuntimeCaveSize; offset += 4u)
             {
-                uint address = candidate + offset;
-
-                if (_pine.Read32(address) != 0u)
+                if (ReadShared32(page + offset) != 0u)
                 {
-                    free = false;
-                    conflictAddress = address;
+                    empty = false;
                     break;
                 }
             }
 
-            if (free)
-                return candidate;
+            if (!empty)
+                continue;
 
-            // conflictAddressを含む領域は空きではない。
-            // 次の候補の末尾がconflictAddress以下になる最大の16バイト境界へ移動。
-            if (conflictAddress < requiredSize)
-                break;
+            WriteShared32(
+                page + SharedRuntimeCaveMarkerOffset,
+                SharedRuntimeCaveMarker);
 
-            uint nextCandidate =
-                (conflictAddress - requiredSize) & ~(alignment - 1u);
-
-            if (nextCandidate >= candidate)
+            if (ReadShared32(page + SharedRuntimeCaveMarkerOffset) !=
+                SharedRuntimeCaveMarker)
             {
-                if (candidate < alignment)
-                    break;
-
-                nextCandidate = candidate - alignment;
+                throw new InvalidOperationException(
+                    "共有ランタイム領域の確保マーカーを書き込めませんでした。");
             }
 
-            candidate = nextCandidate;
+            return page;
         }
 
         throw new InvalidOperationException(
-            "EE RAMに必要サイズ " + requiredSize +
-            " バイトの連続した空き領域が見つかりません。\n" +
-            "16バイト境界で検索し、使用中領域を避けて探索しました。");
+            "EE RAMに共有ランタイム領域（4KB）の空きページがありません。\n" +
+            "指輪機能と種族別特技機能が同じページを共有する方式で探索しました。");
+    }
+
+    private uint FindCodeCave(uint requiredSize)
+    {
+        if (requiredSize < 0x200u ||
+            SharedActionCaveOffset + requiredSize > SharedRuntimeCaveSize)
+        {
+            throw new InvalidOperationException(
+                "共有ページ内に種族別特技コードを配置できません。" +
+                "必要サイズ: " + requiredSize);
+        }
+
+        uint sharedPage = FindOrCreateSharedRuntimeCave();
+        return sharedPage + SharedActionCaveOffset;
     }
 
     private void WriteDispatcherCode(
@@ -1921,7 +1983,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             uint cave = (call & 0x03FFFFFFu) << 2;
 
-            if (cave < CaveSearchEnd || cave > CaveSearchStart)
+            if (cave < CaveSearchEnd || cave > SharedActionAddressMax)
             {
                 throw new InvalidOperationException(
                     "コードケーブのアドレスが範囲外です。");
