@@ -1,2285 +1,1952 @@
 PowerShell 7.7.0
-PS C:\Users\penelope> $Project = "C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort"
+PS C:\Users\penelope> $File = "C:\Users\penelope\Desktop\トルネコいじり作業環境\TornekoIjiriPort\ActionAutoRestoreService.cs"
+PS C:\Users\penelope> $Lines = Get-Content $File
 PS C:\Users\penelope>
-PS C:\Users\penelope> $Files = Get-ChildItem $Project -Recurse -Filter "*.cs"
+PS C:\Users\penelope> "`n===== コード領域の探索・管理 ====="
+
+===== コード領域の探索・管理 =====
 PS C:\Users\penelope>
-PS C:\Users\penelope> $Patterns = @(
->>     "var_644",
->>     "var_648",
->>     "Pcsx2MemoryLayout",
->>     "旧HSP",
->>     "382206",
->>     "386212"
->> )
-PS C:\Users\penelope>
-PS C:\Users\penelope> foreach ($File in $Files) {
->>     $Lines = Get-Content $File.FullName
+PS C:\Users\penelope> for ($i = 0; $i -lt $Lines.Count; $i++) {
+>>     if ($Lines[$i] -match "FindCodeCave|_codeCaveAddress|CodeCaveSearch|CodeCaveSize") {
+>>         $Start = [Math]::Max(0, $i - 12)
+>>         $End = [Math]::Min($Lines.Count - 1, $i + 55)
 >>
->>     for ($i = 0; $i -lt $Lines.Count; $i++) {
->>         foreach ($Pattern in $Patterns) {
->>             if ($Lines[$i] -match [regex]::Escape($Pattern)) {
->>                 Write-Host ""
->>                 Write-Host "===== $($File.Name) : $($i + 1)行目 [$Pattern] ====="
->>
->>                 $Start = [Math]::Max(0, $i - 8)
->>                 $End = [Math]::Min($Lines.Count - 1, $i + 12)
->>
->>                 for ($j = $Start; $j -le $End; $j++) {
->>                     Write-Host ("{0,5}: {1}" -f ($j + 1), $Lines[$j])
->>                 }
->>
->>                 break
->>             }
+>>         for ($j = $Start; $j -le $End; $j++) {
+>>             "{0,4}: {1}" -f ($j + 1), $Lines[$j]
 >>         }
+>>         ""
 >>     }
 >> }
-
-===== DungeonCommonSettingsForm.cs : 1254行目 [Pcsx2MemoryLayout] =====
- 1246:         var changes = new System.Collections.Generic.List<MemoryChange>();
- 1247:         var completed = new System.Collections.Generic.List<MemoryChange>();
- 1248:         long eeBase = 0;
- 1249:
- 1250:         try
- 1251:         {
- 1252:             _itemStatus.Text = "PCSX2のEE RAMを読み取っています...";
- 1253:
- 1254:             eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
- 1255:                 Pcsx2LiveSession.ProcessId);
- 1256:
- 1257:             if (eeBase <= 0)
- 1258:                 throw new InvalidOperationException("EE RAM基準アドレスを取得できません。");
- 1259:
- 1260:             const uint access = 0x0008 | 0x0010 | 0x0020 | 0x0400;
- 1261:
- 1262:             process = OpenProcess(
- 1263:                 access,
- 1264:                 false,
- 1265:                 Pcsx2LiveSession.ProcessId);
- 1266:
-
-===== DungeonCommonSettingsForm.cs : 1573行目 [Pcsx2MemoryLayout] =====
- 1565:
- 1566:         long eeBase = 0;
- 1567:
- 1568:         try
- 1569:         {
- 1570:             _itemStatus.Text =
- 1571:                 "PCSX2のEE RAMを確認しています...";
- 1572:
- 1573:             eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(
- 1574:                 Pcsx2LiveSession.ProcessId);
- 1575:
- 1576:             if (eeBase <= 0)
- 1577:                 throw new InvalidOperationException(
- 1578:                     "EE RAM基準アドレスを取得できません。");
- 1579:
- 1580:             const uint access =
- 1581:                 0x0008 |
- 1582:                 0x0010 |
- 1583:                 0x0020 |
- 1584:                 0x0400;
- 1585:
-
-===== DungeonCommonSettingsForm.cs : 2172行目 [Pcsx2MemoryLayout] =====
- 2164:         var changes = new System.Collections.Generic.List<MemoryChange>();
- 2165:         var completed = new System.Collections.Generic.List<MemoryChange>();
- 2166:         try
- 2167:         {
- 2168:             _itemStatus.Text =
- 2169:                 "PCSX2のメモリを確認しています...";
- 2170:
- 2171:             long eeBase =
- 2172:                 Pcsx2MemoryLayoutBuilder.GetEEmemBase(
- 2173:                     Pcsx2LiveSession.ProcessId);
- 2174:
- 2175:             if (eeBase <= 0)
- 2176:                 throw new InvalidOperationException(
- 2177:                     "PCSX2のEE RAM基準アドレスを取得できません。");
- 2178:
- 2179:             const uint access =
- 2180:                 0x0008 |
- 2181:                 0x0010 |
- 2182:                 0x0020 |
- 2183:                 0x0400;
- 2184:
-
-===== ExtendedItemNameLiveSnapshotForm.cs : 215行目 [Pcsx2MemoryLayout] =====
-  207:                 MessageBoxIcon.Error);
-  208:         }
-  209:
-  210:         SetBusy(false);
-  211:     }
-  212:
-  213:     private static Snapshot CaptureEeRam(int processId)
-  214:     {
-  215:         long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
-  216:
-  217:         if (eeBase <= 0)
-  218:             throw new InvalidOperationException("EE RAM Baseが無効です。");
-  219:
-  220:         IntPtr process = OpenProcess(
-  221:             ProcessVmRead | ProcessQueryInformation,
-  222:             false,
-  223:             processId);
-  224:
-  225:         if (process == IntPtr.Zero)
-  226:         {
-  227:             throw new Win32Exception(
-
-===== ExtendedItemNameMemoryDiagnosticsForm.cs : 124行目 [Pcsx2MemoryLayout] =====
-  116:
-  117:             IntPtr process = IntPtr.Zero;
-  118:
-  119:             try
-  120:             {
-  121:                 Append("診断開始");
-  122:                 Append("PID: " + _processId);
-  123:
-  124:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_processId);
-  125:
-  126:                 if (eeBase <= 0)
-  127:                 {
-  128:                     throw new InvalidOperationException(
-  129:                         "EE RAMのベースアドレスを取得できませんでした。");
-  130:                 }
-  131:
-  132:                 Append(
-  133:                     "EE RAM Base: 0x" +
-  134:                     eeBase.ToString("X"));
-  135:
-  136:                 process = OpenProcess(
-
-===== ExtendedItemNameMemoryWriter.cs : 183行目 [Pcsx2MemoryLayout] =====
-  175:         {
-  176:             throw new InvalidOperationException(
-  177:                 "この試験実装の対象IDは item_164 のみです。");
-  178:         }
-  179:
-  180:         byte[] replacement = CreateReplacement(name);
-  181:
-  182:         long eeBase =
-  183:             Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
-  184:
-  185:         if (eeBase <= 0)
-  186:             throw new InvalidOperationException(
-  187:                 "EE RAMの先頭アドレスが無効です。");
-  188:
-  189:         long idAddress = checked(eeBase + ItemIdOffset);
-  190:         long nameAddress = checked(eeBase + ItemNameOffset);
-  191:
-  192:         IntPtr handle = OpenProcess(
-  193:             ProcessAccess,
-  194:             false,
-  195:             processId);
-
-===== ItemDescriptionEditorForm.cs : 602行目 [Pcsx2MemoryLayout] =====
-  594:
-  595:     if (encoded.Length + 1 > originalLength)
-  596:     {
-  597:         throw new InvalidOperationException(
-  598:             "変更後の文章が元のデータ領域より長いため書き込めません。"
-  599:         );
-  600:     }
-  601:
-  602:     long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(_pid);
-  603:
-  604:     // エレファントクロウの一時コピーではなく、
-  605:     // アイテムデータ一覧内の説明文を編集する
-  606:     long targetOffset = candidate.Address;
-  607:
-  608:     if (candidate.Address == 0x01FFF1F0L)
-  609:     {
-  610:         targetOffset = 0x00107BC7L;
-  611:     }
-  612:
-  613:     long targetAddress = eeBase + targetOffset;
-  614:
-
-===== ItemDescriptionEditorForm.cs : 777行目 [Pcsx2MemoryLayout] =====
-  769:     return startReport;
-  770: }
-  771: private static byte[] ReadEeRam(Action<string> progress, int processId)
-  772:     {
-  773:         byte[] ram = new byte[EeRamSize];
-  774:
-  775:         progress("PCSX2のEE RAMアドレスを特定しています...");
-  776:
-  777:         long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
-  778:
-  779:         if (eeBase <= 0)
-  780:             throw new InvalidOperationException(
-  781:                 "PCSX2のEE RAMアドレスを取得できませんでした。");
-  782:
-  783:         System.IntPtr handle = OpenProcess(
-  784:             PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
-  785:             false,
-  786:             processId);
-  787:
-  788:         if (handle == System.IntPtr.Zero)
-  789:             throw new System.ComponentModel.Win32Exception(
-
-===== MonsterCreatorForm.cs : 222行目 [382206] =====
-  214: ".Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-  215:
-  216:     private const int MonsterRecordSize = 24;
-  217:     private const int MonsterRecordCount = 199;
-  218:     private const int RecruitModifierDataOffset = 365123;
-  219:     private const int RecoveryConstantDataOffset = 364595;
-  220:     private const int LegacyModifierArraySize = 512;
-  221:     private const int SkillVersionOffset = 355056;
-  222:     private const int SkillRangeDataOffset = 382206;
-  223:     private const int SkillAllyItemDataOffset = 386212;
-  224:     private static readonly string[] SkillMessageNames =
-  225: {
-  226:     "アルテマソード",
-  227:     "ギガデイン",
-  228:     "持っている武器を思いきり投げつけた",
-  229:     "なぎはらい",
-  230:     "ムーンサルト",
-  231:     "仲間を吐こうとした",
-  232:     "強い光を出した",
-  233:     "なめまわした",
-  234:     "はげしく攻撃",
-
-===== MonsterCreatorForm.cs : 223行目 [386212] =====
-  215:
-  216:     private const int MonsterRecordSize = 24;
-  217:     private const int MonsterRecordCount = 199;
-  218:     private const int RecruitModifierDataOffset = 365123;
-  219:     private const int RecoveryConstantDataOffset = 364595;
-  220:     private const int LegacyModifierArraySize = 512;
-  221:     private const int SkillVersionOffset = 355056;
-  222:     private const int SkillRangeDataOffset = 382206;
-  223:     private const int SkillAllyItemDataOffset = 386212;
-  224:     private static readonly string[] SkillMessageNames =
-  225: {
-  226:     "アルテマソード",
-  227:     "ギガデイン",
-  228:     "持っている武器を思いきり投げつけた",
-  229:     "なぎはらい",
-  230:     "ムーンサルト",
-  231:     "仲間を吐こうとした",
-  232:     "強い光を出した",
-  233:     "なめまわした",
-  234:     "はげしく攻撃",
-  235:     "剣にちからをこめた",
-
-===== MonsterCreatorForm.cs : 541行目 [旧HSP] =====
-  533:             Dock = DockStyle.Top,
-  534:             AutoSize = true,
-  535:             ForeColor = Color.DimGray,
-  536:             Text =
-  537:                 "旧版24バイト基本レコードの確認済み項目を編集します。\r\n" +
-  538:                 "HP(+0)、攻撃力(+2)、防御力(+4)、系統フラグ(+6)、特技系統フラグ(+7)。\r\n" +
-  539:                 "移動速度(+9)、ドロップ率(+10)、最大レベル(+11)、経験値(+12)、ドロップアイテム(+16)、睡眠率(+18)、成長タイプ(+20)。\r\n" +
-  540:                 "特技使用率(+22)はAのみを書き込みます。+23のBは変更しません。\r\n" +
-  541:                 "勧誘修正値・回復定数は旧HSPの独立配列（各256件）を編集します。\r\n" +
-  542:                 "特技範囲・特技メッセージ・投擲アイテム設定はバージョン5拡張領域を編集します。\r\n" +
-  543:                 "PCSX2接続中は、モンスター選択時にゲーム内の現在値を読み込みます。数値や選択肢を変更すると、その場でゲームメモリへ即時反映します。\r\n" +
-  544:                 "未接続時はBIN作業データを編集し、「再適用」で反映できます。"
-  545:         };
-  546:
-  547:         var content = new Panel
-  548:         {
-  549:             Dock = DockStyle.Fill,
-  550:             AutoScroll = true
-  551:         };
-  552:         content.Controls.Add(explanation);
-  553:         content.Controls.Add(fieldGrid);
-
-===== MonsterCreatorForm.cs : 1677行目 [旧HSP] =====
- 1669:             return false;
- 1670:
- 1671:         if (bin.Length < BinFileService.ExpectedSize)
- 1672:         {
- 1673:             reason = "BINサイズが524,288 bytes未満のため編集できません。";
- 1674:             return false;
- 1675:         }
- 1676:
- 1677:         // 旧HSP label_073:
- 1678:         // var_142 = peek(var_134, 3)
- 1679:         // var_143 = var_142 * 0x01000000
- 1680:         // var_149 = DWORD(var_134 + 16) + var_143
- 1681:         uint rawPointer = BinFileService.ReadUInt32(bin, 16);
- 1682:         uint correction = (uint)bin[3] << 24;
- 1683:         uint pointer = unchecked(rawPointer + correction);
- 1684:
- 1685:         // 旧版のEEアドレス 0x20180000 を物理RAM側へ正規化。
- 1686:         uint physicalAddress = pointer & EeAddressMask;
- 1687:
- 1688:         if (physicalAddress < EeMemoryBaseAddress)
- 1689:         {
-
-===== MonsterCreatorForm.cs : 1774行目 [旧HSP] =====
- 1766:     private static bool TryResolveSkillExtension(byte[]? bin)
- 1767:     {
- 1768:         if (bin == null)
- 1769:             return false;
- 1770:
- 1771:         if (bin.Length < SkillExtensionRequiredEnd)
- 1772:             return false;
- 1773:
- 1774:         // 旧HSPの保存処理では、355056 byte に拡張バージョン5を記録する。
- 1775:         return bin[SkillVersionOffset] == 5;
- 1776:     }
- 1777:
- 1778:     private void SetEditorEnabled(bool enabled)
- 1779:     {
- 1780:         _hp.Enabled = enabled;
- 1781:         _attack.Enabled = enabled;
- 1782:         _defense.Enabled = enabled;
- 1783:         _experience.Enabled = enabled;
- 1784:         _maxLevel.Enabled = enabled;
- 1785:         _growthType.Enabled = enabled;
- 1786:         _moveSpeed.Enabled = enabled;
-
-===== MonsterCreatorForm.cs : 1953行目 [旧HSP] =====
- 1945:                     {
- 1946:                         requested.Add(Tuple.Create(liveRangeOffset, 20, "クリエイター管理・敵側特技データ"));
- 1947:                     }
- 1948:                     if (!ringOverlayActive)
- 1949:                         requested.Add(Tuple.Create(liveAllyOffset, 8, "仲間投げアイテムデータ"));
- 1950:                 }
- 1951:                 else
- 1952:                 {
- 1953:                     // 旧HSP var_411 = ReadProcessMemory(var_646 + 20 * var_542, 2)
- 1954:                     requested.Add(Tuple.Create(liveRangeOffset + 18, 2, "var_411 敵投擲アイテム"));
- 1955:                 }
- 1956:
- 1957:                 var liveData = Pcsx2BinApplier.ReadRanges(
- 1958:                     Pcsx2LiveSession.ProcessId,
- 1959:                     Pcsx2LiveSession.MemoryLayout,
- 1960:                     requested);
- 1961:
- 1962:                 foreach (var item in liveData)
- 1963:                     Array.Copy(item.Item2, 0, _bin, item.Item1, item.Item2.Length);
- 1964:
- 1965:                 _status.Text = MonsterNames[id] + " の現在値をPCSX2から読み込みました。";
-
-===== MonsterSkillData.cs : 365行目 [旧HSP] =====
-  357:         "お墓",
-  358:         "鉄球",
-  359:         "氷の息",
-  360:         "何か352",
-  361:         "モンスターの跡",
-  362:         "凍える息",
-  363:     };
-  364:
-  365:     // 旧HSP var_387: ランダムが先頭、その後に354種類
-  366:     internal static readonly string[] DropItemChoices =
-  367:         new[] { "落アイテム ランダム" }.Concat(ItemNames).ToArray();
-  368:
-  369:     // 投擲アイテムはゲーム内部の0始まりIDに合わせる。先頭の空欄は追加しない。
-  370:     internal static readonly string[] ThrowItemChoices =
-  371:         new[] { "なし" }.Concat(ItemNames).ToArray();
-  372: }
-  373:
-
-===== Program.cs : 223行目 [旧HSP] =====
-  215:             score -= 30;
-  216:
-  217:         return score;
-  218:     }
-  219: }
-  220:
-  221:
-  222: // =========================================================
-  223: // 旧HSP互換 PCSX2接続・メモリ検索基盤
-  224: // 現段階は読み取り専用
-  225: // =========================================================
-  226:
-  227: internal sealed class Pcsx2ScanResult
-  228: {
-  229:     public int ProcessId { get; set; }
-  230:     public string ProcessName { get; set; } = "";
-  231:     public long FirstSignatureAddress { get; set; }
-  232:     public long SecondSignatureAddress { get; set; }
-  233:     public long ScannedBytes { get; set; }
-  234:     public string Message { get; set; } = "";
-  235: }
-
-===== Program.cs : 483行目 [旧HSP] =====
-  475:             long[] fragmentCounts = new long[4];
-  476:
-  477:             bool ScanRun(ulong runStart, ulong runEnd)
-  478:             {
-  479:                 if (runEnd <= runStart)
-  480:                     return false;
-  481:
-  482:                 report?.Invoke(
-  483:                     "旧HSP互換の連続領域を検索中: 0x" +
-  484:                     runStart.ToString("X") + " - 0x" + runEnd.ToString("X"));
-  485:
-  486:
-  487:                 ulong offset = 0;
-  488:                 int carry = 0;
-  489:                 int maxPatternLength = System.Math.Max(
-  490:                     SignatureA.Length, SignatureB.Length);
-  491:                 byte[] buffer = new byte[CHUNK_SIZE + 32];
-  492:
-  493:                 while (offset < runEnd - runStart)
-  494:                 {
-  495:                     int request = (int)System.Math.Min(
-
-===== Program.cs : 763行目 [旧HSP] =====
-  755:         {
-  756:             CloseHandle(handle);
-  757:         }
-  758:     }
-  759:
-  760: // =========================================================
-  761: }
-  762:
-  763: // 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
-  764: // 読み取り専用
-  765: // =========================================================
-  766:
-  767: internal sealed class Pcsx2MemoryLayout
-  768: {
-  769:     public long SignatureA { get; set; }
-  770:     public long SignatureB { get; set; }
-  771:
-  772:     public uint Correction { get; set; }
-  773:
-  774:     public uint[] PointerValues { get; set; } =
-  775:         new uint[5];
-
-===== Program.cs : 767行目 [Pcsx2MemoryLayout] =====
-  759:
-  760: // =========================================================
-  761: }
-  762:
-  763: // 旧HSP互換 ポインタ計算・メモリ領域アドレス定義
-  764: // 読み取り専用
-  765: // =========================================================
-  766:
-  767: internal sealed class Pcsx2MemoryLayout
-  768: {
-  769:     public long SignatureA { get; set; }
-  770:     public long SignatureB { get; set; }
-  771:
-  772:     public uint Correction { get; set; }
-  773:
-  774:     public uint[] PointerValues { get; set; } =
-  775:         new uint[5];
-  776:
-  777:     public System.Collections.Generic.Dictionary<string, long>
-  778:         Addresses { get; set; } =
-  779:         new System.Collections.Generic.Dictionary<string, long>();
-
-===== Program.cs : 797行目 [旧HSP] =====
-  789:         for (int i = 0; i < PointerValues.Length; i++)
-  790:         {
-  791:             lines.Add(
-  792:                 "ポインタ[" + i + "]: 0x" +
-  793:                 PointerValues[i].ToString("X8"));
-  794:         }
-  795:
-  796:         lines.Add("");
-  797:         lines.Add("旧HSP由来の主要アドレス:");
-  798:
-  799:         foreach (var pair in Addresses)
-  800:         {
-  801:             lines.Add(
-  802:                 pair.Key + ": 0x" +
-  803:                 pair.Value.ToString("X"));
-  804:         }
-  805:
-  806:         return string.Join(
-  807:             System.Environment.NewLine,
-  808:             lines);
-  809:     }
-
-===== Program.cs : 812行目 [Pcsx2MemoryLayout] =====
-  804:         }
-  805:
-  806:         return string.Join(
-  807:             System.Environment.NewLine,
-  808:             lines);
-  809:     }
-  810: }
-  811:
-  812: internal static class Pcsx2MemoryLayoutBuilder
-  813: {
-  814:     private const uint PROCESS_VM_READ = 0x0010;
-  815:     private const uint PROCESS_QUERY_INFORMATION = 0x0400;
-  816:
-  817:     [System.Runtime.InteropServices.DllImport(
-  818:         "kernel32.dll", SetLastError = true)]
-  819:     private static extern System.IntPtr OpenProcess(
-  820:         uint access,
-  821:         bool inherit,
-  822:         int processId);
-  823:
-  824:     [System.Runtime.InteropServices.DllImport(
-
-===== Program.cs : 1047行目 [Pcsx2MemoryLayout] =====
- 1039:             CloseHandle(handle);
- 1040:         }
- 1041:     }
- 1042:     private static long AddOffset(long address, long offset)
- 1043:     {
- 1044:         return checked(address + offset);
- 1045:     }
- 1046:
- 1047:     public static Pcsx2MemoryLayout Build(
- 1048:         int processId,
- 1049:         long signatureA,
- 1050:         long signatureB)
- 1051:     {
- 1052:         var layout = new Pcsx2MemoryLayout();
- 1053:
- 1054:         layout.SignatureA = signatureA;
- 1055:         layout.SignatureB = signatureB;
- 1056:
- 1057:         System.IntPtr handle = OpenProcess(
- 1058:             PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
- 1059:             false,
-
-===== Program.cs : 1052行目 [Pcsx2MemoryLayout] =====
- 1044:         return checked(address + offset);
- 1045:     }
- 1046:
- 1047:     public static Pcsx2MemoryLayout Build(
- 1048:         int processId,
- 1049:         long signatureA,
- 1050:         long signatureB)
- 1051:     {
- 1052:         var layout = new Pcsx2MemoryLayout();
- 1053:
- 1054:         layout.SignatureA = signatureA;
- 1055:         layout.SignatureB = signatureB;
- 1056:
- 1057:         System.IntPtr handle = OpenProcess(
- 1058:             PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
- 1059:             false,
- 1060:             processId);
- 1061:
- 1062:         if (handle == System.IntPtr.Zero)
- 1063:         {
- 1064:             throw new System.ComponentModel.Win32Exception(
-
-===== Program.cs : 1071行目 [旧HSP] =====
- 1063:         {
- 1064:             throw new System.ComponentModel.Win32Exception(
- 1065:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
- 1066:                 "ポインタ計算用にPCSX2を開けません。");
- 1067:         }
- 1068:
- 1069:         try
- 1070:         {
- 1071:             // 旧HSP:
- 1072:             // var_142 = peek(var_134, 3)
- 1073:             // var_143 = var_142 * 16777216
- 1074:             byte highByte = Read(handle, signatureA + 3, 1)[0];
- 1075:             uint correction = (uint)highByte << 24;
- 1076:
- 1077:             layout.Correction = correction;
- 1078:
- 1079:             // 旧HSP:
- 1080:             // var_144 ～ var_149
- 1081:             // 4バイト値を5個読み、同じ補正値を加算する。
- 1082:             for (int i = 0; i < 5; i++)
- 1083:             {
-
-===== Program.cs : 1079行目 [旧HSP] =====
- 1071:             // 旧HSP:
- 1072:             // var_142 = peek(var_134, 3)
- 1073:             // var_143 = var_142 * 16777216
- 1074:             byte highByte = Read(handle, signatureA + 3, 1)[0];
- 1075:             uint correction = (uint)highByte << 24;
- 1076:
- 1077:             layout.Correction = correction;
- 1078:
- 1079:             // 旧HSP:
- 1080:             // var_144 ～ var_149
- 1081:             // 4バイト値を5個読み、同じ補正値を加算する。
- 1082:             for (int i = 0; i < 5; i++)
- 1083:             {
- 1084:                 uint raw = ReadUInt32(
- 1085:                     handle,
- 1086:                     signatureA + (i * 4));
- 1087:
- 1088:                 layout.PointerValues[i] =
- 1089:                     unchecked(raw + correction);
- 1090:             }
- 1091:
-
-===== Program.cs : 1092行目 [旧HSP] =====
- 1084:                 uint raw = ReadUInt32(
- 1085:                     handle,
- 1086:                     signatureA + (i * 4));
- 1087:
- 1088:                 layout.PointerValues[i] =
- 1089:                     unchecked(raw + correction);
- 1090:             }
- 1091:
- 1092:             // 旧HSP label_073 のアドレス式を忠実に反映。
- 1093: // var_134 = 第1識別パターンのアドレス
- 1094: // var_136 = 第2識別パターンのアドレス
- 1095: long a = signatureA;
- 1096: long b = signatureB;
- 1097:
- 1098: var map = layout.Addresses;
- 1099:
- 1100: // TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
- 1101: // 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
- 1102: // EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
- 1103: long eeMemBaseForFixedAddresses =
- 1104:     ResolveEEmemBase(processId, handle);
-
-===== Program.cs : 1101行目 [旧HSP] =====
- 1093: // var_134 = 第1識別パターンのアドレス
- 1094: // var_136 = 第2識別パターンのアドレス
- 1095: long a = signatureA;
- 1096: long b = signatureB;
- 1097:
- 1098: var map = layout.Addresses;
- 1099:
- 1100: // TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
- 1101: // 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
- 1102: // EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
- 1103: long eeMemBaseForFixedAddresses =
- 1104:     ResolveEEmemBase(processId, handle);
- 1105:
- 1106: // PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
- 1107: // 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
- 1108:
- 1109: // 第2識別アドレスを基準にする領域
- 1110: map["var_150"] = AddOffset(b, 87592);
- 1111: map["var_152"] = AddOffset(b, 89224);
- 1112: map["var_154"] = AddOffset(b, 16);
- 1113: map["var_156"] = AddOffset(b, 23797200);
-
-===== Program.cs : 1107行目 [旧HSP] =====
- 1099:
- 1100: // TNI_EEMEM_FIXED_ADDRESS_PATCH_20261114
- 1101: // 64bit版PCSX2では旧HSPのCorrectionをホストアドレスとして使わず、
- 1102: // EEmemエクスポートから取得した実際のEEメモリ先頭を使用する。
- 1103: long eeMemBaseForFixedAddresses =
- 1104:     ResolveEEmemBase(processId, handle);
- 1105:
- 1106: // PCSX2 v2.8.2の実際のEEメモリ先頭アドレスを取得する。
- 1107: // 旧HSPと同じ補正値を使用する。var_143 = peek(var_134, 3) * 16777216
- 1108:
- 1109: // 第2識別アドレスを基準にする領域
- 1110: map["var_150"] = AddOffset(b, 87592);
- 1111: map["var_152"] = AddOffset(b, 89224);
- 1112: map["var_154"] = AddOffset(b, 16);
- 1113: map["var_156"] = AddOffset(b, 23797200);
- 1114: map["var_170"] = AddOffset(b, 232804);
- 1115:
- 1116: // サイズ・定数。アドレスではない。
- 1117: map["var_151_size"] = 32 * 30;
- 1118: map["var_153_size"] = 64;
- 1119: map["var_155_size"] = 144;
-
-===== Program.cs : 1139行目 [旧HSP] =====
- 1131: map["var_160"] = AddOffset(a, -297327);
- 1132: map["var_162"] = AddOffset(a, -297238);
- 1133: map["var_164"] = AddOffset(a, 1371800);
- 1134:
- 1135: // 補正値を基準にする領域
- 1136: map["var_166"] = AddOffset(eeMemBaseForFixedAddresses, 9384904L);
- 1137: map["var_168"] = AddOffset(eeMemBaseForFixedAddresses, 9385504L);
- 1138:
- 1139: // 旧HSPの固定アドレス差分。
- 1140: // すべて var_134 + (固定値 - 538443776)
- 1141: map["var_172"] = AddOffset(a, 543012008L - 538443776L);
- 1142: map["var_173"] = AddOffset(a, 543012010L - 538443776L);
- 1143: map["var_174"] = AddOffset(a, 543012012L - 538443776L);
- 1144: map["var_175"] = AddOffset(a, 543012014L - 538443776L);
- 1145: map["var_176"] = AddOffset(a, 543012016L - 538443776L);
- 1146: map["var_177"] = AddOffset(a, 543012020L - 538443776L);
- 1147:
- 1148: map["var_178"] = AddOffset(a, 543011948L - 538443776L);
- 1149: map["var_179"] = AddOffset(a, 543011950L - 538443776L);
- 1150: map["var_180"] = AddOffset(a, 543011952L - 538443776L);
- 1151: map["var_181"] = AddOffset(a, 543011954L - 538443776L);
-
-===== Program.cs : 1242行目 [var_644] =====
- 1234: map["var_247_offset"] = 919588;
- 1235: map["var_248_offset"] = 919585;
- 1236: map["var_249_offset"] = 931848;
- 1237: map["var_250_offset"] = 931852;
- 1238: map["var_251_offset"] = 931856;
- 1239: map["var_252_offset"] = 931860;
- 1240: map["var_253_offset"] = 1647976;
- 1241:
- 1242: map["var_644"] = AddOffset(
- 1243:     a,
- 1244:     546379562L + 6L - 538443776L);
- 1245:
- 1246: map["var_761_size"] =
- 1247:     546383552L - 546379562L;
- 1248:
- 1249: map["var_648"] = AddOffset(
- 1250:     a,
- 1251:     546392048L - 538443776L);
- 1252:
- 1253: map["var_762_size"] =
- 1254:     546393648L - 546392048L;
-
-===== Program.cs : 1249行目 [var_648] =====
- 1241:
- 1242: map["var_644"] = AddOffset(
- 1243:     a,
- 1244:     546379562L + 6L - 538443776L);
- 1245:
- 1246: map["var_761_size"] =
- 1247:     546383552L - 546379562L;
- 1248:
- 1249: map["var_648"] = AddOffset(
- 1250:     a,
- 1251:     546392048L - 538443776L);
- 1252:
- 1253: map["var_762_size"] =
- 1254:     546393648L - 546392048L;
- 1255:
- 1256: map["var_254"] = AddOffset(a, 538156288L - 538443776L);
- 1257: map["var_255_difference"] =
- 1258:     (538162816L - 538443776L) -
- 1259:     (538156288L - 538443776L);
- 1260: map["var_256_size"] = 112;
- 1261:
-
-===== Program.cs : 1272行目 [旧HSP] =====
- 1264:         finally
- 1265:         {
- 1266:             CloseHandle(handle);
- 1267:         }
- 1268:     }
- 1269: }
- 1270:
- 1271: // =========================================================
- 1272: // PCSX2メモリから旧HSP互換BINを構築する。
- 1273: // 読み取り専用。ゲームメモリへの書き込みは行わない。
- 1274: // =========================================================
- 1275:
- 1276: internal static class Pcsx2VanillaBinReader
- 1277: {
- 1278:     private const int BaseSize = 524288;
- 1279:     private const int VersionOffset = 355056;
- 1280:     private const int ExtensionOffset = 355072;
- 1281:
- 1282:     private const uint PROCESS_VM_READ = 0x0010;
- 1283:     private const uint PROCESS_QUERY_INFORMATION = 0x0400;
- 1284:
-
-===== Program.cs : 1356行目 [Pcsx2MemoryLayout] =====
- 1348:
- 1349:             throw new System.InvalidOperationException(detail);
- 1350:         }
- 1351:
- 1352:         return buffer;
- 1353:     }
- 1354:
- 1355:     private static long Address(
- 1356:         Pcsx2MemoryLayout layout,
- 1357:         string key)
- 1358:     {
- 1359:         if (!layout.Addresses.TryGetValue(key, out long value))
- 1360:             throw new System.InvalidOperationException(
- 1361:                 "メモリアドレスが定義されていません: " + key);
- 1362:
- 1363:         return value;
- 1364:     }
- 1365:
- 1366:     private static int Size(
- 1367:         Pcsx2MemoryLayout layout,
- 1368:         string key)
-
-===== Program.cs : 1367行目 [Pcsx2MemoryLayout] =====
- 1359:         if (!layout.Addresses.TryGetValue(key, out long value))
- 1360:             throw new System.InvalidOperationException(
- 1361:                 "メモリアドレスが定義されていません: " + key);
- 1362:
- 1363:         return value;
- 1364:     }
- 1365:
- 1366:     private static int Size(
- 1367:         Pcsx2MemoryLayout layout,
- 1368:         string key)
- 1369:     {
- 1370:         long value = Address(layout, key);
- 1371:
- 1372:         if (value <= 0 || value > 1024 * 1024)
- 1373:             throw new System.InvalidOperationException(
- 1374:                 "メモリ領域サイズが不正です: " + key);
- 1375:
- 1376:         return (int)value;
- 1377:     }
- 1378:
- 1379:     private static void Append(
-
-===== Program.cs : 1405行目 [旧HSP] =====
- 1397:
- 1398:         System.Buffer.BlockCopy(
- 1399:             part,
- 1400:             0,
- 1401:             bin,
- 1402:             destination,
- 1403:             length);
- 1404:
- 1405:         // 旧HSP版のmemcpy後の領域間隔。
- 1406:         destination = checked(destination + length + 16);
- 1407:     }
- 1408:
- 1409:     private static void AppendFlag(
- 1410:         byte[] bin,
- 1411:         ref int destination,
- 1412:         byte value)
- 1413:     {
- 1414:         if (destination < 0 || destination >= bin.Length)
- 1415:             throw new System.InvalidOperationException(
- 1416:                 "BINフラグ位置が範囲外です。");
- 1417:
-
-===== Program.cs : 1424行目 [Pcsx2MemoryLayout] =====
- 1416:                 "BINフラグ位置が範囲外です。");
- 1417:
- 1418:         bin[destination] = value;
- 1419:         destination = checked(destination + 17);
- 1420:     }
- 1421:
- 1422:     public static byte[] Capture(
- 1423:         int processId,
- 1424:         Pcsx2MemoryLayout layout)
- 1425:     {
- 1426:         if (layout == null)
- 1427:             throw new System.ArgumentNullException(nameof(layout));
- 1428:
- 1429:         System.IntPtr handle = OpenProcess(
- 1430:             PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
- 1431:             false,
- 1432:             processId);
- 1433:
- 1434:         if (handle == System.IntPtr.Zero)
- 1435:         {
- 1436:             throw new System.ComponentModel.Win32Exception(
-
-===== Program.cs : 1443行目 [旧HSP] =====
- 1435:         {
- 1436:             throw new System.ComponentModel.Win32Exception(
- 1437:                 System.Runtime.InteropServices.Marshal.GetLastWin32Error(),
- 1438:                 "BIN取得用にPCSX2を開けません。");
- 1439:         }
- 1440:
- 1441:         try
- 1442:         {
- 1443:             // 旧HSP:
- 1444:             // ReadProcessMemory var_130, var_134,
- 1445:             // varptr(var_226), 524288, var_145
- 1446:             byte[] bin = Read(
- 1447:                 handle,
- 1448:                 layout.SignatureA,
- 1449:                 BaseSize);
- 1450:
- 1451:             // 旧HSP版のBIN出力はバージョン5として構築する。
- 1452:             bin[VersionOffset] = 5;
- 1453:
- 1454:             int destination = ExtensionOffset;
- 1455:
-
-===== Program.cs : 1451行目 [旧HSP] =====
- 1443:             // 旧HSP:
- 1444:             // ReadProcessMemory var_130, var_134,
- 1445:             // varptr(var_226), 524288, var_145
- 1446:             byte[] bin = Read(
- 1447:                 handle,
- 1448:                 layout.SignatureA,
- 1449:                 BaseSize);
- 1450:
- 1451:             // 旧HSP版のBIN出力はバージョン5として構築する。
- 1452:             bin[VersionOffset] = 5;
- 1453:
- 1454:             int destination = ExtensionOffset;
- 1455:
- 1456:             // 旧HSP label_155 の読み込み順序を維持。
- 1457:             Append(handle, bin, ref destination,
- 1458:                 Address(layout, "var_150"),
- 1459:                 Size(layout, "var_151_size"));
- 1460:
- 1461:             Append(handle, bin, ref destination,
- 1462:                 Address(layout, "var_152"),
- 1463:                 Size(layout, "var_153_size"));
-
-===== Program.cs : 1456行目 [旧HSP] =====
- 1448:                 layout.SignatureA,
- 1449:                 BaseSize);
- 1450:
- 1451:             // 旧HSP版のBIN出力はバージョン5として構築する。
- 1452:             bin[VersionOffset] = 5;
- 1453:
- 1454:             int destination = ExtensionOffset;
- 1455:
- 1456:             // 旧HSP label_155 の読み込み順序を維持。
- 1457:             Append(handle, bin, ref destination,
- 1458:                 Address(layout, "var_150"),
- 1459:                 Size(layout, "var_151_size"));
- 1460:
- 1461:             Append(handle, bin, ref destination,
- 1462:                 Address(layout, "var_152"),
- 1463:                 Size(layout, "var_153_size"));
- 1464:
- 1465:             Append(handle, bin, ref destination,
- 1466:                 Address(layout, "var_154"),
- 1467:                 Size(layout, "var_155_size"));
- 1468:
-
-===== Program.cs : 1510行目 [旧HSP] =====
- 1502: Append(handle, bin, ref destination,
- 1503:                 diagnosticVar166,
- 1504:                 Size(layout, "var_167_size"));
- 1505:
- 1506:             Append(handle, bin, ref destination,
- 1507:                 Address(layout, "var_168"),
- 1508:                 Size(layout, "var_169_size"));
- 1509:
- 1510:             // 旧HSPのチェックボックス値。
- 1511:             // 新しいC#画面では初期値を0として扱う。
- 1512:             AppendFlag(bin, ref destination, 0);
- 1513:
- 1514:             Append(handle, bin, ref destination,
- 1515:                 Address(layout, "var_170"),
- 1516:                 Size(layout, "var_171_size"));
- 1517:
- 1518:             Append(handle, bin, ref destination,
- 1519:                 Address(layout, "var_220"),
- 1520:                 Size(layout, "var_221_constant"));
- 1521:
- 1522:             Append(handle, bin, ref destination,
-
-===== Program.cs : 1530行目 [var_644] =====
- 1522:             Append(handle, bin, ref destination,
- 1523:                 Address(layout, "var_222"),
- 1524:                 Size(layout, "var_223_size"));
- 1525:
- 1526:             AppendFlag(bin, ref destination, 0);
- 1527:
- 1528:             // バージョン5の追加領域。
- 1529:             Append(handle, bin, ref destination,
- 1530:                 checked(Address(layout, "var_644") - 6),
- 1531:                 Size(layout, "var_761_size"));
- 1532:
- 1533:             Append(handle, bin, ref destination,
- 1534:                 Address(layout, "var_648"),
- 1535:                 Size(layout, "var_762_size"));
- 1536:
- 1537:             Append(handle, bin, ref destination,
- 1538:                 Address(layout, "var_254"),
- 1539:                 Size(layout, "var_255_difference"));
- 1540:
- 1541:             if (destination > BaseSize)
- 1542:             {
-
-===== Program.cs : 1534行目 [var_648] =====
- 1526:             AppendFlag(bin, ref destination, 0);
- 1527:
- 1528:             // バージョン5の追加領域。
- 1529:             Append(handle, bin, ref destination,
- 1530:                 checked(Address(layout, "var_644") - 6),
- 1531:                 Size(layout, "var_761_size"));
- 1532:
- 1533:             Append(handle, bin, ref destination,
- 1534:                 Address(layout, "var_648"),
- 1535:                 Size(layout, "var_762_size"));
- 1536:
- 1537:             Append(handle, bin, ref destination,
- 1538:                 Address(layout, "var_254"),
- 1539:                 Size(layout, "var_255_difference"));
- 1540:
- 1541:             if (destination > BaseSize)
- 1542:             {
- 1543:                 throw new System.InvalidOperationException(
- 1544:                     "旧HSP互換BINの構築位置が524288 bytesを超えました。");
- 1545:             }
- 1546:
-
-===== Program.cs : 1544行目 [旧HSP] =====
- 1536:
- 1537:             Append(handle, bin, ref destination,
- 1538:                 Address(layout, "var_254"),
- 1539:                 Size(layout, "var_255_difference"));
- 1540:
- 1541:             if (destination > BaseSize)
- 1542:             {
- 1543:                 throw new System.InvalidOperationException(
- 1544:                     "旧HSP互換BINの構築位置が524288 bytesを超えました。");
- 1545:             }
- 1546:
- 1547:             if (bin.Length != BaseSize)
- 1548:                 throw new System.InvalidOperationException(
- 1549:                     "BINサイズが524288 bytesではありません。");
- 1550:
- 1551:             return bin;
- 1552:         }
- 1553:         finally
- 1554:         {
- 1555:             CloseHandle(handle);
- 1556:         }
-
-===== Program.cs : 1571行目 [Pcsx2MemoryLayout] =====
- 1563: // ============================================================
- 1564:
- 1565: internal static class Pcsx2LiveSession
- 1566: {
- 1567:     public static bool IsConnected { get; private set; }
- 1568:     public static bool VanillaDataLoaded { get; private set; }
- 1569:     public static int ProcessId { get; private set; }
- 1570:     public static byte[]? VanillaBin { get; private set; }
- 1571:     public static Pcsx2MemoryLayout? MemoryLayout { get; private set; }
- 1572:
- 1573:     public static event System.Action? StateChanged;
- 1574:
- 1575:     public static void SetConnected(int processId)
- 1576:     {
- 1577:         IsConnected = true;
- 1578:         ProcessId = processId;
- 1579:
- 1580:         // 新しい接続では新しい取得を待つ。
- 1581:         VanillaDataLoaded = false;
- 1582:         VanillaBin = null;
- 1583:         MemoryLayout = null;
-
-===== Program.cs : 1600行目 [Pcsx2MemoryLayout] =====
- 1592:                 "取得BINは524288 bytesである必要があります。");
- 1593:
- 1594:         VanillaBin = (byte[])data.Clone();
- 1595:         VanillaDataLoaded = true;
- 1596:
- 1597:         StateChanged?.Invoke();
- 1598:     }
- 1599:
- 1600:     public static void SetMemoryLayout(Pcsx2MemoryLayout layout)
- 1601:     {
- 1602:         if (layout == null)
- 1603:             throw new System.ArgumentNullException(nameof(layout));
- 1604:
- 1605:         MemoryLayout = layout;
- 1606:         StateChanged?.Invoke();
- 1607:     }
- 1608:     public static void SetDisconnected()
- 1609:     {
- 1610:         IsConnected = false;
- 1611:         ProcessId = 0;
- 1612:         MemoryLayout = null;
-
-===== Program.cs : 1782行目 [旧HSP] =====
- 1774:         int processId = _connectedProcessId;
- 1775:
- 1776:         memoryScanButton.Enabled = false;
- 1777:         scanButton.Enabled = false;
- 1778:         refreshButton.Enabled = false;
- 1779:         statusLabel.Text = "メモリ検索中...";
- 1780:
- 1781:         Log("========================================");
- 1782:         Log("旧HSP互換シグネチャ検索を開始します。");
- 1783:         Log("接続済みPID: " + processId);
- 1784:         Log("この処理はメモリ全体を検索します。接続処理とは別です。");
- 1785:
- 1786:         try
- 1787:         {
- 1788:             var result = await System.Threading.Tasks.Task.Run(
- 1789:                 () => Pcsx2MemoryScanner.Scan(
- 1790:                     processId,
- 1791:                     message => Log(message)));
- 1792:
- 1793:             Log(result.Message);
- 1794:             Log("検索済みバイト数: " + result.ScannedBytes.ToString("N0"));
-
-===== Program.cs : 1808行目 [旧HSP] =====
- 1800:                     "必要なシグネチャが見つかりませんでした。PCSX2とゲームの状態を確認してください。");
- 1801:             }
- 1802:
- 1803:             Log("シグネチャA: 0x" +
- 1804:                 result.FirstSignatureAddress.ToString("X"));
- 1805:             Log("シグネチャB: 0x" +
- 1806:                 result.SecondSignatureAddress.ToString("X"));
- 1807:
- 1808:             Log("旧HSP互換ポインタ計算を開始します。");
- 1809:
- 1810:             var layout = await System.Threading.Tasks.Task.Run(
- 1811:                 () => Pcsx2MemoryLayoutBuilder.Build(
- 1812:                     processId,
- 1813:                     result.FirstSignatureAddress,
- 1814:                     result.SecondSignatureAddress));
- 1815:
- 1816:             Log("旧HSP互換アドレス計算が完了しました。");
- 1817:             Log(layout.Describe());
- 1818:
- 1819:             Log("旧HSP互換の524288 bytes BINを構築します。");
- 1820:
-
-===== Program.cs : 1811行目 [Pcsx2MemoryLayout] =====
- 1803:             Log("シグネチャA: 0x" +
- 1804:                 result.FirstSignatureAddress.ToString("X"));
- 1805:             Log("シグネチャB: 0x" +
- 1806:                 result.SecondSignatureAddress.ToString("X"));
- 1807:
- 1808:             Log("旧HSP互換ポインタ計算を開始します。");
- 1809:
- 1810:             var layout = await System.Threading.Tasks.Task.Run(
- 1811:                 () => Pcsx2MemoryLayoutBuilder.Build(
- 1812:                     processId,
- 1813:                     result.FirstSignatureAddress,
- 1814:                     result.SecondSignatureAddress));
- 1815:
- 1816:             Log("旧HSP互換アドレス計算が完了しました。");
- 1817:             Log(layout.Describe());
- 1818:
- 1819:             Log("旧HSP互換の524288 bytes BINを構築します。");
- 1820:
- 1821:             byte[] vanillaBin =
- 1822:                 await System.Threading.Tasks.Task.Run(
- 1823:                     () => Pcsx2VanillaBinReader.Capture(
-
-===== Program.cs : 1816行目 [旧HSP] =====
- 1808:             Log("旧HSP互換ポインタ計算を開始します。");
- 1809:
- 1810:             var layout = await System.Threading.Tasks.Task.Run(
- 1811:                 () => Pcsx2MemoryLayoutBuilder.Build(
- 1812:                     processId,
- 1813:                     result.FirstSignatureAddress,
- 1814:                     result.SecondSignatureAddress));
- 1815:
- 1816:             Log("旧HSP互換アドレス計算が完了しました。");
- 1817:             Log(layout.Describe());
- 1818:
- 1819:             Log("旧HSP互換の524288 bytes BINを構築します。");
- 1820:
- 1821:             byte[] vanillaBin =
- 1822:                 await System.Threading.Tasks.Task.Run(
- 1823:                     () => Pcsx2VanillaBinReader.Capture(
- 1824:                         processId,
- 1825:                         layout));
- 1826:
- 1827:             Pcsx2LiveSession.SetVanillaData(vanillaBin);
- 1828:
-
-===== Program.cs : 1819行目 [旧HSP] =====
- 1811:                 () => Pcsx2MemoryLayoutBuilder.Build(
- 1812:                     processId,
- 1813:                     result.FirstSignatureAddress,
- 1814:                     result.SecondSignatureAddress));
- 1815:
- 1816:             Log("旧HSP互換アドレス計算が完了しました。");
- 1817:             Log(layout.Describe());
- 1818:
- 1819:             Log("旧HSP互換の524288 bytes BINを構築します。");
- 1820:
- 1821:             byte[] vanillaBin =
- 1822:                 await System.Threading.Tasks.Task.Run(
- 1823:                     () => Pcsx2VanillaBinReader.Capture(
- 1824:                         processId,
- 1825:                         layout));
- 1826:
- 1827:             Pcsx2LiveSession.SetVanillaData(vanillaBin);
- 1828:
- 1829:             Log("バニラBINの取得に成功しました。");
- 1830:             Log("基本領域: " + vanillaBin.Length.ToString("N0") + " bytes");
- 1831:             Log("バージョンマーカー: " +
-
-===== Program.cs : 2246行目 [Pcsx2MemoryLayout] =====
- 2238:                 }
- 2239:             }
- 2240:
- 2241:             if (restoreError != null)
- 2242:                 throw restoreError;
- 2243:         }
- 2244:     }
- 2245:
- 2246:     private static long GetAddress(Pcsx2MemoryLayout layout, string key)
- 2247:     {
- 2248:         if (!layout.Addresses.TryGetValue(key, out long value) || value <= 0)
- 2249:             throw new System.InvalidOperationException("アドレス未定義または不正: " + key);
- 2250:         return value;
- 2251:     }
- 2252:
- 2253:     private static int GetSize(Pcsx2MemoryLayout layout, string key)
- 2254:     {
- 2255:         if (!layout.Addresses.TryGetValue(key, out long value) || value <= 0 || value > BaseSize)
- 2256:             throw new System.InvalidOperationException("サイズ未定義または不正: " + key);
- 2257:         return (int)value;
- 2258:     }
-
-===== Program.cs : 2253行目 [Pcsx2MemoryLayout] =====
- 2245:
- 2246:     private static long GetAddress(Pcsx2MemoryLayout layout, string key)
- 2247:     {
- 2248:         if (!layout.Addresses.TryGetValue(key, out long value) || value <= 0)
- 2249:             throw new System.InvalidOperationException("アドレス未定義または不正: " + key);
- 2250:         return value;
- 2251:     }
- 2252:
- 2253:     private static int GetSize(Pcsx2MemoryLayout layout, string key)
- 2254:     {
- 2255:         if (!layout.Addresses.TryGetValue(key, out long value) || value <= 0 || value > BaseSize)
- 2256:             throw new System.InvalidOperationException("サイズ未定義または不正: " + key);
- 2257:         return (int)value;
- 2258:     }
- 2259:
- 2260:     private static void CheckBinRange(byte[] bin, int offset, int length)
- 2261:     {
- 2262:         if (offset < 0 || length < 0 || offset > bin.Length - length)
- 2263:             throw new System.InvalidOperationException(
- 2264:                 "BIN内の適用データ範囲が不正です。位置=" + offset + " サイズ=" + length);
- 2265:     }
-
-===== Program.cs : 2284行目 [Pcsx2MemoryLayout] =====
- 2276:         byte[] data = new byte[length];
- 2277:         System.Buffer.BlockCopy(bin, cursor, data, 0, length);
- 2278:         blocks.Add(new WriteBlock(name, address, data));
- 2279:         cursor = checked(cursor + length + 16);
- 2280:     }
- 2281:
- 2282:     private static void AddKeyBlock(
- 2283:         System.Collections.Generic.List<WriteBlock> blocks,
- 2284:         byte[] bin, ref int cursor, Pcsx2MemoryLayout layout,
- 2285:         string addressKey, string sizeKey)
- 2286:     {
- 2287:         AddBlock(blocks, bin, ref cursor,
- 2288:             GetAddress(layout, addressKey), GetSize(layout, sizeKey), addressKey);
- 2289:     }
- 2290:
- 2291:     private static void SkipFlag(byte[] bin, ref int cursor)
- 2292:     {
- 2293:         CheckBinRange(bin, cursor, 1);
- 2294:         cursor = checked(cursor + 17);
- 2295:     }
- 2296:
-
-===== Program.cs : 2298行目 [Pcsx2MemoryLayout] =====
- 2290:
- 2291:     private static void SkipFlag(byte[] bin, ref int cursor)
- 2292:     {
- 2293:         CheckBinRange(bin, cursor, 1);
- 2294:         cursor = checked(cursor + 17);
- 2295:     }
- 2296:
- 2297:     public static string Apply(
- 2298:         int processId, Pcsx2MemoryLayout layout, byte[] bin)
- 2299:     {
- 2300:         if (processId <= 0)
- 2301:             throw new System.ArgumentOutOfRangeException(nameof(processId));
- 2302:         if (layout == null)
- 2303:             throw new System.ArgumentNullException(nameof(layout));
- 2304:         if (bin == null || bin.Length != BaseSize)
- 2305:             throw new System.InvalidOperationException("適用BINは524288 bytesである必要があります。");
- 2306:
- 2307:         var blocks = new System.Collections.Generic.List<WriteBlock>();
- 2308:         blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
- 2309:
- 2310:         int version = bin[VersionOffset];
-
-===== Program.cs : 2316行目 [旧HSP] =====
- 2308:         blocks.Add(new WriteBlock("BIN基本領域", layout.SignatureA, (byte[])bin.Clone()));
- 2309:
- 2310:         int version = bin[VersionOffset];
- 2311:         int cursor = ExtensionOffset;
- 2312:         int var166MarkerOffset = -1;
- 2313:         byte var166Marker0 = 0;
- 2314:         byte var166Marker1 = 0;
- 2315:         bool var166Var168Included = false;
- 2316:         // 旧HSP label_153: バージョン85以外は追加領域を順番に適用。
- 2317:         if (version != 85)
- 2318:         {
- 2319:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_150", "var_151_size");
- 2320:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_152", "var_153_size");
- 2321:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_154", "var_155_size");
- 2322:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_156", "var_157_size");
- 2323:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_158", "var_159_size");
- 2324:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_160", "var_161_size");
- 2325:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_162", "var_163_size");
- 2326:             AddKeyBlock(blocks, bin, ref cursor, layout, "var_164", "var_165_size");
- 2327:
- 2328:             var166MarkerOffset = cursor;
-
-===== Program.cs : 2359行目 [var_644] =====
- 2351:             if (version >= 4)
- 2352:             {
- 2353:                 SkipFlag(bin, ref cursor);
- 2354:             }
- 2355:
- 2356:             if (version >= 5)
- 2357:             {
- 2358:                 AddBlock(blocks, bin, ref cursor,
- 2359:                     GetAddress(layout, "var_644") - 6,
- 2360:                     GetSize(layout, "var_761_size"), "var_644-6");
- 2361:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
- 2362:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
- 2363:             }
- 2364:         }
- 2365:
- 2366:         if (cursor > bin.Length)
- 2367:             throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
- 2368:
- 2369:         System.IntPtr handle = OpenProcess(
- 2370:             PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
- 2371:             false, processId);
-
-===== Program.cs : 2360行目 [var_644] =====
- 2352:             {
- 2353:                 SkipFlag(bin, ref cursor);
- 2354:             }
- 2355:
- 2356:             if (version >= 5)
- 2357:             {
- 2358:                 AddBlock(blocks, bin, ref cursor,
- 2359:                     GetAddress(layout, "var_644") - 6,
- 2360:                     GetSize(layout, "var_761_size"), "var_644-6");
- 2361:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
- 2362:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
- 2363:             }
- 2364:         }
- 2365:
- 2366:         if (cursor > bin.Length)
- 2367:             throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
- 2368:
- 2369:         System.IntPtr handle = OpenProcess(
- 2370:             PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
- 2371:             false, processId);
- 2372:
-
-===== Program.cs : 2361行目 [var_648] =====
- 2353:                 SkipFlag(bin, ref cursor);
- 2354:             }
- 2355:
- 2356:             if (version >= 5)
- 2357:             {
- 2358:                 AddBlock(blocks, bin, ref cursor,
- 2359:                     GetAddress(layout, "var_644") - 6,
- 2360:                     GetSize(layout, "var_761_size"), "var_644-6");
- 2361:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_648", "var_762_size");
- 2362:                 AddKeyBlock(blocks, bin, ref cursor, layout, "var_254", "var_255_difference");
- 2363:             }
- 2364:         }
- 2365:
- 2366:         if (cursor > bin.Length)
- 2367:             throw new System.InvalidOperationException("BIN適用範囲が524288 bytesを超えています。");
- 2368:
- 2369:         System.IntPtr handle = OpenProcess(
- 2370:             PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION,
- 2371:             false, processId);
- 2372:
- 2373:         if (handle == System.IntPtr.Zero)
-
-===== Program.cs : 2503行目 [Pcsx2MemoryLayout] =====
- 2495:         }
- 2496:         finally
- 2497:         {
- 2498:             CloseHandle(handle);
- 2499:         }
- 2500:     }
- 2501:     public static System.Collections.Generic.List<System.Tuple<int, byte[], string>> ReadRanges(
- 2502:         int processId,
- 2503:         Pcsx2MemoryLayout layout,
- 2504:         System.Collections.Generic.IEnumerable<System.Tuple<int, int, string>> ranges)
- 2505:     {
- 2506:         if (processId <= 0)
- 2507:             throw new System.ArgumentOutOfRangeException(nameof(processId));
- 2508:         if (layout == null)
- 2509:             throw new System.ArgumentNullException(nameof(layout));
- 2510:         if (ranges == null)
- 2511:             throw new System.ArgumentNullException(nameof(ranges));
- 2512:
- 2513:         var requested = new System.Collections.Generic.List<WriteBlock>();
- 2514:         var requestedOffsets = new System.Collections.Generic.List<int>();
- 2515:         foreach (var item in ranges)
-
-===== Program.cs : 2523行目 [382206] =====
- 2515:         foreach (var item in ranges)
- 2516:         {
- 2517:             if (item == null || item.Item2 <= 0 ||
- 2518:                 item.Item1 < 0 || item.Item1 > BaseSize - item.Item2)
- 2519:                 throw new System.InvalidOperationException("PCSX2読み込み範囲が不正です。");
- 2520:
- 2521:             long targetAddress = checked(layout.SignatureA + item.Item1);
- 2522:             bool isSkillRange =
- 2523:                 item.Item1 >= 382206 &&
- 2524:                 item.Item1 + item.Item2 <= 382206 + 199 * 20;
- 2525:
- 2526:             if (isSkillRange)
- 2527:             {
- 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
-
-===== Program.cs : 2524行目 [382206] =====
- 2516:         {
- 2517:             if (item == null || item.Item2 <= 0 ||
- 2518:                 item.Item1 < 0 || item.Item1 > BaseSize - item.Item2)
- 2519:                 throw new System.InvalidOperationException("PCSX2読み込み範囲が不正です。");
- 2520:
- 2521:             long targetAddress = checked(layout.SignatureA + item.Item1);
- 2522:             bool isSkillRange =
- 2523:                 item.Item1 >= 382206 &&
- 2524:                 item.Item1 + item.Item2 <= 382206 + 199 * 20;
- 2525:
- 2526:             if (isSkillRange)
- 2527:             {
- 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
-
-===== Program.cs : 2528行目 [var_644] =====
- 2520:
- 2521:             long targetAddress = checked(layout.SignatureA + item.Item1);
- 2522:             bool isSkillRange =
- 2523:                 item.Item1 >= 382206 &&
- 2524:                 item.Item1 + item.Item2 <= 382206 + 199 * 20;
- 2525:
- 2526:             if (isSkillRange)
- 2527:             {
- 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
-
-===== Program.cs : 2530行目 [var_644] =====
- 2522:             bool isSkillRange =
- 2523:                 item.Item1 >= 382206 &&
- 2524:                 item.Item1 + item.Item2 <= 382206 + 199 * 20;
- 2525:
- 2526:             if (isSkillRange)
- 2527:             {
- 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
-
-===== Program.cs : 2532行目 [382206] =====
- 2524:                 item.Item1 + item.Item2 <= 382206 + 199 * 20;
- 2525:
- 2526:             if (isSkillRange)
- 2527:             {
- 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
-
-===== Program.cs : 2536行目 [386212] =====
- 2528:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
-
-===== Program.cs : 2537行目 [386212] =====
- 2529:                     skillAddress <= 6)
- 2530:                     throw new System.InvalidOperationException("特技拡張領域 var_644 のアドレスを取得できません。");
- 2531:
- 2532:                 targetAddress = checked(skillAddress - 6 + (item.Item1 - 382206));
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
-
-===== Program.cs : 2541行目 [var_648] =====
- 2533:             }
- 2534:
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2550:             if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
- 2551:             {
- 2552:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2553:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
-
-===== Program.cs : 2543行目 [var_648] =====
- 2535:             bool isSkillAllyItem =
- 2536:                 item.Item1 >= 386212 &&
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2550:             if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
- 2551:             {
- 2552:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2553:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2554:             }
- 2555:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
-
-===== Program.cs : 2545行目 [386212] =====
- 2537:                 item.Item1 + item.Item2 <= 386212 + 1600;
- 2538:
- 2539:             if (isSkillAllyItem)
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2550:             if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
- 2551:             {
- 2552:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2553:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2554:             }
- 2555:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
- 2556:             {
- 2557:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
-
-===== Program.cs : 2548行目 [旧HSP] =====
- 2540:             {
- 2541:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2542:                     allyAddress <= 0)
- 2543:                     throw new System.InvalidOperationException("特技拡張領域 var_648 のアドレスを取得できません。");
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2550:             if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
- 2551:             {
- 2552:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2553:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2554:             }
- 2555:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
- 2556:             {
- 2557:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2558:                 targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
- 2559:             }
- 2560:
-
-===== Program.cs : 2552行目 [Pcsx2MemoryLayout] =====
- 2544:
- 2545:                 targetAddress = checked(allyAddress + (item.Item1 - 386212));
- 2546:             }
- 2547:
- 2548:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2550:             if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
- 2551:             {
- 2552:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2553:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2554:             }
- 2555:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
- 2556:             {
- 2557:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2558:                 targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
- 2559:             }
- 2560:
- 2561:             requested.Add(new WriteBlock(item.Item3, targetAddress, new byte[item.Item2]));
- 2562:             requestedOffsets.Add(item.Item1);
- 2563:         }
- 2564:
-
-===== Program.cs : 2557行目 [Pcsx2MemoryLayout] =====
- 2549:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2550:             if (item.Item1 >= 364595 && item.Item1 + item.Item2 <= 364595 + 512)
- 2551:             {
- 2552:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2553:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2554:             }
- 2555:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2 <= 365123 + 512)
- 2556:             {
- 2557:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2558:                 targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
- 2559:             }
- 2560:
- 2561:             requested.Add(new WriteBlock(item.Item3, targetAddress, new byte[item.Item2]));
- 2562:             requestedOffsets.Add(item.Item1);
- 2563:         }
- 2564:
- 2565:         var result = new System.Collections.Generic.List<System.Tuple<int, byte[], string>>();
- 2566:         if (requested.Count == 0)
- 2567:             return result;
- 2568:
- 2569:         System.IntPtr handle = OpenProcess(
-
-===== Program.cs : 2606行目 [Pcsx2MemoryLayout] =====
- 2598:         finally
- 2599:         {
- 2600:             CloseHandle(handle);
- 2601:         }
- 2602:     }
- 2603:
- 2604:     public static string ApplyRanges(
- 2605:         int processId,
- 2606:         Pcsx2MemoryLayout layout,
- 2607:         System.Collections.Generic.IEnumerable<System.Tuple<int, byte[], string>> ranges)
- 2608:     {
- 2609:         if (processId <= 0)
- 2610:             throw new System.ArgumentOutOfRangeException(nameof(processId));
- 2611:
- 2612:         if (layout == null)
- 2613:             throw new System.ArgumentNullException(nameof(layout));
- 2614:
- 2615:         if (ranges == null)
- 2616:             throw new System.ArgumentNullException(nameof(ranges));
- 2617:
- 2618:         var blocks = new System.Collections.Generic.List<WriteBlock>();
-
-===== Program.cs : 2632行目 [382206] =====
- 2624:                 throw new System.InvalidOperationException("モンスター書き込みデータが不正です。");
- 2625:
- 2626:             if (item.Item1 < 0 || item.Item1 > BaseSize - item.Item2.Length)
- 2627:                 throw new System.InvalidOperationException("BIN内の書き込み位置が範囲外です。");
- 2628:
- 2629:             long targetAddress = checked(layout.SignatureA + item.Item1);
- 2630:
- 2631:             bool isSkillRange =
- 2632:                 item.Item1 >= 382206 &&
- 2633:                 item.Item1 + item.Item2.Length <= 382206 + 199 * 20;
- 2634:
- 2635:             if (isSkillRange)
- 2636:             {
- 2637:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2638:                     skillAddress <= 6)
- 2639:                 {
- 2640:                     throw new System.InvalidOperationException(
- 2641:                         "特技拡張領域 var_644 のアドレスを取得できません。");
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
-
-===== Program.cs : 2633行目 [382206] =====
- 2625:
- 2626:             if (item.Item1 < 0 || item.Item1 > BaseSize - item.Item2.Length)
- 2627:                 throw new System.InvalidOperationException("BIN内の書き込み位置が範囲外です。");
- 2628:
- 2629:             long targetAddress = checked(layout.SignatureA + item.Item1);
- 2630:
- 2631:             bool isSkillRange =
- 2632:                 item.Item1 >= 382206 &&
- 2633:                 item.Item1 + item.Item2.Length <= 382206 + 199 * 20;
- 2634:
- 2635:             if (isSkillRange)
- 2636:             {
- 2637:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2638:                     skillAddress <= 6)
- 2639:                 {
- 2640:                     throw new System.InvalidOperationException(
- 2641:                         "特技拡張領域 var_644 のアドレスを取得できません。");
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
- 2645:                     skillAddress - 6 + (item.Item1 - 382206));
-
-===== Program.cs : 2637行目 [var_644] =====
- 2629:             long targetAddress = checked(layout.SignatureA + item.Item1);
- 2630:
- 2631:             bool isSkillRange =
- 2632:                 item.Item1 >= 382206 &&
- 2633:                 item.Item1 + item.Item2.Length <= 382206 + 199 * 20;
- 2634:
- 2635:             if (isSkillRange)
- 2636:             {
- 2637:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2638:                     skillAddress <= 6)
- 2639:                 {
- 2640:                     throw new System.InvalidOperationException(
- 2641:                         "特技拡張領域 var_644 のアドレスを取得できません。");
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
- 2645:                     skillAddress - 6 + (item.Item1 - 382206));
- 2646:             }
- 2647:
- 2648:             bool isSkillAllyItem =
- 2649:                 item.Item1 >= 386212 &&
-
-===== Program.cs : 2641行目 [var_644] =====
- 2633:                 item.Item1 + item.Item2.Length <= 382206 + 199 * 20;
- 2634:
- 2635:             if (isSkillRange)
- 2636:             {
- 2637:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2638:                     skillAddress <= 6)
- 2639:                 {
- 2640:                     throw new System.InvalidOperationException(
- 2641:                         "特技拡張領域 var_644 のアドレスを取得できません。");
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
- 2645:                     skillAddress - 6 + (item.Item1 - 382206));
- 2646:             }
- 2647:
- 2648:             bool isSkillAllyItem =
- 2649:                 item.Item1 >= 386212 &&
- 2650:                 item.Item1 + item.Item2.Length <= 386212 + 1600;
- 2651:
- 2652:             if (isSkillAllyItem)
- 2653:             {
-
-===== Program.cs : 2645行目 [382206] =====
- 2637:                 if (!layout.Addresses.TryGetValue("var_644", out long skillAddress) ||
- 2638:                     skillAddress <= 6)
- 2639:                 {
- 2640:                     throw new System.InvalidOperationException(
- 2641:                         "特技拡張領域 var_644 のアドレスを取得できません。");
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
- 2645:                     skillAddress - 6 + (item.Item1 - 382206));
- 2646:             }
- 2647:
- 2648:             bool isSkillAllyItem =
- 2649:                 item.Item1 >= 386212 &&
- 2650:                 item.Item1 + item.Item2.Length <= 386212 + 1600;
- 2651:
- 2652:             if (isSkillAllyItem)
- 2653:             {
- 2654:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2655:                     allyAddress <= 0)
- 2656:                 {
- 2657:                     throw new System.InvalidOperationException(
-
-===== Program.cs : 2649行目 [386212] =====
- 2641:                         "特技拡張領域 var_644 のアドレスを取得できません。");
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
- 2645:                     skillAddress - 6 + (item.Item1 - 382206));
- 2646:             }
- 2647:
- 2648:             bool isSkillAllyItem =
- 2649:                 item.Item1 >= 386212 &&
- 2650:                 item.Item1 + item.Item2.Length <= 386212 + 1600;
- 2651:
- 2652:             if (isSkillAllyItem)
- 2653:             {
- 2654:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2655:                     allyAddress <= 0)
- 2656:                 {
- 2657:                     throw new System.InvalidOperationException(
- 2658:                         "特技拡張領域 var_648 のアドレスを取得できません。");
- 2659:                 }
- 2660:
- 2661:                 targetAddress = checked(
-
-===== Program.cs : 2650行目 [386212] =====
- 2642:                 }
- 2643:
- 2644:                 targetAddress = checked(
- 2645:                     skillAddress - 6 + (item.Item1 - 382206));
- 2646:             }
- 2647:
- 2648:             bool isSkillAllyItem =
- 2649:                 item.Item1 >= 386212 &&
- 2650:                 item.Item1 + item.Item2.Length <= 386212 + 1600;
- 2651:
- 2652:             if (isSkillAllyItem)
- 2653:             {
- 2654:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2655:                     allyAddress <= 0)
- 2656:                 {
- 2657:                     throw new System.InvalidOperationException(
- 2658:                         "特技拡張領域 var_648 のアドレスを取得できません。");
- 2659:                 }
- 2660:
- 2661:                 targetAddress = checked(
- 2662:                     allyAddress + (item.Item1 - 386212));
-
-===== Program.cs : 2654行目 [var_648] =====
- 2646:             }
- 2647:
- 2648:             bool isSkillAllyItem =
- 2649:                 item.Item1 >= 386212 &&
- 2650:                 item.Item1 + item.Item2.Length <= 386212 + 1600;
- 2651:
- 2652:             if (isSkillAllyItem)
- 2653:             {
- 2654:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2655:                     allyAddress <= 0)
- 2656:                 {
- 2657:                     throw new System.InvalidOperationException(
- 2658:                         "特技拡張領域 var_648 のアドレスを取得できません。");
- 2659:                 }
- 2660:
- 2661:                 targetAddress = checked(
- 2662:                     allyAddress + (item.Item1 - 386212));
- 2663:             }
- 2664:
- 2665:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2666:             // BIN拡張内の位置と実メモリアドレスを対応させる。
-
-===== Program.cs : 2658行目 [var_648] =====
- 2650:                 item.Item1 + item.Item2.Length <= 386212 + 1600;
- 2651:
- 2652:             if (isSkillAllyItem)
- 2653:             {
- 2654:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2655:                     allyAddress <= 0)
- 2656:                 {
- 2657:                     throw new System.InvalidOperationException(
- 2658:                         "特技拡張領域 var_648 のアドレスを取得できません。");
- 2659:                 }
- 2660:
- 2661:                 targetAddress = checked(
- 2662:                     allyAddress + (item.Item1 - 386212));
- 2663:             }
- 2664:
- 2665:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2666:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2667:             if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
- 2668:             {
- 2669:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2670:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
-
-===== Program.cs : 2662行目 [386212] =====
- 2654:                 if (!layout.Addresses.TryGetValue("var_648", out long allyAddress) ||
- 2655:                     allyAddress <= 0)
- 2656:                 {
- 2657:                     throw new System.InvalidOperationException(
- 2658:                         "特技拡張領域 var_648 のアドレスを取得できません。");
- 2659:                 }
- 2660:
- 2661:                 targetAddress = checked(
- 2662:                     allyAddress + (item.Item1 - 386212));
- 2663:             }
- 2664:
- 2665:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2666:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2667:             if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
- 2668:             {
- 2669:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2670:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2671:             }
- 2672:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
- 2673:             {
- 2674:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
-
-===== Program.cs : 2665行目 [旧HSP] =====
- 2657:                     throw new System.InvalidOperationException(
- 2658:                         "特技拡張領域 var_648 のアドレスを取得できません。");
- 2659:                 }
- 2660:
- 2661:                 targetAddress = checked(
- 2662:                     allyAddress + (item.Item1 - 386212));
- 2663:             }
- 2664:
- 2665:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2666:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2667:             if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
- 2668:             {
- 2669:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2670:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2671:             }
- 2672:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
- 2673:             {
- 2674:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2675:                 targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
- 2676:             }
- 2677:
-
-===== Program.cs : 2669行目 [Pcsx2MemoryLayout] =====
- 2661:                 targetAddress = checked(
- 2662:                     allyAddress + (item.Item1 - 386212));
- 2663:             }
- 2664:
- 2665:             // 旧HSPの var_166 / var_168 はEE RAM上の独立配列。
- 2666:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2667:             if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
- 2668:             {
- 2669:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2670:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2671:             }
- 2672:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
- 2673:             {
- 2674:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2675:                 targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
- 2676:             }
- 2677:
- 2678:             blocks.Add(new WriteBlock(
- 2679:                 item.Item3,
- 2680:                 targetAddress,
- 2681:                 (byte[])item.Item2.Clone()));
-
-===== Program.cs : 2674行目 [Pcsx2MemoryLayout] =====
- 2666:             // BIN拡張内の位置と実メモリアドレスを対応させる。
- 2667:             if (item.Item1 >= 364595 && item.Item1 + item.Item2.Length <= 364595 + 512)
- 2668:             {
- 2669:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2670:                 targetAddress = checked(eeBase + 0x008F33C8L + (item.Item1 - 364595));
- 2671:             }
- 2672:             else if (item.Item1 >= 365123 && item.Item1 + item.Item2.Length <= 365123 + 512)
- 2673:             {
- 2674:                 long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2675:                 targetAddress = checked(eeBase + 0x008F3620L + (item.Item1 - 365123));
- 2676:             }
- 2677:
- 2678:             blocks.Add(new WriteBlock(
- 2679:                 item.Item3,
- 2680:                 targetAddress,
- 2681:                 (byte[])item.Item2.Clone()));
- 2682:
- 2683:             mappingDetails.Add(
- 2684:                 item.Item3 +
- 2685:                 ": BIN 0x" + item.Item1.ToString("X") +
- 2686:                 " -> PCSX2 0x" + targetAddress.ToString("X"));
-
-===== Program.cs : 2834行目 [Pcsx2MemoryLayout] =====
- 2826:             source.Add(patch.Clone());
- 2827:         }
- 2828:
- 2829:         if (source.Count == 0)
- 2830:             return "追加メモリ変更: 0件";
- 2831:
- 2832:         const long EeRamSize = 0x02000000L;
- 2833:
- 2834:         long eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 2835:         if (eeBase <= 0)
- 2836:             throw new System.InvalidOperationException(
- 2837:                 "追加メモリ変更の適用に必要なEE RAM基準アドレスを取得できません。");
- 2838:
- 2839:         var blocks = new System.Collections.Generic.List<WriteBlock>();
- 2840:
- 2841:         foreach (var patch in source)
- 2842:         {
- 2843:             if (patch.Address < 0 ||
- 2844:                 patch.Data.Length <= 0 ||
- 2845:                 patch.Address > EeRamSize - patch.Data.Length)
- 2846:             {
-
-===== Program.cs : 3593行目 [Pcsx2MemoryLayout] =====
- 3585:         System.Text.Encoding.RegisterProvider(
- 3586:             System.Text.CodePagesEncodingProvider.Instance);
- 3587:         return System.Text.Encoding.GetEncoding(932);
- 3588:     }
- 3589:
- 3590:     public MonsterNameEditorForm(int processId)
- 3591:     {
- 3592:         _processId = processId;
- 3593:         _eeBase = Pcsx2MemoryLayoutBuilder.GetEEmemBase(processId);
- 3594:
- 3595:         Text = "モンスター名変更・名前データ確認";
- 3596:         StartPosition = FormStartPosition.CenterParent;
- 3597:         Width = 900;
- 3598:         Height = 700;
- 3599:         MinimumSize = new Size(650, 450);
- 3600:         Font = new Font("Yu Gothic UI", 10);
- 3601:
- 3602:         var root = new TableLayoutPanel
- 3603:         {
- 3604:             Dock = DockStyle.Fill,
- 3605:             ColumnCount = 1,
-
-===== Program.cs : 5100行目 [旧HSP] =====
- 5092:             finally
- 5093:             {
- 5094:                 if (testHandle != System.IntPtr.Zero)
- 5095:                     Pcsx2MemoryScanner.CloseConnection(testHandle);
- 5096:             }
- 5097:
- 5098:             Pcsx2LiveSession.SetConnected(processId);
- 5099:
- 5100:             // 旧HSP互換シグネチャを検索
- 5101:             _pcsx2DataStatus.Text =
- 5102:                 "旧HSP互換メモリ検索中...";
- 5103:
- 5104:             var scanResult =
- 5105:                 await System.Threading.Tasks.Task.Run(
- 5106:                     () => Pcsx2MemoryScanner.Scan(processId, null));
- 5107:
- 5108:             if (scanResult.FirstSignatureAddress == 0 ||
- 5109:                 scanResult.SecondSignatureAddress == 0)
- 5110:             {
- 5111:                 throw new System.InvalidOperationException(
- 5112:                     "旧HSP互換シグネチャを検出できませんでした。" +
-
-===== Program.cs : 5102行目 [旧HSP] =====
- 5094:                 if (testHandle != System.IntPtr.Zero)
- 5095:                     Pcsx2MemoryScanner.CloseConnection(testHandle);
- 5096:             }
- 5097:
- 5098:             Pcsx2LiveSession.SetConnected(processId);
- 5099:
- 5100:             // 旧HSP互換シグネチャを検索
- 5101:             _pcsx2DataStatus.Text =
- 5102:                 "旧HSP互換メモリ検索中...";
- 5103:
- 5104:             var scanResult =
- 5105:                 await System.Threading.Tasks.Task.Run(
- 5106:                     () => Pcsx2MemoryScanner.Scan(processId, null));
- 5107:
- 5108:             if (scanResult.FirstSignatureAddress == 0 ||
- 5109:                 scanResult.SecondSignatureAddress == 0)
- 5110:             {
- 5111:                 throw new System.InvalidOperationException(
- 5112:                     "旧HSP互換シグネチャを検出できませんでした。" +
- 5113:                     "\r\n" + scanResult.Message +
- 5114:                     "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
-
-===== Program.cs : 5112行目 [旧HSP] =====
- 5104:             var scanResult =
- 5105:                 await System.Threading.Tasks.Task.Run(
- 5106:                     () => Pcsx2MemoryScanner.Scan(processId, null));
- 5107:
- 5108:             if (scanResult.FirstSignatureAddress == 0 ||
- 5109:                 scanResult.SecondSignatureAddress == 0)
- 5110:             {
- 5111:                 throw new System.InvalidOperationException(
- 5112:                     "旧HSP互換シグネチャを検出できませんでした。" +
- 5113:                     "\r\n" + scanResult.Message +
- 5114:                     "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
- 5115:                     "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
- 5116:                     "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
- 5117:             }
- 5118:
- 5119:             // 旧HSP互換アドレス計算
- 5120:             _pcsx2DataStatus.Text =
- 5121:                 "旧HSP互換アドレス計算中...";
- 5122:
- 5123:             var layout =
- 5124:                 await System.Threading.Tasks.Task.Run(
-
-===== Program.cs : 5119行目 [旧HSP] =====
- 5111:                 throw new System.InvalidOperationException(
- 5112:                     "旧HSP互換シグネチャを検出できませんでした。" +
- 5113:                     "\r\n" + scanResult.Message +
- 5114:                     "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
- 5115:                     "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
- 5116:                     "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
- 5117:             }
- 5118:
- 5119:             // 旧HSP互換アドレス計算
- 5120:             _pcsx2DataStatus.Text =
- 5121:                 "旧HSP互換アドレス計算中...";
- 5122:
- 5123:             var layout =
- 5124:                 await System.Threading.Tasks.Task.Run(
- 5125:                     () => Pcsx2MemoryLayoutBuilder.Build(
- 5126:                         processId,
- 5127:                         scanResult.FirstSignatureAddress,
- 5128:                         scanResult.SecondSignatureAddress));
- 5129:
- 5130:             // 旧HSP互換BIN取得
- 5131:             _pcsx2DataStatus.Text =
-
-===== Program.cs : 5121行目 [旧HSP] =====
- 5113:                     "\r\n" + scanResult.Message +
- 5114:                     "\r\n検索済みバイト数: " + scanResult.ScannedBytes.ToString("N0") +
- 5115:                     "\r\nシグネチャA: 0x" + scanResult.FirstSignatureAddress.ToString("X") +
- 5116:                     "\r\nシグネチャB: 0x" + scanResult.SecondSignatureAddress.ToString("X"));
- 5117:             }
- 5118:
- 5119:             // 旧HSP互換アドレス計算
- 5120:             _pcsx2DataStatus.Text =
- 5121:                 "旧HSP互換アドレス計算中...";
- 5122:
- 5123:             var layout =
- 5124:                 await System.Threading.Tasks.Task.Run(
- 5125:                     () => Pcsx2MemoryLayoutBuilder.Build(
- 5126:                         processId,
- 5127:                         scanResult.FirstSignatureAddress,
- 5128:                         scanResult.SecondSignatureAddress));
- 5129:
- 5130:             // 旧HSP互換BIN取得
- 5131:             _pcsx2DataStatus.Text =
- 5132:                 "バニラBIN取得中...";
- 5133:
-
-===== Program.cs : 5125行目 [Pcsx2MemoryLayout] =====
- 5117:             }
- 5118:
- 5119:             // 旧HSP互換アドレス計算
- 5120:             _pcsx2DataStatus.Text =
- 5121:                 "旧HSP互換アドレス計算中...";
- 5122:
- 5123:             var layout =
- 5124:                 await System.Threading.Tasks.Task.Run(
- 5125:                     () => Pcsx2MemoryLayoutBuilder.Build(
- 5126:                         processId,
- 5127:                         scanResult.FirstSignatureAddress,
- 5128:                         scanResult.SecondSignatureAddress));
- 5129:
- 5130:             // 旧HSP互換BIN取得
- 5131:             _pcsx2DataStatus.Text =
- 5132:                 "バニラBIN取得中...";
- 5133:
- 5134:             Pcsx2LiveSession.SetMemoryLayout(layout);
- 5135:
- 5136:             byte[] vanillaBin =
- 5137:                 await System.Threading.Tasks.Task.Run(
-
-===== Program.cs : 5130行目 [旧HSP] =====
- 5122:
- 5123:             var layout =
- 5124:                 await System.Threading.Tasks.Task.Run(
- 5125:                     () => Pcsx2MemoryLayoutBuilder.Build(
- 5126:                         processId,
- 5127:                         scanResult.FirstSignatureAddress,
- 5128:                         scanResult.SecondSignatureAddress));
- 5129:
- 5130:             // 旧HSP互換BIN取得
- 5131:             _pcsx2DataStatus.Text =
- 5132:                 "バニラBIN取得中...";
- 5133:
- 5134:             Pcsx2LiveSession.SetMemoryLayout(layout);
- 5135:
- 5136:             byte[] vanillaBin =
- 5137:                 await System.Threading.Tasks.Task.Run(
- 5138:                     () => Pcsx2VanillaBinReader.Capture(
- 5139:                         processId,
- 5140:                         layout));
- 5141:
- 5142:             if (vanillaBin == null || vanillaBin.Length != 524288)
-
-===== Program.cs : 5499行目 [Pcsx2MemoryLayout] =====
- 5491:         }
- 5492:
- 5493:         if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0)
- 5494:         {
- 5495:             MessageBox.Show(this, "先にPCSX2へ接続してください。");
- 5496:             return;
- 5497:         }
- 5498:
- 5499:         Pcsx2MemoryLayout? layout = Pcsx2LiveSession.MemoryLayout;
- 5500:         if (layout == null)
- 5501:         {
- 5502:             MessageBox.Show(this, "メモリアドレスが未確定です。PCSX2への接続とメモリ検索を完了してください。");
- 5503:             return;
- 5504:         }
- 5505:
- 5506:         if (MessageBox.Show(
- 5507:             this,
- 5508:             "読み込んだBINの書き込み予定領域を検証します。\\r\\n" +
- 5509:             "先にPCSX2でゲームを一時停止してください。適用中はPCSX2やゲームを終了しないでください。メモリへの書き込みを実行します。\\r\\n\\r\\n続行しますか？",
- 5510:             "改造ダンジョン適用確認",
- 5511:             MessageBoxButtons.YesNo,
-
-===== SlimeRingRuntimeService.cs : 17行目 [382206] =====
-    9: /// <summary>スライムの指輪装備中だけ17種の個別設定を上書きするランタイム処理。</summary>
-   10: internal sealed class SlimeRingRuntimeService : IDisposable
-   11: {
-   12:     private const uint InventoryBaseAddress = 0x00650110u;
-   13:     private const uint InventorySlotStride = 0x240u;
-   14:     private const int InventorySlotCount = 20;
-   15:     private const uint SlimeRingItemId = 0x00A4u;
-   16:     private const uint EquippedFlagMask = 0x00100000u;
-   17:     private const int SkillRangeDataOffset = 382206;
-   18:     private const int SkillAllyItemDataOffset = 386212;
-   19:     private const int MonsterRecordSize = 24;
-   20:     private const int MonsterRecordCount = 199;
-   21:     private const int MonsterTablePointerOffset = 16;
-   22:     private const uint EeAddressMask = 0x1FFFFFFFu;
-   23:     private const uint EeMemoryBaseAddress = 0x00180000u;
-   24:     private const uint SkillMessagePointerBase = 0x209126D0u;
-   25:
-   26:     private readonly Func<byte[]?> _getCurrentBin;
-   27:     private readonly ActionAutoRestoreService _actionRestore;
-   28:     private readonly System.Threading.Timer _timer;
-   29:     private readonly object _sync = new object();
-
-===== SlimeRingRuntimeService.cs : 18行目 [386212] =====
-   10: internal sealed class SlimeRingRuntimeService : IDisposable
-   11: {
-   12:     private const uint InventoryBaseAddress = 0x00650110u;
-   13:     private const uint InventorySlotStride = 0x240u;
-   14:     private const int InventorySlotCount = 20;
-   15:     private const uint SlimeRingItemId = 0x00A4u;
-   16:     private const uint EquippedFlagMask = 0x00100000u;
-   17:     private const int SkillRangeDataOffset = 382206;
-   18:     private const int SkillAllyItemDataOffset = 386212;
-   19:     private const int MonsterRecordSize = 24;
-   20:     private const int MonsterRecordCount = 199;
-   21:     private const int MonsterTablePointerOffset = 16;
-   22:     private const uint EeAddressMask = 0x1FFFFFFFu;
-   23:     private const uint EeMemoryBaseAddress = 0x00180000u;
-   24:     private const uint SkillMessagePointerBase = 0x209126D0u;
-   25:
-   26:     private readonly Func<byte[]?> _getCurrentBin;
-   27:     private readonly ActionAutoRestoreService _actionRestore;
-   28:     private readonly System.Threading.Timer _timer;
-   29:     private readonly object _sync = new object();
-   30:     private Dictionary<int, bool>? _baseBarrier;
+ 163:
+ 164:     // 指輪装備中に限り、味方の対象17種へ優先適用する別テーブル。
+ 165:     private Dictionary<int, ushort> _allyRingActions =
+ 166:         new Dictionary<int, ushort>();
+ 167:
+ 168:     private HashSet<int> _allyRingIonazunForce =
+ 169:         new HashSet<int>();
+ 170:
+ 171:     // nullなら通常のモンスタークリエイター設定を使用する。
+ 172:     // 指輪適用中は専用のイオナズン確定設定を使用する。
+ 173:     private HashSet<int>? _ionazunForceOverride;
+ 174:
+ 175:     private uint _codeCaveAddress;
+ 176:
+ 177:     private int _pollBusy;
+ 178:     private bool _disposed;
+ 179:
+ 180:     private uint _ionazunRepeatCaveAddress;
+ 181:     private string _lastStatus = "";
+ 182:
+ 183:     internal event Action<string>? StatusChanged;
+ 184:
+ 185:
+ 186:     internal ActionAutoRestoreService()
+ 187:     {
+ 188:         _timer = new System.Threading.Timer(Poll, null, 500, 500);
+ 189:     }
+ 190:
+ 191:     internal static uint ReadShared32(uint address)
+ 192:     {
+ 193:         lock (SharedPineAccessSync)
+ 194:         {
+ 195:             if (!SharedPine.TryConnect())
+ 196:             {
+ 197:                 throw new InvalidOperationException(
+ 198:                     "PCSX2 PINE TCP 28011に接続できません。");
+ 199:             }
+ 200:
+ 201:             return SharedPine.Read32(address);
+ 202:         }
+ 203:     }
+ 204:
+ 205:     internal static void WriteShared32(uint address, uint value)
+ 206:     {
+ 207:         lock (SharedPineAccessSync)
+ 208:         {
+ 209:             if (!SharedPine.TryConnect())
+ 210:             {
+ 211:                 throw new InvalidOperationException(
+ 212:                     "PCSX2 PINE TCP 28011に接続できません。");
+ 213:             }
+ 214:
+ 215:             SharedPine.Write32(address, value);
+ 216:         }
+ 217:     }
+ 218:
+ 219:     internal static uint GetSharedStatus()
+ 220:     {
+ 221:         lock (SharedPineAccessSync)
+ 222:         {
+ 223:             if (!SharedPine.TryConnect())
+ 224:             {
+ 225:                 throw new InvalidOperationException(
+ 226:                     "PCSX2 PINE TCP 28011に接続できません。");
+ 227:             }
+ 228:
+ 229:             return SharedPine.GetStatus();
+ 230:         }
+
+ 589:         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
+ 590:     {
+ 591:         bool shouldPatch =
+ 592:             normalEntries.Exists(x => x.Marker == 0xFF) ||
+ 593:             allyOverrideEntries.Exists(x => x.Marker == 0xFF);
+ 594:
+ 595:         if (!shouldPatch)
+ 596:         {
+ 597:             RestoreIonazunRepeatPatch();
+ 598:             return;
+ 599:         }
+ 600:
+ 601:         if (_codeCaveAddress == 0 ||
+ 602:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+ 603:         {
+ 604:             throw new InvalidOperationException(
+ 605:                 "既存ディスパッチャーを検証できません。");
+ 606:         }
+ 607:
+ 608:         uint usedJump = EncodeIonazunRepeatJump(
+ 609:             IonazunUsedBranchAddress,
+ 610:             _codeCaveAddress + 0x58u);
+ 611:
+ 612:         uint compareJump = EncodeIonazunRepeatJump(
+ 613:             IonazunCompareAddress,
+ 614:             _codeCaveAddress + 0x90u);
+ 615:
+ 616:         uint currentUsed =
+ 617:             _pine.Read32(IonazunUsedBranchAddress);
+ 618:
+ 619:         uint currentUsedDelay =
+ 620:             _pine.Read32(IonazunUsedBranchDelayAddress);
+ 621:
+ 622:         uint currentCompare =
+ 623:             _pine.Read32(IonazunCompareAddress);
+ 624:
+ 625:         // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+ 626:         if (currentCompare == 0x24020001u)
+ 627:         {
+ 628:             _pine.Write32(
+ 629:                 IonazunCompareAddress,
+ 630:                 IonazunCompareOriginal);
+ 631:
+ 632:             currentCompare =
+ 633:                 _pine.Read32(IonazunCompareAddress);
+ 634:
+ 635:             if (currentCompare != IonazunCompareOriginal)
+ 636:             {
+ 637:                 throw new InvalidOperationException(
+ 638:                     "確率判定命令の復旧に失敗しました。");
+ 639:             }
+ 640:         }
+ 641:
+ 642:         uint currentCompareBranch =
+ 643:             _pine.Read32(IonazunCompareBranchAddress);
+ 644:
+ 645:         uint currentCompareDelay =
+ 646:             _pine.Read32(IonazunCompareBranchDelayAddress);
+ 647:
+ 648:         if (currentUsedDelay != IonazunUsedBranchDelayOriginal)
+ 649:         {
+ 650:             throw new InvalidOperationException(
+ 651:                 "使用済み判定フックの遅延スロットが想定外です。");
+ 652:         }
+ 653:
+ 654:         if (currentCompareDelay != IonazunCompareBranchDelayOriginal)
+ 655:         {
+ 656:             throw new InvalidOperationException(
+
+ 590:     {
+ 591:         bool shouldPatch =
+ 592:             normalEntries.Exists(x => x.Marker == 0xFF) ||
+ 593:             allyOverrideEntries.Exists(x => x.Marker == 0xFF);
+ 594:
+ 595:         if (!shouldPatch)
+ 596:         {
+ 597:             RestoreIonazunRepeatPatch();
+ 598:             return;
+ 599:         }
+ 600:
+ 601:         if (_codeCaveAddress == 0 ||
+ 602:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+ 603:         {
+ 604:             throw new InvalidOperationException(
+ 605:                 "既存ディスパッチャーを検証できません。");
+ 606:         }
+ 607:
+ 608:         uint usedJump = EncodeIonazunRepeatJump(
+ 609:             IonazunUsedBranchAddress,
+ 610:             _codeCaveAddress + 0x58u);
+ 611:
+ 612:         uint compareJump = EncodeIonazunRepeatJump(
+ 613:             IonazunCompareAddress,
+ 614:             _codeCaveAddress + 0x90u);
+ 615:
+ 616:         uint currentUsed =
+ 617:             _pine.Read32(IonazunUsedBranchAddress);
+ 618:
+ 619:         uint currentUsedDelay =
+ 620:             _pine.Read32(IonazunUsedBranchDelayAddress);
+ 621:
+ 622:         uint currentCompare =
+ 623:             _pine.Read32(IonazunCompareAddress);
+ 624:
+ 625:         // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+ 626:         if (currentCompare == 0x24020001u)
+ 627:         {
+ 628:             _pine.Write32(
+ 629:                 IonazunCompareAddress,
+ 630:                 IonazunCompareOriginal);
+ 631:
+ 632:             currentCompare =
+ 633:                 _pine.Read32(IonazunCompareAddress);
+ 634:
+ 635:             if (currentCompare != IonazunCompareOriginal)
+ 636:             {
+ 637:                 throw new InvalidOperationException(
+ 638:                     "確率判定命令の復旧に失敗しました。");
+ 639:             }
+ 640:         }
+ 641:
+ 642:         uint currentCompareBranch =
+ 643:             _pine.Read32(IonazunCompareBranchAddress);
+ 644:
+ 645:         uint currentCompareDelay =
+ 646:             _pine.Read32(IonazunCompareBranchDelayAddress);
+ 647:
+ 648:         if (currentUsedDelay != IonazunUsedBranchDelayOriginal)
+ 649:         {
+ 650:             throw new InvalidOperationException(
+ 651:                 "使用済み判定フックの遅延スロットが想定外です。");
+ 652:         }
+ 653:
+ 654:         if (currentCompareDelay != IonazunCompareBranchDelayOriginal)
+ 655:         {
+ 656:             throw new InvalidOperationException(
+ 657:                 "確率判定フックの遅延スロットが想定外です。" +
+
+ 598:             return;
+ 599:         }
+ 600:
+ 601:         if (_codeCaveAddress == 0 ||
+ 602:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+ 603:         {
+ 604:             throw new InvalidOperationException(
+ 605:                 "既存ディスパッチャーを検証できません。");
+ 606:         }
+ 607:
+ 608:         uint usedJump = EncodeIonazunRepeatJump(
+ 609:             IonazunUsedBranchAddress,
+ 610:             _codeCaveAddress + 0x58u);
+ 611:
+ 612:         uint compareJump = EncodeIonazunRepeatJump(
+ 613:             IonazunCompareAddress,
+ 614:             _codeCaveAddress + 0x90u);
+ 615:
+ 616:         uint currentUsed =
+ 617:             _pine.Read32(IonazunUsedBranchAddress);
+ 618:
+ 619:         uint currentUsedDelay =
+ 620:             _pine.Read32(IonazunUsedBranchDelayAddress);
+ 621:
+ 622:         uint currentCompare =
+ 623:             _pine.Read32(IonazunCompareAddress);
+ 624:
+ 625:         // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+ 626:         if (currentCompare == 0x24020001u)
+ 627:         {
+ 628:             _pine.Write32(
+ 629:                 IonazunCompareAddress,
+ 630:                 IonazunCompareOriginal);
+ 631:
+ 632:             currentCompare =
+ 633:                 _pine.Read32(IonazunCompareAddress);
+ 634:
+ 635:             if (currentCompare != IonazunCompareOriginal)
+ 636:             {
+ 637:                 throw new InvalidOperationException(
+ 638:                     "確率判定命令の復旧に失敗しました。");
+ 639:             }
+ 640:         }
+ 641:
+ 642:         uint currentCompareBranch =
+ 643:             _pine.Read32(IonazunCompareBranchAddress);
+ 644:
+ 645:         uint currentCompareDelay =
+ 646:             _pine.Read32(IonazunCompareBranchDelayAddress);
+ 647:
+ 648:         if (currentUsedDelay != IonazunUsedBranchDelayOriginal)
+ 649:         {
+ 650:             throw new InvalidOperationException(
+ 651:                 "使用済み判定フックの遅延スロットが想定外です。");
+ 652:         }
+ 653:
+ 654:         if (currentCompareDelay != IonazunCompareBranchDelayOriginal)
+ 655:         {
+ 656:             throw new InvalidOperationException(
+ 657:                 "確率判定フックの遅延スロットが想定外です。" +
+ 658:                 "\nアドレス: 0x" + IonazunCompareBranchDelayAddress.ToString("X8") +
+ 659:                 "\n実際の値: 0x" + currentCompareDelay.ToString("X8") +
+ 660:                 "\n期待値: 0x" + IonazunCompareBranchDelayOriginal.ToString("X8"));
+ 661:         }
+ 662:
+ 663:         if (currentUsed != IonazunUsedBranchOriginal &&
+ 664:             currentUsed != usedJump)
+ 665:         {
+
+ 602:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+ 603:         {
+ 604:             throw new InvalidOperationException(
+ 605:                 "既存ディスパッチャーを検証できません。");
+ 606:         }
+ 607:
+ 608:         uint usedJump = EncodeIonazunRepeatJump(
+ 609:             IonazunUsedBranchAddress,
+ 610:             _codeCaveAddress + 0x58u);
+ 611:
+ 612:         uint compareJump = EncodeIonazunRepeatJump(
+ 613:             IonazunCompareAddress,
+ 614:             _codeCaveAddress + 0x90u);
+ 615:
+ 616:         uint currentUsed =
+ 617:             _pine.Read32(IonazunUsedBranchAddress);
+ 618:
+ 619:         uint currentUsedDelay =
+ 620:             _pine.Read32(IonazunUsedBranchDelayAddress);
+ 621:
+ 622:         uint currentCompare =
+ 623:             _pine.Read32(IonazunCompareAddress);
+ 624:
+ 625:         // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+ 626:         if (currentCompare == 0x24020001u)
+ 627:         {
+ 628:             _pine.Write32(
+ 629:                 IonazunCompareAddress,
+ 630:                 IonazunCompareOriginal);
+ 631:
+ 632:             currentCompare =
+ 633:                 _pine.Read32(IonazunCompareAddress);
+ 634:
+ 635:             if (currentCompare != IonazunCompareOriginal)
+ 636:             {
+ 637:                 throw new InvalidOperationException(
+ 638:                     "確率判定命令の復旧に失敗しました。");
+ 639:             }
+ 640:         }
+ 641:
+ 642:         uint currentCompareBranch =
+ 643:             _pine.Read32(IonazunCompareBranchAddress);
+ 644:
+ 645:         uint currentCompareDelay =
+ 646:             _pine.Read32(IonazunCompareBranchDelayAddress);
+ 647:
+ 648:         if (currentUsedDelay != IonazunUsedBranchDelayOriginal)
+ 649:         {
+ 650:             throw new InvalidOperationException(
+ 651:                 "使用済み判定フックの遅延スロットが想定外です。");
+ 652:         }
+ 653:
+ 654:         if (currentCompareDelay != IonazunCompareBranchDelayOriginal)
+ 655:         {
+ 656:             throw new InvalidOperationException(
+ 657:                 "確率判定フックの遅延スロットが想定外です。" +
+ 658:                 "\nアドレス: 0x" + IonazunCompareBranchDelayAddress.ToString("X8") +
+ 659:                 "\n実際の値: 0x" + currentCompareDelay.ToString("X8") +
+ 660:                 "\n期待値: 0x" + IonazunCompareBranchDelayOriginal.ToString("X8"));
+ 661:         }
+ 662:
+ 663:         if (currentUsed != IonazunUsedBranchOriginal &&
+ 664:             currentUsed != usedJump)
+ 665:         {
+ 666:             throw new InvalidOperationException(
+ 667:                 "使用済み判定命令が想定外です: 0x" +
+ 668:                 currentUsed.ToString("X8"));
+ 669:         }
+
+ 683:
+ 684:         if (!compareOriginal &&
+ 685:             !compareInstalled &&
+ 686:             !compareHalfInstalled)
+ 687:         {
+ 688:             throw new InvalidOperationException(
+ 689:                 "確率判定フックの命令ペアが想定外です。\n" +
+ 690:                 "DE8: 0x" + currentCompare.ToString("X8") + "\n" +
+ 691:                 "DEC: 0x" + currentCompareBranch.ToString("X8"));
+ 692:         }
+ 693:
+ 694:         uint[] repeatCode =
+ 695:             BuildIonazunRepeatCode(_codeCaveAddress);
+ 696:
+ 697:         uint[] compareCode =
+ 698:             BuildIonazunCompareCode(_codeCaveAddress);
+ 699:
+ 700:         uint repeatAddress = _codeCaveAddress + 0x58u;
+ 701:         uint compareAddress = _codeCaveAddress + 0x90u;
+ 702:
+ 703:         for (int i = 0; i < repeatCode.Length; i++)
+ 704:         {
+ 705:             _pine.Write32(
+ 706:                 repeatAddress + (uint)(i * 4),
+ 707:                 repeatCode[i]);
+ 708:         }
+ 709:
+ 710:         for (int i = 0; i < compareCode.Length; i++)
+ 711:         {
+ 712:             _pine.Write32(
+ 713:                 compareAddress + (uint)(i * 4),
+ 714:                 compareCode[i]);
+ 715:         }
+ 716:
+ 717:         for (int i = 0; i < repeatCode.Length; i++)
+ 718:         {
+ 719:             if (_pine.Read32(
+ 720:                 repeatAddress + (uint)(i * 4)) != repeatCode[i])
+ 721:             {
+ 722:                 throw new InvalidOperationException(
+ 723:                     "イオナズン連発コードの検証に失敗しました。");
+ 724:             }
+ 725:         }
+ 726:
+ 727:         for (int i = 0; i < compareCode.Length; i++)
+ 728:         {
+ 729:             if (_pine.Read32(
+ 730:                 compareAddress + (uint)(i * 4)) != compareCode[i])
+ 731:             {
+ 732:                 throw new InvalidOperationException(
+ 733:                     "イオナズン確率判定コードの検証に失敗しました。");
+ 734:             }
+ 735:         }
+ 736:
+ 737:         // 比較命令の次の命令を先にNOPにする。
+ 738:         // これによりJ命令の遅延スロットで元のbeqが実行されない。
+ 739:         if (currentCompareBranch == IonazunCompareBranchOriginal)
+ 740:         {
+ 741:             _pine.Write32(IonazunCompareBranchAddress, 0u);
+ 742:
+ 743:             if (_pine.Read32(IonazunCompareBranchAddress) != 0u)
+ 744:             {
+ 745:                 throw new InvalidOperationException(
+ 746:                     "確率判定の分岐命令をNOPにできませんでした。");
+ 747:             }
+ 748:         }
+ 749:
+ 750:         if (currentCompare == IonazunCompareOriginal)
+
+ 686:             !compareHalfInstalled)
+ 687:         {
+ 688:             throw new InvalidOperationException(
+ 689:                 "確率判定フックの命令ペアが想定外です。\n" +
+ 690:                 "DE8: 0x" + currentCompare.ToString("X8") + "\n" +
+ 691:                 "DEC: 0x" + currentCompareBranch.ToString("X8"));
+ 692:         }
+ 693:
+ 694:         uint[] repeatCode =
+ 695:             BuildIonazunRepeatCode(_codeCaveAddress);
+ 696:
+ 697:         uint[] compareCode =
+ 698:             BuildIonazunCompareCode(_codeCaveAddress);
+ 699:
+ 700:         uint repeatAddress = _codeCaveAddress + 0x58u;
+ 701:         uint compareAddress = _codeCaveAddress + 0x90u;
+ 702:
+ 703:         for (int i = 0; i < repeatCode.Length; i++)
+ 704:         {
+ 705:             _pine.Write32(
+ 706:                 repeatAddress + (uint)(i * 4),
+ 707:                 repeatCode[i]);
+ 708:         }
+ 709:
+ 710:         for (int i = 0; i < compareCode.Length; i++)
+ 711:         {
+ 712:             _pine.Write32(
+ 713:                 compareAddress + (uint)(i * 4),
+ 714:                 compareCode[i]);
+ 715:         }
+ 716:
+ 717:         for (int i = 0; i < repeatCode.Length; i++)
+ 718:         {
+ 719:             if (_pine.Read32(
+ 720:                 repeatAddress + (uint)(i * 4)) != repeatCode[i])
+ 721:             {
+ 722:                 throw new InvalidOperationException(
+ 723:                     "イオナズン連発コードの検証に失敗しました。");
+ 724:             }
+ 725:         }
+ 726:
+ 727:         for (int i = 0; i < compareCode.Length; i++)
+ 728:         {
+ 729:             if (_pine.Read32(
+ 730:                 compareAddress + (uint)(i * 4)) != compareCode[i])
+ 731:             {
+ 732:                 throw new InvalidOperationException(
+ 733:                     "イオナズン確率判定コードの検証に失敗しました。");
+ 734:             }
+ 735:         }
+ 736:
+ 737:         // 比較命令の次の命令を先にNOPにする。
+ 738:         // これによりJ命令の遅延スロットで元のbeqが実行されない。
+ 739:         if (currentCompareBranch == IonazunCompareBranchOriginal)
+ 740:         {
+ 741:             _pine.Write32(IonazunCompareBranchAddress, 0u);
+ 742:
+ 743:             if (_pine.Read32(IonazunCompareBranchAddress) != 0u)
+ 744:             {
+ 745:                 throw new InvalidOperationException(
+ 746:                     "確率判定の分岐命令をNOPにできませんでした。");
+ 747:             }
+ 748:         }
+ 749:
+ 750:         if (currentCompare == IonazunCompareOriginal)
+ 751:         {
+ 752:             _pine.Write32(IonazunCompareAddress, compareJump);
+ 753:
+
+ 688:             throw new InvalidOperationException(
+ 689:                 "確率判定フックの命令ペアが想定外です。\n" +
+ 690:                 "DE8: 0x" + currentCompare.ToString("X8") + "\n" +
+ 691:                 "DEC: 0x" + currentCompareBranch.ToString("X8"));
+ 692:         }
+ 693:
+ 694:         uint[] repeatCode =
+ 695:             BuildIonazunRepeatCode(_codeCaveAddress);
+ 696:
+ 697:         uint[] compareCode =
+ 698:             BuildIonazunCompareCode(_codeCaveAddress);
+ 699:
+ 700:         uint repeatAddress = _codeCaveAddress + 0x58u;
+ 701:         uint compareAddress = _codeCaveAddress + 0x90u;
+ 702:
+ 703:         for (int i = 0; i < repeatCode.Length; i++)
+ 704:         {
+ 705:             _pine.Write32(
+ 706:                 repeatAddress + (uint)(i * 4),
+ 707:                 repeatCode[i]);
+ 708:         }
+ 709:
+ 710:         for (int i = 0; i < compareCode.Length; i++)
+ 711:         {
+ 712:             _pine.Write32(
+ 713:                 compareAddress + (uint)(i * 4),
+ 714:                 compareCode[i]);
+ 715:         }
+ 716:
+ 717:         for (int i = 0; i < repeatCode.Length; i++)
+ 718:         {
+ 719:             if (_pine.Read32(
+ 720:                 repeatAddress + (uint)(i * 4)) != repeatCode[i])
+ 721:             {
+ 722:                 throw new InvalidOperationException(
+ 723:                     "イオナズン連発コードの検証に失敗しました。");
+ 724:             }
+ 725:         }
+ 726:
+ 727:         for (int i = 0; i < compareCode.Length; i++)
+ 728:         {
+ 729:             if (_pine.Read32(
+ 730:                 compareAddress + (uint)(i * 4)) != compareCode[i])
+ 731:             {
+ 732:                 throw new InvalidOperationException(
+ 733:                     "イオナズン確率判定コードの検証に失敗しました。");
+ 734:             }
+ 735:         }
+ 736:
+ 737:         // 比較命令の次の命令を先にNOPにする。
+ 738:         // これによりJ命令の遅延スロットで元のbeqが実行されない。
+ 739:         if (currentCompareBranch == IonazunCompareBranchOriginal)
+ 740:         {
+ 741:             _pine.Write32(IonazunCompareBranchAddress, 0u);
+ 742:
+ 743:             if (_pine.Read32(IonazunCompareBranchAddress) != 0u)
+ 744:             {
+ 745:                 throw new InvalidOperationException(
+ 746:                     "確率判定の分岐命令をNOPにできませんでした。");
+ 747:             }
+ 748:         }
+ 749:
+ 750:         if (currentCompare == IonazunCompareOriginal)
+ 751:         {
+ 752:             _pine.Write32(IonazunCompareAddress, compareJump);
+ 753:
+ 754:             if (_pine.Read32(IonazunCompareAddress) != compareJump)
+ 755:             {
+
+ 689:                 "確率判定フックの命令ペアが想定外です。\n" +
+ 690:                 "DE8: 0x" + currentCompare.ToString("X8") + "\n" +
+ 691:                 "DEC: 0x" + currentCompareBranch.ToString("X8"));
+ 692:         }
+ 693:
+ 694:         uint[] repeatCode =
+ 695:             BuildIonazunRepeatCode(_codeCaveAddress);
+ 696:
+ 697:         uint[] compareCode =
+ 698:             BuildIonazunCompareCode(_codeCaveAddress);
+ 699:
+ 700:         uint repeatAddress = _codeCaveAddress + 0x58u;
+ 701:         uint compareAddress = _codeCaveAddress + 0x90u;
+ 702:
+ 703:         for (int i = 0; i < repeatCode.Length; i++)
+ 704:         {
+ 705:             _pine.Write32(
+ 706:                 repeatAddress + (uint)(i * 4),
+ 707:                 repeatCode[i]);
+ 708:         }
+ 709:
+ 710:         for (int i = 0; i < compareCode.Length; i++)
+ 711:         {
+ 712:             _pine.Write32(
+ 713:                 compareAddress + (uint)(i * 4),
+ 714:                 compareCode[i]);
+ 715:         }
+ 716:
+ 717:         for (int i = 0; i < repeatCode.Length; i++)
+ 718:         {
+ 719:             if (_pine.Read32(
+ 720:                 repeatAddress + (uint)(i * 4)) != repeatCode[i])
+ 721:             {
+ 722:                 throw new InvalidOperationException(
+ 723:                     "イオナズン連発コードの検証に失敗しました。");
+ 724:             }
+ 725:         }
+ 726:
+ 727:         for (int i = 0; i < compareCode.Length; i++)
+ 728:         {
+ 729:             if (_pine.Read32(
+ 730:                 compareAddress + (uint)(i * 4)) != compareCode[i])
+ 731:             {
+ 732:                 throw new InvalidOperationException(
+ 733:                     "イオナズン確率判定コードの検証に失敗しました。");
+ 734:             }
+ 735:         }
+ 736:
+ 737:         // 比較命令の次の命令を先にNOPにする。
+ 738:         // これによりJ命令の遅延スロットで元のbeqが実行されない。
+ 739:         if (currentCompareBranch == IonazunCompareBranchOriginal)
+ 740:         {
+ 741:             _pine.Write32(IonazunCompareBranchAddress, 0u);
+ 742:
+ 743:             if (_pine.Read32(IonazunCompareBranchAddress) != 0u)
+ 744:             {
+ 745:                 throw new InvalidOperationException(
+ 746:                     "確率判定の分岐命令をNOPにできませんでした。");
+ 747:             }
+ 748:         }
+ 749:
+ 750:         if (currentCompare == IonazunCompareOriginal)
+ 751:         {
+ 752:             _pine.Write32(IonazunCompareAddress, compareJump);
+ 753:
+ 754:             if (_pine.Read32(IonazunCompareAddress) != compareJump)
+ 755:             {
+ 756:                 throw new InvalidOperationException(
+
+ 760:
+ 761:         if (currentUsed == IonazunUsedBranchOriginal)
+ 762:         {
+ 763:             _pine.Write32(IonazunUsedBranchAddress, usedJump);
+ 764:
+ 765:             if (_pine.Read32(IonazunUsedBranchAddress) != usedJump)
+ 766:             {
+ 767:                 throw new InvalidOperationException(
+ 768:                     "使用済み判定フックの設置に失敗しました。");
+ 769:             }
+ 770:         }
+ 771:
+ 772:         _ionazunRepeatCaveAddress = _codeCaveAddress;
+ 773:     }
+ 774:
+ 775:     private void RestoreIonazunRepeatPatch()
+ 776:     {
+ 777:         uint currentUsed =
+ 778:             _pine.Read32(IonazunUsedBranchAddress);
+ 779:
+ 780:         uint currentCompare =
+ 781:             _pine.Read32(IonazunCompareAddress);
+ 782:
+ 783:         // 前回の処理で比較フック位置に残った強制成功命令を復旧する
+ 784:         if (currentCompare == 0x24020001u)
+ 785:         {
+ 786:             _pine.Write32(
+ 787:                 IonazunCompareAddress,
+ 788:                 IonazunCompareOriginal);
+ 789:
+ 790:             currentCompare =
+ 791:                 _pine.Read32(IonazunCompareAddress);
+ 792:
+ 793:             if (currentCompare != IonazunCompareOriginal)
+ 794:             {
+ 795:                 throw new InvalidOperationException(
+ 796:                     "確率判定命令の復旧に失敗しました。");
+ 797:             }
+ 798:         }
+ 799:
+ 800:         uint currentCompareBranch =
+ 801:             _pine.Read32(IonazunCompareBranchAddress);
+ 802:
+ 803:         // まず使用済み判定フックを復元
+ 804:         if (currentUsed != IonazunUsedBranchOriginal)
+ 805:         {
+ 806:             if (!IsIonazunRepeatJump(currentUsed))
+ 807:             {
+ 808:                 throw new InvalidOperationException(
+ 809:                     "使用済み判定命令が想定外です: 0x" +
+ 810:                     currentUsed.ToString("X8"));
+ 811:             }
+ 812:
+ 813:             uint target = DecodeIonazunRepeatJump(currentUsed);
+ 814:
+ 815:             if (target < 0x58u)
+ 816:                 throw new InvalidOperationException(
+ 817:                     "使用済み判定フックのジャンプ先が不正です。");
+ 818:
+ 819:             uint cave = target - 0x58u;
+ 820:
+ 821:             if (target != cave + 0x58u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 822:             {
+ 823:                 throw new InvalidOperationException(
+ 824:                     "使用済み判定フックの接続先を検証できません。");
+ 825:             }
+ 826:
+ 827:             if (_codeCaveAddress != 0 &&
+
+ 815:             if (target < 0x58u)
+ 816:                 throw new InvalidOperationException(
+ 817:                     "使用済み判定フックのジャンプ先が不正です。");
+ 818:
+ 819:             uint cave = target - 0x58u;
+ 820:
+ 821:             if (target != cave + 0x58u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 822:             {
+ 823:                 throw new InvalidOperationException(
+ 824:                     "使用済み判定フックの接続先を検証できません。");
+ 825:             }
+ 826:
+ 827:             if (_codeCaveAddress != 0 &&
+ 828:                 _codeCaveAddress != cave)
+ 829:             {
+ 830:                 throw new InvalidOperationException(
+ 831:                     "使用済み判定フックが別のディスパッチャーを参照しています。");
+ 832:             }
+ 833:
+ 834:             _codeCaveAddress = cave;
+ 835:
+ 836:             _pine.Write32(
+ 837:                 IonazunUsedBranchAddress,
+ 838:                 IonazunUsedBranchOriginal);
+ 839:
+ 840:             if (_pine.Read32(IonazunUsedBranchAddress) !=
+ 841:                 IonazunUsedBranchOriginal)
+ 842:             {
+ 843:                 throw new InvalidOperationException(
+ 844:                     "使用済み判定命令の復元に失敗しました。");
+ 845:             }
+ 846:         }
+ 847:
+ 848:         // 比較フックはDE8を先に戻し、その後DECを戻す
+ 849:         if (currentCompare != IonazunCompareOriginal)
+ 850:         {
+ 851:             if (!IsIonazunRepeatJump(currentCompare))
+ 852:             {
+ 853:                 throw new InvalidOperationException(
+ 854:                     "確率判定命令が想定外です: 0x" +
+ 855:                     currentCompare.ToString("X8"));
+ 856:             }
+ 857:
+ 858:             uint target = DecodeIonazunRepeatJump(currentCompare);
+ 859:
+ 860:             if (target < 0x90u)
+ 861:                 throw new InvalidOperationException(
+ 862:                     "確率判定フックのジャンプ先が不正です。");
+ 863:
+ 864:             uint cave = target - 0x90u;
+ 865:
+ 866:             if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 867:             {
+ 868:                 throw new InvalidOperationException(
+ 869:                     "確率判定フックの接続先を検証できません。");
+ 870:             }
+ 871:
+ 872:             if (_codeCaveAddress != 0 &&
+ 873:                 _codeCaveAddress != cave)
+ 874:             {
+ 875:                 throw new InvalidOperationException(
+ 876:                     "確率判定フックが別のディスパッチャーを参照しています。");
+ 877:             }
+ 878:
+ 879:             _codeCaveAddress = cave;
+ 880:
+ 881:             _pine.Write32(
+ 882:                 IonazunCompareAddress,
+
+ 816:                 throw new InvalidOperationException(
+ 817:                     "使用済み判定フックのジャンプ先が不正です。");
+ 818:
+ 819:             uint cave = target - 0x58u;
+ 820:
+ 821:             if (target != cave + 0x58u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 822:             {
+ 823:                 throw new InvalidOperationException(
+ 824:                     "使用済み判定フックの接続先を検証できません。");
+ 825:             }
+ 826:
+ 827:             if (_codeCaveAddress != 0 &&
+ 828:                 _codeCaveAddress != cave)
+ 829:             {
+ 830:                 throw new InvalidOperationException(
+ 831:                     "使用済み判定フックが別のディスパッチャーを参照しています。");
+ 832:             }
+ 833:
+ 834:             _codeCaveAddress = cave;
+ 835:
+ 836:             _pine.Write32(
+ 837:                 IonazunUsedBranchAddress,
+ 838:                 IonazunUsedBranchOriginal);
+ 839:
+ 840:             if (_pine.Read32(IonazunUsedBranchAddress) !=
+ 841:                 IonazunUsedBranchOriginal)
+ 842:             {
+ 843:                 throw new InvalidOperationException(
+ 844:                     "使用済み判定命令の復元に失敗しました。");
+ 845:             }
+ 846:         }
+ 847:
+ 848:         // 比較フックはDE8を先に戻し、その後DECを戻す
+ 849:         if (currentCompare != IonazunCompareOriginal)
+ 850:         {
+ 851:             if (!IsIonazunRepeatJump(currentCompare))
+ 852:             {
+ 853:                 throw new InvalidOperationException(
+ 854:                     "確率判定命令が想定外です: 0x" +
+ 855:                     currentCompare.ToString("X8"));
+ 856:             }
+ 857:
+ 858:             uint target = DecodeIonazunRepeatJump(currentCompare);
+ 859:
+ 860:             if (target < 0x90u)
+ 861:                 throw new InvalidOperationException(
+ 862:                     "確率判定フックのジャンプ先が不正です。");
+ 863:
+ 864:             uint cave = target - 0x90u;
+ 865:
+ 866:             if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 867:             {
+ 868:                 throw new InvalidOperationException(
+ 869:                     "確率判定フックの接続先を検証できません。");
+ 870:             }
+ 871:
+ 872:             if (_codeCaveAddress != 0 &&
+ 873:                 _codeCaveAddress != cave)
+ 874:             {
+ 875:                 throw new InvalidOperationException(
+ 876:                     "確率判定フックが別のディスパッチャーを参照しています。");
+ 877:             }
+ 878:
+ 879:             _codeCaveAddress = cave;
+ 880:
+ 881:             _pine.Write32(
+ 882:                 IonazunCompareAddress,
+ 883:                 IonazunCompareOriginal);
+
+ 822:             {
+ 823:                 throw new InvalidOperationException(
+ 824:                     "使用済み判定フックの接続先を検証できません。");
+ 825:             }
+ 826:
+ 827:             if (_codeCaveAddress != 0 &&
+ 828:                 _codeCaveAddress != cave)
+ 829:             {
+ 830:                 throw new InvalidOperationException(
+ 831:                     "使用済み判定フックが別のディスパッチャーを参照しています。");
+ 832:             }
+ 833:
+ 834:             _codeCaveAddress = cave;
+ 835:
+ 836:             _pine.Write32(
+ 837:                 IonazunUsedBranchAddress,
+ 838:                 IonazunUsedBranchOriginal);
+ 839:
+ 840:             if (_pine.Read32(IonazunUsedBranchAddress) !=
+ 841:                 IonazunUsedBranchOriginal)
+ 842:             {
+ 843:                 throw new InvalidOperationException(
+ 844:                     "使用済み判定命令の復元に失敗しました。");
+ 845:             }
+ 846:         }
+ 847:
+ 848:         // 比較フックはDE8を先に戻し、その後DECを戻す
+ 849:         if (currentCompare != IonazunCompareOriginal)
+ 850:         {
+ 851:             if (!IsIonazunRepeatJump(currentCompare))
+ 852:             {
+ 853:                 throw new InvalidOperationException(
+ 854:                     "確率判定命令が想定外です: 0x" +
+ 855:                     currentCompare.ToString("X8"));
+ 856:             }
+ 857:
+ 858:             uint target = DecodeIonazunRepeatJump(currentCompare);
+ 859:
+ 860:             if (target < 0x90u)
+ 861:                 throw new InvalidOperationException(
+ 862:                     "確率判定フックのジャンプ先が不正です。");
+ 863:
+ 864:             uint cave = target - 0x90u;
+ 865:
+ 866:             if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 867:             {
+ 868:                 throw new InvalidOperationException(
+ 869:                     "確率判定フックの接続先を検証できません。");
+ 870:             }
+ 871:
+ 872:             if (_codeCaveAddress != 0 &&
+ 873:                 _codeCaveAddress != cave)
+ 874:             {
+ 875:                 throw new InvalidOperationException(
+ 876:                     "確率判定フックが別のディスパッチャーを参照しています。");
+ 877:             }
+ 878:
+ 879:             _codeCaveAddress = cave;
+ 880:
+ 881:             _pine.Write32(
+ 882:                 IonazunCompareAddress,
+ 883:                 IonazunCompareOriginal);
+ 884:
+ 885:             if (_pine.Read32(IonazunCompareAddress) !=
+ 886:                 IonazunCompareOriginal)
+ 887:             {
+ 888:                 throw new InvalidOperationException(
+ 889:                     "確率判定命令の復元に失敗しました。");
+
+ 860:             if (target < 0x90u)
+ 861:                 throw new InvalidOperationException(
+ 862:                     "確率判定フックのジャンプ先が不正です。");
+ 863:
+ 864:             uint cave = target - 0x90u;
+ 865:
+ 866:             if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 867:             {
+ 868:                 throw new InvalidOperationException(
+ 869:                     "確率判定フックの接続先を検証できません。");
+ 870:             }
+ 871:
+ 872:             if (_codeCaveAddress != 0 &&
+ 873:                 _codeCaveAddress != cave)
+ 874:             {
+ 875:                 throw new InvalidOperationException(
+ 876:                     "確率判定フックが別のディスパッチャーを参照しています。");
+ 877:             }
+ 878:
+ 879:             _codeCaveAddress = cave;
+ 880:
+ 881:             _pine.Write32(
+ 882:                 IonazunCompareAddress,
+ 883:                 IonazunCompareOriginal);
+ 884:
+ 885:             if (_pine.Read32(IonazunCompareAddress) !=
+ 886:                 IonazunCompareOriginal)
+ 887:             {
+ 888:                 throw new InvalidOperationException(
+ 889:                     "確率判定命令の復元に失敗しました。");
+ 890:             }
+ 891:         }
+ 892:
+ 893:         if (currentCompareBranch != IonazunCompareBranchOriginal)
+ 894:         {
+ 895:             if (currentCompareBranch != 0u)
+ 896:             {
+ 897:                 throw new InvalidOperationException(
+ 898:                     "確率判定の分岐命令が想定外です: 0x" +
+ 899:                     currentCompareBranch.ToString("X8"));
+ 900:             }
+ 901:
+ 902:             _pine.Write32(
+ 903:                 IonazunCompareBranchAddress,
+ 904:                 IonazunCompareBranchOriginal);
+ 905:
+ 906:             if (_pine.Read32(IonazunCompareBranchAddress) !=
+ 907:                 IonazunCompareBranchOriginal)
+ 908:             {
+ 909:                 throw new InvalidOperationException(
+ 910:                     "確率判定の分岐命令の復元に失敗しました。");
+ 911:             }
+ 912:         }
+ 913:
+ 914:         _ionazunRepeatCaveAddress = 0;
+ 915:     }
+ 916:
+ 917:     private List<(byte SpeciesId, byte Marker, byte ActualAction)>
+ 918:         BuildActionEntries(
+ 919:             Dictionary<int, ushort> actions,
+ 920:             ISet<int>? forceOverride = null)
+ 921:     {
+ 922:         var entries =
+ 923:             new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+ 924:
+ 925:         var enabled = forceOverride != null
+ 926:             ? new HashSet<int>(forceOverride)
+ 927:             : _ionazunForceOverride != null
+
+ 861:                 throw new InvalidOperationException(
+ 862:                     "確率判定フックのジャンプ先が不正です。");
+ 863:
+ 864:             uint cave = target - 0x90u;
+ 865:
+ 866:             if (target != cave + 0x90u || cave < CaveSearchEnd || cave > CaveSearchStart)
+ 867:             {
+ 868:                 throw new InvalidOperationException(
+ 869:                     "確率判定フックの接続先を検証できません。");
+ 870:             }
+ 871:
+ 872:             if (_codeCaveAddress != 0 &&
+ 873:                 _codeCaveAddress != cave)
+ 874:             {
+ 875:                 throw new InvalidOperationException(
+ 876:                     "確率判定フックが別のディスパッチャーを参照しています。");
+ 877:             }
+ 878:
+ 879:             _codeCaveAddress = cave;
+ 880:
+ 881:             _pine.Write32(
+ 882:                 IonazunCompareAddress,
+ 883:                 IonazunCompareOriginal);
+ 884:
+ 885:             if (_pine.Read32(IonazunCompareAddress) !=
+ 886:                 IonazunCompareOriginal)
+ 887:             {
+ 888:                 throw new InvalidOperationException(
+ 889:                     "確率判定命令の復元に失敗しました。");
+ 890:             }
+ 891:         }
+ 892:
+ 893:         if (currentCompareBranch != IonazunCompareBranchOriginal)
+ 894:         {
+ 895:             if (currentCompareBranch != 0u)
+ 896:             {
+ 897:                 throw new InvalidOperationException(
+ 898:                     "確率判定の分岐命令が想定外です: 0x" +
+ 899:                     currentCompareBranch.ToString("X8"));
+ 900:             }
+ 901:
+ 902:             _pine.Write32(
+ 903:                 IonazunCompareBranchAddress,
+ 904:                 IonazunCompareBranchOriginal);
+ 905:
+ 906:             if (_pine.Read32(IonazunCompareBranchAddress) !=
+ 907:                 IonazunCompareBranchOriginal)
+ 908:             {
+ 909:                 throw new InvalidOperationException(
+ 910:                     "確率判定の分岐命令の復元に失敗しました。");
+ 911:             }
+ 912:         }
+ 913:
+ 914:         _ionazunRepeatCaveAddress = 0;
+ 915:     }
+ 916:
+ 917:     private List<(byte SpeciesId, byte Marker, byte ActualAction)>
+ 918:         BuildActionEntries(
+ 919:             Dictionary<int, ushort> actions,
+ 920:             ISet<int>? forceOverride = null)
+ 921:     {
+ 922:         var entries =
+ 923:             new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+ 924:
+ 925:         var enabled = forceOverride != null
+ 926:             ? new HashSet<int>(forceOverride)
+ 927:             : _ionazunForceOverride != null
+ 928:                 ? new HashSet<int>(_ionazunForceOverride)
+
+ 867:             {
+ 868:                 throw new InvalidOperationException(
+ 869:                     "確率判定フックの接続先を検証できません。");
+ 870:             }
+ 871:
+ 872:             if (_codeCaveAddress != 0 &&
+ 873:                 _codeCaveAddress != cave)
+ 874:             {
+ 875:                 throw new InvalidOperationException(
+ 876:                     "確率判定フックが別のディスパッチャーを参照しています。");
+ 877:             }
+ 878:
+ 879:             _codeCaveAddress = cave;
+ 880:
+ 881:             _pine.Write32(
+ 882:                 IonazunCompareAddress,
+ 883:                 IonazunCompareOriginal);
+ 884:
+ 885:             if (_pine.Read32(IonazunCompareAddress) !=
+ 886:                 IonazunCompareOriginal)
+ 887:             {
+ 888:                 throw new InvalidOperationException(
+ 889:                     "確率判定命令の復元に失敗しました。");
+ 890:             }
+ 891:         }
+ 892:
+ 893:         if (currentCompareBranch != IonazunCompareBranchOriginal)
+ 894:         {
+ 895:             if (currentCompareBranch != 0u)
+ 896:             {
+ 897:                 throw new InvalidOperationException(
+ 898:                     "確率判定の分岐命令が想定外です: 0x" +
+ 899:                     currentCompareBranch.ToString("X8"));
+ 900:             }
+ 901:
+ 902:             _pine.Write32(
+ 903:                 IonazunCompareBranchAddress,
+ 904:                 IonazunCompareBranchOriginal);
+ 905:
+ 906:             if (_pine.Read32(IonazunCompareBranchAddress) !=
+ 907:                 IonazunCompareBranchOriginal)
+ 908:             {
+ 909:                 throw new InvalidOperationException(
+ 910:                     "確率判定の分岐命令の復元に失敗しました。");
+ 911:             }
+ 912:         }
+ 913:
+ 914:         _ionazunRepeatCaveAddress = 0;
+ 915:     }
+ 916:
+ 917:     private List<(byte SpeciesId, byte Marker, byte ActualAction)>
+ 918:         BuildActionEntries(
+ 919:             Dictionary<int, ushort> actions,
+ 920:             ISet<int>? forceOverride = null)
+ 921:     {
+ 922:         var entries =
+ 923:             new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+ 924:
+ 925:         var enabled = forceOverride != null
+ 926:             ? new HashSet<int>(forceOverride)
+ 927:             : _ionazunForceOverride != null
+ 928:                 ? new HashSet<int>(_ionazunForceOverride)
+ 929:                 : Torneko4ActionStore.GetIonazunForceCopy();
+ 930:
+ 931:         foreach (var pair in actions)
+ 932:         {
+ 933:             if (pair.Key < 0 || pair.Key >= 255)
+ 934:                 throw new InvalidOperationException("モンスター一覧番号が範囲外です: " + pair.Key);
+
+1153:             {
+1154:                 uint index = offset + (uint)b;
+1155:                 if (index < (uint)data.Length)
+1156:                     expected |= (uint)data[index] << (b * 8);
+1157:             }
+1158:             if (_pine.Read32(dataAddress + offset) != expected)
+1159:                 return false;
+1160:         }
+1161:
+1162:         return true;
+1163:     }
+1164:
+1165:     private uint FindCodeCave(uint requiredSize)
+1166:     {
+1167:         if (requiredSize < 0x200u || requiredSize > 0x10000u)
+1168:         {
+1169:             throw new InvalidOperationException(
+1170:                 "必要なコード領域サイズが不正です: " + requiredSize);
+1171:         }
+1172:
+1173:         for (
+1174:             uint candidate = CaveSearchStart;
+1175:             candidate >= CaveSearchEnd;
+1176:             candidate -= CaveSearchStep)
+1177:         {
+1178:             bool free = true;
+1179:
+1180:             for (uint offset = 0; offset < requiredSize; offset += 4u)
+1181:             {
+1182:                 if (_pine.Read32(candidate + offset) != 0u)
+1183:                 {
+1184:                     free = false;
+1185:                     break;
+1186:                 }
+1187:             }
+1188:
+1189:             if (free)
+1190:                 return candidate;
+1191:         }
+1192:
+1193:         throw new InvalidOperationException(
+1194:             "EE RAMに必要サイズ " + requiredSize +
+1195:             " バイトの連続した空き領域が見つかりません。\n" +
+1196:             "512バイト固定ではなく、設定種族数に応じたサイズで探索しました。");
+1197:     }
+1198:
+1199:     private void WriteDispatcherCode(
+1200:         uint address,
+1201:         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
+1202:         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
+1203:     {
+1204:         uint[] stub = BuildDispatcherStub(address);
+1205:         uint[] lookup = BuildSparseLookupCode(
+1206:             address, normalEntries.Count, allyOverrideEntries.Count);
+1207:
+1208:         var allEntries = new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
+1209:         allEntries.AddRange(allyOverrideEntries);
+1210:         allEntries.AddRange(normalEntries);
+1211:         byte[] data = BuildActionData(allEntries);
+1212:
+1213:         for (int i = 0; i < stub.Length; i++)
+1214:             _pine.Write32(address + (uint)(i * 4), stub[i]);
+1215:
+1216:         for (uint offset = (uint)(stub.Length * 4); offset < 0x58u; offset += 4u)
+1217:             _pine.Write32(address + offset, 0u);
+1218:
+1219:         uint lookupAddress = address + 0xE4u;
+1220:         for (int i = 0; i < lookup.Length; i++)
+
+1298:             delayInstruction = _pine.Read32(DelaySlotAddress);
+1299:         }
+1300:
+1301:         if (delayInstruction != OriginalDelayInstruction)
+1302:             throw new InvalidOperationException(
+1303:                 "遅延スロットが想定外です。現在値: 0x" + delayInstruction.ToString("X8"));
+1304:
+1305:         if (currentIsDispatcher)
+1306:         {
+1307:             uint detectedCave = DecodeDispatcherAddress(currentCall);
+1308:             if (IsDispatcherCode(detectedCave, normalEntries, allyOverrideEntries))
+1309:             {
+1310:                 _codeCaveAddress = detectedCave;
+1311:             }
+1312:             else
+1313:             {
+1314:                 RestoreIonazunRepeatPatch();
+1315:                 RestoreCallInstruction();
+1316:                 _codeCaveAddress = 0u;
+1317:                 currentIsDispatcher = false;
+1318:             }
+1319:         }
+1320:
+1321:         if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
+1322:         {
+1323:             RestoreIonazunRepeatPatch();
+1324:             if (currentIsDispatcher)
+1325:                 RestoreCallInstruction();
+1326:             _codeCaveAddress = 0u;
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+
+1304:
+1305:         if (currentIsDispatcher)
+1306:         {
+1307:             uint detectedCave = DecodeDispatcherAddress(currentCall);
+1308:             if (IsDispatcherCode(detectedCave, normalEntries, allyOverrideEntries))
+1309:             {
+1310:                 _codeCaveAddress = detectedCave;
+1311:             }
+1312:             else
+1313:             {
+1314:                 RestoreIonazunRepeatPatch();
+1315:                 RestoreCallInstruction();
+1316:                 _codeCaveAddress = 0u;
+1317:                 currentIsDispatcher = false;
+1318:             }
+1319:         }
+1320:
+1321:         if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
+1322:         {
+1323:             RestoreIonazunRepeatPatch();
+1324:             if (currentIsDispatcher)
+1325:                 RestoreCallInstruction();
+1326:             _codeCaveAddress = 0u;
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+
+1314:                 RestoreIonazunRepeatPatch();
+1315:                 RestoreCallInstruction();
+1316:                 _codeCaveAddress = 0u;
+1317:                 currentIsDispatcher = false;
+1318:             }
+1319:         }
+1320:
+1321:         if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
+1322:         {
+1323:             RestoreIonazunRepeatPatch();
+1324:             if (currentIsDispatcher)
+1325:                 RestoreCallInstruction();
+1326:             _codeCaveAddress = 0u;
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+
+1318:             }
+1319:         }
+1320:
+1321:         if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
+1322:         {
+1323:             RestoreIonazunRepeatPatch();
+1324:             if (currentIsDispatcher)
+1325:                 RestoreCallInstruction();
+1326:             _codeCaveAddress = 0u;
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+
+1319:         }
+1320:
+1321:         if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
+1322:         {
+1323:             RestoreIonazunRepeatPatch();
+1324:             if (currentIsDispatcher)
+1325:                 RestoreCallInstruction();
+1326:             _codeCaveAddress = 0u;
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+1386:             uint speciesId = SharedPine.Read32(traceAddress + 4u);
+
+1324:             if (currentIsDispatcher)
+1325:                 RestoreCallInstruction();
+1326:             _codeCaveAddress = 0u;
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+1386:             uint speciesId = SharedPine.Read32(traceAddress + 4u);
+1387:             uint count = SharedPine.Read32(traceAddress + 8u);
+1388:
+1389:             string[] lines =
+1390:             {
+1391:                 "ENEMY ACTION TRACE",
+
+1327:             return;
+1328:         }
+1329:
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+1386:             uint speciesId = SharedPine.Read32(traceAddress + 4u);
+1387:             uint count = SharedPine.Read32(traceAddress + 8u);
+1388:
+1389:             string[] lines =
+1390:             {
+1391:                 "ENEMY ACTION TRACE",
+1392:                 "Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+1393:                 "Read only: YES",
+1394:                 "Hook address: 0x" + PatchAddress.ToString("X8"),
+
+1330:         if (_codeCaveAddress != 0u &&
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+1386:             uint speciesId = SharedPine.Read32(traceAddress + 4u);
+1387:             uint count = SharedPine.Read32(traceAddress + 8u);
+1388:
+1389:             string[] lines =
+1390:             {
+1391:                 "ENEMY ACTION TRACE",
+1392:                 "Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+1393:                 "Read only: YES",
+1394:                 "Hook address: 0x" + PatchAddress.ToString("X8"),
+1395:                 "Code cave: 0x" + cave.ToString("X8"),
+1396:                 "Trace address: 0x" + traceAddress.ToString("X8"),
+1397:                 "",
+
+1331:             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+1332:         {
+1333:             RestoreIonazunRepeatPatch();
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+1386:             uint speciesId = SharedPine.Read32(traceAddress + 4u);
+1387:             uint count = SharedPine.Read32(traceAddress + 8u);
+1388:
+1389:             string[] lines =
+1390:             {
+1391:                 "ENEMY ACTION TRACE",
+1392:                 "Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+1393:                 "Read only: YES",
+1394:                 "Hook address: 0x" + PatchAddress.ToString("X8"),
+1395:                 "Code cave: 0x" + cave.ToString("X8"),
+1396:                 "Trace address: 0x" + traceAddress.ToString("X8"),
+1397:                 "",
+1398:                 "Recorded calls: " + count.ToString(),
+
+1334:             if (currentIsDispatcher)
+1335:                 RestoreCallInstruction();
+1336:             _codeCaveAddress = 0u;
+1337:         }
+1338:
+1339:         if (_codeCaveAddress == 0u)
+1340:         {
+1341:             uint requiredSize = GetRequiredCaveSize(normalEntries, allyOverrideEntries);
+1342:             _codeCaveAddress = FindCodeCave(requiredSize);
+1343:             WriteDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries);
+1344:         }
+1345:
+1346:         uint newCall = EncodeJal(_codeCaveAddress);
+1347:         _pine.Write32(PatchAddress, newCall);
+1348:
+1349:         uint verifyCall = _pine.Read32(PatchAddress);
+1350:         if (verifyCall != newCall)
+1351:             throw new InvalidOperationException(
+1352:                 "ディスパッチャー呼び出し命令の検証に失敗しました。書き込み値: 0x" +
+1353:                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
+1354:
+1355:         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+1356:     }
+1357:
+1358:     internal static string ReadActionTrace()
+1359:     {
+1360:         lock (SharedPineAccessSync)
+1361:         {
+1362:             if (!SharedPine.TryConnect())
+1363:             {
+1364:                 throw new InvalidOperationException(
+1365:                     "PCSX2 PINE TCP 28011に接続できません。");
+1366:             }
+1367:
+1368:             uint call = SharedPine.Read32(PatchAddress);
+1369:
+1370:             if ((call >> 26) != 3u)
+1371:             {
+1372:                 throw new InvalidOperationException(
+1373:                     "敵特技フックが見つかりません。特技設定を適用してください。");
+1374:             }
+1375:
+1376:             uint cave = (call & 0x03FFFFFFu) << 2;
+1377:
+1378:             if (cave < CaveSearchEnd || cave > CaveSearchStart)
+1379:             {
+1380:                 throw new InvalidOperationException(
+1381:                     "コードケーブのアドレスが範囲外です。");
+1382:             }
+1383:
+1384:             uint traceAddress = cave + 0xD4u;
+1385:             uint actionId = SharedPine.Read32(traceAddress);
+1386:             uint speciesId = SharedPine.Read32(traceAddress + 4u);
+1387:             uint count = SharedPine.Read32(traceAddress + 8u);
+1388:
+1389:             string[] lines =
+1390:             {
+1391:                 "ENEMY ACTION TRACE",
+1392:                 "Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+1393:                 "Read only: YES",
+1394:                 "Hook address: 0x" + PatchAddress.ToString("X8"),
+1395:                 "Code cave: 0x" + cave.ToString("X8"),
+1396:                 "Trace address: 0x" + traceAddress.ToString("X8"),
+1397:                 "",
+1398:                 "Recorded calls: " + count.ToString(),
+1399:                 "Species ID: " + speciesId.ToString(),
+1400:                 "Action ID: 0x" + (actionId & 0xFFFFu).ToString("X4"),
+1401:                 "Action ID signed: " + unchecked((short)(actionId & 0xFFFFu)).ToString(),
+
+1854:                     snapshot = new Dictionary<int, ushort>(_actions);
+1855:                     ringOverrideCount = _allyRingActions.Count;
+1856:                 }
+1857:
+1858:                 if (snapshot.Count == 0)
+1859:                 {
+1860:                     RaiseStatus(
+1861:                         "種族別特技設定なし：元の命令を維持しています。");
+1862:                 }
+1863:
+1864:                 if (snapshot.Count > 0 ||
+1865:                     ringOverrideCount > 0 ||
+1866:                     _codeCaveAddress != 0 ||
+1867:                     _ionazunRepeatCaveAddress != 0)
+1868:                 {
+1869:                     bool connected = _pine.TryConnect();
+1870:
+1871:                     if (!connected)
+1872:                     {
+1873:                         RaiseStatus(
+1874:                             "PINE未接続：PCSX2のTCP 28011を確認してください。");
+1875:                     }
+1876:
+1877:                     if (connected)
+1878:                     {
+1879:                         uint status = _pine.GetStatus();
+1880:
+1881:                         if (status == 0)
+1882:                         {
+1883:                             ApplyRuntime(snapshot);
+1884:                             RaiseStatus(snapshot.Count > 0 || ringOverrideCount > 0
+1885:                                 ? "種族別特技ディスパッチャー適用中：通常設定 " +
+1886:                                   snapshot.Count + "種類 / 指輪上書き " +
+1887:                                   ringOverrideCount + "種類"
+1888:                                 : "種族別特技設定なし：元の命令へ復元済みです。");
+1889:                         }
+1890:
+1891:                         if (status == 1)
+1892:                         {
+1893:                             RaiseStatus(
+1894:                                 "PCSX2一時停止中：再開後に設定を確認します。");
+1895:                         }
+1896:
+1897:                         if (status != 0 && status != 1)
+1898:                         {
+1899:                             RaiseStatus("PCSX2の仮想マシンが停止しています。");
+1900:                         }
+1901:                     }
+1902:                 }
+1903:             }
+1904:         }
+1905:         catch (Exception ex)
+1906:         {
+1907:             RaiseStatus("種族別特技監視エラー: " + ex.Message);
+1908:         }
+1909:
+1910:         Interlocked.Exchange(ref _pollBusy, 0);
+1911:     }
+1912:     private void RaiseStatus(string message)
+1913:     {
+1914:         if (StatusChanged == null)
+1915:             return;
+1916:
+1917:         if (string.Equals(
+1918:             _lastStatus,
+1919:             message,
+1920:             StringComparison.Ordinal))
+1921:             return;
+
+PS C:\Users\penelope>
