@@ -132,9 +132,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
-                    // 段階3A：特技使用判定の呼び出し2か所だけを診断する。
-                    // 行動ID読込・対象判定フックはまだ設置しない。
-                    ApplyRingAllySkillCheckProbeOnly(true);
                 }
                 else
                 {
@@ -156,7 +153,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _lastObservedEquipped = equipped;
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：診断段階3A（味方特技使用判定フック2か所のみ）"
+                    ? "スライムの指輪：段階2適用済み（味方専用データ＋特技使用率・範囲／行動判定フック停止）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
