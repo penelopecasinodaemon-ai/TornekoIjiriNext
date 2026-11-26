@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -8,52 +10,43 @@ namespace TornekoIjiriPort;
 
 internal static class AppSideTraceService
 {
-    private static readonly object Sync = new object();
+    private static readonly object Sync = new();
 
-    // 以前の実行時調査で確認した味方・敵のエントリー位置。
-    // ゲームメモリへの書き込みには使用しない。
     private static readonly uint[] SlotAddresses =
     {
         0x00396800u,
         0x00396820u
     };
 
-    private static readonly Queue<string> Records =
-        new Queue<string>();
-
-    private static readonly Dictionary<uint, string> LastSnapshots =
-        new Dictionary<uint, string>();
+    private static readonly Queue<string> Records = new();
+    private static readonly Dictionary<uint, uint[]> LastSnapshots = new();
 
     private static System.Threading.Timer? _timer;
     private static int _pollBusy;
     private static long _recordCount;
     private static string _logPath = "";
+    private static string _csvPath = "";
 
-    private const int MaxRecords = 3000;
-    private const int PollIntervalMilliseconds = 1000;
+    private const int MaxRecords = 30000;
+    private const int PollIntervalMilliseconds = 500;
+    private const uint StructureSize = 0x200u;
 
-    private static string CreateLogPath()
+    private static string CreatePath(string extension, string prefix)
     {
         string desktop = Environment.GetFolderPath(
             Environment.SpecialFolder.DesktopDirectory);
 
-        if (string.IsNullOrWhiteSpace(desktop) ||
-            !Directory.Exists(desktop))
-        {
+        if (string.IsNullOrWhiteSpace(desktop) || !Directory.Exists(desktop))
             desktop = AppContext.BaseDirectory;
-        }
 
         return Path.Combine(
             desktop,
-            "トルネコいじり_アプリ側メモリ監視_" +
-            DateTime.Now.ToString("yyyyMMdd_HHmmss") +
-            ".txt");
+            prefix + DateTime.Now.ToString("yyyyMMdd_HHmmss") + extension);
     }
 
     private static void AddRecord(string message)
     {
-        string line =
-            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") +
+        string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") +
             " | " + message;
 
         lock (Sync)
@@ -73,101 +66,95 @@ internal static class AppSideTraceService
                (pointer & 3u) == 0u;
     }
 
-    private static string CaptureSlot(uint slot)
+    private static uint Read(uint address)
     {
-        uint slot00 =
-            ActionAutoRestoreService.ReadShared32(slot);
-
-        uint slot04 =
-            ActionAutoRestoreService.ReadShared32(slot + 4u);
-
-        uint pointer =
-            ActionAutoRestoreService.ReadShared32(slot + 8u);
-
-        var sb = new StringBuilder();
-
-        sb.Append("SLOT=0x")
-          .Append(slot.ToString("X8"));
-
-        sb.Append(" S00=0x")
-          .Append(slot00.ToString("X8"));
-
-        sb.Append(" S04=0x")
-          .Append(slot04.ToString("X8"));
-
-        sb.Append(" PTR=0x")
-          .Append(pointer.ToString("X8"));
-
-        if (!IsValidPointer(pointer))
-        {
-            sb.Append(" STRUCT=INVALID");
-            return sb.ToString();
-        }
-
-        uint speciesWord =
-            ActionAutoRestoreService.ReadShared32(pointer + 4u);
-
-        // +0x1D3 は +0x1D0 の最上位バイト。
-        uint factionWord =
-            ActionAutoRestoreService.ReadShared32(pointer + 0x1D0u);
-
-        uint speciesId = speciesWord & 0xFFFFu;
-        uint faction = (factionWord >> 24) & 0xFFu;
-
-        sb.Append(" RUNTIME_ID=0x")
-          .Append(speciesId.ToString("X4"));
-
-        sb.Append(" FACTION=0x")
-          .Append(faction.ToString("X2"));
-
-        sb.Append(" DATA=[");
-
-        // 個体構造体の先頭64バイトを読み取る。
-        // PINEの読み取り結果はアプリ側だけに保存する。
-        for (uint offset = 0u; offset <= 0x3Cu; offset += 4u)
-        {
-            uint value =
-                ActionAutoRestoreService.ReadShared32(pointer + offset);
-
-            if (offset != 0u)
-                sb.Append(' ');
-
-            sb.Append('+')
-              .Append(offset.ToString("X2"))
-              .Append('=')
-              .Append(value.ToString("X8"));
-        }
-
-        sb.Append(']');
-
-        sb.Append(" FACTION_WORD=0x")
-          .Append(factionWord.ToString("X8"));
-
-        return sb.ToString();
+        return ActionAutoRestoreService.ReadShared32(address);
     }
 
-    private static void Capture(bool forceRecord)
+    private static uint GetPointer(uint slot)
+    {
+        return Read(slot + 8u);
+    }
+
+    private static string GetIdentity(uint slot, uint pointer)
+    {
+        uint slot00 = Read(slot);
+        uint slot04 = Read(slot + 4u);
+
+        uint speciesWord = Read(pointer + 4u);
+        uint factionWord = Read(pointer + 0x1D0u);
+
+        uint runtimeId = speciesWord & 0xFFFFu;
+        uint faction = (factionWord >> 24) & 0xFFu;
+
+        return
+            "SLOT=0x" + slot.ToString("X8") +
+            " S00=0x" + slot00.ToString("X8") +
+            " S04=0x" + slot04.ToString("X8") +
+            " PTR=0x" + pointer.ToString("X8") +
+            " RUNTIME_ID=0x" + runtimeId.ToString("X4") +
+            " FACTION=0x" + faction.ToString("X2");
+    }
+
+    private static uint[] ReadWords(uint pointer, uint length)
+    {
+        int count = checked((int)(length / 4u));
+        uint[] values = new uint[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            values[i] = Read(pointer + (uint)(i * 4));
+        }
+
+        return values;
+    }
+
+    private static void CaptureFast()
     {
         foreach (uint slot in SlotAddresses)
         {
-            string snapshot = CaptureSlot(slot);
-            bool changed = false;
+            uint pointer = GetPointer(slot);
+
+            if (!IsValidPointer(pointer))
+            {
+                AddRecord(
+                    "INVALID POINTER | SLOT=0x" +
+                    slot.ToString("X8") +
+                    " PTR=0x" + pointer.ToString("X8"));
+                continue;
+            }
+
+            string identity = GetIdentity(slot, pointer);
+            uint[] values = ReadWords(pointer, 0x40u);
+
+            bool first;
+            uint[]? previous;
 
             lock (Sync)
             {
-                if (!LastSnapshots.TryGetValue(slot, out string? previous) ||
-                    !string.Equals(previous, snapshot, StringComparison.Ordinal))
-                {
-                    LastSnapshots[slot] = snapshot;
-                    changed = true;
-                }
+                first = !LastSnapshots.TryGetValue(slot, out previous);
+                LastSnapshots[slot] = values;
             }
 
-            if (changed || forceRecord)
+            if (first)
             {
+                AddRecord("INITIAL | " + identity);
+                continue;
+            }
+
+            if (previous == null)
+                continue;
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (previous[i] == values[i])
+                    continue;
+
                 AddRecord(
-                    (changed ? "MEMORY CHANGE | " : "MANUAL SAMPLE | ") +
-                    snapshot);
+                    "WORD CHANGE | " + identity +
+                    " OFFSET=+0x" + (i * 4).ToString("X3") +
+                    " BEFORE=0x" + previous[i].ToString("X8") +
+                    " AFTER=0x" + values[i].ToString("X8"));
             }
         }
     }
@@ -181,12 +168,9 @@ internal static class AppSideTraceService
         {
             uint status = ActionAutoRestoreService.GetSharedStatus();
 
-            // PINE Status 0 = 実行中。
-            // 停止中は監視を行わず、ゲームの状態を変更しない。
-            if (status != 0u)
-                return;
-
-            Capture(false);
+            // PINE Status 0 = 実行中
+            if (status == 0u)
+                CaptureFast();
         }
         catch (Exception ex)
         {
@@ -203,24 +187,27 @@ internal static class AppSideTraceService
         lock (Sync)
         {
             if (_timer != null)
-                return
-                    "アプリ側メモリ監視は既に動作しています。\n" +
-                    "記録件数: " + _recordCount;
+                return "監視は既に動作しています。\n" + GetStatusCore();
 
-            uint status =
-                ActionAutoRestoreService.GetSharedStatus();
+            uint status = ActionAutoRestoreService.GetSharedStatus();
 
             if (status != 0u)
             {
                 throw new InvalidOperationException(
-                    "PCSX2をゲーム実行状態にしてから監視を開始してください。\n" +
-                    "現在のPINE Status: " + status);
+                    "PCSX2をゲーム実行状態にしてから開始してください。");
             }
 
             Records.Clear();
             LastSnapshots.Clear();
             _recordCount = 0;
-            _logPath = CreateLogPath();
+
+            _logPath = CreatePath(
+                ".txt",
+                "トルネコいじり_詳細メモリ監視_");
+
+            _csvPath = CreatePath(
+                ".csv",
+                "トルネコいじり_詳細メモリ差分_");
 
             _timer = new System.Threading.Timer(
                 Poll,
@@ -230,40 +217,110 @@ internal static class AppSideTraceService
         }
 
         return
-            "アプリ側メモリ監視を開始しました。\n\n" +
-            "監視対象: 既知の味方・敵エントリー2か所\n" +
+            "詳細メモリ監視を開始しました。\n\n" +
+            "監視対象: 味方・敵スロット2か所\n" +
+            "自動監視範囲: 個体データ先頭64バイト\n" +
             "監視間隔: " + PollIntervalMilliseconds + " ms\n" +
-            "記録先: トルネコいじりネクスト側\n" +
+            "詳細採取範囲: 個体データ512バイト\n" +
+            "詳細採取: PCSX2一時停止中に実行\n" +
+            "保存先: デスクトップ\n" +
             "ゲームメモリへの書き込み: なし\n" +
-            "コードケーブ探索: なし\n\n" +
-            "ゲーム内で味方・敵を行動させた後、記録表示を押してください。";
+            "コードケーブ探索: なし";
     }
 
+    internal static string Mark(string label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+            label = "ユーザー目印";
+
+        AddRecord("===== USER MARKER ===== " + label.Trim());
+
+        return "目印を記録しました。\n" + label.Trim();
+    }
+
+    // 既存の呼び出し元との互換性を維持
     internal static string CaptureNow()
     {
-        uint status =
-            ActionAutoRestoreService.GetSharedStatus();
+        return CaptureDetailed();
+    }
+    internal static string CaptureDetailed()
+    {
+        uint status = ActionAutoRestoreService.GetSharedStatus();
 
         if (status != 1u)
         {
             throw new InvalidOperationException(
-                "手動採取はPCSX2を一時停止してから実行してください。");
+                "詳細採取はPCSX2を一時停止してから実行してください。");
         }
 
-        Capture(true);
-        return ReadRecords();
+        var output = new StringBuilder();
+
+        output.AppendLine("===== DETAILED MEMORY SNAPSHOT =====");
+        output.AppendLine("TIME=" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+        output.AppendLine("READ ONLY");
+        output.AppendLine("STRUCTURE SIZE=0x200");
+
+        foreach (uint slot in SlotAddresses)
+        {
+            uint pointer = GetPointer(slot);
+
+            if (!IsValidPointer(pointer))
+            {
+                output.AppendLine(
+                    "INVALID POINTER SLOT=0x" + slot.ToString("X8") +
+                    " PTR=0x" + pointer.ToString("X8"));
+                continue;
+            }
+
+            string identity = GetIdentity(slot, pointer);
+            uint[] values = ReadWords(pointer, StructureSize);
+
+            output.AppendLine();
+            output.AppendLine(identity);
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                output.AppendLine(
+                    "OFFSET=+0x" + (i * 4).ToString("X3") +
+                    " VALUE=0x" + values[i].ToString("X8") +
+                    " DEC=" + values[i].ToString(CultureInfo.InvariantCulture));
+            }
+
+            AddRecord("DETAILED SNAPSHOT | " + identity);
+
+            lock (Sync)
+            {
+                LastSnapshots[slot] = values.Take(16).ToArray();
+            }
+        }
+
+        string result = output.ToString();
+
+        string path;
+        lock (Sync)
+        {
+            if (string.IsNullOrEmpty(_logPath))
+                _logPath = CreatePath(".txt", "トルネコいじり_詳細メモリ監視_");
+
+            path = _logPath;
+        }
+
+        File.AppendAllText(
+            path,
+            Environment.NewLine + result,
+            new UTF8Encoding(false));
+
+        return result +
+            Environment.NewLine +
+            "詳細スナップショットを保存しました: " + path;
     }
 
     internal static string Read()
     {
-        return ReadRecords();
-    }
-
-    private static string ReadRecords()
-    {
         string[] copy;
         long count;
         string path;
+        string csv;
 
         lock (Sync)
         {
@@ -271,52 +328,70 @@ internal static class AppSideTraceService
             count = _recordCount;
 
             if (string.IsNullOrEmpty(_logPath))
-                _logPath = CreateLogPath();
+                _logPath = CreatePath(".txt", "トルネコいじり_詳細メモリ監視_");
+
+            if (string.IsNullOrEmpty(_csvPath))
+                _csvPath = CreatePath(".csv", "トルネコいじり_詳細メモリ差分_");
 
             path = _logPath;
+            csv = _csvPath;
         }
 
         var sb = new StringBuilder();
 
-        sb.AppendLine("TORNEKO IJIRI NEXT - APP SIDE MEMORY MONITOR");
+        sb.AppendLine("TORNEKO IJIRI NEXT - DETAILED APP SIDE MONITOR");
         sb.AppendLine("READ ONLY");
         sb.AppendLine("Game memory writes: NONE");
         sb.AppendLine("Code cave search: NONE");
-        sb.AppendLine("Code cave writes: NONE");
-        sb.AppendLine("Recorded changes: " + count);
+        sb.AppendLine("Recorded records: " + count);
         sb.AppendLine("Displayed records: " + copy.Length);
         sb.AppendLine("Log file: " + path);
+        sb.AppendLine("CSV file: " + csv);
         sb.AppendLine();
 
-        if (copy.Length == 0)
-        {
-            sb.AppendLine("まだ記録がありません。");
-        }
-        else
-        {
-            foreach (string line in copy)
-                sb.AppendLine(line);
-        }
+        foreach (string line in copy)
+            sb.AppendLine(line);
 
         string result = sb.ToString();
 
-        try
+        File.WriteAllText(path, result, new UTF8Encoding(false));
+
+        var csvText = new StringBuilder();
+        csvText.AppendLine("Timestamp,Record");
+
+        foreach (string line in copy)
         {
-            File.WriteAllText(
-                path,
-                result,
-                new UTF8Encoding(false));
+            int separator = line.IndexOf(" | ", StringComparison.Ordinal);
+            string timestamp = separator >= 0 ? line[..separator] : "";
+            string body = separator >= 0 ? line[(separator + 3)..] : line;
+
+            csvText.Append('"').Append(timestamp.Replace("\"", "\"\""))
+                .Append("\",\"")
+                .Append(body.Replace("\"", "\"\""))
+                .AppendLine("\"");
         }
-        catch (Exception ex)
-        {
-            return result +
-                Environment.NewLine +
-                "ログファイル保存エラー: " + ex;
-        }
+
+        File.WriteAllText(csv, csvText.ToString(), new UTF8Encoding(true));
 
         return result +
             Environment.NewLine +
-            "アプリ側の記録をファイルへ保存しました。";
+            "TXTとCSVへ保存しました。";
+    }
+
+    private static string GetStatusCore()
+    {
+        return
+            "監視状態: " + (_timer == null ? "停止中" : "動作中") +
+            Environment.NewLine +
+            "記録件数: " + _recordCount +
+            Environment.NewLine +
+            "監視間隔: " + PollIntervalMilliseconds + " ms";
+    }
+
+    internal static string GetStatus()
+    {
+        lock (Sync)
+            return GetStatusCore();
     }
 
     internal static string Stop()
@@ -331,25 +406,7 @@ internal static class AppSideTraceService
 
         timer?.Dispose();
 
-        string result = ReadRecords();
-
-        return
-            "アプリ側メモリ監視を停止しました。\n\n" +
-            result;
-    }
-
-    internal static string GetStatus()
-    {
-        lock (Sync)
-        {
-            return
-                "監視状態: " +
-                (_timer == null ? "停止中" : "動作中") +
-                Environment.NewLine +
-                "記録件数: " + _recordCount +
-                Environment.NewLine +
-                "記録ファイル: " +
-                (string.IsNullOrEmpty(_logPath) ? "未作成" : _logPath);
-        }
+        return "監視を停止しました。\n\n" + Read();
     }
 }
+

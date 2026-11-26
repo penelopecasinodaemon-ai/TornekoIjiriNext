@@ -7,13 +7,13 @@ namespace TornekoIjiriPort;
 internal sealed class AllyActionTraceForm : Form
 {
     private readonly TextBox _output;
-    private readonly Button _captureButton;
+    private readonly Button _detailButton;
 
     internal AllyActionTraceForm()
     {
-        Text = "味方・敵メモリ監視（アプリ側記録）";
-        Width = 1080;
-        Height = 680;
+        Text = "味方・敵 詳細メモリ監視（アプリ側記録）";
+        Width = 1150;
+        Height = 760;
         StartPosition = FormStartPosition.CenterParent;
 
         var root = new TableLayoutPanel
@@ -24,58 +24,62 @@ internal sealed class AllyActionTraceForm : Form
             Padding = new Padding(10)
         };
 
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 175));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var buttons = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
-            AutoSize = false,
             AutoScroll = true,
             WrapContents = true
         };
 
-        AddButton(
-            buttons,
-            "アプリ側監視開始",
-            180,
+        AddButton(buttons, "監視開始", 130,
             () => Execute(AppSideTraceService.Start));
 
-        AddButton(
-            buttons,
-            "記録表示・保存",
-            160,
+        AddButton(buttons, "記録表示・TXT/CSV保存", 210,
             () => Execute(AppSideTraceService.Read));
 
-        AddButton(
-            buttons,
-            "アプリ側監視停止",
-            160,
+        AddButton(buttons, "監視停止", 130,
             () => Execute(AppSideTraceService.Stop));
 
-        AddButton(
-            buttons,
-            "監視状態",
-            120,
+        AddButton(buttons, "監視状態", 120,
             () => Execute(AppSideTraceService.GetStatus));
 
-        _captureButton = new Button
+        _detailButton = new Button
         {
-            Text = "一時停止して即時採取",
-            Width = 190,
-            Height = 34
+            Text = "一時停止して512バイト詳細採取",
+            Width = 250,
+            Height = 36
         };
 
-        _captureButton.Click += async (_, _) =>
-            await CaptureNowAsync();
+        _detailButton.Click += async (_, _) => await CaptureDetailedAsync();
+        buttons.Controls.Add(_detailButton);
 
-        buttons.Controls.Add(_captureButton);
+        AddButton(buttons, "目印：イオナズン", 150,
+            () => Execute(() => AppSideTraceService.Mark("イオナズン使用")));
 
-        AddButton(
-            buttons,
-            "実行時メモリ全体採取（読み取り専用）",
-            270,
-            () => CaptureSnapshotAsync());
+        AddButton(buttons, "目印：通常攻撃", 150,
+            () => Execute(() => AppSideTraceService.Mark("通常攻撃")));
+
+        AddButton(buttons, "目印：敵撃破", 140,
+            () => Execute(() => AppSideTraceService.Mark("敵撃破")));
+
+        AddButton(buttons, "任意の目印を入力", 170,
+            () => AddCustomMarker());
+
+        var description = new Label
+        {
+            AutoSize = false,
+            Width = 1050,
+            Height = 48,
+            Text =
+                "自動監視は500ms間隔・個体データ先頭64バイトです。" +
+                "512バイト全体の詳細採取はPCSX2を一時停止して実行してください。",
+            Padding = new Padding(4)
+        };
+
+        buttons.Controls.Add(description);
 
         _output = new TextBox
         {
@@ -92,9 +96,9 @@ internal sealed class AllyActionTraceForm : Form
         Controls.Add(root);
 
         Append(
-            "新しい監視方式です。\r\n" +
-            "ゲーム本体へのトレース用書き込みは行いません。\r\n" +
-            "記録データはトルネコいじりネクスト側で管理します。");
+            "詳細メモリ監視画面です。\r\n" +
+            "ゲーム本体への書き込みは行いません。\r\n" +
+            "目印を使うと行動とメモリ変化を時系列で比較できます。");
     }
 
     private static void AddButton(
@@ -107,7 +111,7 @@ internal sealed class AllyActionTraceForm : Form
         {
             Text = text,
             Width = width,
-            Height = 34
+            Height = 36
         };
 
         button.Click += (_, _) => action();
@@ -126,37 +130,75 @@ internal sealed class AllyActionTraceForm : Form
         }
     }
 
-    private async Task CaptureNowAsync()
+    private async Task CaptureDetailedAsync()
     {
-        _captureButton.Enabled = false;
+        _detailButton.Enabled = false;
 
         try
         {
             string result = await Task.Run(
-                () => AppSideTraceService.CaptureNow());
+                () => AppSideTraceService.CaptureDetailed());
 
             Append(result);
         }
         catch (Exception ex)
         {
-            Append("===== 即時採取エラー =====\r\n" + ex);
+            Append("===== 詳細採取エラー =====\r\n" + ex);
         }
         finally
         {
-            _captureButton.Enabled = true;
+            _detailButton.Enabled = true;
         }
     }
 
-    private void CaptureSnapshotAsync()
+    private void AddCustomMarker()
     {
-        try
+        using var dialog = new Form
         {
-            string result = AllyRuntimeMemorySnapshot.Capture();
-            Append(result);
-        }
-        catch (Exception ex)
+            Text = "調査目印",
+            Width = 420,
+            Height = 150,
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            MinimizeBox = false,
+            MaximizeBox = false
+        };
+
+        var input = new TextBox
         {
-            Append("===== メモリ採取エラー =====\r\n" + ex);
+            Left = 12,
+            Top = 12,
+            Width = 380
+        };
+
+        var ok = new Button
+        {
+            Text = "記録",
+            Left = 230,
+            Top = 48,
+            Width = 75,
+            DialogResult = DialogResult.OK
+        };
+
+        var cancel = new Button
+        {
+            Text = "キャンセル",
+            Left = 315,
+            Top = 48,
+            Width = 75,
+            DialogResult = DialogResult.Cancel
+        };
+
+        dialog.Controls.Add(input);
+        dialog.Controls.Add(ok);
+        dialog.Controls.Add(cancel);
+        dialog.AcceptButton = ok;
+        dialog.CancelButton = cancel;
+
+        if (dialog.ShowDialog(this) == DialogResult.OK &&
+            !string.IsNullOrWhiteSpace(input.Text))
+        {
+            Execute(() => AppSideTraceService.Mark(input.Text));
         }
     }
 
