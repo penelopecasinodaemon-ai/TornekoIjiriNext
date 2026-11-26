@@ -57,6 +57,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private bool? _lastObservedEquipped;
     private bool _diagnosticAllyItemDataApplied;
     private bool _diagnosticSkillStatApplied;
+    private bool _diagnosticAllySkillCheckProbeApplied;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
@@ -98,6 +99,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _processId = 0;
                 _lastObservedEquipped = null;
                 _diagnosticAllyItemDataApplied = false;
+                _diagnosticAllySkillCheckProbeApplied = false;
                 _overlayActive = false;
                 SetOverlaySpeciesIds(Array.Empty<int>());
                 RaiseStatus("スライムの指輪：PCSX2接続待ち（読み取り専用監視）");
@@ -110,6 +112,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _processId = pid;
                 _lastObservedEquipped = null;
                 _diagnosticAllyItemDataApplied = false;
+                _diagnosticAllySkillCheckProbeApplied = false;
             }
 
             // 装備スロットを読み取り、装備状態の変化時だけ指輪専用処理を更新する。
@@ -118,7 +121,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
             if (_lastObservedEquipped != equipped)
             {
-                _lastObservedEquipped = equipped;
                 _overlayActive = false;
                 SetOverlaySpeciesIds(Array.Empty<int>());
 
@@ -129,10 +131,18 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
+
+                    // 段階3A：特技使用判定の呼び出し2か所だけを診断する。
+                    // 行動ID読込・対象判定フックはまだ設置しない。
+                    ApplyRingAllySkillCheckProbeOnly(true);
                 }
                 else
                 {
-                    // 先に特技フックを元へ戻し、その後に投擲データを復元する。
+                    // 先に味方側の診断フックを元へ戻す。
+                    if (_diagnosticAllySkillCheckProbeApplied)
+                        ApplyRingAllySkillCheckProbeOnly(false);
+
+                    // 次に特技率フックを元へ戻し、その後に投擲データを復元する。
                     if (_diagnosticSkillStatApplied)
                     {
                         SlimeRingSkillStatRuntimeService.RestoreHook();
@@ -143,8 +153,10 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                         ApplyRingAllyItemDataOnly(false);
                 }
 
+                _lastObservedEquipped = equipped;
+
                 RaiseStatus(equipped
-                    ? "スライムの指輪：段階2適用済み（味方専用データ＋特技使用率・範囲／行動IDフック停止）"
+                    ? "スライムの指輪：診断段階3A（味方特技使用判定フック2か所のみ）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
@@ -156,6 +168,75 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         {
             Interlocked.Exchange(ref _busy, 0);
         }
+    }
+
+    // 診断段階3A：味方特技使用判定JALの2か所だけを設置する。
+    // 行動ID読込・対象判定・敵側ディスパッチャー・イオナズン分岐には触れない。
+    private void ApplyRingAllySkillCheckProbeOnly(bool equipped)
+    {
+        if (!equipped)
+        {
+            if (!_actionRestore.TryApplyAllyRingSkillCheckProbe(
+                Array.Empty<KeyValuePair<int, ushort>>(),
+                new HashSet<int>(),
+                out string restoreMessage))
+            {
+                throw new InvalidOperationException(restoreMessage);
+            }
+
+            _diagnosticAllySkillCheckProbeApplied = false;
+            RaiseStatus(restoreMessage);
+            return;
+        }
+
+        byte[]? source = _getCurrentBin();
+        if (source == null || source.Length != 524288)
+            source = Pcsx2LiveSession.VanillaBin;
+
+        if (source == null || source.Length != 524288)
+            throw new InvalidOperationException(
+                "診断段階3A：基準BINがありません。");
+
+        int recordTableOffset = ResolveMonsterRecordTableOffset(source);
+        HashSet<int> slimeFamilyIds =
+            GetSlimeFamilySpeciesIds(source, recordTableOffset);
+        SlimeRingSettings settings =
+            SlimeRingSettings.Load(SlimeRingEditorForm.TargetMonsterIds);
+
+        var ringActions = new Dictionary<int, ushort>();
+        var ionazunForce = new HashSet<int>();
+
+        foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
+        {
+            if (!slimeFamilyIds.Contains(speciesId))
+                continue;
+
+            SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
+            if (item.ActionId < 0)
+                continue;
+
+            if (item.ActionId > ushort.MaxValue)
+                throw new InvalidOperationException(
+                    "診断段階3A：行動IDが範囲外です。種族ID=" + speciesId);
+
+            ringActions[speciesId] = (ushort)item.ActionId;
+
+            // 既存のイオナズン確定チェック設定を保持して渡す。
+            // この診断メソッドはイオナズン分岐コード自体を変更しない。
+            if (item.CoromageIonazunAlways)
+                ionazunForce.Add(speciesId);
+        }
+
+        if (!_actionRestore.TryApplyAllyRingSkillCheckProbe(
+            ringActions,
+            ionazunForce,
+            out string message))
+        {
+            throw new InvalidOperationException(message);
+        }
+
+        _diagnosticAllySkillCheckProbeApplied = ringActions.Count > 0;
+        RaiseStatus(message);
     }
 
     // 診断段階2：特技使用率・範囲フックだけを設置する。
