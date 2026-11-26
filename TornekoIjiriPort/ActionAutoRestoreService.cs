@@ -1163,6 +1163,16 @@ internal sealed class ActionAutoRestoreService : IDisposable
             EmitBranch(0x15A00000u, 0);    // bne t5,zero,normalSetup
         Emit(0x00000000u);
 
+        // 味方上書きの有効フラグ。
+        // 0なら4か所のフック設置/データ更新途中なので通常設定へ流す。
+        uint activeAddress = address + AllyHookActiveOffset;
+        Emit(EncodeI(0x0F, 0, 13, (int)(activeAddress >> 16))); // lui t5,hi(active)
+        Emit(EncodeI(0x0D, 13, 13, (int)(activeAddress & 0xFFFFu))); // ori t5,t5,lo(active)
+        Emit(EncodeI(0x23, 13, 13, 0));    // lw t5,0(t5)
+        int inactiveToNormalBranch =
+            EmitBranch(0x11A00000u, 0);    // beq t5,zero,normalSetup
+        Emit(0x00000000u);
+
         // --------------------------------------------------
         // 味方専用：指輪上書きテーブル
         // --------------------------------------------------
@@ -1259,6 +1269,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
             enemyToNormalBranch,
             normalSetup,
             0x15A00000u);
+
+        PatchBranch(
+            inactiveToNormalBranch,
+            normalSetup,
+            0x11A00000u);
 
         PatchBranch(
             noAllyOverridesBranch,
