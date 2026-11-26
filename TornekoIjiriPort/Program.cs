@@ -5010,6 +5010,10 @@ buttons.Controls.Add(UiFactory.Button(
 
         UpdateStatus();
         UpdatePcsx2Status();
+
+        // アプリ起動時にPCSX2が既に起動していれば自動接続する。
+        // 接続・メモリレイアウト確定後、指輪ランタイムが装備状態を確認して適用する。
+        Shown += (_, _) => OpenPcsx2Connection(silentIfNotFound: true);
     }
 
     private void UpdateSlimeRingStatus(string message)
@@ -5049,7 +5053,7 @@ buttons.Controls.Add(UiFactory.Button(
         _pcsx2DataStatus.Text = message;
     }
 
-    private async void OpenPcsx2Connection()
+    private async void OpenPcsx2Connection(bool silentIfNotFound = false)
     {
         if (_pcsx2Connecting)
             return;
@@ -5070,6 +5074,15 @@ buttons.Controls.Add(UiFactory.Button(
 
             if (processes.Count == 0)
             {
+                if (silentIfNotFound)
+                {
+                    _pcsx2ConnectionStatus.Text = "未接続";
+                    _pcsx2ConnectionStatus.ForeColor = Color.DarkRed;
+                    _pcsx2DataStatus.Text =
+                        "起動時にPCSX2が見つかりませんでした。PCSX2起動後に「PCSX2に接続」を押してください。";
+                    return;
+                }
+
                 throw new System.InvalidOperationException(
                     "PCSX2 v2.8.2 が見つかりません。v2.8.2以外のPCSX2（v1.5など）は接続対象から除外しています。v2.8.2を起動してから再接続してください。");
             }
