@@ -583,6 +583,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
                         "特技使用判定スタブが次のコード領域と重複します。");
                 }
 
+                // 所有マーカーの衝突を、コード・テーブルを書き換える前に検査する。
+                uint markerAddress = caveAddress + AllyHookMarkerOffset;
+                uint markerValue = _pine.Read32(markerAddress);
+                if (markerValue != 0u && markerValue != AllyHookMarker)
+                {
+                    throw new InvalidOperationException(
+                        "味方フック識別マーカー位置が別データで使用されています。");
+                }
+
                 // コード・テーブルを先に書き込み、全項目を検証してからフックする。
                 WriteDispatcherData(
                     caveAddress,
@@ -593,14 +602,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     _pine.Write32(
                         caveAddress + AllySkillCheckStubOffset + (uint)(i * 4),
                         stub[i]);
-
-                uint markerAddress = caveAddress + AllyHookMarkerOffset;
-                uint markerValue = _pine.Read32(markerAddress);
-                if (markerValue != 0u && markerValue != AllyHookMarker)
-                {
-                    throw new InvalidOperationException(
-                        "味方フック識別マーカー位置が別データで使用されています。");
-                }
 
                 _pine.Write32(markerAddress, AllyHookMarker);
 
