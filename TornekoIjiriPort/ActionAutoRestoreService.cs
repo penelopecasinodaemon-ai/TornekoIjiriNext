@@ -1535,8 +1535,23 @@ internal sealed class ActionAutoRestoreService : IDisposable
             check2 != OriginalAllySkillCheckCall ||
             actionLoad != OriginalAllyActionLoad ||
             targetCheckLoad != OriginalAllyTargetCheckActionLoad;
+
         if (!anyHook)
+        {
+            if (preferredCaveAddress != 0u &&
+                IsAllyHookMarker(preferredCaveAddress))
+            {
+                uint activeAddress = preferredCaveAddress + AllyHookActiveOffset;
+                if (_pine.Read32(activeAddress) != 0u)
+                {
+                    _pine.Write32(activeAddress, 0u);
+                    if (_pine.Read32(activeAddress) != 0u)
+                        throw new InvalidOperationException(
+                            "味方行動フックの無効化に失敗しました。");
+                }
+            }
             return;
+        }
 
         uint DeriveCave(
             uint hookAddress,
@@ -1554,69 +1569,19 @@ internal sealed class ActionAutoRestoreService : IDisposable
             uint target = opcode == 2u
                 ? DecodeJFrom(hookAddress, instruction)
                 : DecodeJalFrom(hookAddress, instruction);
-            var markerChecks = new List<string>();
 
             foreach (uint offset in offsets)
             {
-                if (target < offset)
-                {
-                    markerChecks.Add(
-                        "offset=0x" + offset.ToString("X") +
-                        " 候補なし（接続先がoffset未満）");
-                    continue;
-                }
-
+                if (target < offset) continue;
                 uint candidate = target - offset;
-                uint markerAddress = candidate + AllyHookMarkerOffset;
-                uint markerValue = _pine.Read32(markerAddress);
-                uint ringMarkerValue = _pine.Read32(
-                    candidate + SharedRingCaveMarkerOffset);
-                uint pageMarkerValue = _pine.Read32(
-                    candidate + SharedRuntimeCaveMarkerOffset);
-
-                markerChecks.Add(
-                    "offset=0x" + offset.ToString("X") +
-                    " 候補領域=0x" + candidate.ToString("X8") +
-                    " 味方マーカー位置=0x" + markerAddress.ToString("X8") +
-                    " 味方マーカー値=0x" + markerValue.ToString("X8") +
-                    " 指輪マーカー値=0x" + ringMarkerValue.ToString("X8") +
-                    " 共有ページマーカー値=0x" + pageMarkerValue.ToString("X8"));
-
-                if (markerValue == AllyHookMarker)
+                if (_pine.Read32(candidate + AllyHookMarkerOffset) == AllyHookMarker)
                     return candidate;
             }
 
-            string[] hookSnapshot =
-            {
-                "フック命令スナップショット:",
-                "  0x" + AllySkillCheckAddress1.ToString("X8") +
-                    " = 0x" + check1.ToString("X8") +
-                    "（元命令=0x" + OriginalAllySkillCheckCall.ToString("X8") + "）",
-                "  0x" + AllySkillCheckAddress2.ToString("X8") +
-                    " = 0x" + check2.ToString("X8") +
-                    "（元命令=0x" + OriginalAllySkillCheckCall.ToString("X8") + "）",
-                "  0x" + AllyActionLoadAddress.ToString("X8") +
-                    " = 0x" + actionLoad.ToString("X8") +
-                    "（元命令=0x" + OriginalAllyActionLoad.ToString("X8") + "）",
-                "  0x" + AllyTargetCheckActionLoadAddress.ToString("X8") +
-                    " = 0x" + targetCheckLoad.ToString("X8") +
-                    "（元命令=0x" + OriginalAllyTargetCheckActionLoad.ToString("X8") + "）"
-            };
-
             throw new InvalidOperationException(
-                "味方側特技フックの接続先と所有マーカーが一致しません。" +
-                Environment.NewLine +
-                "検査対象位置=0x" + hookAddress.ToString("X8") +
-                " 命令=0x" + instruction.ToString("X8") +
-                " 接続先=0x" + target.ToString("X8") +
-                Environment.NewLine +
-                string.Join(Environment.NewLine, hookSnapshot) +
-                Environment.NewLine +
-                "所有マーカー検査:" +
-                Environment.NewLine +
-                string.Join(Environment.NewLine, markerChecks) +
-                Environment.NewLine +
-                "期待する味方マーカー=0x" + AllyHookMarker.ToString("X8"));
+                "味方側フックの接続先と所有マーカーが一致しません。" +
+                "位置=0x" + hookAddress.ToString("X8") +
+                " 接続先=0x" + target.ToString("X8"));
         }
 
         uint[] derived =
@@ -1631,12 +1596,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 AllyActionLoadAddress, actionLoad,
                 OriginalAllyActionLoad,
                 AllyActionLoadStubOffset,
-                LegacyAllyActionLoadStubOffset),
+                LegacyAllyActionLoadStubOffset,
+                OlderLegacyAllyActionLoadStubOffset),
             DeriveCave(
                 AllyTargetCheckActionLoadAddress, targetCheckLoad,
                 OriginalAllyTargetCheckActionLoad,
                 AllyTargetCheckStubOffset,
-                LegacyAllyTargetCheckStubOffset)
+                LegacyAllyTargetCheckStubOffset,
+                OlderLegacyAllyTargetCheckStubOffset)
         };
 
         uint caveAddress = preferredCaveAddress;
@@ -1659,14 +1626,19 @@ internal sealed class ActionAutoRestoreService : IDisposable
             AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
         uint expectedLoad = EncodeJFrom(
             AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
-        uint expectedLegacyLoad = EncodeJalFrom(
+        uint expectedOldLoad = EncodeJFrom(
             AllyActionLoadAddress, caveAddress + LegacyAllyActionLoadStubOffset);
+        uint expectedOlderLoad = EncodeJalFrom(
+            AllyActionLoadAddress, caveAddress + OlderLegacyAllyActionLoadStubOffset);
         uint expectedTargetCheck = EncodeJFrom(
             AllyTargetCheckActionLoadAddress,
             caveAddress + AllyTargetCheckStubOffset);
-        uint expectedLegacyTargetCheck = EncodeJalFrom(
+        uint expectedOldTargetCheck = EncodeJFrom(
             AllyTargetCheckActionLoadAddress,
             caveAddress + LegacyAllyTargetCheckStubOffset);
+        uint expectedOlderTargetCheck = EncodeJalFrom(
+            AllyTargetCheckActionLoadAddress,
+            caveAddress + OlderLegacyAllyTargetCheckStubOffset);
 
         if (check1 != OriginalAllySkillCheckCall && check1 != expected1)
             throw new InvalidOperationException("0x00241D48のフック先が想定外です。");
@@ -1674,11 +1646,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException("0x00241DB8のフック先が想定外です。");
         if (actionLoad != OriginalAllyActionLoad &&
             actionLoad != expectedLoad &&
-            actionLoad != expectedLegacyLoad)
+            actionLoad != expectedOldLoad &&
+            actionLoad != expectedOlderLoad)
             throw new InvalidOperationException("0x00241D5Cのフック先が想定外です。");
         if (targetCheckLoad != OriginalAllyTargetCheckActionLoad &&
             targetCheckLoad != expectedTargetCheck &&
-            targetCheckLoad != expectedLegacyTargetCheck)
+            targetCheckLoad != expectedOldTargetCheck &&
+            targetCheckLoad != expectedOlderTargetCheck)
             throw new InvalidOperationException("0x002CA3DCのフック先が想定外です。");
 
         if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
@@ -1688,12 +1662,21 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException(
                 "味方側特技フックの遅延スロットが想定外のため復元を中止しました。");
 
+        // 先に機能を無効化してから4か所の命令を元へ戻す。
+        uint activeAddress = caveAddress + AllyHookActiveOffset;
+        _pine.Write32(activeAddress, 0u);
+        if (_pine.Read32(activeAddress) != 0u)
+            throw new InvalidOperationException(
+                "味方行動フックの無効化に失敗したため、復元を中止しました。");
+
         if (check1 == expected1) _pine.Write32(AllySkillCheckAddress1, OriginalAllySkillCheckCall);
         if (check2 == expected2) _pine.Write32(AllySkillCheckAddress2, OriginalAllySkillCheckCall);
-        if (actionLoad == expectedLoad || actionLoad == expectedLegacyLoad)
+        if (actionLoad == expectedLoad || actionLoad == expectedOldLoad ||
+            actionLoad == expectedOlderLoad)
             _pine.Write32(AllyActionLoadAddress, OriginalAllyActionLoad);
         if (targetCheckLoad == expectedTargetCheck ||
-            targetCheckLoad == expectedLegacyTargetCheck)
+            targetCheckLoad == expectedOldTargetCheck ||
+            targetCheckLoad == expectedOlderTargetCheck)
             _pine.Write32(AllyTargetCheckActionLoadAddress, OriginalAllyTargetCheckActionLoad);
 
         if (_pine.Read32(AllySkillCheckAddress1) != OriginalAllySkillCheckCall ||
@@ -1741,17 +1724,69 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException(
                 "味方側AIのフック位置に想定外の命令があります。既存の処理を保護するため中止しました。");
 
-        if (current1 == OriginalAllySkillCheckCall) _pine.Write32(AllySkillCheckAddress1, expected1);
-        if (current2 == OriginalAllySkillCheckCall) _pine.Write32(AllySkillCheckAddress2, expected2);
-        if (currentLoad == OriginalAllyActionLoad) _pine.Write32(AllyActionLoadAddress, expectedLoad);
-        if (currentTargetCheck == OriginalAllyTargetCheckActionLoad)
-            _pine.Write32(AllyTargetCheckActionLoadAddress, expectedTargetCheck);
+        uint activeAddress = caveAddress + AllyHookActiveOffset;
+        uint activeValue = _pine.Read32(activeAddress);
+        bool allInstalled =
+            current1 == expected1 &&
+            current2 == expected2 &&
+            currentLoad == expectedLoad &&
+            currentTargetCheck == expectedTargetCheck;
 
-        if (_pine.Read32(AllySkillCheckAddress1) != expected1 ||
-            _pine.Read32(AllySkillCheckAddress2) != expected2 ||
-            _pine.Read32(AllyActionLoadAddress) != expectedLoad ||
-            _pine.Read32(AllyTargetCheckActionLoadAddress) != expectedTargetCheck)
-            throw new InvalidOperationException("味方側AIフックの設置検証に失敗しました。");
+        if (allInstalled && activeValue == 1u)
+            return;
+
+        // まず無効化。フック命令が一部だけ存在しても、スタブは元処理へ素通しする。
+        _pine.Write32(activeAddress, 0u);
+        if (_pine.Read32(activeAddress) != 0u)
+            throw new InvalidOperationException(
+                "味方行動フックの有効化準備に失敗しました。");
+
+        try
+        {
+            // 行動ID読込・対象判定を先に設置し、特技判定2か所を最後に設置する。
+            if (currentLoad == OriginalAllyActionLoad)
+                _pine.Write32(AllyActionLoadAddress, expectedLoad);
+            if (currentTargetCheck == OriginalAllyTargetCheckActionLoad)
+                _pine.Write32(AllyTargetCheckActionLoadAddress, expectedTargetCheck);
+            if (current1 == OriginalAllySkillCheckCall)
+                _pine.Write32(AllySkillCheckAddress1, expected1);
+            if (current2 == OriginalAllySkillCheckCall)
+                _pine.Write32(AllySkillCheckAddress2, expected2);
+
+            if (_pine.Read32(AllySkillCheckAddress1) != expected1 ||
+                _pine.Read32(AllySkillCheckAddress2) != expected2 ||
+                _pine.Read32(AllyActionLoadAddress) != expectedLoad ||
+                _pine.Read32(AllyTargetCheckActionLoadAddress) != expectedTargetCheck)
+                throw new InvalidOperationException(
+                    "味方側AIフック4か所の設置検証に失敗しました。");
+
+            // 4か所すべての検証後に初めて上書きを有効化する。
+            _pine.Write32(activeAddress, 1u);
+            if (_pine.Read32(activeAddress) != 1u)
+                throw new InvalidOperationException(
+                    "味方行動フックの有効化検証に失敗しました。");
+        }
+        catch
+        {
+            // 部分設置状態を残さない。無効フラグを維持したまま元命令へ戻す。
+            try { _pine.Write32(activeAddress, 0u); } catch { }
+            try
+            {
+                if (_pine.Read32(AllySkillCheckAddress1) == expected1)
+                    _pine.Write32(AllySkillCheckAddress1, OriginalAllySkillCheckCall);
+                if (_pine.Read32(AllySkillCheckAddress2) == expected2)
+                    _pine.Write32(AllySkillCheckAddress2, OriginalAllySkillCheckCall);
+                if (_pine.Read32(AllyActionLoadAddress) == expectedLoad)
+                    _pine.Write32(AllyActionLoadAddress, OriginalAllyActionLoad);
+                if (_pine.Read32(AllyTargetCheckActionLoadAddress) == expectedTargetCheck)
+                    _pine.Write32(AllyTargetCheckActionLoadAddress, OriginalAllyTargetCheckActionLoad);
+            }
+            catch
+            {
+                // active flag=0を維持し、残ったフックは元処理へ素通しさせる。
+            }
+            throw;
+        }
     }
 
     private static uint GetRequiredCaveSize(
