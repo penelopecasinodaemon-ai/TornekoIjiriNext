@@ -37,14 +37,18 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint OriginalAllyTargetCheckDelay = 0x24631FD0u;
 
     private const uint AllySkillCheckStubOffset = 0x800u;
-    private const uint AllyActionLoadStubOffset = 0x8A0u;
-    private const uint AllyTargetCheckStubOffset = 0x960u;
+    private const uint AllyActionLoadStubOffset = 0x8B0u;
+    private const uint AllyTargetCheckStubOffset = 0x970u;
+    // 4か所すべてのフック設置が完了するまで、各スタブは元処理へ素通しする。
+    private const uint AllyHookActiveOffset = 0xA78u;
     private const uint AllyHookMarkerOffset = 0xA7Cu;
 
-    // 旧版では味方アクション読込・対象判定スタブを0x880/0x940に配置していた。
-    // 旧フックを安全に解除できるよう、復元処理だけで旧オフセットも認識する。
-    private const uint LegacyAllyActionLoadStubOffset = 0x880u;
-    private const uint LegacyAllyTargetCheckStubOffset = 0x940u;
+    // 旧版の配置を復元時だけ認識する。
+    // 旧版1: Jで0x8A0/0x960、さらに旧版: JALで0x880/0x940。
+    private const uint LegacyAllyActionLoadStubOffset = 0x8A0u;
+    private const uint LegacyAllyTargetCheckStubOffset = 0x960u;
+    private const uint OlderLegacyAllyActionLoadStubOffset = 0x880u;
+    private const uint OlderLegacyAllyTargetCheckStubOffset = 0x940u;
     private const uint AllyHookMarker = 0x534C4148u;
     private const uint AllyHookReservedSize = 0xA80u;
     private const int MaxSpeciesActionEntries = 255;
@@ -457,241 +461,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     "種族別特技の適用に失敗しました。\n" +
                     ex.Message +
                     "\n詳細ログ: " + logPath;
-                return false;
-            }
-        }
-    }
-
-    // 診断段階3A：味方の特技使用判定呼び出し2か所だけをフックする。
-    // 行動ID読込・対象判定・敵ディスパッチャー・イオナズン分岐は変更しない。
-    internal bool TryApplyAllyRingSkillCheckProbe(
-        IEnumerable<KeyValuePair<int, ushort>> ringActions,
-        ISet<int>? ionazunForce,
-        out string message)
-    {
-        message = "";
-
-        var copy = new Dictionary<int, ushort>();
-        if (ringActions != null)
-        {
-            foreach (var pair in ringActions)
-                copy[pair.Key] = pair.Value;
-        }
-
-        var forceCopy = ionazunForce == null
-            ? new HashSet<int>()
-            : new HashSet<int>(ionazunForce);
-
-        lock (_operationSync)
-        {
-            uint expected1 = 0u;
-            uint expected2 = 0u;
-            uint caveAddress = 0u;
-
-            try
-            {
-                if (!_pine.TryConnect())
-                {
-                    message = "指輪設定は保持しました。PCSX2接続後に反映します。";
-                    return false;
-                }
-
-                if (_pine.GetStatus() != 0u)
-                {
-                    message = "PCSX2をゲーム実行状態にしてください。";
-                    return false;
-                }
-
-                if (copy.Count == 0)
-                {
-                    RestoreAllyActionHooks();
-                    message = "味方特技使用判定フックを解除しました。";
-                    return true;
-                }
-
-                var entries = BuildActionEntries(copy, forceCopy);
-                if (entries.Count == 0)
-                {
-                    RestoreAllyActionHooks();
-                    message = "味方側の有効な行動ID設定がないため、フックを設置しません。";
-                    return true;
-                }
-
-                // 通常設定ディスパッチャーが共有テーブルを使用中なら、上書きしない。
-                uint enemyCall = _pine.Read32(PatchAddress);
-                uint enemyDelay = _pine.Read32(DelaySlotAddress);
-                if (enemyCall != OriginalCallInstruction ||
-                    enemyDelay != OriginalDelayInstruction)
-                {
-                    throw new InvalidOperationException(
-                        "敵用ディスパッチャーが稼働中、またはその遅延スロットが変更されています。" +
-                        "敵側処理と共有テーブルを保護するため、診断フックを設置しません。" +
-                        "PCSX2を完全終了して通常起動し直してください。");
-                }
-
-                lock (_stateSync)
-                {
-                    if (_actions.Count != 0 || _allyRingActions.Count != 0)
-                    {
-                        throw new InvalidOperationException(
-                            "通常設定または別の指輪上書きが登録されています。" +
-                            "今回は味方専用フックだけを切り分けるため、通常設定を解除してください。");
-                    }
-                }
-
-                // 今回の診断では2つのJAL位置以外にフックが存在しないことを必須とする。
-                uint current1 = _pine.Read32(AllySkillCheckAddress1);
-                uint current2 = _pine.Read32(AllySkillCheckAddress2);
-                uint currentLoad = _pine.Read32(AllyActionLoadAddress);
-                uint currentTarget = _pine.Read32(AllyTargetCheckActionLoadAddress);
-
-                if (current1 != OriginalAllySkillCheckCall ||
-                    current2 != OriginalAllySkillCheckCall ||
-                    currentLoad != OriginalAllyActionLoad ||
-                    currentTarget != OriginalAllyTargetCheckActionLoad)
-                {
-                    throw new InvalidOperationException(
-                        "診断開始時点で味方側フック位置に元命令以外が存在します。" +
-                        "PCSX2を完全終了して通常起動し直してください。");
-                }
-
-                if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
-                    _pine.Read32(AllySkillCheckDelay2Address) != OriginalAllySkillCheckDelay ||
-                    _pine.Read32(AllyActionLoadDelayAddress) != OriginalAllyActionLoadDelay ||
-                    _pine.Read32(AllyTargetCheckDelayAddress) != OriginalAllyTargetCheckDelay)
-                {
-                    throw new InvalidOperationException(
-                        "味方側AIの遅延スロットが想定値と異なります。診断フックを中止しました。");
-                }
-
-                // 段階2が実際に使用しているページをフック命令から逆算する。
-                // 別の古い共有ページを誤って選んで、稼働中のデータ領域を壊さない。
-                uint ringStatHook = _pine.Read32(RingSkillStatHookAddress);
-                if ((ringStatHook >> 26) != 2u)
-                {
-                    throw new InvalidOperationException(
-                        "スライムの指輪・段階2フックがJ命令ではありません。" +
-                        "味方側診断フックを設置しません。");
-                }
-
-                uint sharedPage = DecodeJFrom(
-                    RingSkillStatHookAddress,
-                    ringStatHook);
-
-                if (sharedPage < CaveSearchEnd ||
-                    sharedPage > CaveSearchStart ||
-                    (sharedPage & (SharedRuntimeCaveStep - 1u)) != 0u ||
-                    _pine.Read32(sharedPage + SharedRingCaveMarkerOffset) != SharedRingCaveMarker ||
-                    _pine.Read32(sharedPage + SharedRuntimeCaveMarkerOffset) != SharedRuntimeCaveMarker)
-                {
-                    throw new InvalidOperationException(
-                        "段階2の共有コード領域を所有マーカーで確認できません。" +
-                        "別のページへ書き込むことを避けるため中止しました。");
-                }
-
-                caveAddress = sharedPage + SharedActionCaveOffset;
-
-                expected1 = EncodeJalFrom(
-                    AllySkillCheckAddress1,
-                    caveAddress + AllySkillCheckStubOffset);
-                expected2 = EncodeJalFrom(
-                    AllySkillCheckAddress2,
-                    caveAddress + AllySkillCheckStubOffset);
-
-                uint[] stub = BuildAllySkillCheckStub(
-                    caveAddress,
-                    MaxSpeciesActionEntries);
-
-                if (AllySkillCheckStubOffset + (uint)stub.Length * 4u >
-                    AllyActionLoadStubOffset)
-                {
-                    throw new InvalidOperationException(
-                        "特技使用判定スタブが次のコード領域と重複します。");
-                }
-
-                // 所有マーカーの衝突を、コード・テーブルを書き換える前に検査する。
-                uint markerAddress = caveAddress + AllyHookMarkerOffset;
-                uint markerValue = _pine.Read32(markerAddress);
-                if (markerValue != 0u && markerValue != AllyHookMarker)
-                {
-                    throw new InvalidOperationException(
-                        "味方フック識別マーカー位置が別データで使用されています。");
-                }
-
-                // コード・テーブルを先に書き込み、全項目を検証してからフックする。
-                WriteDispatcherData(
-                    caveAddress,
-                    new List<(byte SpeciesId, byte Marker, byte ActualAction)>(),
-                    entries);
-
-                for (int i = 0; i < stub.Length; i++)
-                    _pine.Write32(
-                        caveAddress + AllySkillCheckStubOffset + (uint)(i * 4),
-                        stub[i]);
-
-                _pine.Write32(markerAddress, AllyHookMarker);
-
-                for (int i = 0; i < stub.Length; i++)
-                {
-                    if (_pine.Read32(
-                        caveAddress + AllySkillCheckStubOffset + (uint)(i * 4)) != stub[i])
-                    {
-                        throw new InvalidOperationException(
-                            "特技使用判定スタブの書き込み検証に失敗しました。");
-                    }
-                }
-
-                if (_pine.Read32(markerAddress) != AllyHookMarker)
-                    throw new InvalidOperationException("味方フック識別マーカーの検証に失敗しました。");
-
-                _pine.Write32(AllySkillCheckAddress1, expected1);
-                if (_pine.Read32(AllySkillCheckAddress1) != expected1)
-                    throw new InvalidOperationException("1か所目の特技使用判定フックを検証できません。");
-
-                _pine.Write32(AllySkillCheckAddress2, expected2);
-                if (_pine.Read32(AllySkillCheckAddress2) != expected2)
-                    throw new InvalidOperationException("2か所目の特技使用判定フックを検証できません。");
-
-                message =
-                    "診断段階3A：味方の特技使用判定フック2か所だけを設置しました。" +
-                    Environment.NewLine +
-                    "行動ID読込フック：未設置" +
-                    Environment.NewLine +
-                    "対象判定フック：未設置" +
-                    Environment.NewLine +
-                    "敵ディスパッチャー・イオナズン分岐：変更なし";
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // 途中まで設置されたJALだけを元に戻す。敵側やイオナズン側には触れない。
-                try
-                {
-                    if (_pine.TryConnect())
-                    {
-                        if (expected1 != 0u &&
-                            _pine.Read32(AllySkillCheckAddress1) == expected1)
-                        {
-                            _pine.Write32(
-                                AllySkillCheckAddress1,
-                                OriginalAllySkillCheckCall);
-                        }
-
-                        if (expected2 != 0u &&
-                            _pine.Read32(AllySkillCheckAddress2) == expected2)
-                        {
-                            _pine.Write32(
-                                AllySkillCheckAddress2,
-                                OriginalAllySkillCheckCall);
-                        }
-                    }
-                }
-                catch
-                {
-                    // 元命令への復元エラーは下記メッセージに含めて通知する。
-                }
-
-                message = "味方特技使用判定フックの適用に失敗しました: " + ex.Message;
                 return false;
             }
         }
@@ -1540,13 +1309,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private static uint[] BuildAllySkillCheckStub(uint caveAddress, int entryCount)
     {
         uint dataAddress = caveAddress + 0x200u;
+        uint activeAddress = caveAddress + AllyHookActiveOffset;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
-        // この位置は元々 JAL 0x0023C750 の呼び出し位置。
-        // フック側のJALが設定した ra は元の呼び出し元の戻り先
-        // (呼び出し命令+8) なので、ここでは ra を変更せず末尾JUMPする。
-        // 一時レジスタ t0～t4 は元関数へ渡す前に完全に復元する。
+        // 元のJAL遅延スロットでa1は既に読み込まれている。
+        // 4か所のフックが揃うまでは必ず元の特技判定へ素通しする。
         Emit(0x27BDFFB0u);                    // addiu sp,sp,-0x50
         Emit(0x7FA80000u);                    // sq t0,0(sp)
         Emit(0x7FA90010u);                    // sq t1,0x10(sp)
@@ -1554,11 +1322,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7FAB0030u);                    // sq t3,0x30(sp)
         Emit(0x7FAC0040u);                    // sq t4,0x40(sp)
 
-        // 元のJAL遅延スロット 0x9045003A は lbu a1,0x3A(v0)。
-        // したがって v0 が個体データポインタ。
-        Emit(0x0040402Du);                    // daddu t0,v0,zero
+        Emit(EncodeI(0x0F, 0, 11, (int)(activeAddress >> 16))); // lui t3,hi(active)
+        Emit(EncodeI(0x0D, 11, 11, (int)(activeAddress & 0xFFFFu))); // ori t3,t3,lo(active)
+        Emit(EncodeI(0x23, 11, 12, 0));       // lw t4,0(t3)
+        int inactive = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0)); // beq t4,zero,original
+
+        Emit(0x0040402Du);                    // daddu t0,v0,zero: actor data pointer
         int nullActor = EmitBranchWithDelay(code, EncodeI(0x04, 8, 0, 0));
-        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0): faction
+        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0): 0=ally
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
         Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0): runtime species ID
         Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
@@ -1573,8 +1344,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x09, 12, 12, -1));      // addiu t4,t4,-1
         int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
 
-        // 一致しない場合は元の a1 (遅延スロットで読み込んだ行動ID) のまま。
-        // 一致した場合だけテーブルの行動IDを a1 に設定する。
+        // 一致しない場合は元のa1のまま、元関数を呼ぶ。
         int tailCallOriginal = code.Count;
         Emit(0x7BA80000u);                    // lq t0,0(sp)
         Emit(0x7BA90010u);                    // lq t1,0x10(sp)
@@ -1582,13 +1352,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7BAB0030u);                    // lq t3,0x30(sp)
         Emit(0x7BAC0040u);                    // lq t4,0x40(sp)
         Emit(0x27BD0050u);                    // addiu sp,sp,0x50
-        Emit(0x0808F1D4u);                    // j 0x0023C750 (raを維持)
+        Emit(0x0808F1D4u);                    // j 0x0023C750; preserve caller ra
         Emit(0u);
 
         int foundLabel = code.Count;
         Emit(EncodeI(0x24, 11, 5, 2));        // lbu a1,2(t3): configured action ID
         int foundToTailCall = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
 
+        PatchBranch(code, inactive, tailCallOriginal);
         PatchBranch(code, nullActor, tailCallOriginal);
         PatchBranch(code, enemy, tailCallOriginal);
         PatchBranch(code, noEntries, tailCallOriginal);
@@ -1602,6 +1373,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     {
         uint dataAddress = caveAddress + 0x200u;
         uint traceMarkerAddress = caveAddress + 0xE0u;
+        uint activeAddress = caveAddress + AllyHookActiveOffset;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
@@ -1612,10 +1384,16 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7FAC0030u);                    // sq t4,0x30(sp)
         Emit(0xAFBF0040u);                    // sw ra,0x40(sp)
 
+        // 4か所のフックが揃うまでは元の行動IDを返す。
+        Emit(EncodeI(0x0F, 0, 11, (int)(activeAddress >> 16)));
+        Emit(EncodeI(0x0D, 11, 11, (int)(activeAddress & 0xFFFFu)));
+        Emit(EncodeI(0x23, 11, 12, 0));       // lw t4,0(t3)
+        int inactive = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
+
         Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
 
-        // 味方だけ連発判定用マーカーを初期化する。敵側の通常設定・マーカーには触れない。
+        // 味方だけ連発判定用マーカーを初期化する。敵側には触れない。
         Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
         Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
         Emit(EncodeI(0x28, 10, 0, 0));        // sb zero,0(t2)
@@ -1638,7 +1416,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         int originalToRestore = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
 
         int foundLabel = code.Count;
-        Emit(EncodeI(0x24, 11, 9, 1));       // lbu t1,1(t3): Ionazun force marker
+        Emit(EncodeI(0x24, 11, 9, 1));        // lbu t1,1(t3): Ionazun force marker
         Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
         Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
         Emit(EncodeI(0x28, 10, 9, 0));        // sb t1,0(t2)
@@ -1651,12 +1429,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
         Emit(0x8FBF0040u);                    // lw ra,0x40(sp)
         Emit(0x27BD0050u);                    // addiu sp,sp,0x50
-        // フック元はJALではなく元のload命令。$raを使わず次命令へ戻る。
         Emit(EncodeJFrom(
             caveAddress + AllyActionLoadStubOffset + (uint)(code.Count * 4),
             0x00241D64u));
         Emit(0u);
 
+        PatchBranch(code, inactive, noMatch);
         PatchBranch(code, enemy, noMatch);
         PatchBranch(code, noEntries, noMatch);
         PatchBranch(code, found, foundLabel);
@@ -1671,6 +1449,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     {
         uint dataAddress = caveAddress + 0x200u;
         uint traceMarkerAddress = caveAddress + 0xE0u;
+        uint activeAddress = caveAddress + AllyHookActiveOffset;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
@@ -1681,7 +1460,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7FAC0030u);                    // sq t4,0x30(sp)
         Emit(0xAFBF0040u);                    // sw ra,0x40(sp)
 
-        Emit(EncodeI(0x24, 5, 9, 0x1D3));     // lbu t1,0x1D3(a1): faction
+        // 4か所のフックが揃うまでは元の対象判定用行動IDを返す。
+        Emit(EncodeI(0x0F, 0, 11, (int)(activeAddress >> 16)));
+        Emit(EncodeI(0x0D, 11, 11, (int)(activeAddress & 0xFFFFu)));
+        Emit(EncodeI(0x23, 11, 12, 0));       // lw t4,0(t3)
+        int inactive = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
+
+        Emit(EncodeI(0x24, 5, 9, 0x1D3));     // lbu t1,0x1D3(a1): 0=ally
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
 
         // 味方だけ連発判定マーカーを初期化する。敵側の状態は変更しない。
@@ -1707,7 +1492,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         int originalToRestore = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
 
         int foundLabel = code.Count;
-        Emit(EncodeI(0x24, 11, 9, 1));       // lbu t1,1(t3): Ionazun force marker
+        Emit(EncodeI(0x24, 11, 9, 1));        // lbu t1,1(t3): Ionazun force marker
         Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
         Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
         Emit(EncodeI(0x28, 10, 9, 0));        // sb t1,0(t2)
@@ -1720,12 +1505,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
         Emit(0x8FBF0040u);                    // lw ra,0x40(sp)
         Emit(0x27BD0050u);                    // addiu sp,sp,0x50
-        // フック元はJALではなく元のload命令。$raを使わず次命令へ戻る。
         Emit(EncodeJFrom(
             caveAddress + AllyTargetCheckStubOffset + (uint)(code.Count * 4),
             0x002CA3E4u));
         Emit(0u);
 
+        PatchBranch(code, inactive, noMatch);
         PatchBranch(code, enemy, noMatch);
         PatchBranch(code, noEntries, noMatch);
         PatchBranch(code, found, foundLabel);
