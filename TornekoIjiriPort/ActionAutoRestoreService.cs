@@ -1498,20 +1498,69 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     hookAddress.ToString("X8") + " 値=0x" + instruction.ToString("X8"));
 
             uint target = DecodeJalFrom(hookAddress, instruction);
+            var markerChecks = new List<string>();
+
             foreach (uint offset in offsets)
             {
                 if (target < offset)
+                {
+                    markerChecks.Add(
+                        "offset=0x" + offset.ToString("X") +
+                        " 候補なし（接続先がoffset未満）");
                     continue;
+                }
 
                 uint candidate = target - offset;
-                if (IsAllyHookMarker(candidate))
+                uint markerAddress = candidate + AllyHookMarkerOffset;
+                uint markerValue = _pine.Read32(markerAddress);
+                uint ringMarkerValue = _pine.Read32(
+                    candidate + SharedRingCaveMarkerOffset);
+                uint pageMarkerValue = _pine.Read32(
+                    candidate + SharedRuntimeCaveMarkerOffset);
+
+                markerChecks.Add(
+                    "offset=0x" + offset.ToString("X") +
+                    " 候補領域=0x" + candidate.ToString("X8") +
+                    " 味方マーカー位置=0x" + markerAddress.ToString("X8") +
+                    " 味方マーカー値=0x" + markerValue.ToString("X8") +
+                    " 指輪マーカー値=0x" + ringMarkerValue.ToString("X8") +
+                    " 共有ページマーカー値=0x" + pageMarkerValue.ToString("X8"));
+
+                if (markerValue == AllyHookMarker)
                     return candidate;
             }
 
+            string[] hookSnapshot =
+            {
+                "フック命令スナップショット:",
+                "  0x" + AllySkillCheckAddress1.ToString("X8") +
+                    " = 0x" + check1.ToString("X8") +
+                    "（元命令=0x" + OriginalAllySkillCheckCall.ToString("X8") + "）",
+                "  0x" + AllySkillCheckAddress2.ToString("X8") +
+                    " = 0x" + check2.ToString("X8") +
+                    "（元命令=0x" + OriginalAllySkillCheckCall.ToString("X8") + "）",
+                "  0x" + AllyActionLoadAddress.ToString("X8") +
+                    " = 0x" + actionLoad.ToString("X8") +
+                    "（元命令=0x" + OriginalAllyActionLoad.ToString("X8") + "）",
+                "  0x" + AllyTargetCheckActionLoadAddress.ToString("X8") +
+                    " = 0x" + targetCheckLoad.ToString("X8") +
+                    "（元命令=0x" + OriginalAllyTargetCheckActionLoad.ToString("X8") + "）"
+            };
+
             throw new InvalidOperationException(
                 "味方側特技フックの接続先と所有マーカーが一致しません。" +
-                "位置=0x" + hookAddress.ToString("X8") +
-                " 接続先=0x" + target.ToString("X8"));
+                Environment.NewLine +
+                "検査対象位置=0x" + hookAddress.ToString("X8") +
+                " 命令=0x" + instruction.ToString("X8") +
+                " 接続先=0x" + target.ToString("X8") +
+                Environment.NewLine +
+                string.Join(Environment.NewLine, hookSnapshot) +
+                Environment.NewLine +
+                "所有マーカー検査:" +
+                Environment.NewLine +
+                string.Join(Environment.NewLine, markerChecks) +
+                Environment.NewLine +
+                "期待する味方マーカー=0x" + AllyHookMarker.ToString("X8"));
         }
 
         uint[] derived =
