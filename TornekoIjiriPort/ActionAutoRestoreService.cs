@@ -973,28 +973,46 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         return new uint[]
         {
-            0x90480004u,
+            // --------------------------------------------------
+            // 元の関数へ戻すため、一時レジスタを退避
+            // --------------------------------------------------
 
+            0x27BDFFE0u, // addiu sp,sp,-0x20
+
+            0xAFA80000u, // sw t0,0(sp)
+            0xAFA90004u, // sw t1,4(sp)
+            0xAFAA0008u, // sw t2,8(sp)
+            0xAFAB000Cu, // sw t3,12(sp)
+            0xAFAC0010u, // sw t4,16(sp)
+            0xAFAD0014u, // sw t5,20(sp)
+
+            // 実行時種族ID
+            0x90480004u, // lbu t0,4(v0)
+
+            // トレース領域
             0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu),
             0x356B0000u | (traceAddress & 0xFFFFu),
 
+            // 元のs1と実行時種族IDを記録
             0xAD710000u,
             0xAD680004u,
 
+            // 呼び出し回数
             0x8D6C0008u,
             0x258C0001u,
             0xAD6C0008u,
 
+            // 今回の特技マーカーを初期化
             0xAD60000Cu,
 
+            // 特技テーブル検索へ
             EncodeIonazunRepeatJump(
-                address + 9u * 4u,
+                address + 18u * 4u,
                 lookupAddress),
 
             0x00000000u
         };
     }
-
     private static uint[] BuildSparseLookupCode(
         uint address,
         int normalEntryCount,
@@ -1008,6 +1026,25 @@ internal sealed class ActionAutoRestoreService : IDisposable
         var code = new List<uint>();
 
         void Emit(uint instruction) => code.Add(instruction);
+
+        void EmitRestoreAndJump()
+        {
+            // ディスパッチャーで使用した一時レジスタを復元
+            Emit(0x8FA80000u); // lw t0,0(sp)
+            Emit(0x8FA90004u); // lw t1,4(sp)
+            Emit(0x8FAA0008u); // lw t2,8(sp)
+            Emit(0x8FAB000Cu); // lw t3,12(sp)
+            Emit(0x8FAC0010u); // lw t4,16(sp)
+            Emit(0x8FAD0014u); // lw t5,20(sp)
+
+            // 元のスタック位置へ戻す
+            Emit(0x27BD0020u); // addiu sp,sp,0x20
+
+            // 元の特技処理関数へ戻る
+            Emit(0x0808F1D4u); // j 0x0023C750
+            Emit(0x00000000u); // nop
+        }
+
 
         int EmitBranch(uint opcode, int targetIndex)
         {
@@ -1096,8 +1133,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         int noMatch = code.Count;
 
-        Emit(0x0808F1D4u);                 // j 0x0023C750
-        Emit(0x00000000u);                 // nop
+        EmitRestoreAndJump();
 
         // --------------------------------------------------
         // 指輪設定に一致した場合
@@ -1110,8 +1146,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0xAD6C000Cu);                 // sw t4,12(t3): trace marker
         Emit(0x01408821u);                 // addu s1,t2,zero
 
-        Emit(0x0808F1D4u);                 // j 0x0023C750
-        Emit(0x00000000u);                 // nop
+        EmitRestoreAndJump();
 
         // --------------------------------------------------
         // 通常設定に一致した場合
@@ -1124,8 +1159,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0xAD6C000Cu);                 // sw t4,12(t3)
         Emit(0x01408821u);                 // addu s1,t2,zero
 
-        Emit(0x0808F1D4u);                 // j 0x0023C750
-        Emit(0x00000000u);                 // nop
+        EmitRestoreAndJump();
 
         // --------------------------------------------------
         // 分岐先の確定

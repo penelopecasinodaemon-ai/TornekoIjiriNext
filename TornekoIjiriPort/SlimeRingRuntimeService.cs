@@ -255,6 +255,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
             }
 
+            // =============================================
             // 系統フラグが後から外れた種族も基準値に戻せるよう、
             // 対象全種族のデータを書き込む。
             writes.Add(Tuple.Create(
@@ -268,13 +269,20 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             Pcsx2LiveSession.MemoryLayout!,
             writes);
 
+        string skillStatResult =
+            SlimeRingSkillStatRuntimeService.Apply(
+                source,
+                recordTableOffset,
+                settings,
+                slimeFamilyIds);
+
         string applyResult =
             "スライム系統フラグが有効な対象種族数: " +
             slimeFamilyIds.Count +
             Environment.NewLine +
             "味方専用投擲データを適用しました。" +
             Environment.NewLine +
-            "特技使用率・範囲は、敵側への影響を避けるため変更していません。";
+            skillStatResult;
 
         string runtimeResult =
             ApplyActionAndExtraSettings(settings, slimeFamilyIds);
@@ -323,8 +331,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     ringIonazunForce.Add(id);
             }
 
-            if (item.GanirasuBarrier)
-                barriers[id] = true;
+            // 指輪のガニラスバリアは個体別陣営判定が未実装のため、ここでは追加しない。
+
         }
 
         if (!_actionRestore.TryApplyAllyRingOverrides(
@@ -354,6 +362,10 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             Environment.NewLine +
             actionMessage +
             Environment.NewLine +
+            "ガニラスバリア：個体別陣営判定対応まで指輪からの追加を停止。" +
+            Environment.NewLine +
+            "クリエイター基準設定を維持します。" +
+            Environment.NewLine +
             barrierMessage;
     }
     private void Deactivate(string status)
@@ -376,6 +388,17 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         SetOverlaySpeciesIds(Array.Empty<int>());
 
+        // 使用率・範囲の陣営判定フックを解除する。
+        try
+        {
+            SlimeRingSkillStatRuntimeService.RestoreHook();
+        }
+        catch (Exception ex)
+        {
+            RaiseStatus(status + " / 特技使用率・範囲フック解除エラー: " + ex.Message);
+            return;
+        }
+
         // 指輪専用の味方上書きだけを解除し、通常設定へ戻す。
         _actionRestore.TryApplyAllyRingOverrides(
             new Dictionary<int, ushort>(),
@@ -395,6 +418,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         {
             RaiseStatus(status + " / 実行時設定の復元エラー: " + ex.Message);
         }
+
 
         try
         {
