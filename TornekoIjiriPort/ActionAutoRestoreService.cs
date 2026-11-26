@@ -1296,25 +1296,20 @@ internal sealed class ActionAutoRestoreService : IDisposable
         // したがって v0 が個体データポインタ。
         Emit(0x0040402Du);                    // daddu t0,v0,zero
         int nullActor = EmitBranchWithDelay(code, EncodeI(0x04, 8, 0, 0));
-        Emit(0u);
         Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0): faction
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
-        Emit(0u);
         Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0): runtime species ID
         Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
         Emit(EncodeI(0x09, 0, 12, entryCount));
         int noEntries = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
-        Emit(0u);
 
         int loop = code.Count;
         Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3): table species ID
         int found = EmitBranchWithDelay(code, EncodeI(0x04, 9, 10, 0));
-        Emit(0u);
         Emit(EncodeI(0x09, 11, 11, 3));       // addiu t3,t3,3
         Emit(EncodeI(0x09, 12, 12, -1));      // addiu t4,t4,-1
         int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
-        Emit(0u);
 
         // 一致しない場合は元の a1 (遅延スロットで読み込んだ行動ID) のまま。
         // 一致した場合だけテーブルの行動IDを a1 に設定する。
@@ -1331,7 +1326,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
         int foundLabel = code.Count;
         Emit(EncodeI(0x24, 11, 5, 2));        // lbu a1,2(t3): configured action ID
         int foundToTailCall = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
-        Emit(0u);
 
         PatchBranch(code, nullActor, tailCallOriginal);
         PatchBranch(code, enemy, tailCallOriginal);
@@ -1358,7 +1352,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
-        Emit(0u);
 
         // 味方だけ連発判定用マーカーを初期化する。敵側の通常設定・マーカーには触れない。
         Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
@@ -1370,21 +1363,17 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
         Emit(EncodeI(0x09, 0, 12, entryCount));
         int noEntries = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
-        Emit(0u);
 
         int loop = code.Count;
         Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3)
         int found = EmitBranchWithDelay(code, EncodeI(0x04, 9, 10, 0));
-        Emit(0u);
         Emit(EncodeI(0x09, 11, 11, 3));       // addiu t3,t3,3
         Emit(EncodeI(0x09, 12, 12, -1));      // addiu t4,t4,-1
         int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
-        Emit(0u);
 
         int noMatch = code.Count;
         Emit(EncodeI(0x24, 8, 2, 0x3A));      // lbu v0,0x3A(t0)
         int originalToRestore = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
-        Emit(0u);
 
         int foundLabel = code.Count;
         Emit(EncodeI(0x24, 11, 9, 1));       // lbu t1,1(t3): Ionazun force marker
@@ -1429,7 +1418,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         Emit(EncodeI(0x24, 5, 9, 0x1D3));     // lbu t1,0x1D3(a1): faction
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
-        Emit(0u);
 
         // 味方だけ連発判定マーカーを初期化する。敵側の状態は変更しない。
         Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
@@ -1441,21 +1429,17 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
         Emit(EncodeI(0x09, 0, 12, entryCount));
         int noEntries = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
-        Emit(0u);
 
         int loop = code.Count;
         Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3)
         int found = EmitBranchWithDelay(code, EncodeI(0x04, 9, 10, 0));
-        Emit(0u);
         Emit(EncodeI(0x09, 11, 11, 3));       // addiu t3,t3,3
         Emit(EncodeI(0x09, 12, 12, -1));      // addiu t4,t4,-1
         int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
-        Emit(0u);
 
         int noMatch = code.Count;
         Emit(EncodeI(0x24, 5, 2, 0x3A));      // lbu v0,0x3A(a1)
         int originalToRestore = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
-        Emit(0u);
 
         int foundLabel = code.Count;
         Emit(EncodeI(0x24, 11, 9, 1));       // lbu t1,1(t3): Ionazun force marker
