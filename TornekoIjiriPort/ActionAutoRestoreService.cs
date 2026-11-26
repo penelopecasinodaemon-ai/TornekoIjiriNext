@@ -313,6 +313,21 @@ internal sealed class ActionAutoRestoreService : IDisposable
             ((instruction & 0x03FFFFFFu) << 2);
     }
 
+    // 元が通常命令の位置へフックする場合はJを使い、呼び出し元の$raを保持する。
+    private static uint EncodeJFrom(uint instructionAddress, uint targetAddress)
+    {
+        if (((instructionAddress + 4u) & 0xF0000000u) !=
+            (targetAddress & 0xF0000000u))
+            throw new InvalidOperationException("Jフックの接続先が到達範囲外です。");
+        return 0x08000000u | ((targetAddress >> 2) & 0x03FFFFFFu);
+    }
+
+    private static uint DecodeJFrom(uint instructionAddress, uint instruction)
+    {
+        return ((instructionAddress + 4u) & 0xF0000000u) |
+            ((instruction & 0x03FFFFFFu) << 2);
+    }
+
     private static uint EncodeI(int opcode, int rs, int rt, int immediate)
     {
         return ((uint)opcode << 26) | ((uint)rs << 21) |
@@ -1537,7 +1552,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
         Emit(0x8FBF0040u);                    // lw ra,0x40(sp)
         Emit(0x27BD0050u);                    // addiu sp,sp,0x50
-        Emit(0x03E00008u);                    // jr ra
+        // フック元はJALではなく元のload命令。$raを使わず次命令へ戻る。
+        Emit(EncodeJFrom(
+            caveAddress + AllyActionLoadStubOffset + (uint)(code.Count * 4),
+            0x00241D64u));
         Emit(0u);
 
         PatchBranch(code, enemy, noMatch);
@@ -1603,7 +1621,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
         Emit(0x8FBF0040u);                    // lw ra,0x40(sp)
         Emit(0x27BD0050u);                    // addiu sp,sp,0x50
-        Emit(0x03E00008u);                    // jr ra
+        // フック元はJALではなく元のload命令。$raを使わず次命令へ戻る。
+        Emit(EncodeJFrom(
+            caveAddress + AllyTargetCheckStubOffset + (uint)(code.Count * 4),
+            0x002CA3E4u));
         Emit(0u);
 
         PatchBranch(code, enemy, noMatch);
@@ -1640,12 +1661,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
             params uint[] offsets)
         {
             if (instruction == original) return 0u;
-            if ((instruction >> 26) != 3u)
+            uint opcode = instruction >> 26;
+            if (opcode != 2u && opcode != 3u)
                 throw new InvalidOperationException(
                     "味方側特技フック命令が想定外です。位置=0x" +
                     hookAddress.ToString("X8") + " 値=0x" + instruction.ToString("X8"));
 
-            uint target = DecodeJalFrom(hookAddress, instruction);
+            uint target = opcode == 2u
+                ? DecodeJFrom(hookAddress, instruction)
+                : DecodeJalFrom(hookAddress, instruction);
             var markerChecks = new List<string>();
 
             foreach (uint offset in offsets)
@@ -1749,11 +1773,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
             AllySkillCheckAddress1, caveAddress + AllySkillCheckStubOffset);
         uint expected2 = EncodeJalFrom(
             AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
-        uint expectedLoad = EncodeJalFrom(
+        uint expectedLoad = EncodeJFrom(
             AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
         uint expectedLegacyLoad = EncodeJalFrom(
             AllyActionLoadAddress, caveAddress + LegacyAllyActionLoadStubOffset);
-        uint expectedTargetCheck = EncodeJalFrom(
+        uint expectedTargetCheck = EncodeJFrom(
             AllyTargetCheckActionLoadAddress,
             caveAddress + AllyTargetCheckStubOffset);
         uint expectedLegacyTargetCheck = EncodeJalFrom(
@@ -1815,8 +1839,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         uint expected1 = EncodeJalFrom(AllySkillCheckAddress1, caveAddress + AllySkillCheckStubOffset);
         uint expected2 = EncodeJalFrom(AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
-        uint expectedLoad = EncodeJalFrom(AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
-        uint expectedTargetCheck = EncodeJalFrom(
+        uint expectedLoad = EncodeJFrom(AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
+        uint expectedTargetCheck = EncodeJFrom(
             AllyTargetCheckActionLoadAddress,
             caveAddress + AllyTargetCheckStubOffset);
 
