@@ -178,20 +178,39 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         SlimeRingSettings settings =
             SlimeRingSettings.Load(SlimeRingEditorForm.TargetMonsterIds);
 
-        string result = SlimeRingSkillStatRuntimeService.Apply(
-            source,
-            recordTableOffset,
-            settings,
-            slimeFamilyIds);
+        try
+        {
+            string result = SlimeRingSkillStatRuntimeService.Apply(
+                source,
+                recordTableOffset,
+                settings,
+                slimeFamilyIds);
 
-        _diagnosticSkillStatApplied = true;
-        RaiseStatus(
-            "スライムの指輪：診断段階2・特技使用率／範囲フック適用済み" +
-            Environment.NewLine +
-            "行動IDディスパッチャー：未設置" +
-            Environment.NewLine +
-            result);
+            _diagnosticSkillStatApplied = true;
+            RaiseStatus(
+                "スライムの指輪：診断段階2・特技使用率／範囲フック適用済み" +
+                Environment.NewLine +
+                "行動IDディスパッチャー：未設置" +
+                Environment.NewLine +
+                result);
+        }
+        catch
+        {
+            // 設置途中で失敗した場合、当サービス所有のフックだけを元に戻す。
+            try
+            {
+                SlimeRingSkillStatRuntimeService.RestoreHook();
+            }
+            catch
+            {
+                // 元命令への復元に失敗した場合は、元の例外を優先して通知する。
+            }
+
+            _diagnosticSkillStatApplied = false;
+            throw;
+        }
     }
+
 
     // 診断段階1専用。指輪の味方専用投擲データだけを更新する。
     // 特技使用率フック、行動ディスパッチャー、イオナズン分岐、バリアには触れない。
