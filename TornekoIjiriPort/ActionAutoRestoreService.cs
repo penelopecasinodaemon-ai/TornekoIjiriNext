@@ -460,6 +460,194 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 
+    // 診断段階3A：味方の特技使用判定呼び出し2か所だけをフックする。
+    // 行動ID読込・対象判定・敵ディスパッチャー・イオナズン分岐は変更しない。
+    internal bool TryApplyAllyRingSkillCheckProbe(
+        IEnumerable<KeyValuePair<int, ushort>> ringActions,
+        ISet<int>? ionazunForce,
+        out string message)
+    {
+        message = "";
+
+        var copy = new Dictionary<int, ushort>();
+        if (ringActions != null)
+        {
+            foreach (var pair in ringActions)
+                copy[pair.Key] = pair.Value;
+        }
+
+        var forceCopy = ionazunForce == null
+            ? new HashSet<int>()
+            : new HashSet<int>(ionazunForce);
+
+        lock (_operationSync)
+        {
+            uint expected1 = 0u;
+            uint expected2 = 0u;
+            uint caveAddress = 0u;
+
+            try
+            {
+                if (!_pine.TryConnect())
+                {
+                    message = "指輪設定は保持しました。PCSX2接続後に反映します。";
+                    return false;
+                }
+
+                if (_pine.GetStatus() != 0u)
+                {
+                    message = "PCSX2をゲーム実行状態にしてください。";
+                    return false;
+                }
+
+                if (copy.Count == 0)
+                {
+                    RestoreAllyActionHooks();
+                    message = "味方特技使用判定フックを解除しました。";
+                    return true;
+                }
+
+                var entries = BuildActionEntries(copy, forceCopy);
+                if (entries.Count == 0)
+                {
+                    RestoreAllyActionHooks();
+                    message = "味方側の有効な行動ID設定がないため、フックを設置しません。";
+                    return true;
+                }
+
+                // 今回の診断では2つのJAL位置以外にフックが存在しないことを必須とする。
+                uint current1 = _pine.Read32(AllySkillCheckAddress1);
+                uint current2 = _pine.Read32(AllySkillCheckAddress2);
+                uint currentLoad = _pine.Read32(AllyActionLoadAddress);
+                uint currentTarget = _pine.Read32(AllyTargetCheckActionLoadAddress);
+
+                if (current1 != OriginalAllySkillCheckCall ||
+                    current2 != OriginalAllySkillCheckCall ||
+                    currentLoad != OriginalAllyActionLoad ||
+                    currentTarget != OriginalAllyTargetCheckActionLoad)
+                {
+                    throw new InvalidOperationException(
+                        "診断開始時点で味方側フック位置に元命令以外が存在します。" +
+                        "PCSX2を完全終了して通常起動し直してください。");
+                }
+
+                if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
+                    _pine.Read32(AllySkillCheckDelay2Address) != OriginalAllySkillCheckDelay ||
+                    _pine.Read32(AllyActionLoadDelayAddress) != OriginalAllyActionLoadDelay ||
+                    _pine.Read32(AllyTargetCheckDelayAddress) != OriginalAllyTargetCheckDelay)
+                {
+                    throw new InvalidOperationException(
+                        "味方側AIの遅延スロットが想定値と異なります。診断フックを中止しました。");
+                }
+
+                uint sharedPage = FindOrCreateSharedRuntimeCave();
+                caveAddress = sharedPage + SharedActionCaveOffset;
+
+                expected1 = EncodeJalFrom(
+                    AllySkillCheckAddress1,
+                    caveAddress + AllySkillCheckStubOffset);
+                expected2 = EncodeJalFrom(
+                    AllySkillCheckAddress2,
+                    caveAddress + AllySkillCheckStubOffset);
+
+                uint[] stub = BuildAllySkillCheckStub(
+                    caveAddress,
+                    MaxSpeciesActionEntries);
+
+                if (AllySkillCheckStubOffset + (uint)stub.Length * 4u >
+                    AllyActionLoadStubOffset)
+                {
+                    throw new InvalidOperationException(
+                        "特技使用判定スタブが次のコード領域と重複します。");
+                }
+
+                // コード・テーブルを先に書き込み、全項目を検証してからフックする。
+                WriteDispatcherData(
+                    caveAddress,
+                    new List<(byte SpeciesId, byte Marker, byte ActualAction)>(),
+                    entries);
+
+                for (int i = 0; i < stub.Length; i++)
+                    _pine.Write32(
+                        caveAddress + AllySkillCheckStubOffset + (uint)(i * 4),
+                        stub[i]);
+
+                uint markerAddress = caveAddress + AllyHookMarkerOffset;
+                uint markerValue = _pine.Read32(markerAddress);
+                if (markerValue != 0u && markerValue != AllyHookMarker)
+                {
+                    throw new InvalidOperationException(
+                        "味方フック識別マーカー位置が別データで使用されています。");
+                }
+
+                _pine.Write32(markerAddress, AllyHookMarker);
+
+                for (int i = 0; i < stub.Length; i++)
+                {
+                    if (_pine.Read32(
+                        caveAddress + AllySkillCheckStubOffset + (uint)(i * 4)) != stub[i])
+                    {
+                        throw new InvalidOperationException(
+                            "特技使用判定スタブの書き込み検証に失敗しました。");
+                    }
+                }
+
+                if (_pine.Read32(markerAddress) != AllyHookMarker)
+                    throw new InvalidOperationException("味方フック識別マーカーの検証に失敗しました。");
+
+                _pine.Write32(AllySkillCheckAddress1, expected1);
+                if (_pine.Read32(AllySkillCheckAddress1) != expected1)
+                    throw new InvalidOperationException("1か所目の特技使用判定フックを検証できません。");
+
+                _pine.Write32(AllySkillCheckAddress2, expected2);
+                if (_pine.Read32(AllySkillCheckAddress2) != expected2)
+                    throw new InvalidOperationException("2か所目の特技使用判定フックを検証できません。");
+
+                message =
+                    "診断段階3A：味方の特技使用判定フック2か所だけを設置しました。" +
+                    Environment.NewLine +
+                    "行動ID読込フック：未設置" +
+                    Environment.NewLine +
+                    "対象判定フック：未設置" +
+                    Environment.NewLine +
+                    "敵ディスパッチャー・イオナズン分岐：変更なし";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // 途中まで設置されたJALだけを元に戻す。敵側やイオナズン側には触れない。
+                try
+                {
+                    if (_pine.TryConnect())
+                    {
+                        if (expected1 != 0u &&
+                            _pine.Read32(AllySkillCheckAddress1) == expected1)
+                        {
+                            _pine.Write32(
+                                AllySkillCheckAddress1,
+                                OriginalAllySkillCheckCall);
+                        }
+
+                        if (expected2 != 0u &&
+                            _pine.Read32(AllySkillCheckAddress2) == expected2)
+                        {
+                            _pine.Write32(
+                                AllySkillCheckAddress2,
+                                OriginalAllySkillCheckCall);
+                        }
+                    }
+                }
+                catch
+                {
+                    // 元命令への復元エラーは下記メッセージに含めて通知する。
+                }
+
+                message = "味方特技使用判定フックの適用に失敗しました: " + ex.Message;
+                return false;
+            }
+        }
+    }
+
     internal bool TryApplyAllyRingOverrides(
         IEnumerable<KeyValuePair<int, ushort>> ringActions,
         ISet<int>? ionazunForce,
