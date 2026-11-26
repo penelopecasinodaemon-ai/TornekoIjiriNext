@@ -18,6 +18,24 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint DelaySlotAddress = 0x002435C8u;
     private const uint OriginalDelayInstruction = 0x84510004u;
 
+    // 味方側AIの特技使用可否判定と行動ID読み出し。
+    private const uint AllySkillCheckAddress1 = 0x00241D48u;
+    private const uint AllySkillCheckAddress2 = 0x00241DB8u;
+    private const uint AllyActionLoadAddress = 0x00241D5Cu;
+    private const uint OriginalAllySkillCheckCall = 0x0C08F1D4u;
+    private const uint OriginalAllyActionLoad = 0x9102003Au;
+    private const uint AllySkillCheckDelay1Address = 0x00241D4Cu;
+    private const uint AllySkillCheckDelay2Address = 0x00241DBCu;
+    private const uint AllyActionLoadDelayAddress = 0x00241D60u;
+    private const uint OriginalAllySkillCheckDelay = 0x9045003Au;
+    private const uint OriginalAllyActionLoadDelay = 0x3C03008Eu;
+
+    private const uint AllySkillCheckStubOffset = 0x800u;
+    private const uint AllyActionLoadStubOffset = 0x880u;
+    private const uint AllyHookMarkerOffset = 0xA7Cu;
+    private const uint AllyHookMarker = 0x534C4148u;
+    private const uint AllyHookReservedSize = 0xA80u;
+
     // 旧版の全敵共通パッチ ori s1,zero,actionId
     private const uint LegacyPatchBase = 0x34110000u;
 
@@ -253,14 +271,27 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private static uint EncodeJal(uint address)
     {
-        if ((address & 0xF0000000u) !=
-            ((PatchAddress + 4u) & 0xF0000000u))
-        {
-            throw new InvalidOperationException(
-                "ディスパッチャーのアドレスがJALの到達範囲外です。");
-        }
+        return EncodeJalFrom(PatchAddress, address);
+    }
 
-        return 0x0C000000u | ((address >> 2) & 0x03FFFFFFu);
+    private static uint EncodeJalFrom(uint instructionAddress, uint targetAddress)
+    {
+        if (((instructionAddress + 4u) & 0xF0000000u) !=
+            (targetAddress & 0xF0000000u))
+            throw new InvalidOperationException("JALフックの接続先が到達範囲外です。");
+        return 0x0C000000u | ((targetAddress >> 2) & 0x03FFFFFFu);
+    }
+
+    private static uint DecodeJalFrom(uint instructionAddress, uint instruction)
+    {
+        return ((instructionAddress + 4u) & 0xF0000000u) |
+            ((instruction & 0x03FFFFFFu) << 2);
+    }
+
+    private static uint EncodeI(int opcode, int rs, int rt, int immediate)
+    {
+        return ((uint)opcode << 26) | ((uint)rs << 21) |
+            ((uint)rt << 16) | ((uint)immediate & 0xFFFFu);
     }
 
     internal bool TryApply(
@@ -1206,6 +1237,248 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         return code.ToArray();
     }
+    private static int EmitBranchWithDelay(List<uint> code, uint instruction)
+    {
+        int index = code.Count;
+        code.Add(instruction);
+        code.Add(0u);
+        return index;
+    }
+
+    private static void PatchBranch(List<uint> code, int branchIndex, int targetIndex)
+    {
+        int displacement = targetIndex - (branchIndex + 1);
+        code[branchIndex] = (code[branchIndex] & 0xFFFF0000u) | (uint)(ushort)displacement;
+    }
+
+    private static uint[] BuildAllySkillCheckStub(uint caveAddress, int entryCount)
+    {
+        uint dataAddress = caveAddress + 0x200u;
+        var code = new List<uint>();
+        void Emit(uint x) => code.Add(x);
+
+        Emit(0x27BDFFF0u);                    // addiu sp,sp,-0x10
+        Emit(0xAFBF0000u);                    // sw ra,0(sp)
+        Emit(EncodeI(0x23, 4, 8, 8));         // lw t0,8(a0)
+        int nullActor = EmitBranchWithDelay(code, EncodeI(0x04, 8, 0, 0));
+        Emit(0u);
+        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
+        int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
+        Emit(0u);
+        Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0)
+        Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
+        Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
+        Emit(EncodeI(0x09, 0, 12, entryCount));
+        int noEntries = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
+        Emit(0u);
+
+        int loop = code.Count;
+        Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3)
+        int found = EmitBranchWithDelay(code, EncodeI(0x04, 9, 10, 0));
+        Emit(0u);
+        Emit(EncodeI(0x09, 11, 11, 3));       // addiu t3,t3,3
+        Emit(EncodeI(0x09, 12, 12, -1));      // addiu t4,t4,-1
+        int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
+        Emit(0u);
+
+        int callOriginal = code.Count;
+        Emit(0x0C08F1D4u);                    // jal 0x0023C750
+        Emit(0u);
+        Emit(0x8FBF0000u);                    // lw ra,0(sp)
+        Emit(0x27BD0010u);                    // addiu sp,sp,0x10
+        Emit(0x03E00008u);                    // jr ra
+        Emit(0u);
+
+        int foundLabel = code.Count;
+        Emit(EncodeI(0x24, 11, 5, 2));        // lbu a1,2(t3)
+        int foundToCall = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
+        Emit(0u);
+
+        PatchBranch(code, nullActor, callOriginal);
+        PatchBranch(code, enemy, callOriginal);
+        PatchBranch(code, noEntries, callOriginal);
+        PatchBranch(code, found, foundLabel);
+        PatchBranch(code, repeat, loop);
+        PatchBranch(code, foundToCall, callOriginal);
+        return code.ToArray();
+    }
+
+    private static uint[] BuildAllyActionLoadStub(uint caveAddress, int entryCount)
+    {
+        uint dataAddress = caveAddress + 0x200u;
+        var code = new List<uint>();
+        void Emit(uint x) => code.Add(x);
+
+        Emit(0x27BDFFB0u);                    // addiu sp,sp,-0x50
+        Emit(0x7FA90000u);                    // sq t1,0(sp)
+        Emit(0x7FAA0010u);                    // sq t2,0x10(sp)
+        Emit(0x7FAB0020u);                    // sq t3,0x20(sp)
+        Emit(0x7FAC0030u);                    // sq t4,0x30(sp)
+        Emit(0xAFBF0040u);                    // sw ra,0x40(sp)
+        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
+        int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
+        Emit(0u);
+        Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0)
+        Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
+        Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
+        Emit(EncodeI(0x09, 0, 12, entryCount));
+        int noEntries = EmitBranchWithDelay(code, EncodeI(0x04, 12, 0, 0));
+        Emit(0u);
+
+        int loop = code.Count;
+        Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3)
+        int found = EmitBranchWithDelay(code, EncodeI(0x04, 9, 10, 0));
+        Emit(0u);
+        Emit(EncodeI(0x09, 11, 11, 3));       // addiu t3,t3,3
+        Emit(EncodeI(0x09, 12, 12, -1));      // addiu t4,t4,-1
+        int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
+        Emit(0u);
+
+        int noMatch = code.Count;
+        Emit(EncodeI(0x24, 8, 2, 0x3A));      // lbu v0,0x3A(t0)
+        int originalToRestore = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
+        Emit(0u);
+
+        int foundLabel = code.Count;
+        Emit(EncodeI(0x24, 11, 2, 2));       // lbu v0,2(t3)
+
+        int restore = code.Count;
+        Emit(0x7BA90000u);                    // lq t1,0(sp)
+        Emit(0x7BAA0010u);                    // lq t2,0x10(sp)
+        Emit(0x7BAB0020u);                    // lq t3,0x20(sp)
+        Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
+        Emit(0x8FBF0040u);                    // lw ra,0x40(sp)
+        Emit(0x27BD0050u);                    // addiu sp,sp,0x50
+        Emit(0x03E00008u);                    // jr ra
+        Emit(0u);
+
+        PatchBranch(code, enemy, noMatch);
+        PatchBranch(code, noEntries, noMatch);
+        PatchBranch(code, found, foundLabel);
+        PatchBranch(code, repeat, loop);
+        PatchBranch(code, originalToRestore, restore);
+        return code.ToArray();
+    }
+
+    private bool IsAllyHookMarker(uint caveAddress)
+    {
+        return _pine.Read32(caveAddress + AllyHookMarkerOffset) == AllyHookMarker;
+    }
+
+    private void RestoreAllyActionHooks(uint preferredCaveAddress = 0u)
+    {
+        uint check1 = _pine.Read32(AllySkillCheckAddress1);
+        uint check2 = _pine.Read32(AllySkillCheckAddress2);
+        uint actionLoad = _pine.Read32(AllyActionLoadAddress);
+
+        bool anyHook = check1 != OriginalAllySkillCheckCall ||
+            check2 != OriginalAllySkillCheckCall ||
+            actionLoad != OriginalAllyActionLoad;
+        if (!anyHook)
+            return;
+
+        uint DeriveCave(uint hookAddress, uint instruction, uint original, uint offset)
+        {
+            if (instruction == original) return 0u;
+            if ((instruction >> 26) != 3u)
+                throw new InvalidOperationException(
+                    "味方側特技フック命令が想定外です。位置=0x" +
+                    hookAddress.ToString("X8") + " 値=0x" + instruction.ToString("X8"));
+            uint target = DecodeJalFrom(hookAddress, instruction);
+            if (target < offset)
+                throw new InvalidOperationException("味方側特技フックの接続先が不正です。");
+            return target - offset;
+        }
+
+        uint[] derived =
+        {
+            DeriveCave(AllySkillCheckAddress1, check1, OriginalAllySkillCheckCall, AllySkillCheckStubOffset),
+            DeriveCave(AllySkillCheckAddress2, check2, OriginalAllySkillCheckCall, AllySkillCheckStubOffset),
+            DeriveCave(AllyActionLoadAddress, actionLoad, OriginalAllyActionLoad, AllyActionLoadStubOffset)
+        };
+
+        uint caveAddress = preferredCaveAddress;
+        if (caveAddress == 0u)
+            foreach (uint value in derived)
+                if (value != 0u) { caveAddress = value; break; }
+
+        if (caveAddress == 0u || !IsAllyHookMarker(caveAddress))
+            throw new InvalidOperationException(
+                "味方側特技フックの所有マーカーを確認できないため、復元を中止しました。");
+
+        foreach (uint value in derived)
+            if (value != 0u && value != caveAddress)
+                throw new InvalidOperationException(
+                    "味方側特技フックが複数のコードケーブを参照しています。");
+
+        uint expected1 = EncodeJalFrom(AllySkillCheckAddress1, caveAddress + AllySkillCheckStubOffset);
+        uint expected2 = EncodeJalFrom(AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
+        uint expectedLoad = EncodeJalFrom(AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
+
+        if (check1 != OriginalAllySkillCheckCall && check1 != expected1)
+            throw new InvalidOperationException("0x00241D48のフック先が想定外です。");
+        if (check2 != OriginalAllySkillCheckCall && check2 != expected2)
+            throw new InvalidOperationException("0x00241DB8のフック先が想定外です。");
+        if (actionLoad != OriginalAllyActionLoad && actionLoad != expectedLoad)
+            throw new InvalidOperationException("0x00241D5Cのフック先が想定外です。");
+
+        if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
+            _pine.Read32(AllySkillCheckDelay2Address) != OriginalAllySkillCheckDelay ||
+            _pine.Read32(AllyActionLoadDelayAddress) != OriginalAllyActionLoadDelay)
+            throw new InvalidOperationException(
+                "味方側特技フックの遅延スロットが想定外のため復元を中止しました。");
+
+        if (check1 == expected1) _pine.Write32(AllySkillCheckAddress1, OriginalAllySkillCheckCall);
+        if (check2 == expected2) _pine.Write32(AllySkillCheckAddress2, OriginalAllySkillCheckCall);
+        if (actionLoad == expectedLoad) _pine.Write32(AllyActionLoadAddress, OriginalAllyActionLoad);
+
+        if (_pine.Read32(AllySkillCheckAddress1) != OriginalAllySkillCheckCall ||
+            _pine.Read32(AllySkillCheckAddress2) != OriginalAllySkillCheckCall ||
+            _pine.Read32(AllyActionLoadAddress) != OriginalAllyActionLoad)
+            throw new InvalidOperationException("味方側特技フックを元の命令へ復元できませんでした。");
+    }
+
+    private void ApplyAllyActionHooks(uint caveAddress, int allyOverrideEntryCount)
+    {
+        if (allyOverrideEntryCount <= 0)
+        {
+            RestoreAllyActionHooks(caveAddress);
+            return;
+        }
+
+        if (!IsAllyHookMarker(caveAddress))
+            throw new InvalidOperationException("味方側特技フックのコードケーブ識別マーカーがありません。");
+
+        if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
+            _pine.Read32(AllySkillCheckDelay2Address) != OriginalAllySkillCheckDelay ||
+            _pine.Read32(AllyActionLoadDelayAddress) != OriginalAllyActionLoadDelay)
+            throw new InvalidOperationException(
+                "味方側AIの遅延スロットが想定値と異なります。安全のためフックを中止しました。");
+
+        uint expected1 = EncodeJalFrom(AllySkillCheckAddress1, caveAddress + AllySkillCheckStubOffset);
+        uint expected2 = EncodeJalFrom(AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
+        uint expectedLoad = EncodeJalFrom(AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
+
+        uint current1 = _pine.Read32(AllySkillCheckAddress1);
+        uint current2 = _pine.Read32(AllySkillCheckAddress2);
+        uint currentLoad = _pine.Read32(AllyActionLoadAddress);
+
+        if ((current1 != OriginalAllySkillCheckCall && current1 != expected1) ||
+            (current2 != OriginalAllySkillCheckCall && current2 != expected2) ||
+            (currentLoad != OriginalAllyActionLoad && currentLoad != expectedLoad))
+            throw new InvalidOperationException(
+                "味方側AIのフック位置に想定外の命令があります。既存の処理を保護するため中止しました。");
+
+        if (current1 == OriginalAllySkillCheckCall) _pine.Write32(AllySkillCheckAddress1, expected1);
+        if (current2 == OriginalAllySkillCheckCall) _pine.Write32(AllySkillCheckAddress2, expected2);
+        if (currentLoad == OriginalAllyActionLoad) _pine.Write32(AllyActionLoadAddress, expectedLoad);
+
+        if (_pine.Read32(AllySkillCheckAddress1) != expected1 ||
+            _pine.Read32(AllySkillCheckAddress2) != expected2 ||
+            _pine.Read32(AllyActionLoadAddress) != expectedLoad)
+            throw new InvalidOperationException("味方側AIフックの設置検証に失敗しました。");
+    }
+
     private static uint GetRequiredCaveSize(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
@@ -1213,7 +1486,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint dataLength =
             (uint)(normalEntries.Count + allyOverrideEntries.Count) * 3u;
         uint paddedDataLength = (dataLength + 3u) & ~3u;
-        return 0x200u + paddedDataLength;
+        return Math.Max(AllyHookReservedSize, 0x200u + paddedDataLength);
     }
 
     private bool IsDispatcherCode(
@@ -1242,6 +1515,17 @@ internal sealed class ActionAutoRestoreService : IDisposable
         for (int i = 0; i < lookup.Length; i++)
             if (_pine.Read32(lookupAddress + (uint)(i * 4)) != lookup[i])
                 return false;
+
+        uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
+        uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
+        for (int i = 0; i < allyCheck.Length; i++)
+            if (_pine.Read32(address + AllySkillCheckStubOffset + (uint)(i * 4)) != allyCheck[i])
+                return false;
+        for (int i = 0; i < allyLoad.Length; i++)
+            if (_pine.Read32(address + AllyActionLoadStubOffset + (uint)(i * 4)) != allyLoad[i])
+                return false;
+        if (_pine.Read32(address + AllyHookMarkerOffset) != AllyHookMarker)
+            return false;
 
         uint dataAddress = address + 0x200u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
@@ -1320,6 +1604,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
         for (int i = 0; i < lookup.Length; i++)
             _pine.Write32(lookupAddress + (uint)(i * 4), lookup[i]);
 
+        uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
+        uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
+        for (int i = 0; i < allyCheck.Length; i++)
+            _pine.Write32(address + AllySkillCheckStubOffset + (uint)(i * 4), allyCheck[i]);
+        for (int i = 0; i < allyLoad.Length; i++)
+            _pine.Write32(address + AllyActionLoadStubOffset + (uint)(i * 4), allyLoad[i]);
+
         uint dataAddress = address + 0x200u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
         for (uint offset = 0; offset < paddedLength; offset += 4u)
@@ -1339,6 +1630,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         _pine.Write32(traceAddress + 4u, 0u);
         _pine.Write32(traceAddress + 8u, 0u);
         _pine.Write32(traceAddress + 12u, 0u);
+        _pine.Write32(address + AllyHookMarkerOffset, AllyHookMarker);
 
         if (!IsDispatcherCode(address, normalEntries, allyOverrideEntries))
             throw new InvalidOperationException("敵味方別特技ディスパッチャーの検証に失敗しました。");
@@ -1373,7 +1665,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
     {
         Dictionary<int, ushort> allyRingActions;
         HashSet<int> allyRingIonazunForce;
-
         lock (_stateSync)
         {
             allyRingActions = new Dictionary<int, ushort>(_allyRingActions);
@@ -1381,12 +1672,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         var normalEntries = BuildActionEntries(actions);
-        var allyOverrideEntries =
-            BuildActionEntries(allyRingActions, allyRingIonazunForce);
+        var allyOverrideEntries = BuildActionEntries(allyRingActions, allyRingIonazunForce);
 
         uint currentCall = _pine.Read32(PatchAddress);
         bool currentIsDispatcher = IsDispatcherCall(currentCall);
-
         if (currentCall != OriginalCallInstruction && !currentIsDispatcher)
             throw new InvalidOperationException(
                 "敵特技呼び出し命令が想定外です。現在値: 0x" + currentCall.ToString("X8"));
@@ -1397,10 +1686,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
             _pine.Write32(DelaySlotAddress, OriginalDelayInstruction);
             delayInstruction = _pine.Read32(DelaySlotAddress);
         }
-
         if (delayInstruction != OriginalDelayInstruction)
             throw new InvalidOperationException(
                 "遅延スロットが想定外です。現在値: 0x" + delayInstruction.ToString("X8"));
+
+        if (!currentIsDispatcher && _codeCaveAddress == 0u)
+            RestoreAllyActionHooks();
 
         if (currentIsDispatcher)
         {
@@ -1411,6 +1702,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             }
             else
             {
+                RestoreAllyActionHooks(detectedCave);
                 RestoreIonazunRepeatPatch();
                 RestoreCallInstruction();
                 _codeCaveAddress = 0u;
@@ -1418,23 +1710,24 @@ internal sealed class ActionAutoRestoreService : IDisposable
             }
         }
 
-        if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
-        {
-            RestoreIonazunRepeatPatch();
-            if (currentIsDispatcher)
-                RestoreCallInstruction();
-            _codeCaveAddress = 0u;
-            // 通常設定と指輪上書きは統合ディスパッチャーで処理する。
-            return;
-        }
-
         if (_codeCaveAddress != 0u &&
             !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
         {
+            RestoreAllyActionHooks(_codeCaveAddress);
             RestoreIonazunRepeatPatch();
             if (currentIsDispatcher)
                 RestoreCallInstruction();
             _codeCaveAddress = 0u;
+        }
+
+        if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
+        {
+            RestoreAllyActionHooks(_codeCaveAddress);
+            RestoreIonazunRepeatPatch();
+            if (currentIsDispatcher)
+                RestoreCallInstruction();
+            _codeCaveAddress = 0u;
+            return;
         }
 
         if (_codeCaveAddress == 0u)
@@ -1446,7 +1739,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         uint newCall = EncodeJal(_codeCaveAddress);
         _pine.Write32(PatchAddress, newCall);
-
         uint verifyCall = _pine.Read32(PatchAddress);
         if (verifyCall != newCall)
             throw new InvalidOperationException(
@@ -1454,7 +1746,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
 
         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
-            // 通常設定と指輪上書きは統合ディスパッチャーで処理する。
+        ApplyAllyActionHooks(_codeCaveAddress, allyOverrideEntries.Count);
     }
 
     internal static string ReadActionTrace()
@@ -2047,6 +2339,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             {
                 if (_pine.TryConnect() && _pine.GetStatus() == 0)
                 {
+                    RestoreAllyActionHooks(_codeCaveAddress);
                     RestoreIonazunRepeatPatch();
                     RestoreCallInstruction();
                 }
