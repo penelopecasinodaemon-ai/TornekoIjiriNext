@@ -1586,8 +1586,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         if (check1 == expected1) _pine.Write32(AllySkillCheckAddress1, OriginalAllySkillCheckCall);
         if (check2 == expected2) _pine.Write32(AllySkillCheckAddress2, OriginalAllySkillCheckCall);
-        if (actionLoad == expectedLoad) _pine.Write32(AllyActionLoadAddress, OriginalAllyActionLoad);
-        if (targetCheckLoad == expectedTargetCheck)
+        if (actionLoad == expectedLoad || actionLoad == expectedLegacyLoad)
+            _pine.Write32(AllyActionLoadAddress, OriginalAllyActionLoad);
+        if (targetCheckLoad == expectedTargetCheck ||
+            targetCheckLoad == expectedLegacyTargetCheck)
             _pine.Write32(AllyTargetCheckActionLoadAddress, OriginalAllyTargetCheckActionLoad);
 
         if (_pine.Read32(AllySkillCheckAddress1) != OriginalAllySkillCheckCall ||
