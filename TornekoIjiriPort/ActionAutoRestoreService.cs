@@ -1730,21 +1730,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
         uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, allyOverrideEntries.Count);
 
-        // 各スタブの実サイズを検査し、隣接スタブや所有マーカーへの上書きを防止する。
-        if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
-            AllyActionLoadStubOffset + (uint)allyLoad.Length * 4u > AllyTargetCheckStubOffset ||
-            AllyTargetCheckStubOffset + (uint)allyTargetCheck.Length * 4u > AllyHookMarkerOffset)
-        {
-            throw new InvalidOperationException(
-                "味方側特技スタブの配置領域が重複しています。コードを書き込まずに中止しました。");
-        }
-
-        if (0xE4u + (uint)lookup.Length * 4u > 0x200u)
-        {
-            throw new InvalidOperationException(
-                "種族検索コードが設定データ領域と重複しています。コードを書き込まずに中止しました。");
-        }
-
         for (int i = 0; i < allyCheck.Length; i++)
             if (!DispatcherWordMatches(
                 address + AllySkillCheckStubOffset + (uint)(i * 4),
@@ -1930,6 +1915,22 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
         uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
         uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, allyOverrideEntries.Count);
+
+        // 書き込み前に実サイズを検査し、隣接スタブ・所有マーカーへの上書きを防止する。
+        if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
+            AllyActionLoadStubOffset + (uint)allyLoad.Length * 4u > AllyTargetCheckStubOffset ||
+            AllyTargetCheckStubOffset + (uint)allyTargetCheck.Length * 4u > AllyHookMarkerOffset)
+        {
+            throw new InvalidOperationException(
+                "味方側特技スタブの配置領域が重複しています。コードを書き込まずに中止しました。");
+        }
+
+        if (0xE4u + (uint)lookup.Length * 4u > 0x200u)
+        {
+            throw new InvalidOperationException(
+                "種族検索コードが設定データ領域と重複しています。コードを書き込まずに中止しました。");
+        }
+
         for (int i = 0; i < allyCheck.Length; i++)
             _pine.Write32(address + AllySkillCheckStubOffset + (uint)(i * 4), allyCheck[i]);
         for (int i = 0; i < allyLoad.Length; i++)
