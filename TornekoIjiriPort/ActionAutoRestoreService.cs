@@ -1614,11 +1614,32 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return Math.Max(AllyHookReservedSize, 0x200u + paddedDataLength);
     }
 
+    private string _lastDispatcherVerificationFailure = "";
+
+    private bool DispatcherWordMatches(
+        uint address,
+        uint expected,
+        string section)
+    {
+        uint actual = _pine.Read32(address);
+        if (actual == expected)
+            return true;
+
+        _lastDispatcherVerificationFailure =
+            section +
+            " / アドレス=0x" + address.ToString("X8") +
+            " / 期待値=0x" + expected.ToString("X8") +
+            " / 実際値=0x" + actual.ToString("X8");
+        return false;
+    }
+
     private bool IsDispatcherCode(
         uint address,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
     {
+        _lastDispatcherVerificationFailure = "";
+
         uint[] stub = BuildDispatcherStub(address);
         uint[] lookup = BuildSparseLookupCode(
             address, normalEntries.Count, allyOverrideEntries.Count);
@@ -1629,31 +1650,44 @@ internal sealed class ActionAutoRestoreService : IDisposable
         byte[] data = BuildActionData(allEntries);
 
         for (int i = 0; i < stub.Length; i++)
-            if (_pine.Read32(address + (uint)(i * 4)) != stub[i])
+            if (!DispatcherWordMatches(
+                address + (uint)(i * 4), stub[i], "メインディスパッチャー"))
                 return false;
 
         for (uint offset = (uint)(stub.Length * 4); offset < 0x58u; offset += 4u)
-            if (_pine.Read32(address + offset) != 0u)
+            if (!DispatcherWordMatches(
+                address + offset, 0u, "メインコード余白"))
                 return false;
 
         uint lookupAddress = address + 0xE4u;
         for (int i = 0; i < lookup.Length; i++)
-            if (_pine.Read32(lookupAddress + (uint)(i * 4)) != lookup[i])
+            if (!DispatcherWordMatches(
+                lookupAddress + (uint)(i * 4), lookup[i], "種族検索コード"))
                 return false;
 
         uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
         uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
         uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, allyOverrideEntries.Count);
         for (int i = 0; i < allyCheck.Length; i++)
-            if (_pine.Read32(address + AllySkillCheckStubOffset + (uint)(i * 4)) != allyCheck[i])
+            if (!DispatcherWordMatches(
+                address + AllySkillCheckStubOffset + (uint)(i * 4),
+                allyCheck[i], "味方特技使用判定スタブ"))
                 return false;
         for (int i = 0; i < allyLoad.Length; i++)
-            if (_pine.Read32(address + AllyActionLoadStubOffset + (uint)(i * 4)) != allyLoad[i])
+            if (!DispatcherWordMatches(
+                address + AllyActionLoadStubOffset + (uint)(i * 4),
+                allyLoad[i], "味方特技ID読込スタブ"))
                 return false;
         for (int i = 0; i < allyTargetCheck.Length; i++)
-            if (_pine.Read32(address + AllyTargetCheckStubOffset + (uint)(i * 4)) != allyTargetCheck[i])
+            if (!DispatcherWordMatches(
+                address + AllyTargetCheckStubOffset + (uint)(i * 4),
+                allyTargetCheck[i], "味方対象判定スタブ"))
                 return false;
-        if (_pine.Read32(address + AllyHookMarkerOffset) != AllyHookMarker)
+
+        if (!DispatcherWordMatches(
+            address + AllyHookMarkerOffset,
+            AllyHookMarker,
+            "味方フック所有マーカー"))
             return false;
 
         uint dataAddress = address + 0x200u;
@@ -1668,7 +1702,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 if (index < (uint)data.Length)
                     expected |= (uint)data[index] << (b * 8);
             }
-            if (_pine.Read32(dataAddress + offset) != expected)
+            if (!DispatcherWordMatches(
+                dataAddress + offset, expected, "種族別アクションデータ"))
                 return false;
         }
 
@@ -1847,7 +1882,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
         _pine.Write32(address + AllyHookMarkerOffset, AllyHookMarker);
 
         if (!IsDispatcherCode(address, normalEntries, allyOverrideEntries))
-            throw new InvalidOperationException("敵味方別特技ディスパッチャーの検証に失敗しました。");
+            throw new InvalidOperationException(
+                "敵味方別特技ディスパッチャーの検証に失敗しました。\n" +
+                _lastDispatcherVerificationFailure);
     }
 
     private void RestoreCallInstruction()
