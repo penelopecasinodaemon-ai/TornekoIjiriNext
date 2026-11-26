@@ -537,14 +537,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     }
                 }
 
-                if (_codeCaveAddress != 0u ||
-                    _ionazunRepeatCaveAddress != 0u)
-                {
-                    throw new InvalidOperationException(
-                        "既存ディスパッチャーまたはイオナズン連発フックの管理状態が残っています。" +
-                        "共有コード領域を変更しないため、PCSX2とアプリを再起動してください。");
-                }
-
                 // 今回の診断では2つのJAL位置以外にフックが存在しないことを必須とする。
                 uint current1 = _pine.Read32(AllySkillCheckAddress1);
                 uint current2 = _pine.Read32(AllySkillCheckAddress2);
