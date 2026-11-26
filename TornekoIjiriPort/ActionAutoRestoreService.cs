@@ -515,6 +515,36 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     return true;
                 }
 
+                // 通常設定ディスパッチャーが共有テーブルを使用中なら、上書きしない。
+                uint enemyCall = _pine.Read32(PatchAddress);
+                uint enemyDelay = _pine.Read32(DelaySlotAddress);
+                if (enemyCall != OriginalCallInstruction ||
+                    enemyDelay != OriginalDelayInstruction)
+                {
+                    throw new InvalidOperationException(
+                        "敵用ディスパッチャーが稼働中、またはその遅延スロットが変更されています。" +
+                        "敵側処理と共有テーブルを保護するため、診断フックを設置しません。" +
+                        "PCSX2を完全終了して通常起動し直してください。");
+                }
+
+                lock (_stateSync)
+                {
+                    if (_actions.Count != 0 || _allyRingActions.Count != 0)
+                    {
+                        throw new InvalidOperationException(
+                            "通常設定または別の指輪上書きが登録されています。" +
+                            "今回は味方専用フックだけを切り分けるため、通常設定を解除してください。");
+                    }
+                }
+
+                if (_codeCaveAddress != 0u ||
+                    _ionazunRepeatCaveAddress != 0u)
+                {
+                    throw new InvalidOperationException(
+                        "既存ディスパッチャーまたはイオナズン連発フックの管理状態が残っています。" +
+                        "共有コード領域を変更しないため、PCSX2とアプリを再起動してください。");
+                }
+
                 // 今回の診断では2つのJAL位置以外にフックが存在しないことを必須とする。
                 uint current1 = _pine.Read32(AllySkillCheckAddress1);
                 uint current2 = _pine.Read32(AllySkillCheckAddress2);
