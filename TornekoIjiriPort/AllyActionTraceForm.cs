@@ -49,6 +49,9 @@ internal sealed class AllyActionTraceForm : Form
         AddButton(buttons, "仲間/敵IDトレース解除", 190,
             () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Restore"));
 
+        AddButton(buttons, "仲間/敵構造体ダンプ", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "DumpKnownStructures"));
+
         _snapshotButton = new Button
         {
             Text = "実行時コード採取",
