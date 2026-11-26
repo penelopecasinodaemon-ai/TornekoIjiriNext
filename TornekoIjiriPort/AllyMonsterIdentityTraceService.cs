@@ -73,8 +73,8 @@ internal static class AllyMonsterIdentityTraceService
         c.Add(I(0x04,10,0,0));            // beq t2,zero,restore
         c.Add(0);
 
-        c.Add(I(0x0C,9,26,4));            // sll k0,t1,4
-        c.Add(I(0x0C,9,27,3));            // sll k1,t1,3
+        c.Add(R(0,9,26,4,0x00));           // sll k0,t1,4
+        c.Add(R(0,9,27,3,0x00));           // sll k1,t1,3
         c.Add(R(26,27,26,0,0x21));        // addu k0,k0,k1
         c.Add(I(0x0F,0,10,(int)(records >> 16)));
         c.Add(I(0x0D,10,10,(int)(records & 0xFFFF)));
