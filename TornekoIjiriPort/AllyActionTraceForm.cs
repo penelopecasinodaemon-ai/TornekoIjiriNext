@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -8,13 +7,13 @@ namespace TornekoIjiriPort;
 internal sealed class AllyActionTraceForm : Form
 {
     private readonly TextBox _output;
-    private readonly Button _snapshotButton;
+    private readonly Button _captureButton;
 
     internal AllyActionTraceForm()
     {
-        Text = "味方側特技呼び出しトレース";
+        Text = "味方・敵メモリ監視（アプリ側記録）";
         Width = 1080;
-        Height = 650;
+        Height = 680;
         StartPosition = FormStartPosition.CenterParent;
 
         var root = new TableLayoutPanel
@@ -24,7 +23,8 @@ internal sealed class AllyActionTraceForm : Form
             RowCount = 2,
             Padding = new Padding(10)
         };
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 176));
+
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var buttons = new FlowLayoutPanel
@@ -35,60 +35,47 @@ internal sealed class AllyActionTraceForm : Form
             WrapContents = true
         };
 
-        AddButton(buttons, "味方トレース設置", 140,
-            () => InvokeTraceMethod("AllyActionTraceService", "Install"));
-        AddButton(buttons, "トレース読み取り", 140,
-            () => InvokeTraceMethod("AllyActionTraceService", "Read"));
-        AddButton(buttons, "元の命令に復元", 140,
-            () => InvokeTraceMethod("AllyActionTraceService", "Restore"));
+        AddButton(
+            buttons,
+            "アプリ側監視開始",
+            180,
+            () => Execute(AppSideTraceService.Start));
 
-        AddButton(buttons, "仲間/敵IDトレース設置", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Install"));
-        AddButton(buttons, "仲間/敵ID記録読み取り", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Read"));
-        AddButton(buttons, "仲間/敵IDトレース解除", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Restore"));
+        AddButton(
+            buttons,
+            "記録表示・保存",
+            160,
+            () => Execute(AppSideTraceService.Read));
 
-        AddButton(buttons, "仲間/敵構造体ダンプ", 190,
-            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "DumpKnownStructures"));
+        AddButton(
+            buttons,
+            "アプリ側監視停止",
+            160,
+            () => Execute(AppSideTraceService.Stop));
 
-        _snapshotButton = new Button
+        AddButton(
+            buttons,
+            "監視状態",
+            120,
+            () => Execute(AppSideTraceService.GetStatus));
+
+        _captureButton = new Button
         {
-            Text = "実行時コード採取",
-            Width = 160,
+            Text = "一時停止して即時採取",
+            Width = 190,
             Height = 34
         };
-        _snapshotButton.Click += async (_, _) => await CaptureSnapshotAsync();
-        buttons.Controls.Add(_snapshotButton);
 
-        AddButton(buttons, "分岐トレース設置", 140,
-            () => InvokeTraceMethod("AllySkillRouteTraceService", "Install"));
-        AddButton(buttons, "分岐記録読み取り", 140,
-            () => InvokeTraceMethod("AllySkillRouteTraceService", "Read"));
-        AddButton(buttons, "分岐フック解除", 140,
-            () => InvokeTraceMethod("AllySkillRouteTraceService", "Restore"));
-        AddButton(buttons, "入口フック設置", 140,
-            () => InvokeTraceMethod("AllySkillEntryTraceService", "Install"));
-        AddButton(buttons, "入口記録読み取り", 150,
-            () => InvokeTraceMethod("AllySkillEntryTraceService", "Read"));
-        AddButton(buttons, "入口フック解除", 140,
-            () => InvokeTraceMethod("AllySkillEntryTraceService", "Restore"));
+        _captureButton.Click += async (_, _) =>
+            await CaptureNowAsync();
 
-        AddButton(buttons, "多点観測設置（24地点）", 190,
-            () => InvokeTraceMethod("AllyMultiPointTraceService", "Install"));
-        AddButton(buttons, "多点記録読み取り", 160,
-            () => InvokeTraceMethod("AllyMultiPointTraceService", "Read"));
-        AddButton(buttons, "多点フック一括解除", 170,
-            () => InvokeTraceMethod("AllyMultiPointTraceService", "Restore"));
+        buttons.Controls.Add(_captureButton);
 
-AddButton(buttons, "呼び出し地点トレース設置", 190,
-    () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Install"));
-
-AddButton(buttons, "呼び出し地点記録読み取り", 190,
-    () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Read"));
-
-AddButton(buttons, "呼び出し地点フック解除", 190,
-    () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Restore"));
+        AddButton(
+            buttons,
+            "実行時メモリ全体採取（読み取り専用）",
+            270,
+            () => CaptureSnapshotAsync());
 
         _output = new TextBox
         {
@@ -103,6 +90,11 @@ AddButton(buttons, "呼び出し地点フック解除", 190,
         root.Controls.Add(buttons, 0, 0);
         root.Controls.Add(_output, 0, 1);
         Controls.Add(root);
+
+        Append(
+            "新しい監視方式です。\r\n" +
+            "ゲーム本体へのトレース用書き込みは行いません。\r\n" +
+            "記録データはトルネコいじりネクスト側で管理します。");
     }
 
     private static void AddButton(
@@ -117,59 +109,54 @@ AddButton(buttons, "呼び出し地点フック解除", 190,
             Width = width,
             Height = 34
         };
+
         button.Click += (_, _) => action();
         panel.Controls.Add(button);
     }
 
-    private async Task CaptureSnapshotAsync()
+    private void Execute(Func<string> action)
     {
-        _snapshotButton.Enabled = false;
-        Append("実行時コード採取開始。PCSX2を一時停止してください。");
+        try
+        {
+            Append(action());
+        }
+        catch (Exception ex)
+        {
+            Append("===== エラー =====\r\n" + ex);
+        }
+    }
+
+    private async Task CaptureNowAsync()
+    {
+        _captureButton.Enabled = false;
 
         try
         {
             string result = await Task.Run(
-                () => AllyRuntimeMemorySnapshot.Capture());
+                () => AppSideTraceService.CaptureNow());
+
             Append(result);
         }
         catch (Exception ex)
         {
-            Append("===== 採取エラー =====\r\n" + ex);
+            Append("===== 即時採取エラー =====\r\n" + ex);
         }
         finally
         {
-            _snapshotButton.Enabled = true;
+            _captureButton.Enabled = true;
         }
     }
 
-    private void InvokeTraceMethod(string serviceName, string methodName)
+    private void CaptureSnapshotAsync()
     {
         try
         {
-            Type serviceType =
-                typeof(AllyActionTraceForm).Assembly.GetType(
-                    "TornekoIjiriPort." + serviceName, true);
-
-            BindingFlags flags =
-                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
-
-            MethodInfo method = serviceType.GetMethod(
-                methodName, flags, null, Type.EmptyTypes, null);
-
-            if (method == null)
-                throw new MissingMethodException(
-                    serviceName + "." + methodName + "() が見つかりません。");
-
-            object result = method.Invoke(null, null);
-            Append(result == null ? "完了しました。" : result.ToString());
+            string result = AllyRuntimeMemorySnapshot.Capture();
+            Append(result);
         }
         catch (Exception ex)
         {
-            Exception actual = ex;
-            if (ex is TargetInvocationException tie && tie.InnerException != null)
-                actual = tie.InnerException;
-
-            Append("===== エラー =====\r\n" + actual);
+            Append("===== メモリ採取エラー =====\r\n" + ex);
         }
     }
 
