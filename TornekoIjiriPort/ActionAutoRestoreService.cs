@@ -1918,16 +1918,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
     {
         uint[] stub = BuildDispatcherStub(address);
         uint[] lookup = BuildSparseLookupCode(
-            address, normalEntries.Count, allyOverrideEntries.Count);
+            address, MaxSpeciesActionEntries, MaxSpeciesActionEntries);
 
-        var allEntries = new List<(byte SpeciesId, byte Marker, byte ActualAction)>();
-        allEntries.AddRange(allyOverrideEntries);
-        allEntries.AddRange(normalEntries);
-        byte[] data = BuildActionData(allEntries);
-
-        uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
-        uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
-        uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, allyOverrideEntries.Count);
+        uint[] allyCheck = BuildAllySkillCheckStub(address, MaxSpeciesActionEntries);
+        uint[] allyLoad = BuildAllyActionLoadStub(address, MaxSpeciesActionEntries);
+        uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, MaxSpeciesActionEntries);
 
         // 書き込みを始める前に全コード領域の重複を検査する。
         if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
