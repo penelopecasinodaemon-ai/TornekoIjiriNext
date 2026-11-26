@@ -133,9 +133,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 行動IDディスパッチャーとイオナズン分岐には触れない。
                     ApplyRingSkillStatOnly();
 
-                    // 診断段階3：味方専用の行動IDフックだけを追加。
-                    // 敵ディスパッチャーとイオナズン分岐は変更しない。
-                    ApplyRingAllyActionOnly(true);
+                    // 診断段階3はフリーズ原因の切り分けのため停止。
+                    // 段階1・2（投擲データ／特技使用率・範囲）のみ適用する。
                 }
                 else
                 {
@@ -156,7 +155,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 }
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：診断段階3適用済み（味方専用データ＋特技使用率・範囲＋行動IDフック）"
+                    ? "スライムの指輪：診断段階2適用済み（味方専用データ＋特技使用率・範囲／行動IDフック停止）"
                     : "スライムの指輪：未装備（診断段階2を解除）");
             }
         }
