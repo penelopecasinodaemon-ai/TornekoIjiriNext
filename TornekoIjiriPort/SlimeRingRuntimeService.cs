@@ -30,14 +30,27 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private Dictionary<int, bool>? _baseBarrier;
     private bool _ringActive;
     private static volatile bool _overlayActive;
+    private static readonly object OverlaySync = new object();
+    private static HashSet<int> _overlaySpeciesIds = new HashSet<int>();
 
-    // 指輪が上書き中の対象モンスターかどうか。
+    // 指輪装備中かつ、モンスタークリエイターの
+    // スライム系統フラグが有効な種族だけを上書き対象にする。
     internal static bool IsOverlayActiveForMonster(int speciesId)
     {
-        return _overlayActive &&
-            Array.IndexOf(
-                SlimeRingEditorForm.TargetMonsterIds,
-                speciesId) >= 0;
+        lock (OverlaySync)
+            return _overlayActive && _overlaySpeciesIds.Contains(speciesId);
+    }
+
+    private static void SetOverlaySpeciesIds(IEnumerable<int> speciesIds)
+    {
+        lock (OverlaySync)
+            _overlaySpeciesIds = new HashSet<int>(speciesIds);
+    }
+
+    private static bool OverlaySpeciesIdsMatch(ISet<int> speciesIds)
+    {
+        lock (OverlaySync)
+            return _overlaySpeciesIds.SetEquals(speciesIds);
     }
     private bool _disposed;
     private int _processId;
@@ -118,7 +131,30 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 settingsChanged = true;
             }
 
-            if (settingsChanged || forceApply)
+            // モンスタークリエイターの系統フラグ変更も検出する。
+            bool familyFlagsChanged = false;
+
+            if (_ringActive)
+            {
+                byte[]? currentBin = _getCurrentBin();
+
+                if (currentBin == null || currentBin.Length != 524288)
+                    currentBin = Pcsx2LiveSession.VanillaBin;
+
+                if (currentBin != null && currentBin.Length == 524288)
+                {
+                    int tableOffset =
+                        ResolveMonsterRecordTableOffset(currentBin);
+
+                    HashSet<int> currentFamilyIds =
+                        GetSlimeFamilySpeciesIds(currentBin, tableOffset);
+
+                    familyFlagsChanged =
+                        !OverlaySpeciesIdsMatch(currentFamilyIds);
+                }
+            }
+
+            if (settingsChanged || forceApply || familyFlagsChanged)
             {
                 try
                 {
@@ -173,7 +209,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             _overlayActive = true;
             _lastBarrierTrace = string.Empty;
         }
-        RaiseStatus("スライムの指輪：装備を検出。17種の専用設定を適用します。");
+        SetOverlaySpeciesIds(Array.Empty<int>());
+        RaiseStatus("スライムの指輪：装備を検出。スライム系統フラグを確認します。");
     }
 
     private void ApplyRingSettings()
@@ -186,24 +223,44 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         byte[] work = (byte[])source.Clone();
         var writes = new List<Tuple<int, byte[], string>>();
 
+        int recordTableOffset = ResolveMonsterRecordTableOffset(source);
+
+        HashSet<int> slimeFamilyIds =
+            GetSlimeFamilySpeciesIds(source, recordTableOffset);
+
+        SetOverlaySpeciesIds(slimeFamilyIds);
 
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
-            SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
-            int allyOffset = checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
-            // 特技範囲(+6)は敵味方共通テーブルなので、ここでは絶対に書き換えない。
-            // 味方専用の範囲反映は、仲間側ディスパッチャーの個別フックで行う。
+            int allyOffset =
+                checked(SkillAllyItemDataOffset + (speciesId + 1) * 8);
+
             CheckRange(work, allyOffset, 8);
 
-            // 味方専用データだけを指輪設定で上書きする。
-            WriteUInt16(work, allyOffset, (ushort)Clamp(item.AllyThrowItem1, 0, 65535));
-            WriteUInt16(work, allyOffset + 2, (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
+            // スライム系統フラグが有効な種族だけ指輪設定を適用する。
+            // 対象外の種族はクリエイターの基準値を維持する。
+            if (slimeFamilyIds.Contains(speciesId))
+            {
+                SlimeRingMonsterSettings item =
+                    settings.GetMonster(speciesId);
 
+                WriteUInt16(
+                    work,
+                    allyOffset,
+                    (ushort)Clamp(item.AllyThrowItem1, 0, 65535));
+
+                WriteUInt16(
+                    work,
+                    allyOffset + 2,
+                    (ushort)Clamp(item.AllyThrowItem2, 0, 65535));
+            }
+
+            // 系統フラグが後から外れた種族も基準値に戻せるよう、
+            // 対象全種族のデータを書き込む。
             writes.Add(Tuple.Create(
                 allyOffset,
                 Slice(work, allyOffset, 8),
                 "指輪・味方専用投擲データ ID=" + speciesId));
-
         }
 
         Pcsx2BinApplier.ApplyRanges(
@@ -212,21 +269,26 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             writes);
 
         string applyResult =
+            "スライム系統フラグが有効な対象種族数: " +
+            slimeFamilyIds.Count +
+            Environment.NewLine +
             "味方専用投擲データを適用しました。" +
             Environment.NewLine +
-            "特技使用率・範囲の共通データは変更していません（敵側への影響を防止）。" +
-            Environment.NewLine +
-            "指輪の範囲設定は仲間側専用フックの実装待ちです。";
+            "特技使用率・範囲は、敵側への影響を避けるため変更していません。";
 
-        string runtimeResult = ApplyActionAndExtraSettings(settings);
+        string runtimeResult =
+            ApplyActionAndExtraSettings(settings, slimeFamilyIds);
+
         RaiseStatus(
-            "スライムの指輪：17種の個別設定を適用中" +
+            "スライムの指輪：スライム系統フラグが有効な味方種族へ適用中" +
             Environment.NewLine + applyResult +
             Environment.NewLine + "--- 特技・バリア適用結果 ---" +
             Environment.NewLine + runtimeResult);
     }
 
-    private string ApplyActionAndExtraSettings(SlimeRingSettings settings)
+    private string ApplyActionAndExtraSettings(
+        SlimeRingSettings settings,
+        ISet<int> slimeFamilyIds)
     {
         Dictionary<int, bool> barriers;
 
@@ -244,6 +306,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         foreach (int id in SlimeRingEditorForm.TargetMonsterIds)
         {
+            if (!slimeFamilyIds.Contains(id))
+                continue;
+
             SlimeRingMonsterSettings item = settings.GetMonster(id);
 
             if (item.ActionId > 0 &&
@@ -308,6 +373,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             _lastBarrierTrace = string.Empty;
             _baseBarrier = null;
         }
+
+        SetOverlaySpeciesIds(Array.Empty<int>());
 
         // 指輪専用の味方上書きだけを解除し、通常設定へ戻す。
         _actionRestore.TryApplyAllyRingOverrides(
@@ -391,6 +458,29 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             Pcsx2LiveSession.ProcessId,
             Pcsx2LiveSession.MemoryLayout,
             writes);
+    }
+
+    private static HashSet<int> GetSlimeFamilySpeciesIds(
+        byte[] bin,
+        int recordTableOffset)
+    {
+        // モンスタークリエイターの系統フラグ bit 5 = スライム系統
+        const byte SlimeFamilyFlagMask = 0x20;
+
+        var result = new HashSet<int>();
+
+        foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
+        {
+            int recordOffset = checked(
+                recordTableOffset + speciesId * MonsterRecordSize);
+
+            CheckRange(bin, recordOffset, MonsterRecordSize);
+
+            if ((bin[recordOffset + 6] & SlimeFamilyFlagMask) != 0)
+                result.Add(speciesId);
+        }
+
+        return result;
     }
 
     private static int ResolveMonsterRecordTableOffset(byte[] bin)
