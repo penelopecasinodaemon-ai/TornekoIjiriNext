@@ -54,6 +54,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     }
     private bool _disposed;
     private int _processId;
+    private bool? _lastObservedEquipped;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
@@ -73,169 +74,62 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         _timer = new System.Threading.Timer(Poll, null, 1200, 500);
     }
 
-    // Torneko4読み込み後に基準設定を更新し、指輪設定の再適用を予約する。
+    // 互換性のためメソッドは残すが、読み取り専用監視では何も適用しない。
     internal void NotifyTorneko4Loaded()
     {
-        lock (_sync)
-        {
-            if (_ringActive)
-            {
-                // Torneko4から読み込まれた設定を新しい基準値にする。
-                _baseBarrier = global::Torneko4GanirasuBarrierStore.GetCopy();
-            }
-        }
-
-        // 未装備の場合も要求を保持し、装備検出後に適用する。
-        Interlocked.Exchange(ref _forceApplyRequested, 1);
     }
+
+    // この監視処理は装備状態の読み取りと表示だけを行う。
+    // ゲームメモリへの書き込み・フック設置・設定適用・解除は一切行わない。
     private void Poll(object? state)
     {
-        if (_disposed || Interlocked.Exchange(ref _busy, 1) != 0) return;
+        if (_disposed || Interlocked.Exchange(ref _busy, 1) != 0)
+            return;
+
         try
         {
-            if (!Pcsx2LiveSession.IsConnected || Pcsx2LiveSession.ProcessId <= 0 || Pcsx2LiveSession.MemoryLayout == null)
+            if (!Pcsx2LiveSession.IsConnected ||
+                Pcsx2LiveSession.ProcessId <= 0 ||
+                Pcsx2LiveSession.MemoryLayout == null)
             {
-                if (_ringActive) Deactivate("PCSX2未接続のため指輪専用設定を解除しました。");
                 _processId = 0;
+                _lastObservedEquipped = null;
+                _overlayActive = false;
+                SetOverlaySpeciesIds(Array.Empty<int>());
+                RaiseStatus("スライムの指輪：PCSX2接続待ち（読み取り専用監視）");
                 return;
             }
 
             int pid = Pcsx2LiveSession.ProcessId;
-            if (_processId != 0 && _processId != pid && _ringActive)
-                Deactivate("PCSX2の接続先が変わったため指輪専用設定を解除しました。");
-            _processId = pid;
-
-            bool equipped;
-            try { equipped = IsSlimeRingEquipped(); }
-            catch (Exception ex)
+            if (_processId != pid)
             {
-                RaiseStatus("スライムの指輪：装備状態の確認待ち / " + ex.Message);
-                return;
+                _processId = pid;
+                _lastObservedEquipped = null;
             }
 
-            if (!equipped)
+            // ReadShared32による装備スロットの読み取りのみ。
+            // このメソッドからApplyRingSettings/Deactivate等は呼び出さない。
+            bool equipped = IsSlimeRingEquipped();
+
+            if (_lastObservedEquipped != equipped)
             {
-                if (_ringActive)
-                {
-                    Deactivate("スライムの指輪を外したため、モンスタークリエイター設定へ戻しました。");
-                }
-                else
-                {
-                    // アプリ再起動やsavestateロードで管理状態だけ初期化され、
-                    // EE RAMに指輪フックが残っているケースも解除する。
-                    try
-                    {
-                        SlimeRingSkillStatRuntimeService.RestoreHook();
-                    }
-                    catch (Exception ex)
-                    {
-                        RaiseStatus("スライムの指輪：未装備 / 残存フック解除エラー: " + ex.Message);
-                        return;
-                    }
+                _lastObservedEquipped = equipped;
+                _overlayActive = false;
+                SetOverlaySpeciesIds(Array.Empty<int>());
 
-                    RaiseStatus("スライムの指輪：未装備");
-                }
-                return;
-            }
-
-            DateTime writeTime = File.Exists(SlimeRingSettings.SettingsPath)
-                ? File.GetLastWriteTimeUtc(SlimeRingSettings.SettingsPath)
-                : DateTime.MinValue;
-            // Torneko4読み込み後の再適用要求を確認する。
-            bool forceApply =
-                Interlocked.Exchange(ref _forceApplyRequested, 0) != 0;
-
-            bool settingsChanged = writeTime != _settingsWriteTime;
-
-            if (!_ringActive)
-            {
-                Activate();
-                settingsChanged = true;
-            }
-
-            // モンスタークリエイターの系統フラグと
-            // 特技使用率・範囲の変更を検出する。
-            bool familyFlagsChanged = false;
-            bool creatorSkillSettingsChanged = false;
-
-            uint currentCreatorSkillSettingsFingerprint = 0;
-            bool hasCurrentCreatorSkillSettingsFingerprint = false;
-
-            if (_ringActive)
-            {
-                byte[]? currentBin = _getCurrentBin();
-
-                if (currentBin == null || currentBin.Length != 524288)
-                    currentBin = Pcsx2LiveSession.VanillaBin;
-
-                if (currentBin != null && currentBin.Length == 524288)
-                {
-                    int tableOffset =
-                        ResolveMonsterRecordTableOffset(currentBin);
-
-                    HashSet<int> currentFamilyIds =
-                        GetSlimeFamilySpeciesIds(currentBin, tableOffset);
-
-                    familyFlagsChanged =
-                        !OverlaySpeciesIdsMatch(currentFamilyIds);
-
-                    currentCreatorSkillSettingsFingerprint =
-                        CalculateCreatorSkillSettingsFingerprint(
-                            currentBin,
-                            tableOffset);
-
-                    hasCurrentCreatorSkillSettingsFingerprint = true;
-
-                    creatorSkillSettingsChanged =
-                        _hasCreatorSkillSettingsFingerprint &&
-                        currentCreatorSkillSettingsFingerprint !=
-                        _creatorSkillSettingsFingerprint;
-                }
-            }
-
-            if (settingsChanged ||
-                forceApply ||
-                familyFlagsChanged ||
-                creatorSkillSettingsChanged)
-            {
-                try
-                {
-                    ApplyRingSettings();
-                    _settingsWriteTime = writeTime;
-
-                    // 再適用が成功した場合だけ最新値を監視基準にする。
-                    if (hasCurrentCreatorSkillSettingsFingerprint)
-                    {
-                        _creatorSkillSettingsFingerprint =
-                            currentCreatorSkillSettingsFingerprint;
-
-                        _hasCreatorSkillSettingsFingerprint = true;
-                    }
-                }
-                catch
-                {
-                    if (forceApply)
-                        Interlocked.Exchange(ref _forceApplyRequested, 1);
-
-                    throw;
-                }
-            }
-
-            if (_ringActive)
-            {
-                string trace =
-                    Torneko4GanirasuBarrierRuntime.ReadRuntimeTrace();
-
-                if (!string.IsNullOrEmpty(trace) &&
-                    trace != _lastBarrierTrace)
-                {
-                    _lastBarrierTrace = trace;
-                    RaiseStatus(trace);
-                }
+                RaiseStatus(equipped
+                    ? "スライムの指輪：装備を検出（読み取り専用監視中・自動適用停止）"
+                    : "スライムの指輪：未装備（読み取り専用監視中）");
             }
         }
-        catch (Exception ex) { RaiseStatus("スライムの指輪：反映エラー / " + ex.Message); }
-        finally { Interlocked.Exchange(ref _busy, 0); }
+        catch (Exception ex)
+        {
+            RaiseStatus("スライムの指輪：装備状態の読み取りエラー / " + ex.Message);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _busy, 0);
+        }
     }
 
     private static uint CalculateCreatorSkillSettingsFingerprint(
@@ -648,9 +542,14 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     }
     public void Dispose()
     {
-        if (_disposed) return;
-        _timer.Dispose();
-        if (_ringActive) Deactivate("アプリ終了：指輪専用設定を解除しました。");
+        if (_disposed)
+            return;
+
         _disposed = true;
+        _timer.Dispose();
+        _overlayActive = false;
+        SetOverlaySpeciesIds(Array.Empty<int>());
+
+        // 終了時もゲームメモリには触れない。
     }
 }
