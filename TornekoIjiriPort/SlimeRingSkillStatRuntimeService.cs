@@ -147,9 +147,10 @@ internal static class SlimeRingSkillStatRuntimeService
         Emit(I(0x09, 0, 15, entryCount));         // addiu t7,zero,entryCount
 
         int loopLabel = code.Count;
+        Emit(I(0x0C, 4, 27, 0x00FF));           // andi k1,a0,0xFF: lh由来の符号拡張を除去
         Emit(I(0x24, 14, 26, 0));                 // lbu k0,0(t6): runtime species ID
         int entryFoundBranch =
-            EmitBranch(code, I(0x04, 26, 4, 0));   // beq k0,a0,entryFound
+            EmitBranch(code, I(0x04, 26, 27, 0));  // beq k0,k1,entryFound
         Emit(0u);
         Emit(I(0x09, 14, 14, EntrySize));         // addiu t6,t6,EntrySize
         Emit(I(0x09, 15, 15, -1));                // addiu t7,t7,-1
@@ -565,11 +566,22 @@ internal static class SlimeRingSkillStatRuntimeService
 
             uint[] code = BuildCode(cave, entries.Count);
 
-            for (int i = 0; i < code.Length; i++)
+            if (activeNewCave != 0)
             {
-                ActionAutoRestoreService.WriteShared32(
-                    cave + (uint)(i * 4),
-                    code[i]);
+                // 既に実行中のフック先コードは書き換えない。
+                // savestate復元などでフックだけ残っている場合も、
+                // 既存コードが一致することを確認してデータだけ更新する。
+                VerifyCode(cave, entries.Count);
+            }
+            else
+            {
+                // フック未設置のときだけコードを先に書き込む。
+                for (int i = 0; i < code.Length; i++)
+                {
+                    ActionAutoRestoreService.WriteShared32(
+                        cave + (uint)(i * 4),
+                        code[i]);
+                }
             }
 
             WriteBytes(cave + DataOffset, data);
