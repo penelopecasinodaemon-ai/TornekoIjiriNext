@@ -2549,7 +2549,31 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
         catch (Exception ex)
         {
-            RaiseStatus("種族別特技監視エラー: " + ex.Message);
+            string logPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                "トルネコいじり_種族別特技監視エラー.txt");
+
+            try
+            {
+                System.IO.File.WriteAllText(
+                    logPath,
+                    "発生日時: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                    Environment.NewLine + ex.ToString());
+
+                string oneLineMessage = ex.Message
+                    .Replace("\\r", " ")
+                    .Replace("\\n", " ");
+
+                RaiseStatus(
+                    "種族別特技監視エラー: " + oneLineMessage +
+                    " / 詳細ログ: デスクトップの「トルネコいじり_種族別特技監視エラー.txt」");
+            }
+            catch (Exception logException)
+            {
+                RaiseStatus(
+                    "種族別特技監視エラー: " + ex.Message +
+                    " / ログ保存にも失敗: " + logException.Message);
+            }
         }
 
         Interlocked.Exchange(ref _pollBusy, 0);
