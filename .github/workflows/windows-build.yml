@@ -1,0 +1,30 @@
+name: Windows .NET build
+
+on:
+  push:
+    paths:
+      - "TornekoIjiriPort/**"
+      - ".github/workflows/windows-build.yml"
+  pull_request:
+    paths:
+      - "TornekoIjiriPort/**"
+      - ".github/workflows/windows-build.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore .\TornekoIjiriPort\TornekoIjiriPort.csproj
+
+      - name: Build Release
+        run: dotnet build .\TornekoIjiriPort\TornekoIjiriPort.csproj -c Release --no-restore
