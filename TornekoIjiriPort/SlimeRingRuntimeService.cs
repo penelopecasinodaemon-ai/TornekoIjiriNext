@@ -57,7 +57,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private bool? _lastObservedEquipped;
     private bool _diagnosticAllyItemDataApplied;
     private bool _diagnosticSkillStatApplied;
-    private bool _diagnosticAllyActionApplied;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
@@ -82,7 +81,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     {
     }
 
-    // 装備状態を監視し、味方専用データ・特技率/範囲・行動IDを段階的に反映する。
+    // 装備状態を監視し、検証済みの味方専用データと特技率/範囲だけを反映する。
+    // 行動IDフックは通常攻撃を停止させる不具合が確認されたため、ここからは呼び出さない。
     // 敵ディスパッチャー、イオナズン分岐、バリアには触れない。
     private void Poll(object? state)
     {
@@ -130,9 +130,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
-                    // 段階3：味方専用の行動IDフック。
-                    // 敵用ディスパッチャーとイオナズン分岐には触れない。
-                    ApplyRingAllyActionOnly(true);
                 }
                 else
                 {
@@ -143,17 +140,12 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                         _diagnosticSkillStatApplied = false;
                     }
 
-                    if (_diagnosticAllyActionApplied)
-                    {
-                        ApplyRingAllyActionOnly(false);
-                    }
-
                     if (_diagnosticAllyItemDataApplied)
                         ApplyRingAllyItemDataOnly(false);
                 }
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：段階3適用済み（味方専用データ＋特技使用率・範囲＋味方専用行動IDフック）"
+                    ? "スライムの指輪：段階2適用済み（味方専用データ＋特技使用率・範囲／行動IDフック停止）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
@@ -165,62 +157,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         {
             Interlocked.Exchange(ref _busy, 0);
         }
-    }
-
-    // 診断段階3：味方専用の行動ID上書きだけを適用する。
-    // 敵側ディスパッチャーとイオナズン分岐には触れない。
-    private void ApplyRingAllyActionOnly(bool equipped)
-    {
-        var ringActions = new Dictionary<int, ushort>();
-
-        if (equipped)
-        {
-            byte[]? source = _getCurrentBin();
-            if (source == null || source.Length != 524288)
-                source = Pcsx2LiveSession.VanillaBin;
-
-            if (source == null || source.Length != 524288)
-                throw new InvalidOperationException(
-                    "診断段階3：基準BINがありません。");
-
-            int recordTableOffset = ResolveMonsterRecordTableOffset(source);
-            HashSet<int> slimeFamilyIds =
-                GetSlimeFamilySpeciesIds(source, recordTableOffset);
-            SlimeRingSettings settings =
-                SlimeRingSettings.Load(SlimeRingEditorForm.TargetMonsterIds);
-
-            foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
-            {
-                if (!slimeFamilyIds.Contains(speciesId))
-                    continue;
-
-                SlimeRingMonsterSettings item = settings.GetMonster(speciesId);
-                if (item.ActionId > 0 &&
-                    item.ActionId <= byte.MaxValue &&
-                    Array.Exists(
-                        ActionAutoRestoreService.ActionChoices,
-                        x => x.Id == item.ActionId))
-                {
-                    ringActions[speciesId] = (ushort)item.ActionId;
-                }
-            }
-        }
-
-        if (!_actionRestore.TryApplyAllyRingOverridesIsolated(
-            ringActions,
-            out string message))
-        {
-            throw new InvalidOperationException(
-                "診断段階3の味方専用行動ID適用に失敗しました: " + message);
-        }
-
-        _diagnosticAllyActionApplied = equipped && ringActions.Count > 0;
-        RaiseStatus(
-            equipped
-                ? "スライムの指輪：診断段階3・味方専用行動IDフック適用済み" +
-                  Environment.NewLine + message
-                : "スライムの指輪：味方専用行動IDフック解除済み" +
-                  Environment.NewLine + message);
     }
 
     // 診断段階2：特技使用率・範囲フックだけを設置する。
