@@ -64,6 +64,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint SharedRuntimeCaveMarker = 0x54524E43u;
     private const uint SharedRingCaveMarkerOffset = 0x3F0u;
     private const uint SharedRingCaveMarker = 0x534C5254u;
+    private const uint RingSkillStatHookAddress = 0x0021D6CCu;
+    private const uint RingSkillStatOriginalInstruction = 0x8D080010u;
     private const uint SharedActionCaveMarkerOffset = SharedActionCaveOffset + 0xA7Cu;
     private const uint SharedActionCaveMarker = 0x534C4148u;
     private const uint SharedActionAddressMax = CaveSearchStart + SharedActionCaveOffset;
@@ -562,7 +564,31 @@ internal sealed class ActionAutoRestoreService : IDisposable
                         "味方側AIの遅延スロットが想定値と異なります。診断フックを中止しました。");
                 }
 
-                uint sharedPage = FindOrCreateSharedRuntimeCave();
+                // 段階2が実際に使用しているページをフック命令から逆算する。
+                // 別の古い共有ページを誤って選んで、稼働中のデータ領域を壊さない。
+                uint ringStatHook = _pine.Read32(RingSkillStatHookAddress);
+                if ((ringStatHook >> 26) != 2u)
+                {
+                    throw new InvalidOperationException(
+                        "スライムの指輪・段階2フックがJ命令ではありません。" +
+                        "味方側診断フックを設置しません。");
+                }
+
+                uint sharedPage = DecodeJFrom(
+                    RingSkillStatHookAddress,
+                    ringStatHook);
+
+                if (sharedPage < CaveSearchEnd ||
+                    sharedPage > CaveSearchStart ||
+                    (sharedPage & (SharedRuntimeCaveStep - 1u)) != 0u ||
+                    _pine.Read32(sharedPage + SharedRingCaveMarkerOffset) != SharedRingCaveMarker ||
+                    _pine.Read32(sharedPage + SharedRuntimeCaveMarkerOffset) != SharedRuntimeCaveMarker)
+                {
+                    throw new InvalidOperationException(
+                        "段階2の共有コード領域を所有マーカーで確認できません。" +
+                        "別のページへ書き込むことを避けるため中止しました。");
+                }
+
                 caveAddress = sharedPage + SharedActionCaveOffset;
 
                 expected1 = EncodeJalFrom(
