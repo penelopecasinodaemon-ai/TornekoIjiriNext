@@ -1281,17 +1281,26 @@ internal sealed class ActionAutoRestoreService : IDisposable
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
-        Emit(0x27BDFFF0u);                    // addiu sp,sp,-0x10
-        Emit(0xAFBF0000u);                    // sw ra,0(sp)
+        // この位置は元々 JAL 0x0023C750 の呼び出し位置。
+        // フック側のJALが設定した ra は元の呼び出し元の戻り先
+        // (呼び出し命令+8) なので、ここでは ra を変更せず末尾JUMPする。
+        // 一時レジスタ t0～t4 は元関数へ渡す前に完全に復元する。
+        Emit(0x27BDFFB0u);                    // addiu sp,sp,-0x50
+        Emit(0x7FA80000u);                    // sq t0,0(sp)
+        Emit(0x7FA90010u);                    // sq t1,0x10(sp)
+        Emit(0x7FAA0020u);                    // sq t2,0x20(sp)
+        Emit(0x7FAB0030u);                    // sq t3,0x30(sp)
+        Emit(0x7FAC0040u);                    // sq t4,0x40(sp)
+
         // 元のJAL遅延スロット 0x9045003A は lbu a1,0x3A(v0)。
-        // したがって v0 が既に個体データポインタ。a0+8 を再参照しない。
+        // したがって v0 が個体データポインタ。
         Emit(0x0040402Du);                    // daddu t0,v0,zero
         int nullActor = EmitBranchWithDelay(code, EncodeI(0x04, 8, 0, 0));
         Emit(0u);
-        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
+        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0): faction
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
         Emit(0u);
-        Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0)
+        Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0): runtime species ID
         Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
         Emit(EncodeI(0x09, 0, 12, entryCount));
@@ -1299,7 +1308,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0u);
 
         int loop = code.Count;
-        Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3)
+        Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3): table species ID
         int found = EmitBranchWithDelay(code, EncodeI(0x04, 9, 10, 0));
         Emit(0u);
         Emit(EncodeI(0x09, 11, 11, 3));       // addiu t3,t3,3
@@ -1307,25 +1316,29 @@ internal sealed class ActionAutoRestoreService : IDisposable
         int repeat = EmitBranchWithDelay(code, EncodeI(0x05, 12, 0, 0));
         Emit(0u);
 
-        int callOriginal = code.Count;
-        Emit(0x0C08F1D4u);                    // jal 0x0023C750
-        Emit(0u);
-        Emit(0x8FBF0000u);                    // lw ra,0(sp)
-        Emit(0x27BD0010u);                    // addiu sp,sp,0x10
-        Emit(0x03E00008u);                    // jr ra
+        // 一致しない場合は元の a1 (遅延スロットで読み込んだ行動ID) のまま。
+        // 一致した場合だけテーブルの行動IDを a1 に設定する。
+        int tailCallOriginal = code.Count;
+        Emit(0x7BA80000u);                    // lq t0,0(sp)
+        Emit(0x7BA90010u);                    // lq t1,0x10(sp)
+        Emit(0x7BAA0020u);                    // lq t2,0x20(sp)
+        Emit(0x7BAB0030u);                    // lq t3,0x30(sp)
+        Emit(0x7BAC0040u);                    // lq t4,0x40(sp)
+        Emit(0x27BD0050u);                    // addiu sp,sp,0x50
+        Emit(0x0808F1D4u);                    // j 0x0023C750 (raを維持)
         Emit(0u);
 
         int foundLabel = code.Count;
-        Emit(EncodeI(0x24, 11, 5, 2));        // lbu a1,2(t3)
-        int foundToCall = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
+        Emit(EncodeI(0x24, 11, 5, 2));        // lbu a1,2(t3): configured action ID
+        int foundToTailCall = EmitBranchWithDelay(code, EncodeI(0x04, 0, 0, 0));
         Emit(0u);
 
-        PatchBranch(code, nullActor, callOriginal);
-        PatchBranch(code, enemy, callOriginal);
-        PatchBranch(code, noEntries, callOriginal);
+        PatchBranch(code, nullActor, tailCallOriginal);
+        PatchBranch(code, enemy, tailCallOriginal);
+        PatchBranch(code, noEntries, tailCallOriginal);
         PatchBranch(code, found, foundLabel);
         PatchBranch(code, repeat, loop);
-        PatchBranch(code, foundToCall, callOriginal);
+        PatchBranch(code, foundToTailCall, tailCallOriginal);
         return code.ToArray();
     }
 
@@ -1716,6 +1729,22 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint[] allyCheck = BuildAllySkillCheckStub(address, allyOverrideEntries.Count);
         uint[] allyLoad = BuildAllyActionLoadStub(address, allyOverrideEntries.Count);
         uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, allyOverrideEntries.Count);
+
+        // 各スタブの実サイズを検査し、隣接スタブや所有マーカーへの上書きを防止する。
+        if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
+            AllyActionLoadStubOffset + (uint)allyLoad.Length * 4u > AllyTargetCheckStubOffset ||
+            AllyTargetCheckStubOffset + (uint)allyTargetCheck.Length * 4u > AllyHookMarkerOffset)
+        {
+            throw new InvalidOperationException(
+                "味方側特技スタブの配置領域が重複しています。コードを書き込まずに中止しました。");
+        }
+
+        if (0xE4u + (uint)lookup.Length * 4u > 0x200u)
+        {
+            throw new InvalidOperationException(
+                "種族検索コードが設定データ領域と重複しています。コードを書き込まずに中止しました。");
+        }
+
         for (int i = 0; i < allyCheck.Length; i++)
             if (!DispatcherWordMatches(
                 address + AllySkillCheckStubOffset + (uint)(i * 4),
