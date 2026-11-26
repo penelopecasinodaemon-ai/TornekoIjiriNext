@@ -110,7 +110,7 @@ internal static class AllyMonsterIdentityTraceService
         c.Add(I(0x09,29,29,0x30));        // addiu sp,sp,0x30
 
         c.Add(EncodeJ(cave + (uint)(c.Count * 4), TargetFunction));
-        c.Add(0);
+        c.Add(OriginalDelay);              // 元のJAL遅延スロットを実行
         return c.ToArray();
     }
 
@@ -174,16 +174,21 @@ internal static class AllyMonsterIdentityTraceService
             if (delay != OriginalDelay)
                 throw new InvalidOperationException("0x002D452Cの遅延スロットが想定値と異なります。現在値: 0x" + delay.ToString("X8"));
 
-            if ((current >> 26) == 3u)
+            if (current == OriginalCall)
+            {
+                // 正常な元命令。新規設置へ進む。
+            }
+            else if ((current >> 26) == 3u)
             {
                 uint oldCave = DecodeJ(HookAddress, current);
                 if (oldCave >= CaveEnd && oldCave <= CaveStart && IsCode(oldCave))
-                    return "モンスター識別トレースは既に設置されています。\nCave: 0x" + oldCave.ToString("X8");
+                    return "モンスター識別トレースは既に設置されています。\\nCave: 0x" + oldCave.ToString("X8");
                 throw new InvalidOperationException("0x002D4528には別のJALフックがあります。上書きしません。現在値: 0x" + current.ToString("X8"));
             }
-
-            if (current != OriginalCall)
-                throw new InvalidOperationException("0x002D4528の元命令が想定値と異なります。期待値: 0x" + OriginalCall.ToString("X8") + "\n現在値: 0x" + current.ToString("X8"));
+            else
+            {
+                throw new InvalidOperationException("0x002D4528の元命令が想定値と異なります。期待値: 0x" + OriginalCall.ToString("X8") + "\\n現在値: 0x" + current.ToString("X8"));
+            }
 
             uint cave = FindCave();
             WriteCode(cave);
