@@ -82,7 +82,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     {
     }
 
-    // 装備状態を監視し、検証済みの味方専用データと特技率/範囲だけを反映する。
+    // 装備状態を監視し、味方専用データ・特技率/範囲・行動IDを反映する。
     // 行動IDは味方側の特技判定・行動ID読込・対象判定を一組として適用する。
     // 敵側はモンスタークリエイター設定を維持し、イオナズン確定判定も既存処理を使う。
     private void Poll(object? state)
@@ -132,14 +132,14 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
-                    // 段階3は通常攻撃停止の原因が未特定のため無効。
-                    // 味方の特技判定・行動ID・対象判定フックは設置しない。
+                    // 段階3：味方専用の特技判定・行動ID読込・対象判定を一括適用。
+                    // 4か所のフックがすべて検証されるまで共有有効フラグは0のまま。
+                    ApplyRingAllyActionOnly(true);
                 }
                 else
                 {
-                    // 先に味方専用の4か所の行動フックを解除する。
-                    if (_ringAllyActionHooksApplied)
-                        ApplyRingAllyActionOnly(false);
+                    // 指輪上書き設定を必ず消去し、前回接続時の残留設定も防ぐ。
+                    ApplyRingAllyActionOnly(false);
 
                     // 次に特技率フックを元へ戻し、その後に投擲データを復元する。
                     if (_diagnosticSkillStatApplied)
@@ -155,7 +155,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _lastObservedEquipped = equipped;
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：段階2適用済み（味方専用データ＋特技使用率・範囲／行動判定フック停止）"
+                    ? "スライムの指輪：段階3適用済み（味方専用データ＋特技使用率・範囲＋行動ID）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
