@@ -129,7 +129,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
-
                 }
                 else
                 {
