@@ -37,9 +37,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint OriginalAllyTargetCheckDelay = 0x24631FD0u;
 
     private const uint AllySkillCheckStubOffset = 0x800u;
-    private const uint AllyActionLoadStubOffset = 0x880u;
-    private const uint AllyTargetCheckStubOffset = 0x940u;
+    private const uint AllyActionLoadStubOffset = 0x8A0u;
+    private const uint AllyTargetCheckStubOffset = 0x960u;
     private const uint AllyHookMarkerOffset = 0xA7Cu;
+
+    // 旧版では味方アクション読込・対象判定スタブを0x880/0x940に配置していた。
+    // 旧フックを安全に解除できるよう、復元処理だけで旧オフセットも認識する。
+    private const uint LegacyAllyActionLoadStubOffset = 0x880u;
+    private const uint LegacyAllyTargetCheckStubOffset = 0x940u;
     private const uint AllyHookMarker = 0x534C4148u;
     private const uint AllyHookReservedSize = 0xA80u;
 
@@ -1481,25 +1486,53 @@ internal sealed class ActionAutoRestoreService : IDisposable
         if (!anyHook)
             return;
 
-        uint DeriveCave(uint hookAddress, uint instruction, uint original, uint offset)
+        uint DeriveCave(
+            uint hookAddress,
+            uint instruction,
+            uint original,
+            params uint[] offsets)
         {
             if (instruction == original) return 0u;
             if ((instruction >> 26) != 3u)
                 throw new InvalidOperationException(
                     "味方側特技フック命令が想定外です。位置=0x" +
                     hookAddress.ToString("X8") + " 値=0x" + instruction.ToString("X8"));
+
             uint target = DecodeJalFrom(hookAddress, instruction);
-            if (target < offset)
-                throw new InvalidOperationException("味方側特技フックの接続先が不正です。");
-            return target - offset;
+            foreach (uint offset in offsets)
+            {
+                if (target < offset)
+                    continue;
+
+                uint candidate = target - offset;
+                if (IsAllyHookMarker(candidate))
+                    return candidate;
+            }
+
+            throw new InvalidOperationException(
+                "味方側特技フックの接続先と所有マーカーが一致しません。" +
+                "位置=0x" + hookAddress.ToString("X8") +
+                " 接続先=0x" + target.ToString("X8"));
         }
 
         uint[] derived =
         {
-            DeriveCave(AllySkillCheckAddress1, check1, OriginalAllySkillCheckCall, AllySkillCheckStubOffset),
-            DeriveCave(AllySkillCheckAddress2, check2, OriginalAllySkillCheckCall, AllySkillCheckStubOffset),
-            DeriveCave(AllyActionLoadAddress, actionLoad, OriginalAllyActionLoad, AllyActionLoadStubOffset),
-            DeriveCave(AllyTargetCheckActionLoadAddress, targetCheckLoad, OriginalAllyTargetCheckActionLoad, AllyTargetCheckStubOffset)
+            DeriveCave(
+                AllySkillCheckAddress1, check1,
+                OriginalAllySkillCheckCall, AllySkillCheckStubOffset),
+            DeriveCave(
+                AllySkillCheckAddress2, check2,
+                OriginalAllySkillCheckCall, AllySkillCheckStubOffset),
+            DeriveCave(
+                AllyActionLoadAddress, actionLoad,
+                OriginalAllyActionLoad,
+                AllyActionLoadStubOffset,
+                LegacyAllyActionLoadStubOffset),
+            DeriveCave(
+                AllyTargetCheckActionLoadAddress, targetCheckLoad,
+                OriginalAllyTargetCheckActionLoad,
+                AllyTargetCheckStubOffset,
+                LegacyAllyTargetCheckStubOffset)
         };
 
         uint caveAddress = preferredCaveAddress;
@@ -1516,21 +1549,32 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 throw new InvalidOperationException(
                     "味方側特技フックが複数のコードケーブを参照しています。");
 
-        uint expected1 = EncodeJalFrom(AllySkillCheckAddress1, caveAddress + AllySkillCheckStubOffset);
-        uint expected2 = EncodeJalFrom(AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
-        uint expectedLoad = EncodeJalFrom(AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
+        uint expected1 = EncodeJalFrom(
+            AllySkillCheckAddress1, caveAddress + AllySkillCheckStubOffset);
+        uint expected2 = EncodeJalFrom(
+            AllySkillCheckAddress2, caveAddress + AllySkillCheckStubOffset);
+        uint expectedLoad = EncodeJalFrom(
+            AllyActionLoadAddress, caveAddress + AllyActionLoadStubOffset);
+        uint expectedLegacyLoad = EncodeJalFrom(
+            AllyActionLoadAddress, caveAddress + LegacyAllyActionLoadStubOffset);
         uint expectedTargetCheck = EncodeJalFrom(
             AllyTargetCheckActionLoadAddress,
             caveAddress + AllyTargetCheckStubOffset);
+        uint expectedLegacyTargetCheck = EncodeJalFrom(
+            AllyTargetCheckActionLoadAddress,
+            caveAddress + LegacyAllyTargetCheckStubOffset);
 
         if (check1 != OriginalAllySkillCheckCall && check1 != expected1)
             throw new InvalidOperationException("0x00241D48のフック先が想定外です。");
         if (check2 != OriginalAllySkillCheckCall && check2 != expected2)
             throw new InvalidOperationException("0x00241DB8のフック先が想定外です。");
-        if (actionLoad != OriginalAllyActionLoad && actionLoad != expectedLoad)
+        if (actionLoad != OriginalAllyActionLoad &&
+            actionLoad != expectedLoad &&
+            actionLoad != expectedLegacyLoad)
             throw new InvalidOperationException("0x00241D5Cのフック先が想定外です。");
         if (targetCheckLoad != OriginalAllyTargetCheckActionLoad &&
-            targetCheckLoad != expectedTargetCheck)
+            targetCheckLoad != expectedTargetCheck &&
+            targetCheckLoad != expectedLegacyTargetCheck)
             throw new InvalidOperationException("0x002CA3DCのフック先が想定外です。");
 
         if (_pine.Read32(AllySkillCheckDelay1Address) != OriginalAllySkillCheckDelay ||
