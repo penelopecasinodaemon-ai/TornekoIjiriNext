@@ -403,40 +403,13 @@ internal static class SlimeRingSkillStatRuntimeService
 
     private static uint FindMarkedCave()
     {
-        for (uint p = CaveStart; p >= CaveEnd; p -= CaveStep)
-        {
-            if (ActionAutoRestoreService.ReadShared32(p + MarkerOffset) == Marker)
-                return p;
-        }
-
-        return 0;
+        // 指輪マーカーだけでなく、種族別特技側が確保した共有ページも再利用する。
+        return ActionAutoRestoreService.FindSharedRuntimeCave();
     }
 
     private static uint FindFreeCave()
     {
-        for (uint p = CaveStart; p >= CaveEnd; p -= CaveStep)
-        {
-            // 先頭が使用中なら、残り4KBを読む必要はない。
-            if (ActionAutoRestoreService.ReadShared32(p) != 0)
-                continue;
-
-            bool empty = true;
-
-            for (uint offset = 4; offset < CaveSize; offset += 4)
-            {
-                if (ActionAutoRestoreService.ReadShared32(p + offset) != 0)
-                {
-                    empty = false;
-                    break;
-                }
-            }
-
-            if (empty)
-                return p;
-        }
-
-        throw new InvalidOperationException(
-            "スライムの指輪・陣営別特技判定用の空きコード領域がありません。");
+        return ActionAutoRestoreService.FindOrCreateSharedRuntimeCave();
     }
 
     private static uint GetOwnedCaveAt(
@@ -532,6 +505,16 @@ internal static class SlimeRingSkillStatRuntimeService
                 BuildEntries(source, recordTableOffset, settings, slimeFamilyIds);
 
             byte[] data = BuildData(entries);
+
+            uint ringDataCapacity =
+                ActionAutoRestoreService.SharedActionCaveOffset - DataOffset;
+
+            if ((uint)data.Length > ringDataCapacity)
+            {
+                throw new InvalidOperationException(
+                    "スライムの指輪設定テーブルが共有領域の上限を超えています。" +
+                    "現在: " + data.Length + " バイト / 上限: " + ringDataCapacity + " バイト");
+            }
 
             uint currentHook =
                 ActionAutoRestoreService.ReadShared32(HookAddress);
