@@ -79,6 +79,13 @@ AddButton(buttons, "呼び出し地点記録読み取り", 190,
 AddButton(buttons, "呼び出し地点フック解除", 190,
     () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Restore"));
 
+        AddButton(buttons, "仲間/敵IDトレース設置", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Install"));
+        AddButton(buttons, "仲間/敵ID記録読み取り", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Read"));
+        AddButton(buttons, "仲間/敵IDトレース解除", 190,
+            () => InvokeTraceMethod("AllyMonsterIdentityTraceService", "Restore"));
+
         _output = new TextBox
         {
             Dock = DockStyle.Fill,
