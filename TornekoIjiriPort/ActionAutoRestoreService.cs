@@ -1317,14 +1317,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7FAC0030u);                    // sq t4,0x30(sp)
         Emit(0xAFBF0040u);                    // sw ra,0x40(sp)
 
-        // イオナズン連発判定用マーカーを毎回初期化する。
+        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
+        int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
+        Emit(0u);
+
+        // 味方だけ連発判定用マーカーを初期化する。敵側の通常設定・マーカーには触れない。
         Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
         Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
         Emit(EncodeI(0x28, 10, 0, 0));        // sb zero,0(t2)
 
-        Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
-        int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
-        Emit(0u);
         Emit(EncodeI(0x24, 8, 10, 4));        // lbu t2,4(t0)
         Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16)));
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu)));
