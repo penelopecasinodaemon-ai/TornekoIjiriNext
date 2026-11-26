@@ -80,8 +80,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     {
     }
 
-    // この監視処理は装備状態の読み取りと表示だけを行う。
-    // ゲームメモリへの書き込み・フック設置・設定適用・解除は一切行わない。
+    // 診断段階1では装備状態を監視し、味方専用投擲データだけを限定的に反映する。
+    // 特技使用率・行動フック・イオナズン分岐・バリアには触れない。
     private void Poll(object? state)
     {
         if (_disposed || Interlocked.Exchange(ref _busy, 1) != 0)
@@ -110,8 +110,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _diagnosticAllyItemDataApplied = false;
             }
 
-            // ReadShared32による装備スロットの読み取りのみ。
-            // このメソッドからApplyRingSettings/Deactivate等は呼び出さない。
+            // 装備スロットを読み取り、変化時だけ診断段階1を実行する。
+            // 従来の一括ApplyRingSettings/Deactivateは呼び出さない。
             bool equipped = IsSlimeRingEquipped();
 
             if (_lastObservedEquipped != equipped)
@@ -209,7 +209,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         Pcsx2BinApplier.ApplyRanges(
             Pcsx2LiveSession.ProcessId,
-            Pcsx2LiveSession.MemoryLayout,
+            Pcsx2LiveSession.MemoryLayout!,
             writes);
 
         _diagnosticAllyItemDataApplied = equipped;
