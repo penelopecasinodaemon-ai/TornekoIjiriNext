@@ -1,0 +1,528 @@
+using System;
+using System.Collections.Generic;
+
+namespace TornekoIjiriPort;
+
+/// <summary>
+/// スライムの指輪の特技使用率・範囲を、
+/// 0x002D4528の個体判定時に味方／敵で切り替える。
+/// +0x1D3: 0=味方、1=敵。
+/// </summary>
+internal static class SlimeRingSkillStatRuntimeService
+{
+    private const uint HookAddress = 0x002D4528u;
+    private const uint DelayAddress = 0x002D452Cu;
+    private const uint OriginalCall = 0x0C0B4F04u;
+    private const uint OriginalDelay = 0x0220282Du;
+    private const uint TargetFunction = 0x002D3C10u;
+
+    private const uint CaveStart = 0x01FF0000u;
+    private const uint CaveEnd = 0x01E00000u;
+    private const uint CaveStep = 0x00001000u;
+    private const uint CaveSize = 0x1000u;
+
+    private const uint MarkerOffset = 0x3F0u;
+    private const uint DataOffset = 0x400u;
+    private const uint Marker = 0x534C5254u;
+
+    private const int SkillRangeDataOffset = 382206;
+    private const int MonsterRecordSize = 24;
+    private const uint EeAddressMask = 0x1FFFFFFFu;
+    private const uint EeMemoryBaseAddress = 0x00180000u;
+
+    private const int EntrySize = 20;
+
+    private static readonly object Sync = new object();
+
+    private sealed class Entry
+    {
+        public byte RuntimeSpeciesId;
+        public byte AllyRate;
+        public ushort AllyRange;
+        public byte BaseRate;
+        public ushort BaseRange;
+        public uint RateAddress;
+        public uint RangeAddress;
+    }
+
+    private static uint I(int op, int rs, int rt, int imm)
+    {
+        return ((uint)op << 26) |
+               ((uint)rs << 21) |
+               ((uint)rt << 16) |
+               (ushort)imm;
+    }
+
+    private static uint EncodeJ(uint pc, uint target)
+    {
+        if (((pc + 4u) & 0xF0000000u) !=
+            (target & 0xF0000000u))
+        {
+            throw new InvalidOperationException(
+                "コードケーブから元関数へジャンプできません。");
+        }
+
+        return 0x08000000u |
+               ((target >> 2) & 0x03FFFFFFu);
+    }
+
+    private static uint EncodeJal(uint pc, uint target)
+    {
+        return EncodeJ(pc, target) | 0x04000000u;
+    }
+
+    private static uint DecodeJ(uint pc, uint instruction)
+    {
+        return ((pc + 4u) & 0xF0000000u) |
+               ((instruction & 0x03FFFFFFu) << 2);
+    }
+
+    private static int EmitBranch(
+        List<uint> code,
+        uint opcode,
+        int targetIndex)
+    {
+        int index = code.Count;
+        code.Add(opcode);
+
+        int displacement = targetIndex < 0
+            ? 0
+            : targetIndex - (index + 1);
+
+        code[index] =
+            opcode | (uint)(ushort)displacement;
+
+        return index;
+    }
+
+    private static void PatchBranch(
+        List<uint> code,
+        int branchIndex,
+        int targetIndex,
+        uint opcode)
+    {
+        int displacement =
+            targetIndex - (branchIndex + 1);
+
+        code[branchIndex] =
+            opcode | (uint)(ushort)displacement;
+    }
+
+    private static uint[] BuildCode(uint cave, int entryCount)
+    {
+        uint dataAddress = cave + DataOffset;
+
+        var code = new List<uint>();
+
+        void Emit(uint instruction) => code.Add(instruction);
+
+        // t0～t4、k0を保存
+        Emit(I(0x09, 29, 29, -0x30)); // addiu sp,sp,-0x30
+        Emit(I(0x3F, 29, 8, 0x00));   // sd t0,0(sp)
+        Emit(I(0x3F, 29, 9, 0x08));   // sd t1,8(sp)
+        Emit(I(0x3F, 29, 10, 0x10));  // sd t2,16(sp)
+        Emit(I(0x3F, 29, 11, 0x18));  // sd t3,24(sp)
+        Emit(I(0x3F, 29, 12, 0x20));  // sd t4,32(sp)
+        Emit(I(0x3F, 29, 26, 0x28));  // sd k0,40(sp)
+
+        // t0 = [s2+8] 個体データポインタ
+        Emit(I(0x23, 18, 8, 8));
+
+        int nullActorBranch =
+            EmitBranch(code, I(0x04, 8, 0, 0), -1);
+        Emit(0u);
+
+        // t1 = 陣営フラグ
+        Emit(I(0x24, 8, 9, 0x1D3));
+
+        // t2 = 実行時種族ID
+        Emit(I(0x23, 18, 10, 4));
+
+        // t3 = 設定テーブル
+        Emit(I(0x0F, 0, 11, (int)(dataAddress >> 16)));
+        Emit(I(0x0D, 11, 11, (int)(dataAddress & 0xFFFF)));
+
+        // t4 = エントリー数
+        Emit(I(0x09, 0, 12, entryCount));
+
+        int loopStart = code.Count;
+
+        Emit(I(0x24, 11, 26, 0)); // lbu k0,0(t3)
+
+        int foundBranch =
+            EmitBranch(code, I(0x04, 26, 10, 0), -1);
+        Emit(0u);
+
+        Emit(I(0x09, 11, 11, EntrySize));
+        Emit(I(0x09, 12, 12, -1));
+
+        int loopBranch =
+            EmitBranch(code, I(0x05, 12, 0, 0), loopStart);
+        Emit(0u);
+
+        int noMatchBranch =
+            EmitBranch(code, I(0x04, 0, 0, 0), -1);
+        Emit(0u);
+
+        int foundLabel = code.Count;
+
+        // 陣営0なら味方、0以外なら敵
+        int allyBranch =
+            EmitBranch(code, I(0x04, 9, 0, 0), -1);
+        Emit(0u);
+
+        // 敵：BINの基準値を使用
+        Emit(I(0x24, 11, 8, 8));    // lbu t0,8(t3)
+        Emit(I(0x23, 11, 26, 12));  // lw k0,12(t3)
+        Emit(I(0x28, 26, 8, 0));    // sb t0,0(k0)
+
+        Emit(I(0x25, 11, 8, 10));   // lhu t0,10(t3)
+        Emit(I(0x23, 11, 26, 16));  // lw k0,16(t3)
+        Emit(I(0x29, 26, 8, 0));    // sh t0,0(k0)
+
+        int enemyDoneBranch =
+            EmitBranch(code, I(0x04, 0, 0, 0), -1);
+        Emit(0u);
+
+        // 味方：指輪の設定を使用
+        int allyLabel = code.Count;
+
+        Emit(I(0x24, 11, 8, 4));    // lbu t0,4(t3)
+        Emit(I(0x23, 11, 26, 12));  // lw k0,12(t3)
+        Emit(I(0x28, 26, 8, 0));    // sb t0,0(k0)
+
+        Emit(I(0x25, 11, 8, 6));    // lhu t0,6(t3)
+        Emit(I(0x23, 11, 26, 16));  // lw k0,16(t3)
+        Emit(I(0x29, 26, 8, 0));    // sh t0,0(k0)
+
+        int restoreLabel = code.Count;
+
+        PatchBranch(code, nullActorBranch, restoreLabel, I(0x04, 8, 0, 0));
+        PatchBranch(code, foundBranch, foundLabel, I(0x04, 26, 10, 0));
+        PatchBranch(code, noMatchBranch, restoreLabel, I(0x04, 0, 0, 0));
+        PatchBranch(code, allyBranch, allyLabel, I(0x04, 9, 0, 0));
+        PatchBranch(code, enemyDoneBranch, restoreLabel, I(0x04, 0, 0, 0));
+
+        // 保存したレジスタを復元
+        Emit(I(0x37, 29, 26, 0x28)); // ld k0,40(sp)
+        Emit(I(0x37, 29, 12, 0x20)); // ld t4,32(sp)
+        Emit(I(0x37, 29, 11, 0x18)); // ld t3,24(sp)
+        Emit(I(0x37, 29, 10, 0x10)); // ld t2,16(sp)
+        Emit(I(0x37, 29, 9, 0x08));  // ld t1,8(sp)
+        Emit(I(0x37, 29, 8, 0x00));  // ld t0,0(sp)
+        Emit(I(0x09, 29, 29, 0x30)); // addiu sp,sp,0x30
+
+        Emit(EncodeJ(cave + (uint)(code.Count * 4), TargetFunction));
+
+        // 元の遅延スロットはフック呼び出し元で既に実行されている。
+        // 二重実行しない。
+        Emit(0u);
+
+        return code.ToArray();
+    }
+
+    private static List<Entry> BuildEntries(
+        byte[] source,
+        int recordTableOffset,
+        SlimeRingSettings settings,
+        ISet<int> slimeFamilyIds)
+    {
+        uint rawPointer =
+            BitConverter.ToUInt32(source, 16);
+
+        uint correction =
+            (uint)source[3] << 24;
+
+        uint physicalAddress =
+            unchecked(rawPointer + correction) & EeAddressMask;
+
+        if (physicalAddress < EeMemoryBaseAddress)
+            throw new InvalidOperationException(
+                "モンスターテーブルの物理アドレスが不正です。");
+
+        var result = new List<Entry>();
+
+        foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
+        {
+            int recordOffset =
+                checked(recordTableOffset + speciesId * MonsterRecordSize);
+
+            int rangeOffset =
+                checked(SkillRangeDataOffset + (speciesId + 1) * 20);
+
+            if (recordOffset < 0 ||
+                recordOffset + MonsterRecordSize > source.Length ||
+                rangeOffset < 0 ||
+                rangeOffset + 8 > source.Length)
+            {
+                throw new InvalidOperationException(
+                    "特技データのBIN範囲が不正です。種族ID=" + speciesId);
+            }
+
+            byte baseRate = source[recordOffset + 22];
+
+            ushort baseRange =
+                BitConverter.ToUInt16(source, rangeOffset + 6);
+
+            SlimeRingMonsterSettings item =
+                settings.GetMonster(speciesId);
+
+            bool eligible =
+                slimeFamilyIds.Contains(speciesId);
+
+            byte allyRate = eligible
+                ? (byte)Math.Clamp(item.SkillRate, 0, 255)
+                : baseRate;
+
+            ushort allyRange = eligible
+                ? (ushort)Math.Clamp(item.SkillRange, 0, 7)
+                : baseRange;
+
+            uint rateAddress =
+                physicalAddress +
+                (uint)(speciesId + 1) * MonsterRecordSize +
+                22u;
+
+            uint rangeAddress =
+                EeMemoryBaseAddress +
+                (uint)rangeOffset + 6u;
+
+            result.Add(new Entry
+            {
+                RuntimeSpeciesId = (byte)(speciesId + 1),
+                AllyRate = allyRate,
+                AllyRange = allyRange,
+                BaseRate = baseRate,
+                BaseRange = baseRange,
+                RateAddress = rateAddress,
+                RangeAddress = rangeAddress
+            });
+        }
+
+        return result;
+    }
+
+    private static byte[] BuildData(List<Entry> entries)
+    {
+        byte[] data = new byte[entries.Count * EntrySize];
+
+        for (int i = 0; i < entries.Count; i++)
+        {
+            Entry e = entries[i];
+            int p = i * EntrySize;
+
+            data[p] = e.RuntimeSpeciesId;
+            data[p + 4] = e.AllyRate;
+            BitConverter.GetBytes(e.AllyRange).CopyTo(data, p + 6);
+
+            data[p + 8] = e.BaseRate;
+            BitConverter.GetBytes(e.BaseRange).CopyTo(data, p + 10);
+
+            BitConverter.GetBytes(e.RateAddress).CopyTo(data, p + 12);
+            BitConverter.GetBytes(e.RangeAddress).CopyTo(data, p + 16);
+        }
+
+        return data;
+    }
+
+    private static void WriteBytes(uint address, byte[] data)
+    {
+        for (int offset = 0; offset < data.Length; offset += 4)
+        {
+            byte[] word = new byte[4];
+            int count = Math.Min(4, data.Length - offset);
+            Array.Copy(data, offset, word, 0, count);
+
+            ActionAutoRestoreService.WriteShared32(
+                address + (uint)offset,
+                BitConverter.ToUInt32(word, 0));
+        }
+    }
+
+    private static byte[] ReadBytes(uint address, int length)
+    {
+        byte[] data = new byte[length];
+
+        for (int offset = 0; offset < length; offset += 4)
+        {
+            uint value =
+                ActionAutoRestoreService.ReadShared32(
+                    address + (uint)offset);
+
+            byte[] word = BitConverter.GetBytes(value);
+            int count = Math.Min(4, length - offset);
+            Array.Copy(word, 0, data, offset, count);
+        }
+
+        return data;
+    }
+
+    private static uint FindFreeCave()
+    {
+        for (uint p = CaveStart; p >= CaveEnd; p -= CaveStep)
+        {
+            byte[] bytes = ReadBytes(p, (int)CaveSize);
+            bool empty = true;
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                if (bytes[i] != 0)
+                {
+                    empty = false;
+                    break;
+                }
+            }
+
+            if (empty)
+                return p;
+        }
+
+        throw new InvalidOperationException(
+            "スライムの指輪・陣営判定用の空きコード領域がありません。");
+    }
+
+    private static uint GetOwnedCave(uint currentCall)
+    {
+        if (currentCall == OriginalCall)
+            return 0;
+
+        if ((currentCall & 0xFC000000u) != 0x0C000000u)
+            throw new InvalidOperationException(
+                "0x002D4528に想定外の命令があります。");
+
+        uint cave = DecodeJ(HookAddress, currentCall);
+
+        if (cave < CaveEnd ||
+            cave > CaveStart ||
+            ActionAutoRestoreService.ReadShared32(cave + MarkerOffset) != Marker)
+        {
+            throw new InvalidOperationException(
+                "0x002D4528には別のフックが設置されています。" +
+                "識別トレースなどを解除してから実行してください。");
+        }
+
+        return cave;
+    }
+
+    private static void VerifyCode(uint cave, int entryCount)
+    {
+        uint[] expected = BuildCode(cave, entryCount);
+
+        for (int i = 0; i < expected.Length; i++)
+        {
+            uint actual =
+                ActionAutoRestoreService.ReadShared32(
+                    cave + (uint)(i * 4));
+
+            if (actual != expected[i])
+            {
+                throw new InvalidOperationException(
+                    "陣営判定コードの検証に失敗しました。" +
+                    "位置=0x" + (cave + (uint)(i * 4)).ToString("X8"));
+            }
+        }
+    }
+
+    internal static string Apply(
+        byte[] source,
+        int recordTableOffset,
+        SlimeRingSettings settings,
+        ISet<int> slimeFamilyIds)
+    {
+        lock (Sync)
+        {
+            if (source == null || source.Length != 524288)
+                throw new InvalidOperationException("反映元BINが不正です。");
+
+            uint delay =
+                ActionAutoRestoreService.ReadShared32(DelayAddress);
+
+            if (delay != OriginalDelay)
+                throw new InvalidOperationException(
+                    "0x002D452Cの遅延スロットが想定値と異なります。");
+
+            List<Entry> entries =
+                BuildEntries(source, recordTableOffset, settings, slimeFamilyIds);
+
+            byte[] data = BuildData(entries);
+
+            uint currentCall =
+                ActionAutoRestoreService.ReadShared32(HookAddress);
+
+            uint cave = GetOwnedCave(currentCall);
+
+            bool newCave = cave == 0;
+
+            if (newCave)
+                cave = FindFreeCave();
+
+            uint[] code = BuildCode(cave, entries.Count);
+
+            for (int i = 0; i < code.Length; i++)
+            {
+                ActionAutoRestoreService.WriteShared32(
+                    cave + (uint)(i * 4),
+                    code[i]);
+            }
+
+            WriteBytes(cave + DataOffset, data);
+
+            ActionAutoRestoreService.WriteShared32(
+                cave + MarkerOffset,
+                Marker);
+
+            VerifyCode(cave, entries.Count);
+
+            uint expectedCall =
+                EncodeJal(HookAddress, cave);
+
+            if (newCave)
+            {
+                ActionAutoRestoreService.WriteShared32(
+                    HookAddress,
+                    expectedCall);
+            }
+
+            if (ActionAutoRestoreService.ReadShared32(HookAddress)
+                != expectedCall)
+            {
+                throw new InvalidOperationException(
+                    "陣営判定フックの設置・検証に失敗しました。");
+            }
+
+            return
+                "特技使用率・範囲の個体別切り替えを適用しました。" +
+                Environment.NewLine +
+                "対象種族数: " + entries.Count +
+                Environment.NewLine +
+                "味方: 指輪設定 / 敵: BIN基準値" +
+                Environment.NewLine +
+                "陣営判定: 個体データ +0x1D3";
+        }
+    }
+
+    internal static void RestoreHook()
+    {
+        lock (Sync)
+        {
+            uint current =
+                ActionAutoRestoreService.ReadShared32(HookAddress);
+
+            if (current == OriginalCall)
+                return;
+
+            uint cave = GetOwnedCave(current);
+
+            ActionAutoRestoreService.WriteShared32(
+                HookAddress,
+                OriginalCall);
+
+            if (ActionAutoRestoreService.ReadShared32(HookAddress)
+                != OriginalCall)
+            {
+                throw new InvalidOperationException(
+                    "陣営判定フックを元のJALへ戻せませんでした。");
+            }
+        }
+    }
+}

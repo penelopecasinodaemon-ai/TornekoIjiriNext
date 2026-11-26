@@ -11,9 +11,9 @@ internal static class AllyActionTraceService
     private const uint OriginalDelay = 0x0200202Du;
     private const uint DispatcherAddress = 0x0023C750u;
 
-    private const uint CaveStart = 0x01EF0000u;
+    private const uint CaveStart = 0x01FF0000u;
     private const uint CaveEnd = 0x01E00000u;
-    private const uint CaveStep = 0x00010000u;
+    private const uint CaveStep = 0x00001000u;
     private const uint CaveSize = 0x180u;
     private const uint TraceOffset = 0x100u;
 
@@ -296,4 +296,5 @@ internal static class AllyActionTraceService
             "遅延スロットは変更していません。";
     }
 }
+
 

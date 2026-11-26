@@ -1023,34 +1023,19 @@ internal sealed class ActionAutoRestoreService : IDisposable
         // 味方だけ指輪テーブルを先に検索し、該当なしなら通常テーブルへ進む。
         // 敵は指輪テーブルを飛ばして通常テーブルだけを検索する。
 
-        // stack確保
-        Emit(0x27BDFFF0u);
-        // ra, a0, v0, t0を保存
-        Emit(0xAFBF000Cu);
-        Emit(0xAFA40008u);
-        Emit(0xAFA20004u);
-        Emit(0xAFA80000u);
-
-        // dgEnemyCheckSide(a0)
-        Emit(0x0C08DBD4u);
+        // a0は特技判定対象の個体構造体ポインタ。
+        // [a0+8]の個体データポインタから陣営フラグを直接読む。
+        Emit(0x8C880008u);                 // lw t0,8(a0)
+        int nullActorToNormalBranch =
+            EmitBranch(0x11000000u, 0);    // beq t0,zero,normalSetup
         Emit(0x00000000u);
-        // 陣営判定結果をt5へ退避
-        Emit(0x00406821u);
 
-        // 元のレジスタを復元
-        Emit(0x8FA40008u);
-        Emit(0x8FA20004u);
-        Emit(0x8FA80000u);
-        Emit(0x8FBF000Cu);
-        // stack解放
-        Emit(0x27BD0010u);
+        Emit(0x910D01D3u);                 // lbu t5,0x1D3(t0)
+        int enemyToNormalBranch =
+            EmitBranch(0x15A00000u, 0);    // bne t5,zero,normalSetup
+        Emit(0x00000000u);
 
-        // dgEnemyCheckSideがcaller-savedのt3を変更してもよいようtraceアドレスを再設定。
-        Emit(0x3C0B0000u | ((traceAddress >> 16) & 0xFFFFu));
-        Emit(0x356B0000u | (traceAddress & 0xFFFFu));
-
-        // 敵（t5 != 0）は通常設定へ。味方（t5 == 0）は指輪設定を先に検索。
-        int enemyToNormalBranch = EmitBranch(0x15A00000u, 0);
+        // 味方だけ指輪テーブルを検索する。
 
         // 指輪上書きテーブル
         Emit(0x3C090000u | ((dataAddress >> 16) & 0xFFFFu));
@@ -1109,6 +1094,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             code[index] = opcode | (uint)(ushort)displacement;
         }
 
+        PatchBranch(nullActorToNormalBranch, normalSetup, 0x11000000u);
         PatchBranch(enemyToNormalBranch, normalSetup, 0x15A00000u);
         PatchBranch(noAllyOverridesBranch, normalSetup, 0x11800000u);
         PatchBranch(allyMatchBranch, allyMatch, 0x110A0000u);
@@ -1338,6 +1324,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             if (currentIsDispatcher)
                 RestoreCallInstruction();
             _codeCaveAddress = 0u;
+            AllyActionOverrideRuntime.Apply(normalEntries, allyOverrideEntries);
             return;
         }
 
@@ -1367,6 +1354,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
 
         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
+        AllyActionOverrideRuntime.Apply(normalEntries, allyOverrideEntries);
     }
 
     internal static string ReadActionTrace()
@@ -2156,4 +2144,5 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 }
+
 
