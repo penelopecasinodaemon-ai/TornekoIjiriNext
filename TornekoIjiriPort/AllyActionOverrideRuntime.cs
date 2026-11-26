@@ -5,9 +5,9 @@ namespace TornekoIjiriPort;
 
 internal static class AllyActionOverrideRuntime
 {
-    private const uint HookAddress = 0x002F3E60u;
+    private const uint HookAddress = 0x002D46E0u;
     private const uint OriginalCall = 0x0C0B4F04u;
-    private const uint DelayAddress = 0x002F3E64u;
+    private const uint DelayAddress = 0x002D46E4u;
     private const uint OriginalDelay = 0x85A50004u;
 
     private const uint TargetFunction = 0x002D3C10u;
@@ -115,26 +115,23 @@ internal static class AllyActionOverrideRuntime
 
         var code = new List<uint>();
 
-        // s2がNULLなら元の関数へ
-        int contextNull = EmitBranch(code, 0x04, 18, 0);
-        code.Add(0u);
-
-        // t0 = *(s2 + 8): 個体データポインタ
-        code.Add(I(0x23, 18, 8, 8));
+        // t5は個体データポインタ。
+        // t6へ退避してからテーブル検索用レジスタを使用する。
+        code.Add(R(13, 0, 14, 0, 0x21)); // addu t6,t5,zero
 
         // 個体データポインタがNULLなら元の関数へ
-        int actorNull = EmitBranch(code, 0x04, 8, 0);
+        int actorNull = EmitBranch(code, 0x04, 14, 0);
         code.Add(0u);
 
         // +0x1D3: 0=味方、0以外=敵
-        code.Add(I(0x24, 8, 9, 0x1D3));
+        code.Add(I(0x24, 14, 9, 0x1D3)); // lbu t1,0x1D3(t6)
 
         // 敵なら変更しない
         int enemyBranch = EmitBranch(code, 0x05, 9, 0);
         code.Add(0u);
 
-        // t2 = 実行時種族ID（個体データ+4）
-        code.Add(I(0x24, 8, 10, 4));
+        // +4: 実行時種族ID
+        code.Add(I(0x24, 14, 10, 4)); // lbu t2,4(t6)
 
         // ------------------------------
         // 指輪上書きテーブルを先に検索
@@ -152,8 +149,8 @@ internal static class AllyActionOverrideRuntime
         int ringMatch = EmitBranch(code, 0x04, 10, 13);
         code.Add(0u);
 
-        code.Add(I(0x09, 11, 11, 2));  // addiu t3,t3,2
-        code.Add(I(0x09, 12, 12, -1)); // addiu t4,t4,-1
+        code.Add(I(0x09, 11, 11, 2));
+        code.Add(I(0x09, 12, 12, -1));
 
         int ringRepeat = EmitBranch(code, 0x07, 12, 0);
         code.Add(0u);
@@ -171,7 +168,7 @@ internal static class AllyActionOverrideRuntime
 
         int normalLoop = code.Count;
 
-        code.Add(I(0x24, 11, 13, 0)); // lbu t5,0(t3)
+        code.Add(I(0x24, 11, 13, 0));
 
         int normalMatch = EmitBranch(code, 0x04, 10, 13);
         code.Add(0u);
@@ -192,12 +189,13 @@ internal static class AllyActionOverrideRuntime
 
         // 元の関数へテールジャンプ
         int originalFunction = code.Count;
+
         code.Add(EncodeJ(
             cave + (uint)(originalFunction * 4),
             TargetFunction));
+
         code.Add(0u);
 
-        PatchBranch(code, contextNull, originalFunction);
         PatchBranch(code, actorNull, originalFunction);
         PatchBranch(code, enemyBranch, originalFunction);
 
@@ -211,7 +209,6 @@ internal static class AllyActionOverrideRuntime
 
         return code.ToArray();
     }
-
     private static byte[] BuildData(
         IReadOnlyList<(byte SpeciesId, byte Marker, byte ActualAction)> ring,
         IReadOnlyList<(byte SpeciesId, byte Marker, byte ActualAction)> normal)
@@ -391,7 +388,13 @@ internal static class AllyActionOverrideRuntime
                     ActionAutoRestoreService.ReadShared32(
                         existingCave + MarkerOffset) != Marker)
                     throw new InvalidOperationException(
-                        "味方特技呼び出し位置に別のフックがあります。上書きしません。");
+                        "味方特技呼び出し位置に別のフックがあります。上書きしません。" +
+                        "\n現在命令: 0x" + current.ToString("X8") +
+                        "\n飛び先: 0x" + existingCave.ToString("X8") +
+                        "\n飛び先マーカー: 0x" +
+                        ActionAutoRestoreService.ReadShared32(
+                            existingCave + MarkerOffset).ToString("X8") +
+                        "\n期待マーカー: 0x" + Marker.ToString("X8"));
 
                 ours = true;
             }

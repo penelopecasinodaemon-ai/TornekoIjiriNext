@@ -4714,8 +4714,7 @@ internal sealed class MainForm : Form
     private readonly Label _pcsx2ConnectionStatus =
         new Label();
 
-    private readonly Label _pcsx2DataStatus =
-        new Label();
+    private readonly TextBox _pcsx2DataStatus = new TextBox();
 
     private bool _pcsx2Connecting;
 
@@ -4739,7 +4738,7 @@ internal sealed class MainForm : Form
             Padding = new Padding(12)
         };
 
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 128));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
@@ -4792,12 +4791,20 @@ internal sealed class MainForm : Form
             ForeColor = Color.DarkRed
         };
 
-        _pcsx2DataStatus = new Label
+        _pcsx2DataStatus = new TextBox
         {
             Text = "バニラデータ未読み込み",
-            AutoSize = true,
-            Location = new Point(205, 58),
-            Font = new Font("Yu Gothic UI", 9)
+            Multiline = true,
+            ReadOnly = true,
+            WordWrap = true,
+            ScrollBars = ScrollBars.Vertical,
+            BorderStyle = BorderStyle.FixedSingle,
+            BackColor = pcsx2Panel.BackColor,
+            Location = new Point(12, 78),
+            Size = new Size(1000, 42),
+            Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
+            Font = new Font("Yu Gothic UI", 9),
+            TabStop = false
         };
 
         pcsx2Panel.Controls.Add(pcsx2Title);

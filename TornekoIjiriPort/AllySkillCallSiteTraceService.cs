@@ -14,7 +14,7 @@ internal static class AllySkillCallSiteTraceService
     private const uint DelayAddress = 0x002F3E64u;
 
     private const uint OriginalCall = 0x0C0B4F04u;
-    private const uint OriginalDelay = 0x85A50004u;
+    private const uint OriginalDelay = 0x0200282Du;
 
     private const uint TargetFunction = 0x002D3C10u;
 

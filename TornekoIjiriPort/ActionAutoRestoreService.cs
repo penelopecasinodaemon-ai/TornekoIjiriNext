@@ -1014,98 +1014,166 @@ internal sealed class ActionAutoRestoreService : IDisposable
             int index = code.Count;
             code.Add(opcode);
             code.Add(0u);
+
             int displacement = targetIndex - (index + 1);
             code[index] = opcode | (uint)(ushort)displacement;
+
             return index;
         }
 
-        // dgEnemyCheckSideの戻り値：1=敵、0=味方。
-        // 味方だけ指輪テーブルを先に検索し、該当なしなら通常テーブルへ進む。
-        // 敵は指輪テーブルを飛ばして通常テーブルだけを検索する。
+        // --------------------------------------------------
+        // 呼び出し元 0x002435BC で v0 = *(s2 + 8) が実行済み。
+        //
+        // v0     = 個体データポインタ
+        // v0 + 4 = 実行時種族ID
+        // v0+1D3 = 陣営フラグ
+        //
+        // BuildDispatcherStub の最初の命令で
+        // t0 = lbu(v0 + 4) が実行済み。
+        //
+        // ここでは t0 を絶対に上書きしない。
+        // --------------------------------------------------
 
-        // a0は特技判定対象の個体構造体ポインタ。
-        // [a0+8]の個体データポインタから陣営フラグを直接読む。
-        Emit(0x8C880008u);                 // lw t0,8(a0)
-        int nullActorToNormalBranch =
-            EmitBranch(0x11000000u, 0);    // beq t0,zero,normalSetup
-        Emit(0x00000000u);
+        // v0 + 0x1D3: 0=味方、0以外=敵
+        Emit(0x904D01D3u);                 // lbu t5,0x1D3(v0)
 
-        Emit(0x910D01D3u);                 // lbu t5,0x1D3(t0)
+        // 敵なら通常設定へ
         int enemyToNormalBranch =
             EmitBranch(0x15A00000u, 0);    // bne t5,zero,normalSetup
         Emit(0x00000000u);
 
-        // 味方だけ指輪テーブルを検索する。
+        // --------------------------------------------------
+        // 味方専用：指輪上書きテーブル
+        // --------------------------------------------------
 
-        // 指輪上書きテーブル
         Emit(0x3C090000u | ((dataAddress >> 16) & 0xFFFFu));
         Emit(0x35290000u | (dataAddress & 0xFFFFu));
         Emit(0x240C0000u | ((uint)allyOverrideEntryCount & 0xFFFFu));
-        int noAllyOverridesBranch = EmitBranch(0x11800000u, 0);
+
+        int noAllyOverridesBranch =
+            EmitBranch(0x11800000u, 0);
 
         int allyLoop = code.Count;
-        Emit(0x912A0000u);                         // lbu t2,0(t1)
-        int allyMatchBranch = EmitBranch(0x110A0000u, 0);
-        Emit(0x25290003u);                         // addiu t1,t1,3
-        Emit(0x258CFFFFu);                         // addiu t4,t4,-1
-        int allyRepeatBranch = EmitBranch(0x15800000u, allyLoop);
 
+        Emit(0x912A0000u);                 // lbu t2,0(t1)
+        int allyMatchBranch =
+            EmitBranch(0x110A0000u, 0);    // beq t0,t2,allyMatch
+
+        Emit(0x25290003u);                 // addiu t1,t1,3
+        Emit(0x258CFFFFu);                 // addiu t4,t4,-1
+
+        int allyRepeatBranch =
+            EmitBranch(0x15800000u, allyLoop);
+
+        // --------------------------------------------------
         // 通常設定テーブル
+        // --------------------------------------------------
+
         int normalSetup = code.Count;
+
         Emit(0x3C090000u | ((normalDataAddress >> 16) & 0xFFFFu));
         Emit(0x35290000u | (normalDataAddress & 0xFFFFu));
         Emit(0x240C0000u | ((uint)normalEntryCount & 0xFFFFu));
-        int noNormalEntriesBranch = EmitBranch(0x11800000u, 0);
+
+        int noNormalEntriesBranch =
+            EmitBranch(0x11800000u, 0);
 
         int normalLoop = code.Count;
-        Emit(0x912A0000u);                         // lbu t2,0(t1)
-        int normalMatchBranch = EmitBranch(0x110A0000u, 0);
-        Emit(0x25290003u);                         // addiu t1,t1,3
-        Emit(0x258CFFFFu);                         // addiu t4,t4,-1
-        int normalRepeatBranch = EmitBranch(0x15800000u, normalLoop);
 
-        // どちらのテーブルにも該当しない場合は元の処理へ。
+        Emit(0x912A0000u);                 // lbu t2,0(t1)
+        int normalMatchBranch =
+            EmitBranch(0x110A0000u, 0);    // beq t0,t2,normalMatch
+
+        Emit(0x25290003u);                 // addiu t1,t1,3
+        Emit(0x258CFFFFu);                 // addiu t4,t4,-1
+
+        int normalRepeatBranch =
+            EmitBranch(0x15800000u, normalLoop);
+
+        // --------------------------------------------------
+        // 一致しなかった場合は元の処理へ
+        // --------------------------------------------------
+
         int noMatch = code.Count;
-        Emit(0x0808F1D4u);
-        Emit(0x00000000u);
 
-        // 指輪設定に一致した場合。
+        Emit(0x0808F1D4u);                 // j 0x0023C750
+        Emit(0x00000000u);                 // nop
+
+        // --------------------------------------------------
+        // 指輪設定に一致した場合
+        // --------------------------------------------------
+
         int allyMatch = code.Count;
-        Emit(0x912C0001u);                         // lbu t4,1(t1): marker
-        Emit(0x912A0002u);                         // lbu t2,2(t1): action
-        Emit(0xAD6C000Cu);                         // sw t4,12(t3): trace marker
-        Emit(0x01408821u);                         // addu s1,t2,zero
-        Emit(0x0808F1D4u);
-        Emit(0x00000000u);
 
-        // 通常設定に一致した場合。
+        Emit(0x912C0001u);                 // lbu t4,1(t1): marker
+        Emit(0x912A0002u);                 // lbu t2,2(t1): action
+        Emit(0xAD6C000Cu);                 // sw t4,12(t3): trace marker
+        Emit(0x01408821u);                 // addu s1,t2,zero
+
+        Emit(0x0808F1D4u);                 // j 0x0023C750
+        Emit(0x00000000u);                 // nop
+
+        // --------------------------------------------------
+        // 通常設定に一致した場合
+        // --------------------------------------------------
+
         int normalMatch = code.Count;
-        Emit(0x912C0001u);
-        Emit(0x912A0002u);
-        Emit(0xAD6C000Cu);
-        Emit(0x01408821u);
-        Emit(0x0808F1D4u);
-        Emit(0x00000000u);
 
-        // 分岐先を確定。
+        Emit(0x912C0001u);                 // lbu t4,1(t1)
+        Emit(0x912A0002u);                 // lbu t2,2(t1)
+        Emit(0xAD6C000Cu);                 // sw t4,12(t3)
+        Emit(0x01408821u);                 // addu s1,t2,zero
+
+        Emit(0x0808F1D4u);                 // j 0x0023C750
+        Emit(0x00000000u);                 // nop
+
+        // --------------------------------------------------
+        // 分岐先の確定
+        // --------------------------------------------------
+
         void PatchBranch(int index, int targetIndex, uint opcode)
         {
             int displacement = targetIndex - (index + 1);
             code[index] = opcode | (uint)(ushort)displacement;
         }
 
-        PatchBranch(nullActorToNormalBranch, normalSetup, 0x11000000u);
-        PatchBranch(enemyToNormalBranch, normalSetup, 0x15A00000u);
-        PatchBranch(noAllyOverridesBranch, normalSetup, 0x11800000u);
-        PatchBranch(allyMatchBranch, allyMatch, 0x110A0000u);
-        PatchBranch(allyRepeatBranch, allyLoop, 0x15800000u);
-        PatchBranch(noNormalEntriesBranch, noMatch, 0x11800000u);
-        PatchBranch(normalMatchBranch, normalMatch, 0x110A0000u);
-        PatchBranch(normalRepeatBranch, normalLoop, 0x15800000u);
+        PatchBranch(
+            enemyToNormalBranch,
+            normalSetup,
+            0x15A00000u);
+
+        PatchBranch(
+            noAllyOverridesBranch,
+            normalSetup,
+            0x11800000u);
+
+        PatchBranch(
+            allyMatchBranch,
+            allyMatch,
+            0x110A0000u);
+
+        PatchBranch(
+            allyRepeatBranch,
+            allyLoop,
+            0x15800000u);
+
+        PatchBranch(
+            noNormalEntriesBranch,
+            noMatch,
+            0x11800000u);
+
+        PatchBranch(
+            normalMatchBranch,
+            normalMatch,
+            0x110A0000u);
+
+        PatchBranch(
+            normalRepeatBranch,
+            normalLoop,
+            0x15800000u);
 
         return code.ToArray();
     }
-
     private static uint GetRequiredCaveSize(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
@@ -1324,7 +1392,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             if (currentIsDispatcher)
                 RestoreCallInstruction();
             _codeCaveAddress = 0u;
-            AllyActionOverrideRuntime.Apply(normalEntries, allyOverrideEntries);
+            // 通常設定と指輪上書きは統合ディスパッチャーで処理する。
             return;
         }
 
@@ -1354,7 +1422,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 newCall.ToString("X8") + " 読み戻し値: 0x" + verifyCall.ToString("X8"));
 
         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
-        AllyActionOverrideRuntime.Apply(normalEntries, allyOverrideEntries);
+            // 通常設定と指輪上書きは統合ディスパッチャーで処理する。
     }
 
     internal static string ReadActionTrace()
