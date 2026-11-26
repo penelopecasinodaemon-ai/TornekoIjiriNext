@@ -2561,8 +2561,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     Environment.NewLine + ex.ToString());
 
                 string oneLineMessage = ex.Message
-                    .Replace("\\r", " ")
-                    .Replace("\\n", " ");
+                    .Replace("\r", " ")
+                    .Replace("\n", " ");
 
                 RaiseStatus(
                     "種族別特技監視エラー: " + oneLineMessage +
