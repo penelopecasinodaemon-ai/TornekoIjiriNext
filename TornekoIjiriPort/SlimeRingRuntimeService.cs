@@ -58,6 +58,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private bool _diagnosticAllyItemDataApplied;
     private bool _diagnosticSkillStatApplied;
     private bool _ringAllyActionHooksApplied;
+    private bool _ringActionSettingsSubmitted;
     private DateTime _settingsWriteTime = DateTime.MinValue;
     private string _lastStatus = string.Empty;
     private string _lastBarrierTrace = string.Empty;
@@ -96,6 +97,15 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 Pcsx2LiveSession.ProcessId <= 0 ||
                 Pcsx2LiveSession.MemoryLayout == null)
             {
+                if (_ringActionSettingsSubmitted)
+                {
+                    _actionRestore.TryApplyAllyRingOverrides(
+                        Array.Empty<KeyValuePair<int, ushort>>(),
+                        new HashSet<int>(),
+                        out _);
+                    _ringActionSettingsSubmitted = false;
+                }
+
                 _processId = 0;
                 _lastObservedEquipped = null;
                 _diagnosticAllyItemDataApplied = false;
@@ -109,6 +119,15 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             int pid = Pcsx2LiveSession.ProcessId;
             if (_processId != pid)
             {
+                if (_ringActionSettingsSubmitted)
+                {
+                    _actionRestore.TryApplyAllyRingOverrides(
+                        Array.Empty<KeyValuePair<int, ushort>>(),
+                        new HashSet<int>(),
+                        out _);
+                    _ringActionSettingsSubmitted = false;
+                }
+
                 _processId = pid;
                 _lastObservedEquipped = null;
                 _diagnosticAllyItemDataApplied = false;
@@ -175,15 +194,18 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     {
         if (!equipped)
         {
-            if (!_actionRestore.TryApplyAllyRingOverrides(
+            bool restored = _actionRestore.TryApplyAllyRingOverrides(
                 Array.Empty<KeyValuePair<int, ushort>>(),
                 new HashSet<int>(),
-                out string restoreMessage))
-            {
-                throw new InvalidOperationException(restoreMessage);
-            }
+                out string restoreMessage);
 
+            // TryApplyは接続可否にかかわらず先に内部の指輪設定を空にする。
+            _ringActionSettingsSubmitted = false;
             _ringAllyActionHooksApplied = false;
+
+            if (!restored)
+                throw new InvalidOperationException(restoreMessage);
+
             RaiseStatus(restoreMessage);
             return;
         }
@@ -225,6 +247,10 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             if (item.CoromageIonazunAlways)
                 ionazunForce.Add(speciesId);
         }
+
+        // 接続エラー時もActionAutoRestoreService側に残った設定を追跡できるよう、
+        // 呼び出し前に「設定を渡した」状態にする。
+        _ringActionSettingsSubmitted = true;
 
         if (!_actionRestore.TryApplyAllyRingOverrides(
             ringActions,
