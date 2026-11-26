@@ -146,8 +146,8 @@ internal static class SlimeRingSkillStatRuntimeService
         EmitAddress(code, 14, dataAddress);       // t6 = entry table
         Emit(I(0x09, 0, 15, entryCount));         // addiu t7,zero,entryCount
 
-        int loopLabel = code.Count;
         Emit(I(0x0C, 4, 27, 0x00FF));           // andi k1,a0,0xFF: lh由来の符号拡張を除去
+        int loopLabel = code.Count;
         Emit(I(0x24, 14, 26, 0));                 // lbu k0,0(t6): runtime species ID
         int entryFoundBranch =
             EmitBranch(code, I(0x04, 26, 27, 0));  // beq k0,k1,entryFound
