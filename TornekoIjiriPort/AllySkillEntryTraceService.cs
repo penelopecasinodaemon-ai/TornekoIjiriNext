@@ -29,9 +29,9 @@ internal static class AllySkillEntryTraceService
     private const uint CaveEnd = 0x01E00000u;
     private const uint CaveStep = 0x00001000u;
 
-    private const uint CaveSize = 0x180u;
-    private const uint TraceOffset = 0x100u;
-    private const uint TraceBytes = 0x40u;
+    private const uint CaveSize = 0x300u;
+    private const uint TraceOffset = 0x200u;
+    private const uint TraceBytes = 0x80u;
 
     private static readonly object Sync = new object();
 
@@ -146,6 +146,41 @@ internal static class AllySkillEntryTraceService
 
         code.Add(I(0x2B, 8, 16, 0x18));
         // sw s0,24(t0)
+
+        // -----------------------------------------
+        // 追加レジスタ記録
+        // -----------------------------------------
+
+        code.Add(I(0x2B, 8, 3, 0x28));  // v1
+        code.Add(I(0x2B, 8, 6, 0x2C));  // a2
+        code.Add(I(0x2B, 8, 7, 0x30));  // a3
+
+        code.Add(I(0x2B, 8, 10, 0x34)); // t2
+        code.Add(I(0x2B, 8, 11, 0x38)); // t3
+        code.Add(I(0x2B, 8, 12, 0x3C)); // t4
+
+        code.Add(I(0x2B, 8, 15, 0x40)); // t7
+        code.Add(I(0x2B, 8, 24, 0x44)); // t8
+        code.Add(I(0x2B, 8, 25, 0x48)); // t9
+
+        code.Add(I(0x2B, 8, 17, 0x4C)); // s1
+        code.Add(I(0x2B, 8, 18, 0x50)); // s2
+        code.Add(I(0x2B, 8, 19, 0x54)); // s3
+        code.Add(I(0x2B, 8, 20, 0x58)); // s4
+        code.Add(I(0x2B, 8, 21, 0x5C)); // s5
+        code.Add(I(0x2B, 8, 22, 0x60)); // s6
+        code.Add(I(0x2B, 8, 23, 0x64)); // s7
+
+        code.Add(I(0x2B, 8, 28, 0x68)); // gp
+        code.Add(I(0x2B, 8, 30, 0x6C)); // fp
+        code.Add(I(0x2B, 8, 31, 0x70)); // ra
+
+        // スタックに退避した元のt0/t1を記録
+        code.Add(I(0x23, 29, 9, 0x00)); // lw t1,0(sp)
+        code.Add(I(0x2B, 8, 9, 0x74)); // sw t1,0x74(t0)
+
+        code.Add(I(0x23, 29, 9, 0x04)); // lw t1,4(sp)
+        code.Add(I(0x2B, 8, 9, 0x78)); // sw t1,0x78(t0)
 
         // 元のSPを記録
         code.Add(I(0x09, 29, 9, 0x20));
@@ -507,6 +542,84 @@ internal static class AllySkillEntryTraceService
             uint tableValue = ActionAutoRestoreService.ReadShared32(
                 trace + 0x24);
 
+            var registerFields = new (string Name, uint Offset)[]
+            {
+                ("v1", 0x28u),
+                ("a2", 0x2Cu),
+                ("a3", 0x30u),
+                ("t2", 0x34u),
+                ("t3", 0x38u),
+                ("t4", 0x3Cu),
+                ("t7", 0x40u),
+                ("t8", 0x44u),
+                ("t9", 0x48u),
+                ("s1", 0x4Cu),
+                ("s2", 0x50u),
+                ("s3", 0x54u),
+                ("s4", 0x58u),
+                ("s5", 0x5Cu),
+                ("s6", 0x60u),
+                ("s7", 0x64u),
+                ("gp", 0x68u),
+                ("fp", 0x6Cu),
+                ("ra", 0x70u),
+                ("t0(original)", 0x74u),
+                ("t1(original)", 0x78u)
+            };
+
+            var registerDump = new System.Collections.Generic.List<string>();
+
+            foreach (var field in registerFields)
+            {
+                uint value = ActionAutoRestoreService.ReadShared32(
+                    trace + field.Offset);
+
+                registerDump.Add(
+                    field.Name.PadRight(14) +
+                    ": 0x" + value.ToString("X8"));
+            }
+
+            string registerDumpText =
+                "ADDITIONAL REGISTER DUMP" + Environment.NewLine +
+                string.Join(Environment.NewLine, registerDump);
+            uint actorAddress = a0 & 0x1FFFFFFFu;
+            uint skillAddress = t6 & 0x1FFFFFFFu;
+
+
+
+            var actorDump = new System.Collections.Generic.List<string>();
+            var skillDump = new System.Collections.Generic.List<string>();
+
+            for (uint offset = 0; offset < 0x60u; offset += 4u)
+            {
+                uint address = actorAddress + offset;
+                uint value = ActionAutoRestoreService.ReadShared32(address);
+
+                actorDump.Add(
+                    "+0x" + offset.ToString("X2") +
+                    " [0x" + address.ToString("X8") +
+                    "] = 0x" + value.ToString("X8"));
+            }
+
+            for (uint offset = 0; offset < 0x60u; offset += 4u)
+            {
+                uint address = skillAddress + offset;
+                uint value = ActionAutoRestoreService.ReadShared32(address);
+
+                skillDump.Add(
+                    "+0x" + offset.ToString("X2") +
+                    " [0x" + address.ToString("X8") +
+                    "] = 0x" + value.ToString("X8"));
+            }
+
+            string actorDumpText =
+                "ACTOR MEMORY DUMP (a0)" + Environment.NewLine +
+                string.Join(Environment.NewLine, actorDump);
+
+            string skillDumpText =
+                "SKILL MEMORY DUMP (t6)" + Environment.NewLine +
+                string.Join(Environment.NewLine, skillDump);
+
             return string.Join(Environment.NewLine, new[]
             {
                 "ALLY SKILL ENTRY TRACE",
@@ -523,10 +636,15 @@ internal static class AllySkillEntryTraceService
                 "t6              : 0x" + t6.ToString("X8"),
                 "s0              : 0x" + s0.ToString("X8"),
                 "Original SP     : 0x" + originalSp.ToString("X8"),
-                "",
+
                 "LH t6+6         : 0x" + skillIndex.ToString("X8"),
                 "LHU t6+4        : 0x" + tableValue.ToString("X8"),
                 "",
+                registerDumpText,
+                "",
+                actorDumpText,
+                "",
+                skillDumpText,                "",
                 count == 0u
                     ? "まだフックは実行されていません。"
                     : "最後に通過した呼び出し結果を記録しています。",
@@ -600,3 +718,4 @@ internal static class AllySkillEntryTraceService
         }
     }
 }
+

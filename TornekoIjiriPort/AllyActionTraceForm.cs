@@ -70,6 +70,15 @@ internal sealed class AllyActionTraceForm : Form
         AddButton(buttons, "多点フック一括解除", 170,
             () => InvokeTraceMethod("AllyMultiPointTraceService", "Restore"));
 
+AddButton(buttons, "呼び出し地点トレース設置", 190,
+    () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Install"));
+
+AddButton(buttons, "呼び出し地点記録読み取り", 190,
+    () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Read"));
+
+AddButton(buttons, "呼び出し地点フック解除", 190,
+    () => InvokeTraceMethod("AllySkillCallSiteTraceService", "Restore"));
+
         _output = new TextBox
         {
             Dock = DockStyle.Fill,

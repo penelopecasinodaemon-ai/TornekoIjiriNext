@@ -186,8 +186,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         byte[] work = (byte[])source.Clone();
         var writes = new List<Tuple<int, byte[], string>>();
 
-        // 実験版・指輪特技使用率上書き
-        int recordTableOffset = ResolveMonsterRecordTableOffset(work);
 
         foreach (int speciesId in SlimeRingEditorForm.TargetMonsterIds)
         {
@@ -206,38 +204,6 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 Slice(work, allyOffset, 8),
                 "指輪・味方専用投擲データ ID=" + speciesId));
 
-            // 実験版・指輪特技使用範囲上書き
-            int rangeOffset =
-                SkillRangeDataOffset + (speciesId + 1) * 20;
-
-            CheckRange(work, rangeOffset + 6, 2);
-
-            WriteUInt16(
-                work,
-                rangeOffset + 6,
-                (ushort)Clamp(item.SkillRange, 0, 7));
-
-            writes.Add(Tuple.Create(
-                rangeOffset + 6,
-                Slice(work, rangeOffset + 6, 2),
-                "実験版・指輪特技使用範囲 ID=" + speciesId));
-
-            // 実験版・指輪特技使用率上書き
-            // +22=A、+23=B。Bは変更しない。
-            int recordOffset =
-                recordTableOffset + speciesId * MonsterRecordSize;
-
-            int rateOffset = recordOffset + 22;
-
-            CheckRange(work, rateOffset, 1);
-
-            work[rateOffset] =
-                (byte)Clamp(item.SkillRate, 0, 255);
-
-            writes.Add(Tuple.Create(
-                rateOffset,
-                Slice(work, rateOffset, 1),
-                "実験版・指輪特技使用率A ID=" + speciesId));
         }
 
         Pcsx2BinApplier.ApplyRanges(
@@ -248,7 +214,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         string applyResult =
             "味方専用投擲データを適用しました。" +
             Environment.NewLine +
-            "共通特技範囲データは変更していません（敵側への影響を防止）。" +
+            "特技使用率・範囲の共通データは変更していません（敵側への影響を防止）。" +
             Environment.NewLine +
             "指輪の範囲設定は仲間側専用フックの実装待ちです。";
 
