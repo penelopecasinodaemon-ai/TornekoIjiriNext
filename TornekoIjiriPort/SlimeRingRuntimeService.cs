@@ -130,8 +130,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
-                    // 行動IDフックは通常攻撃の停止を招いたため無効化する。
-                    // 味方専用データと特技使用率・範囲のみ適用する。
+                    // 段階3：味方専用の行動IDフック。
+                    // 敵用ディスパッチャーとイオナズン分岐には触れない。
+                    ApplyRingAllyActionOnly(true);
                 }
                 else
                 {
@@ -152,7 +153,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 }
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：診断段階3適用済み（味方専用データ＋特技使用率・範囲＋味方専用行動IDフック）"
+                    ? "スライムの指輪：段階3適用済み（味方専用データ＋特技使用率・範囲＋味方専用行動IDフック）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
