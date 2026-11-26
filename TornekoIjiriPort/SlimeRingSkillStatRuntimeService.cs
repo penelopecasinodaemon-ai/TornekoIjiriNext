@@ -140,8 +140,9 @@ internal static class SlimeRingSkillStatRuntimeService
         Emit(R(1, 8, 2, 0, 0x21));   // addu v0,at,t0
         Emit(R(2, 9, 2, 0, 0x21));   // addu v0,v0,t1
 
-        // 最初に必ずBIN基準値へ戻す。
-        // 以前のAI個体が書き込んだ指輪値を、未対応呼び出し元へ持ち越さない。
+        // 種族IDから設定テーブルのエントリを探す。
+        // 未対応の呼び出し元では共有データを書き換えない。
+        // AI判定以外の種族データ参照で指輪値が基準値へ戻されるのを防ぐ。
         EmitAddress(code, 14, dataAddress);       // t6 = entry table
         Emit(I(0x09, 0, 15, entryCount));         // addiu t7,zero,entryCount
 
@@ -161,15 +162,7 @@ internal static class SlimeRingSkillStatRuntimeService
 
         int entryFoundLabel = code.Count;
 
-        // 基準値をレコード+22と範囲テーブルへ反映する。
-        Emit(I(0x24, 14, 24, 8));                 // lbu t8,8(t6): baseRate
-        Emit(I(0x28, 2, 24, 22));                 // sb t8,22(v0)
-        Emit(I(0x25, 14, 24, 10));                // lhu t8,10(t6): baseRange
-        Emit(I(0x23, 14, 27, 12));                // lw k1,12(t6): range address
-        Emit(I(0x29, 27, 24, 0));                 // sh t8,0(k1)
-
-        // 対象AI判定の呼び出し元だけ、個体の陣営を追加判定する。
-        // それ以外の呼び出し元は、上で復元した基準値のまま戻る。
+        // 対象AI判定の呼び出し元だけ、個体の陣営を確認する。
         var s2Branches = new List<int>();
         var s1Branches = new List<int>();
 
@@ -196,13 +189,13 @@ internal static class SlimeRingSkillStatRuntimeService
         AddReturnAddressBranch(0x0023DA18u, true);
 
         int unrecognizedCallerBranch =
-            EmitBranch(code, I(0x04, 0, 0, 0));   // beq zero,zero,restore
+            EmitBranch(code, I(0x04, 0, 0, 0));   // unknown caller: do not touch shared values
         Emit(0u);
 
         int actorS1Label = code.Count;
         Emit(I(0x23, 17, 11, 8));                 // lw t3,8(s1)
         int actorS1NullBranch =
-            EmitBranch(code, I(0x04, 11, 0, 0));   // beq t3,zero,restore
+            EmitBranch(code, I(0x04, 11, 0, 0));   // beq t3,zero,baseline
         Emit(0u);
         int actorS1CommonBranch =
             EmitBranch(code, I(0x04, 0, 0, 0));    // beq zero,zero,common
@@ -211,7 +204,7 @@ internal static class SlimeRingSkillStatRuntimeService
         int actorS2Label = code.Count;
         Emit(I(0x23, 18, 11, 8));                 // lw t3,8(s2)
         int actorS2NullBranch =
-            EmitBranch(code, I(0x04, 11, 0, 0));   // beq t3,zero,restore
+            EmitBranch(code, I(0x04, 11, 0, 0));   // beq t3,zero,baseline
         Emit(0u);
         int actorS2CommonBranch =
             EmitBranch(code, I(0x04, 0, 0, 0));    // beq zero,zero,common
@@ -222,12 +215,12 @@ internal static class SlimeRingSkillStatRuntimeService
         Emit(I(0x24, 11, 13, 4));                 // lbu t5,4(t3): runtime species ID
 
         int speciesMismatchBranch =
-            EmitBranch(code, I(0x05, 13, 4, 0));   // bne t5,a0,restore
+            EmitBranch(code, I(0x05, 13, 4, 0));   // bne t5,a0,baseline
         Emit(0u);
 
-        // 0=味方。敵・個体情報不一致・nullなら基準値のまま。
+        // 0=味方。敵・個体情報不一致・nullならBIN基準値を適用する。
         int enemyBranch =
-            EmitBranch(code, I(0x05, 12, 0, 0));   // bne t4,zero,restore
+            EmitBranch(code, I(0x05, 12, 0, 0));   // bne t4,zero,baseline
         Emit(0u);
 
         // 味方だけ指輪設定で上書きする。
@@ -236,6 +229,20 @@ internal static class SlimeRingSkillStatRuntimeService
         Emit(I(0x25, 14, 24, 6));                 // lhu t8,6(t6): allyRange
         Emit(I(0x23, 14, 27, 12));                // lw k1,12(t6): range address
         Emit(I(0x29, 27, 24, 0));                 // sh t8,0(k1)
+        int allyDoneBranch =
+            EmitBranch(code, I(0x04, 0, 0, 0));    // beq zero,zero,restore
+        Emit(0u);
+
+        // 敵AIの判定時だけ通常設定へ戻す。
+        // 未対応呼び出し元ではこの領域に来ないため、味方の指輪値を維持する。
+        int baselineLabel = code.Count;
+        Emit(I(0x24, 14, 24, 8));                 // lbu t8,8(t6): baseRate
+        Emit(I(0x28, 2, 24, 22));                 // sb t8,22(v0)
+        Emit(I(0x25, 14, 24, 10));                // lhu t8,10(t6): baseRange
+        Emit(I(0x23, 14, 27, 12));                // lw k1,12(t6): range address
+        Emit(I(0x29, 27, 24, 0));                 // sh t8,0(k1)
+
+        int restoreLabel = code.Count;
 
         int restoreLabel = code.Count;
 
@@ -250,12 +257,13 @@ internal static class SlimeRingSkillStatRuntimeService
             PatchBranch(code, branch, actorS1Label, I(0x04, 31, 10, 0));
 
         PatchBranch(code, unrecognizedCallerBranch, restoreLabel, I(0x04, 0, 0, 0));
-        PatchBranch(code, actorS1NullBranch, restoreLabel, I(0x04, 11, 0, 0));
+        PatchBranch(code, actorS1NullBranch, baselineLabel, I(0x04, 11, 0, 0));
         PatchBranch(code, actorS1CommonBranch, commonLabel, I(0x04, 0, 0, 0));
-        PatchBranch(code, actorS2NullBranch, restoreLabel, I(0x04, 11, 0, 0));
+        PatchBranch(code, actorS2NullBranch, baselineLabel, I(0x04, 11, 0, 0));
         PatchBranch(code, actorS2CommonBranch, commonLabel, I(0x04, 0, 0, 0));
-        PatchBranch(code, speciesMismatchBranch, restoreLabel, I(0x05, 13, 4, 0));
-        PatchBranch(code, enemyBranch, restoreLabel, I(0x05, 12, 0, 0));
+        PatchBranch(code, speciesMismatchBranch, baselineLabel, I(0x05, 13, 4, 0));
+        PatchBranch(code, enemyBranch, baselineLabel, I(0x05, 12, 0, 0));
+        PatchBranch(code, allyDoneBranch, restoreLabel, I(0x04, 0, 0, 0));
 
         // 元関数が変更しない一時レジスタを元に戻し、元の呼び出し元へ戻る。
         Emit(I(0x37, 29, 27, 0x48)); // ld k1,72(sp)
