@@ -1306,6 +1306,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private static uint[] BuildAllyActionLoadStub(uint caveAddress, int entryCount)
     {
         uint dataAddress = caveAddress + 0x200u;
+        uint traceMarkerAddress = caveAddress + 0xE0u;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
@@ -1315,6 +1316,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0x7FAB0020u);                    // sq t3,0x20(sp)
         Emit(0x7FAC0030u);                    // sq t4,0x30(sp)
         Emit(0xAFBF0040u);                    // sw ra,0x40(sp)
+
+        // イオナズン連発判定用マーカーを毎回初期化する。
+        Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
+        Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
+        Emit(EncodeI(0x28, 10, 0, 0));        // sb zero,0(t2)
+
         Emit(EncodeI(0x24, 8, 9, 0x1D3));     // lbu t1,0x1D3(t0)
         int enemy = EmitBranchWithDelay(code, EncodeI(0x05, 9, 0, 0));
         Emit(0u);
@@ -1340,7 +1347,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(0u);
 
         int foundLabel = code.Count;
-        Emit(EncodeI(0x24, 11, 2, 2));       // lbu v0,2(t3)
+        Emit(EncodeI(0x24, 11, 9, 1));       // lbu t1,1(t3): Ionazun force marker
+        Emit(EncodeI(0x0F, 0, 10, (int)(traceMarkerAddress >> 16)));
+        Emit(EncodeI(0x0D, 10, 10, (int)(traceMarkerAddress & 0xFFFFu)));
+        Emit(EncodeI(0x28, 10, 9, 0));        // sb t1,0(t2)
+        Emit(EncodeI(0x24, 11, 2, 2));       // lbu v0,2(t3): ring action ID
 
         int restore = code.Count;
         Emit(0x7BA90000u);                    // lq t1,0(sp)
