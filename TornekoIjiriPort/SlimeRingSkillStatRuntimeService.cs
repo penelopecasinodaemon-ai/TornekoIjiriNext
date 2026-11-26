@@ -136,7 +136,7 @@ internal static class SlimeRingSkillStatRuntimeService
         Emit(I(0x24, 8, 9, 0x1D3));
 
         // t2 = 実行時種族ID
-        Emit(I(0x23, 18, 10, 4));
+        Emit(I(0x24, 8, 10, 4));
 
         // t3 = 設定テーブル
         Emit(I(0x0F, 0, 11, (int)(dataAddress >> 16)));
