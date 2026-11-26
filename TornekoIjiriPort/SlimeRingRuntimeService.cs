@@ -83,7 +83,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     }
 
     // 装備状態を監視し、味方専用データ・特技率/範囲・行動IDを段階的に反映する。
-    // 特技使用率・行動フック・イオナズン分岐・バリアには触れない。
+    // 敵ディスパッチャー、イオナズン分岐、バリアには触れない。
     private void Poll(object? state)
     {
         if (_disposed || Interlocked.Exchange(ref _busy, 1) != 0)
@@ -112,7 +112,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _diagnosticAllyItemDataApplied = false;
             }
 
-            // 装備スロットを読み取り、変化時だけ診断段階1を実行する。
+            // 装備スロットを読み取り、装備状態の変化時だけ指輪専用処理を更新する。
             // 従来の一括ApplyRingSettings/Deactivateは呼び出さない。
             bool equipped = IsSlimeRingEquipped();
 
@@ -122,15 +122,12 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 _overlayActive = false;
                 SetOverlaySpeciesIds(Array.Empty<int>());
 
-                // 診断段階1：味方専用投擲データだけを反映する。
-                // 特技使用率フック・行動フック・バリア処理は実行しない。
                 if (equipped)
                 {
-                    // 診断段階1：味方専用投擲データのみ。
+                    // 段階1：味方専用投擲データ。
                     ApplyRingAllyItemDataOnly(true);
 
-                    // 診断段階2：特技使用率・範囲フックのみ追加。
-                    // 行動IDディスパッチャーとイオナズン分岐には触れない。
+                    // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
                     // 診断段階3：修正済みの味方専用行動IDフックを適用する。
