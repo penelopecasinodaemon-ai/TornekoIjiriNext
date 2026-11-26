@@ -2007,7 +2007,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
         // 書き込みを始める前に全コード領域の重複を検査する。
         if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
             AllyActionLoadStubOffset + (uint)allyLoad.Length * 4u > AllyTargetCheckStubOffset ||
-            AllyTargetCheckStubOffset + (uint)allyTargetCheck.Length * 4u > AllyHookMarkerOffset)
+            AllyTargetCheckStubOffset + (uint)allyTargetCheck.Length * 4u > AllyHookActiveOffset)
         {
             throw new InvalidOperationException(
                 "味方側特技スタブの配置領域が重複しています。メモリへの書き込みを中止しました。");
@@ -2018,6 +2018,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
             throw new InvalidOperationException(
                 "種族検索コードが設定データ領域と重複しています。メモリへの書き込みを中止しました。");
         }
+
+        // 既存フックが残っている場合も、先に無効フラグを落としてからコードを更新する。
+        uint activeAddress = address + AllyHookActiveOffset;
+        _pine.Write32(activeAddress, 0u);
+        if (_pine.Read32(activeAddress) != 0u)
+            throw new InvalidOperationException(
+                "味方行動フックを無効化できないため、コード更新を中止しました。");
 
         for (int i = 0; i < stub.Length; i++)
             _pine.Write32(address + (uint)(i * 4), stub[i]);
@@ -2059,6 +2066,32 @@ internal sealed class ActionAutoRestoreService : IDisposable
         byte[] data = BuildActionData(allyOverrideEntries, normalEntries);
         uint dataAddress = address + 0x200u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
+
+        // 設定データが変わる場合は、書き換え中だけ味方フックを無効化する。
+        bool dataChanged = false;
+        for (uint offset = 0; offset < paddedLength; offset += 4u)
+        {
+            uint value = 0u;
+            for (int b = 0; b < 4; b++)
+            {
+                uint index = offset + (uint)b;
+                if (index < (uint)data.Length)
+                    value |= (uint)data[index] << (b * 8);
+            }
+            if (_pine.Read32(dataAddress + offset) != value)
+                dataChanged = true;
+        }
+
+        uint activeAddress = address + AllyHookActiveOffset;
+        bool ownsAllyHook = _pine.Read32(address + AllyHookMarkerOffset) == AllyHookMarker;
+        if (dataChanged && ownsAllyHook && _pine.Read32(activeAddress) != 0u)
+        {
+            _pine.Write32(activeAddress, 0u);
+            if (_pine.Read32(activeAddress) != 0u)
+                throw new InvalidOperationException(
+                    "味方行動フックを無効化できないため、設定データ更新を中止しました。");
+        }
+
         for (uint offset = 0; offset < paddedLength; offset += 4u)
         {
             uint value = 0u;
