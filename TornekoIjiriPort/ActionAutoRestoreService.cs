@@ -2175,11 +2175,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private uint FindCodeCave(uint requiredSize)
     {
         if (requiredSize < 0x200u ||
-            SharedActionCaveOffset + requiredSize > SharedRuntimeCaveSize)
+            SharedActionCaveOffset + requiredSize > SharedRuntimeCaveSize ||
+            SharedActionCaveOffset + requiredSize > SharedRuntimeCaveMarkerOffset)
         {
             throw new InvalidOperationException(
-                "共有ページ内に種族別特技コードを配置できません。" +
-                "必要サイズ: " + requiredSize);
+                "共有ページ内に種族別特技コードを安全に配置できません。" +
+                "必要サイズ: " + requiredSize +
+                " / 共有ページ管理マーカー: 0x" +
+                SharedRuntimeCaveMarkerOffset.ToString("X"));
         }
 
         uint sharedPage = FindOrCreateSharedRuntimeCave();
@@ -2199,6 +2202,17 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint[] allyLoad = BuildAllyActionLoadStub(address, MaxSpeciesActionEntries);
         uint[] allyTargetCheck = BuildAllyTargetCheckStub(address, MaxSpeciesActionEntries);
         uint[] allyActionExecution = BuildAllyActionExecutionStub(address, MaxSpeciesActionEntries);
+
+        // 書き込みを始める前にコード・有効フラグ・所有マーカーの配置を検査する。
+        if ((AllyHookActiveOffset & 3u) != 0u ||
+            (AllyHookMarkerOffset & 3u) != 0u ||
+            AllyHookActiveOffset + 4u > AllyHookMarkerOffset ||
+            AllyHookMarkerOffset + 4u > AllyHookReservedSize ||
+            SharedActionCaveOffset + AllyHookReservedSize > SharedRuntimeCaveMarkerOffset)
+        {
+            throw new InvalidOperationException(
+                "味方側特技フックの有効フラグ・所有マーカーが共有ページ管理領域と重複しています。");
+        }
 
         // 書き込みを始める前に全コード領域の重複を検査する。
         if (AllySkillCheckStubOffset + (uint)allyCheck.Length * 4u > AllyActionLoadStubOffset ||
