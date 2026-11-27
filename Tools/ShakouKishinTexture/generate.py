@@ -7,6 +7,7 @@ colors, relief, ornaments, or painted details are copied into the result.
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 import math
+from collections import deque
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "カスタムモンスター" / "普通のいしにんぎょう.png"
@@ -70,7 +71,34 @@ def main():
     # White is the atlas background. The binary mask keeps only the actual
     # mapped UV islands; the source's grayscale artwork is never sampled.
     gray=src.convert("L")
-    mask=gray.point(lambda p: 255 if p < 255 else 0).resize((SW,SH),Image.Resampling.NEAREST)
+    gp=gray.load()
+    exterior=bytearray(W*H)
+    queue=deque()
+    # Flood-fill only background pixels connected to the atlas border. This
+    # also fills white specular/engraving gaps enclosed inside a UV island.
+    for x in range(W):
+        for y in (0,H-1):
+            i=y*W+x
+            if gp[x,y] >= 250 and not exterior[i]:
+                exterior[i]=1
+                queue.append((x,y))
+    for y in range(H):
+        for x in (0,W-1):
+            i=y*W+x
+            if gp[x,y] >= 250 and not exterior[i]:
+                exterior[i]=1
+                queue.append((x,y))
+    while queue:
+        x,y=queue.popleft()
+        for nx,ny in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
+            if 0 <= nx < W and 0 <= ny < H:
+                i=ny*W+nx
+                if not exterior[i] and gp[nx,ny] >= 250:
+                    exterior[i]=1
+                    queue.append((nx,ny))
+    mask=Image.new("L",(W,H))
+    mask.putdata([0 if exterior[y*W+x] else 255 for y in range(H) for x in range(W)])
+    mask=mask.resize((SW,SH),Image.Resampling.NEAREST)
 
     # Fresh procedural material: independent of the source's brightness/relief.
     base=Image.new("RGB",(SW,SH),(255,255,255))
