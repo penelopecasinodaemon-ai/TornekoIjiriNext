@@ -154,7 +154,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階3：味方専用の特技判定・行動ID読込・対象判定を一括適用する。
                     // 行動者の陣営フラグと種族IDを読み取り、味方の対象スライムだけ指輪の行動IDを返す。
                     // 敵側では元の行動IDを返し、共有AIテーブル全体の入れ替えは行わない。
-                    // 4か所のフックがすべて検証されるまで共有有効フラグは0のまま。
+                    // 5か所のフックがすべて検証されるまで共有有効フラグは0のまま。
                     ApplyRingAllyActionOnly(true);
                 }
                 else
