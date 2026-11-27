@@ -229,6 +229,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private bool _disposed;
 
     private uint _ionazunRepeatCaveAddress;
+    // 最後にフル検証・適用を完了した時刻。監視周期ごとの全テーブル走査を避ける。
+    private DateTime _lastFullApplyUtc = DateTime.MinValue;
     private string _lastStatus = "";
 
     internal event Action<string>? StatusChanged;
@@ -721,11 +723,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
             return;
         }
 
-        if (_codeCaveAddress == 0 ||
-            !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+        // ApplyRuntimeが既存コードを検証済み、またはWriteDispatcherCodeで初回検証済み。
+        // ここで再度IsDispatcherCodeを呼ぶと監視周期ごとに数百回のPINE読み取りが重複する。
+        if (_codeCaveAddress == 0)
         {
             throw new InvalidOperationException(
-                "既存ディスパッチャーを検証できません。");
+                "既存ディスパッチャーのコードケーブがありません。");
         }
 
         uint usedJump = EncodeIonazunRepeatJump(
@@ -2114,8 +2117,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint dataAddress = address + 0x200u;
         uint paddedLength = ((uint)data.Length + 3u) & ~3u;
 
-        // 設定データが変わる場合は、書き換え中だけ味方フックを無効化する。
-        bool dataChanged = false;
+        // 最初の読み取りで変更が必要なDWORDだけを記録する。
+        // 変更のない監視周期では、ここで返るため再読み取り・再書き込みをしない。
+        var changedWords = new List<(uint Address, uint Value)>();
+
         for (uint offset = 0; offset < paddedLength; offset += 4u)
         {
             uint value = 0u;
@@ -2125,13 +2130,21 @@ internal sealed class ActionAutoRestoreService : IDisposable
                 if (index < (uint)data.Length)
                     value |= (uint)data[index] << (b * 8);
             }
-            if (_pine.Read32(dataAddress + offset) != value)
-                dataChanged = true;
+
+            uint target = dataAddress + offset;
+            if (_pine.Read32(target) != value)
+                changedWords.Add((target, value));
         }
 
+        if (changedWords.Count == 0)
+            return;
+
+        // 設定データが変わる場合は、書き換え中だけ味方フックを無効化する。
         uint activeAddress = address + AllyHookActiveOffset;
-        bool ownsAllyHook = _pine.Read32(address + AllyHookMarkerOffset) == AllyHookMarker;
-        if (dataChanged && ownsAllyHook && _pine.Read32(activeAddress) != 0u)
+        bool ownsAllyHook =
+            _pine.Read32(address + AllyHookMarkerOffset) == AllyHookMarker;
+
+        if (ownsAllyHook && _pine.Read32(activeAddress) != 0u)
         {
             _pine.Write32(activeAddress, 0u);
             if (_pine.Read32(activeAddress) != 0u)
@@ -2139,22 +2152,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
                     "味方行動フックを無効化できないため、設定データ更新を中止しました。");
         }
 
-        for (uint offset = 0; offset < paddedLength; offset += 4u)
+        // 先ほど差分が見つかったDWORDだけを書き込み、各書き込みを読み戻して検証する。
+        foreach (var word in changedWords)
         {
-            uint value = 0u;
-            for (int b = 0; b < 4; b++)
-            {
-                uint index = offset + (uint)b;
-                if (index < (uint)data.Length)
-                    value |= (uint)data[index] << (b * 8);
-            }
-            uint target = dataAddress + offset;
-            if (_pine.Read32(target) != value)
-                _pine.Write32(target, value);
-            if (_pine.Read32(target) != value)
+            _pine.Write32(word.Address, word.Value);
+            if (_pine.Read32(word.Address) != word.Value)
                 throw new InvalidOperationException(
                     "種族別アクションデータの更新検証に失敗しました。アドレス=0x" +
-                    target.ToString("X8"));
+                    word.Address.ToString("X8"));
         }
     }
 
@@ -2203,6 +2208,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         uint currentCall = _pine.Read32(PatchAddress);
         bool currentIsDispatcher = IsDispatcherCall(currentCall);
+        bool dispatcherCodeVerified = false;
         if (currentCall != OriginalCallInstruction && !currentIsDispatcher)
             throw new InvalidOperationException(
                 "敵特技呼び出し命令が想定外です。現在値: 0x" + currentCall.ToString("X8"));
@@ -2226,6 +2232,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             if (IsDispatcherCode(detectedCave, normalEntries, allyOverrideEntries))
             {
                 _codeCaveAddress = detectedCave;
+                dispatcherCodeVerified = true;
             }
             else
             {
@@ -2236,15 +2243,21 @@ internal sealed class ActionAutoRestoreService : IDisposable
             }
         }
 
-        if (_codeCaveAddress != 0u &&
-            !IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+        if (_codeCaveAddress != 0u && !dispatcherCodeVerified)
         {
-            if (currentIsDispatcher)
-                throw new InvalidOperationException(
-                    "稼働中のディスパッチャーコードが一致しません。安全のため変更を中止しました。");
-            RestoreAllyActionHooks(_codeCaveAddress);
-            RestoreIonazunRepeatPatch();
-            _codeCaveAddress = 0u;
+            if (!IsDispatcherCode(_codeCaveAddress, normalEntries, allyOverrideEntries))
+            {
+                if (currentIsDispatcher)
+                    throw new InvalidOperationException(
+                        "稼働中のディスパッチャーコードが一致しません。安全のため変更を中止しました。");
+                RestoreAllyActionHooks(_codeCaveAddress);
+                RestoreIonazunRepeatPatch();
+                _codeCaveAddress = 0u;
+            }
+            else
+            {
+                dispatcherCodeVerified = true;
+            }
         }
 
         if (normalEntries.Count == 0 && allyOverrideEntries.Count == 0)
@@ -2254,6 +2267,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
             if (currentIsDispatcher)
                 RestoreCallInstruction();
             _codeCaveAddress = 0u;
+            _lastFullApplyUtc = DateTime.UtcNow;
             return;
         }
 
@@ -2281,6 +2295,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
         ApplyAllyActionHooks(_codeCaveAddress, allyOverrideEntries.Count);
+        _lastFullApplyUtc = DateTime.UtcNow;
     
         }
     }
@@ -2766,6 +2781,47 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
     }
 
+    // 監視タイマー用の軽量な健全性確認。
+    // 設定変更はTryApply系の呼び出しで即時反映されるため、通常周期ではフック命令と有効フラグだけを見る。
+    // フルコード・全データの検証はPoll側の30秒周期、または設定変更時のApplyRuntimeで行う。
+    private bool NeedsRuntimeApply(
+        Dictionary<int, ushort> normalActions,
+        int ringOverrideCount)
+    {
+        lock (SharedPineAccessSync)
+        {
+            uint currentCall = _pine.Read32(PatchAddress);
+
+            if (normalActions.Count == 0 && ringOverrideCount == 0)
+            {
+                return
+                    _codeCaveAddress != 0u ||
+                    _ionazunRepeatCaveAddress != 0u ||
+                    currentCall != OriginalCallInstruction;
+            }
+
+            if (_codeCaveAddress == 0u)
+                return true;
+
+            uint expectedCall = EncodeJal(_codeCaveAddress);
+            if (currentCall != expectedCall)
+                return true;
+
+            if (ringOverrideCount > 0)
+            {
+                uint marker = _pine.Read32(
+                    _codeCaveAddress + AllyHookMarkerOffset);
+                uint active = _pine.Read32(
+                    _codeCaveAddress + AllyHookActiveOffset);
+
+                if (marker != AllyHookMarker || active != 1u)
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
     private void Poll(object? state)
     {
         if (_disposed ||
@@ -2810,7 +2866,19 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
                         if (status == 0)
                         {
-                            ApplyRuntime(snapshot);
+                            bool needsApply = NeedsRuntimeApply(
+                                snapshot,
+                                ringOverrideCount);
+
+                            // 設定変更・フック消失時は即時適用する。
+                            // それ以外は30秒に1回だけフル検証し、500ms周期での大量PINE要求を避ける。
+                            bool deepVerificationDue =
+                                _lastFullApplyUtc == DateTime.MinValue ||
+                                DateTime.UtcNow - _lastFullApplyUtc >= TimeSpan.FromSeconds(30);
+
+                            if (needsApply || deepVerificationDue)
+                                ApplyRuntime(snapshot);
+
                             RaiseStatus(snapshot.Count > 0 || ringOverrideCount > 0
                                 ? "種族別特技ディスパッチャー適用中：通常設定 " +
                                   snapshot.Count + "種類 / 指輪上書き " +
