@@ -485,6 +485,9 @@ internal static class SlimeRingSkillStatRuntimeService
     {
         lock (Sync)
         {
+            // 複数命令から成るEEメモリ更新を一括で直列化し、別サービスのフック更新と交差させない。
+            lock (ActionAutoRestoreService.SharedPineAccessSync)
+            {
             if (source == null || source.Length != 524288)
                 throw new InvalidOperationException("反映元BINが不正です。");
 
@@ -633,6 +636,7 @@ internal static class SlimeRingSkillStatRuntimeService
                 "対象AI呼び出し元: 8箇所 ($ra 判定)" +
                 Environment.NewLine +
                 "旧フック 0x002D4528: 元のJALへ復元";
+            }
         }
     }
 
@@ -640,6 +644,9 @@ internal static class SlimeRingSkillStatRuntimeService
     {
         lock (Sync)
         {
+            // 複数命令から成るEEメモリ更新を一括で直列化し、別サービスのフック更新と交差させない。
+            lock (ActionAutoRestoreService.SharedPineAccessSync)
+            {
             uint current =
                 ActionAutoRestoreService.ReadShared32(HookAddress);
 
@@ -686,6 +693,7 @@ internal static class SlimeRingSkillStatRuntimeService
                     throw new InvalidOperationException(
                         "旧フック 0x002D4528 を元のJALへ戻せませんでした。");
                 }
+            }
             }
         }
     }
