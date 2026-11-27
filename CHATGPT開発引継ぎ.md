@@ -512,7 +512,7 @@ ELFの実命令を確認した。行動者データには陣営フラグ `+0x1D3
 ### 13-8. 実機検証状態
 
 - 段階2のみの状態で味方スライムが通常攻撃することはユーザー確認済み。
-- 2026-11-27のコード更新コミットは `3e9806c8`（ActionAutoRestoreService）、`b0746683`（SlimeRingSkillStatRuntimeService）、`3d29b3ba`（SlimeRingRuntimeService）、`aa924a9d`（監視負荷削減）。GitHub Actions Windows .NET buildはそれぞれsuccess。監視負荷削減のrunは `45925309981`。文書更新は `fe1604aa`。
+- 2026-11-27のコード更新コミットは `3e9806c8`（ActionAutoRestoreService）、`b0746683`（SlimeRingSkillStatRuntimeService）、`3d29b3ba`（SlimeRingRuntimeService）、`aa924a9d`（監視負荷削減）。GitHub Actions Windows .NET buildはそれぞれsuccess。監視負荷削減のrunは `45925309981`。関連文書の追記コミットは `fe1604aa`、`5dc0b898`、`76690c54`、`3b2276a1`。
 - 段階3再有効化後の実機挙動は未確認。GitHub Actionsのビルド成功は実機動作成功を意味しない。
 - 次の実機確認では、まずフリーズしないこと、次に味方対象スライムの行動ID、最後に敵スライムがモンスタークリエイター設定のままであることを個別に確認する。問題があれば新しいメモリダンプを取得し、フック命令・遅延スロット・有効フラグ・コードページを照合する。
 
