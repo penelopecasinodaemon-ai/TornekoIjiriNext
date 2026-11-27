@@ -1,73 +1,82 @@
-from PIL import Image, ImageDraw, ImageFilter
+#!/usr/bin/env python3
+"""Generate an ornamental Shakou Kishin texture from the Ishiningyo UV atlas."""
 from pathlib import Path
+from PIL import Image, ImageDraw
 import math
 
-ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "カスタムモンスター" / "普通のいしにんぎょう.png"
-OUTPUT = ROOT / "カスタムモンスター" / "シャコウ鬼神.png"
+ROOT=Path(__file__).resolve().parents[2]
+SOURCE=ROOT/"カスタムモンスター"/"普通のいしにんぎょう.png"
+OUTPUT=ROOT/"カスタムモンスター"/"シャコウ鬼神.png"
 
-im = Image.open(SOURCE).convert("RGBA")
-if im.size != (256, 256):
-    raise SystemExit(f"Expected 256x256 UV texture, got {im.size}")
-px = im.load()
+def clamp(v): return max(0,min(255,int(v)))
+def ramp(v,stops):
+    for (x0,c0),(x1,c1) in zip(stops,stops[1:]):
+        if v<=x1:
+            t=(v-x0)/max(1,x1-x0)
+            return tuple(clamp(a+(b-a)*t) for a,b in zip(c0,c1))
+    return stops[-1][1]
 
-# Rebuild the material palette while retaining the original UV relief and alpha.
-# Dark stone -> charcoal/navy; midtones -> blue-grey; raised highlights -> turquoise/silver.
-for y in range(256):
-    for x in range(256):
-        r,g,b,a = px[x,y]
-        if a == 0:
-            continue
-        lum = (r*0.299 + g*0.587 + b*0.114)
-        if lum < 35:
-            c = (15, 22, 34)
-        elif lum < 75:
-            t=(lum-35)/40
-            c=(int(18+18*t), int(27+23*t), int(42+28*t))
-        elif lum < 125:
-            t=(lum-75)/50
-            c=(int(36+24*t), int(50+34*t), int(70+42*t))
-        elif lum < 180:
-            t=(lum-125)/55
-            c=(int(60+28*t), int(84+50*t), int(112+55*t))
-        else:
-            t=min(1,(lum-180)/75)
-            c=(int(88+75*t), int(134+75*t), int(154+85*t))
-        px[x,y]=(c[0],c[1],c[2],a)
-
-# Accent existing raised details with a luminous turquoise glaze.
-for y in range(256):
-    for x in range(256):
-        r,g,b,a=px[x,y]
-        if a and max(r,g,b)>105 and g>r*1.12 and b>r*1.15:
-            px[x,y]=(min(255,r+10),min(255,g+28),min(255,b+30),a)
-
-# The ornamental UV island at the left-middle is the existing scroll-work island.
-# Replace its old thin ornament with two substantial inward-curling skirt spirals.
-layer=Image.new("RGBA",(256,256),(0,0,0,0))
-d=ImageDraw.Draw(layer)
-def spiral(cx,cy,rx,ry,turns=1.48):
+def spiral(draw,cx,cy,rx,ry,phase=0):
     pts=[]
-    for i in range(260):
-        t=i/259
-        ang=-math.pi/2 + turns*2*math.pi*t
-        rad=0.035+0.965*t
-        pts.append((cx+math.cos(ang)*rx*rad, cy+math.sin(ang)*ry*rad))
-    # dark engraved groove and bright turquoise raised edge
-    d.line([(x+1.2,y+1.2) for x,y in pts], fill=(8,17,28,235), width=6, joint="curve")
-    d.line(pts, fill=(46,205,207,255), width=3, joint="curve")
-    d.line([(x-1.0,y-1.0) for x,y in pts], fill=(170,248,239,235), width=1, joint="curve")
-    d.ellipse((cx-3,cy-3,cx+3,cy+3), fill=(115,245,230,255), outline=(15,48,62,255), width=1)
+    for n in range(220):
+        t=n/219
+        a=phase+t*math.pi*3.2
+        r=1-0.91*t
+        pts.append((cx+math.cos(a)*rx*r,cy+math.sin(a)*ry*r))
+    draw.line([(x+0.8,y+1.0) for x,y in pts],fill=(5,19,31),width=3)
+    draw.line(pts,fill=(69,211,204),width=2)
+    draw.ellipse((cx-1.4,cy-1.4,cx+1.4,cy+1.4),fill=(177,255,245))
 
-# Keep all marks inside the scroll island's 0..80 x 88..170 footprint.
-spiral(22,128,17,25,1.35)
-spiral(59,128,17,25,1.35)
-# A crisp central V-shaped flourish ties the two curls together.
-d.line([(37,153),(40,158),(43,153)], fill=(8,17,28,230), width=6)
-d.line([(37,151),(40,156),(43,151)], fill=(95,235,222,255), width=3)
+def main():
+    src=Image.open(SOURCE).convert("RGB")
+    if src.size!=(256,256): raise ValueError(f"Expected 256x256, got {src.size}")
+    stone=[(0,(7,10,18)),(48,(18,25,37)),(96,(39,51,66)),(144,(75,91,105)),(192,(132,146,153)),(255,(218,225,225))]
+    enamel=[(0,(5,15,24)),(48,(9,49,60)),(96,(15,100,112)),(144,(25,155,162)),(192,(95,211,207)),(255,(220,255,244))]
+    sp=src.load()
+    out=Image.new("RGB",src.size); op=out.load()
+    # Rebuild the complete material palette while retaining embossed light/shadow.
+    for y in range(256):
+        for x in range(256):
+            r,g,b=sp[x,y]; lum=clamp(.299*r+.587*g+.114*b)
+            base=ramp(lum,stone)
+            # Raised decorative islands: large scroll panel, top ornamental plate,
+            # and narrow hem/edge strips identified in the supplied atlas.
+            accent=((x<82 and 104<=y<174) or (54<=x<113 and y<62)
+                    or (x<256 and 190<=y<256) or (205<=x<251 and 75<=y<190))
+            if accent:
+                teal=ramp(lum,enamel); m=.78 if lum>65 else .48
+                base=tuple(clamp(base[i]*(1-m)+teal[i]*m) for i in range(3))
+            op[x,y]=base
 
-# Compose softly so the original island's stone shading remains visible beneath the new raised lines.
-im=Image.alpha_composite(im,layer)
-# Reintroduce a subtle satin finish and keep transparent atlas pixels untouched.
-im.save(OUTPUT,optimize=True)
-print(f"Wrote {OUTPUT} ({im.size[0]}x{im.size[1]})")
+    # The broad left-hand ornamental UV island is the skirt-scroll panel.
+    # Replace the old generic curling relief with a paired, inward-facing spiral motif.
+    d=ImageDraw.Draw(out)
+    spiral(d,23,139,12,17,0.1)
+    spiral(d,59,139,12,17,math.pi+0.1)
+    d.line([(7,159),(18,166),(40,170),(64,166),(76,159)],fill=(8,24,36),width=4)
+    d.line([(7,157),(18,164),(40,168),(64,164),(76,157)],fill=(96,230,220),width=2)
+    # Small inner highlights give the curls the polished enamel look from the reference.
+    d.ellipse((38,165,42,169),fill=(180,255,246))
+
+    # Raised turquoise piping and rivets along the lower horizontal hem UV strips.
+    for y in (193,232):
+        d.line([(2,y),(253,y)],fill=(8,25,38),width=3)
+        d.line([(2,y-1),(253,y-1)],fill=(92,224,216),width=1)
+    for x in range(8,253,12):
+        d.ellipse((x-1,211,x+1,213),fill=(133,245,234))
+
+    # Decorative medallion details on the upper central panel.
+    for cx in (70,99):
+        d.ellipse((cx-7,86,cx+7,100),fill=(10,35,49),outline=(109,239,229),width=2)
+        d.ellipse((cx-4,89,cx+4,97),outline=(57,178,181),width=2)
+        d.ellipse((cx-1,92,cx+1,94),fill=(207,255,248))
+    d.line([(77,82),(85,76),(92,82)],fill=(111,241,230),width=2)
+    d.ellipse((81,119,91,129),fill=(17,72,83),outline=(135,249,238),width=2)
+    for x,y in [(75,135),(81,132),(87,131),(93,132),(99,135)]:
+        d.ellipse((x,y,x+2,y+2),fill=(150,250,239))
+
+    OUTPUT.parent.mkdir(parents=True,exist_ok=True)
+    out.save(OUTPUT,format="PNG",optimize=True)
+    print(f"Generated {OUTPUT.relative_to(ROOT)} ({out.width}x{out.height})")
+
+if __name__=="__main__": main()
