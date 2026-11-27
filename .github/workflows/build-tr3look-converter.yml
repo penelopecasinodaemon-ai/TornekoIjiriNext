@@ -1,0 +1,24 @@
+name: Build PNG to TR3LOOK Converter
+
+on:
+  push:
+    paths:
+      - "Tools/Tr3LookPngConverter/**"
+      - ".github/workflows/build-tr3look-converter.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Publish Windows x64 EXE
+        run: dotnet publish Tools/Tr3LookPngConverter/Tr3LookPngConverter.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tr3LookPngConverter-win-x64
+          path: Tools/Tr3LookPngConverter/bin/Release/net8.0-windows/win-x64/publish/
+          if-no-files-found: error
