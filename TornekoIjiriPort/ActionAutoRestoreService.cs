@@ -1617,16 +1617,16 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x05, 9, 0, 0));         // bne t1,zero,restoreRegisters
         Emit(EncodeI(0x24, 16, 10, 4));       // delay: lbu t2,4(s0)
 
-        Emit(EncodeI(0x09, 0, 2, entryCount)); // addiu v0,zero,entryCount (loop counter only)
+        Emit(EncodeI(0x09, 0, 12, entryCount)); // addiu t4,zero,entryCount (saved loop counter)
 
         int loop = code.Count;
         Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3): table species ID
         int found = code.Count;
         Emit(EncodeI(0x14, 9, 10, 0));        // beql t1,t2,restoreRegisters
         Emit(EncodeI(0x24, 11, 3, 2));        // delay: lbu v1,2(t3), only on match
-        Emit(EncodeI(0x09, 2, 2, -1));        // addiu v0,v0,-1
+        Emit(EncodeI(0x09, 12, 12, -1));       // addiu t4,t4,-1
         int repeat = code.Count;
-        Emit(EncodeI(0x05, 2, 0, 0));         // bne v0,zero,loop
+        Emit(EncodeI(0x05, 12, 0, 0));         // bne t4,zero,loop
         Emit(EncodeI(0x09, 11, 11, 3));       // delay: addiu t3,t3,3
 
         restoreRegisters = code.Count;
