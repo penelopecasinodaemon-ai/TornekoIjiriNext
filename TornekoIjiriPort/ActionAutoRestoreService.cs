@@ -1599,8 +1599,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
-        Emit(EncodeI(0x0F, 0, 11, (int)(activeAddress >> 16))); // lui t3,hi(active)
-        Emit(EncodeI(0x23, 11, 12, (int)(activeAddress & 0xFFFFu))); // lw t4,lo(active)(t3)
+        uint dataAddress = caveAddress + 0x200u;
+        Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16))); // lui t3,hi(data)
+        Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu))); // ori t3,t3,lo(data)
+        Emit(EncodeI(0x23, 11, 12, 0x878)); // lw t4,0x878(t3): active flag
         int inactive = code.Count;
         Emit(EncodeI(0x04, 12, 0, 0)); // beq t4,zero,branchDecision
         Emit(EncodeI(0x24, 16, 9, 0x1D3)); // delay: lbu t1,0x1D3(s0)
@@ -1609,8 +1611,6 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x05, 9, 0, 0)); // bne t1,zero,branchDecision
         Emit(EncodeI(0x24, 16, 10, 4)); // delay: lbu t2,4(s0)
 
-        // t3はactive flagを指している。+0xA78から-0x878して種族テーブル(+0x200)へ。
-        Emit(EncodeI(0x09, 11, 11, -0x878)); // addiu t3,t3,-0x878
         Emit(EncodeI(0x09, 0, 2, entryCount)); // addiu v0,zero,entryCount
 
         int loop = code.Count;
