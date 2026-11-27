@@ -45,7 +45,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint AllySkillCheckStubOffset = 0x800u;
     private const uint AllyActionLoadStubOffset = 0x8B0u;
     private const uint AllyTargetCheckStubOffset = 0x970u;
-    private const uint AllyActionExecutionStubOffset = 0xA14u;
+    private const uint AllyActionExecutionStubOffset = 0xA28u;
     // 5か所すべてのフック設置が完了するまで、各スタブは元処理へ素通しする。
     private const uint AllyHookActiveOffset = 0xA78u;
     private const uint AllyHookMarkerOffset = 0xA7Cu;
@@ -1588,9 +1588,13 @@ internal sealed class ActionAutoRestoreService : IDisposable
     // 分岐命令の直前で味方・対象種族に限ってv1を指輪設定IDへ置換する。
     // 0なら元の0x002D0470へ、それ以外なら元の0x002D045Cへ戻し、
     // 0x002D045C以降の2/7判定はゲーム本来の命令に任せる。
+    // 状態11ハンドラ(0x002D0424)は、0x002D0450で個体データ+0x3Aを読み、
+    // 0/2/7かどうかで処理経路を分ける。行動ID読込フックだけではこの値は変わらないため、
+    // 分岐命令の直前で味方・対象種族に限ってv1を指輪設定IDへ置換する。
+    // 0なら元の0x002D0470へ、それ以外なら元の0x002D045Cへ戻す。
+    // 既存の対象判定スタブ直後に配置するため、20命令・0x50バイトに圧縮している。
     private static uint[] BuildAllyActionExecutionStub(uint caveAddress, int entryCount)
     {
-        uint dataAddress = caveAddress + 0x200u;
         uint activeAddress = caveAddress + AllyHookActiveOffset;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
@@ -1599,16 +1603,14 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x23, 11, 12, (int)(activeAddress & 0xFFFFu))); // lw t4,lo(active)(t3)
         int inactive = code.Count;
         Emit(EncodeI(0x04, 12, 0, 0)); // beq t4,zero,branchDecision
-        Emit(0u);
+        Emit(EncodeI(0x24, 16, 9, 0x1D3)); // delay: lbu t1,0x1D3(s0)
 
-        Emit(EncodeI(0x24, 16, 9, 0x1D3)); // lbu t1,0x1D3(s0): 0=ally
         int enemy = code.Count;
         Emit(EncodeI(0x05, 9, 0, 0)); // bne t1,zero,branchDecision
-        Emit(0u);
+        Emit(EncodeI(0x24, 16, 10, 4)); // delay: lbu t2,4(s0)
 
-        Emit(EncodeI(0x24, 16, 10, 4)); // lbu t2,4(s0): runtime species ID
-        Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16))); // lui t3,hi(data)
-        Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu))); // ori t3,t3,lo(data)
+        // t3はactive flagを指している。+0xA78から-0x878して種族テーブル(+0x200)へ。
+        Emit(EncodeI(0x09, 11, 11, -0x878)); // addiu t3,t3,-0x878
         Emit(EncodeI(0x09, 0, 2, entryCount)); // addiu v0,zero,entryCount
 
         int loop = code.Count;
@@ -1642,8 +1644,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
         PatchBranch(code, repeat, loop);
         PatchBranch(code, zeroAction, zeroLabel);
 
-        if ((uint)code.Count * 4u > AllyHookActiveOffset - AllyActionExecutionStubOffset)
-            throw new InvalidOperationException("味方行動実行分岐スタブが予約領域を超えています。");
+        if ((uint)code.Count * 4u != AllyHookActiveOffset - AllyActionExecutionStubOffset)
+            throw new InvalidOperationException("味方行動実行分岐スタブのサイズが予約領域と一致しません。");
 
         return code.ToArray();
     }
