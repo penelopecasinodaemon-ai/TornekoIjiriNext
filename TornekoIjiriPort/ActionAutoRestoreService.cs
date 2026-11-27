@@ -78,6 +78,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint RingSkillStatHookAddress = 0x0021D6CCu;
     private const uint RingSkillStatOriginalInstruction = 0x8D080010u;
     private const uint SharedActionCaveMarkerOffset = SharedActionCaveOffset + AllyHookMarkerOffset;
+    // 旧版(実行フック拡張前)の共有ページ検出用。現行コードの配置先には使用しない。
+    private const uint LegacySharedActionCaveMarkerOffset = SharedActionCaveOffset + 0xA7Cu;
     private const uint SharedActionCaveMarker = 0x534C4148u;
     private const uint SharedActionAddressMax = CaveSearchStart + SharedActionCaveOffset;
     private static readonly object SharedRuntimeCaveSync = new object();
@@ -2100,9 +2102,12 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
             uint actionMarker = ReadShared32(
                 page + SharedActionCaveMarkerOffset);
+            uint legacyActionMarker = ReadShared32(
+                page + LegacySharedActionCaveMarkerOffset);
 
             if (ringMarker == SharedRingCaveMarker ||
-                actionMarker == SharedActionCaveMarker)
+                actionMarker == SharedActionCaveMarker ||
+                legacyActionMarker == SharedActionCaveMarker)
             {
                 if (managerMarker != 0u)
                 {
