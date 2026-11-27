@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms><EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Tr3LookPngConverter</AssemblyName><RootNamespace>Tr3LookPngConverter</RootNamespace>
+    <PublishSingleFile>true</PublishSingleFile><SelfContained>true</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\default_template.tr3look" />
+    <EmbeddedResource Include="Assets\default_base.png.b64" />
+  </ItemGroup>
+</Project>
