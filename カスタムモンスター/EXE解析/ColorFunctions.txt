@@ -1,0 +1,914 @@
+TEXT main.(*Game).MonColor(SB) ijiri/color.go
+  color.go:76		0x68b980		493b6610		CMPQ SP, 0x10(R14)			
+  color.go:76		0x68b984		0f8643020000		JBE 0x68bbcd				
+  color.go:76		0x68b98a		55			PUSHQ BP				
+  color.go:76		0x68b98b		4889e5			MOVQ SP, BP				
+  color.go:76		0x68b98e		4883ec38		SUBQ $0x38, SP				
+  color.go:77		0x68b992		488d73ff		LEAQ -0x1(BX), SI			
+  color.go:77		0x68b996		660f1f840000000000	NOPW 0(AX)(AX*1)			
+  color.go:77		0x68b99f		90			NOPL					
+  color.go:77		0x68b9a0		4881feff000000		CMPQ SI, $0xff				
+  color.go:77		0x68b9a7		0f8332010000		JAE 0x68badf				
+  color.go:80		0x68b9ad		488b4808		MOVQ 0x8(AX), CX			
+  color.go:80		0x68b9b1		8db3001f9e00		LEAL 0x9e1f00(BX), SI			
+  color.go:80		0x68b9b7		660f1f840000000000	NOPW 0(AX)(AX*1)			
+  color.go:80		0x68b9c0		4839f1			CMPQ CX, SI				
+  color.go:80		0x68b9c3		0f86fc010000		JBE 0x68bbc5				
+  color.go:80		0x68b9c9		488b38			MOVQ 0(AX), DI				
+  color.go:80		0x68b9cc		0fb63437		MOVZX 0(DI)(SI*1), SI			
+  color.go:81		0x68b9d0		4883c6f0		ADDQ $-0x10, SI				
+  color.go:81		0x68b9d4		4883fe40		CMPQ SI, $0x40				
+  color.go:81		0x68b9d8		0f83f4000000		JAE 0x68bad2				
+  color.go:80		0x68b9de		488b5010		MOVQ 0x10(AX), DX			
+  color.go:39		0x68b9e2		8d0cf6			LEAL 0(SI)(SI*8), CX			
+  color.go:39		0x68b9e5		c1e107			SHLL $0x7, CX				
+  color.go:44		0x68b9e8		8db180209e00		LEAL 0x9e2080(CX), SI			
+  color.go:43		0x68b9ee		90			NOPL					
+  color.go:44		0x68b9ef		4839f2			CMPQ DX, SI				
+  color.go:44		0x68b9f2		0f82c4010000		JB 0x68bbbc				
+  color.go:39		0x68b9f8		448d8100209e00		LEAL 0x9e2000(CX), R8			
+  color.go:39		0x68b9ff		90			NOPL					
+  color.go:44		0x68ba00		4939f0			CMPQ R8, SI				
+  color.go:44		0x68ba03		0f87a9010000		JA 0x68bbb2				
+  color.go:44		0x68ba09		4189f1			MOVL SI, R9				
+  color.go:44		0x68ba0c		4c29c6			SUBQ R8, SI				
+  color.go:44		0x68ba0f		4589c2			MOVL R8, R10				
+  color.go:44		0x68ba12		4929d0			SUBQ DX, R8				
+  color.go:44		0x68ba15		49c1f83f		SARQ $0x3f, R8				
+  color.go:44		0x68ba19		4d21d0			ANDQ R10, R8				
+  color.go:44		0x68ba1c		4c01c7			ADDQ R8, DI				
+  color.go:44		0x68ba1f		90			NOPL					
+  bytes.go:22		0x68ba20		48393581674a00		CMPQ main.colHdr+8(SB), SI		
+  bytes.go:22		0x68ba27		7404			JE 0x68ba2d				
+  bytes.go:22		0x68ba29		31d2			XORL DX, DX				
+  bytes.go:22		0x68ba2b		eb30			JMP 0x68ba5d				
+  color.go:77		0x68ba2d		4889442448		MOVQ AX, 0x48(SP)			
+  color.go:39		0x68ba32		894c241c		MOVL CX, 0x1c(SP)			
+  color.go:44		0x68ba36		44894c2418		MOVL R9, 0x18(SP)			
+  color.go:44		0x68ba3b		488b1d5e674a00		MOVQ main.colHdr(SB), BX		
+  bytes.go:22		0x68ba42		4889f8			MOVQ DI, AX				
+  bytes.go:22		0x68ba45		4889f1			MOVQ SI, CX				
+  bytes.go:22		0x68ba48		e8337cd7ff		CALL runtime.memequal(SB)		
+  color.go:85		0x68ba4d		8b4c241c		MOVL 0x1c(SP), CX			
+  color.go:85		0x68ba51		448b4c2418		MOVL 0x18(SP), R9			
+  bytes.go:22		0x68ba56		89c2			MOVL AX, DX				
+  color.go:85		0x68ba58		488b442448		MOVQ 0x48(SP), AX			
+  bytes.go:22		0x68ba5d		0f1f00			NOPL 0(AX)				
+  bytes.go:22		0x68ba60		84d2			TESTL DL, DL				
+  color.go:81		0x68ba62		746e			JE 0x68bad2				
+  color.go:85		0x68ba64		488b5010		MOVQ 0x10(AX), DX			
+  color.go:85		0x68ba68		81c180249e00		ADDL $0x9e2480, CX			
+  color.go:85		0x68ba6e		4839ca			CMPQ DX, CX				
+  color.go:85		0x68ba71		0f8236010000		JB 0x68bbad				
+  color.go:85		0x68ba77		660f1f840000000000	NOPW 0(AX)(AX*1)			
+  color.go:85		0x68ba80		4939c9			CMPQ R9, CX				
+  color.go:85		0x68ba83		0f871c010000		JA 0x68bba5				
+  color.go:85		0x68ba89		488b30			MOVQ 0(AX), SI				
+  color.go:85		0x68ba8c		4889742430		MOVQ SI, 0x30(SP)			
+  color.go:85		0x68ba91		4c29ca			SUBQ R9, DX				
+  color.go:85		0x68ba94		4889542420		MOVQ DX, 0x20(SP)			
+  color.go:85		0x68ba99		48f7da			NEGQ DX					
+  color.go:85		0x68ba9c		48c1fa3f		SARQ $0x3f, DX				
+  color.go:85		0x68baa0		4c21ca			ANDQ R9, DX				
+  color.go:85		0x68baa3		4889542428		MOVQ DX, 0x28(SP)			
+  color.go:90		0x68baa8		488d0511080d00		LEAQ type:*+164544(SB), AX		
+  color.go:90		0x68baaf		bb00040000		MOVL $0x400, BX				
+  color.go:90		0x68bab4		4889d9			MOVQ BX, CX				
+  color.go:90		0x68bab7		e84448deff		CALL runtime.makeslice(SB)		
+  color.go:85		0x68babc		488b542430		MOVQ 0x30(SP), DX			
+  color.go:85		0x68bac1		488b742428		MOVQ 0x28(SP), SI			
+  color.go:85		0x68bac6		4801f2			ADDQ SI, DX				
+  color.go:91		0x68bac9		488b742420		MOVQ 0x20(SP), SI			
+  color.go:91		0x68bace		31c9			XORL CX, CX				
+  color.go:91		0x68bad0		eb1d			JMP 0x68baef				
+  color.go:82		0x68bad2		31c0			XORL AX, AX				
+  color.go:82		0x68bad4		31db			XORL BX, BX				
+  color.go:82		0x68bad6		4889d9			MOVQ BX, CX				
+  color.go:82		0x68bad9		4883c438		ADDQ $0x38, SP				
+  color.go:82		0x68badd		5d			POPQ BP					
+  color.go:82		0x68bade		c3			RET					
+  color.go:78		0x68badf		31c0			XORL AX, AX				
+  color.go:78		0x68bae1		31db			XORL BX, BX				
+  color.go:78		0x68bae3		4889d9			MOVQ BX, CX				
+  color.go:78		0x68bae6		4883c438		ADDQ $0x38, SP				
+  color.go:78		0x68baea		5d			POPQ BP					
+  color.go:78		0x68baeb		c3			RET					
+  color.go:91		0x68baec		48ffc1			INCQ CX					
+  color.go:91		0x68baef		4881f900010000		CMPQ CX, $0x100				
+  color.go:91		0x68baf6		7d79			JGE 0x68bb71				
+  color.go:93		0x68baf8		4889cf			MOVQ CX, DI				
+  color.go:93		0x68bafb		83e718			ANDL $0x18, DI				
+  color.go:93		0x68bafe		6690			NOPW					
+  color.go:93		0x68bb00		4883ff08		CMPQ DI, $0x8				
+  color.go:93		0x68bb04		7406			JE 0x68bb0c				
+  color.go:93		0x68bb06		4883ff10		CMPQ DI, $0x10				
+  color.go:93		0x68bb0a		7509			JNE 0x68bb15				
+  color.go:94		0x68bb0c		4889cf			MOVQ CX, DI				
+  color.go:94		0x68bb0f		4883f718		XORQ $0x18, DI				
+  color.go:94		0x68bb13		eb03			JMP 0x68bb18				
+  color.go:96		0x68bb15		4889cf			MOVQ CX, DI				
+  color.go:96		0x68bb18		4989c8			MOVQ CX, R8				
+  color.go:96		0x68bb1b		49c1e002		SHLQ $0x2, R8				
+  color.go:96		0x68bb1f		4d8d4804		LEAQ 0x4(R8), R9			
+  color.go:96		0x68bb23		4d39c8			CMPQ R8, R9				
+  color.go:96		0x68bb26		776d			JA 0x68bb95				
+  color.go:96		0x68bb28		4d8d8800fcffff		LEAQ 0xfffffc00(R8), R9			
+  color.go:96		0x68bb2f		49c1f93f		SARQ $0x3f, R9				
+  color.go:96		0x68bb33		4d21c1			ANDQ R8, R9				
+  color.go:96		0x68bb36		48c1e702		SHLQ $0x2, DI				
+  color.go:96		0x68bb3a		4c8d4704		LEAQ 0x4(DI), R8			
+  color.go:96		0x68bb3e		4d8d1401		LEAQ 0(R9)(AX*1), R10			
+  color.go:96		0x68bb42		4c39c6			CMPQ SI, R8				
+  color.go:96		0x68bb45		7243			JB 0x68bb8a				
+  color.go:96		0x68bb47		4c39c7			CMPQ DI, R8				
+  color.go:96		0x68bb4a		7733			JA 0x68bb7f				
+  color.go:96		0x68bb4c		4989f8			MOVQ DI, R8				
+  color.go:96		0x68bb4f		4829f7			SUBQ SI, DI				
+  color.go:96		0x68bb52		48c1ff3f		SARQ $0x3f, DI				
+  color.go:96		0x68bb56		4c21c7			ANDQ R8, DI				
+  color.go:96		0x68bb59		4c8d043a		LEAQ 0(DX)(DI*1), R8			
+  color.go:96		0x68bb5d		0f1f00			NOPL 0(AX)				
+  color.go:96		0x68bb60		4d39d0			CMPQ R8, R10				
+  color.go:96		0x68bb63		7487			JE 0x68baec				
+  color.go:96		0x68bb65		8b3c3a			MOVL 0(DX)(DI*1), DI			
+  color.go:96		0x68bb68		42893c08		MOVL DI, 0(AX)(R9*1)			
+  color.go:96		0x68bb6c		e97bffffff		JMP 0x68baec				
+  color.go:85		0x68bb71		bb00040000		MOVL $0x400, BX				
+  color.go:85		0x68bb76		4889d9			MOVQ BX, CX				
+  color.go:85		0x68bb79		4883c438		ADDQ $0x38, SP				
+  color.go:85		0x68bb7d		5d			POPQ BP					
+  color.go:85		0x68bb7e		c3			RET					
+  color.go:96		0x68bb7f		4889f8			MOVQ DI, AX				
+  color.go:96		0x68bb82		4c89c1			MOVQ R8, CX				
+  color.go:96		0x68bb85		e836addeff		CALL runtime.panicSliceB(SB)		
+  color.go:96		0x68bb8a		4c89c1			MOVQ R8, CX				
+  color.go:96		0x68bb8d		4889f2			MOVQ SI, DX				
+  color.go:96		0x68bb90		e8ebacdeff		CALL runtime.panicSliceAcap(SB)		
+  color.go:96		0x68bb95		4c89c0			MOVQ R8, AX				
+  color.go:96		0x68bb98		4c89c9			MOVQ R9, CX				
+  color.go:96		0x68bb9b		0f1f440000		NOPL 0(AX)(AX*1)			
+  color.go:96		0x68bba0		e81baddeff		CALL runtime.panicSliceB(SB)		
+  color.go:85		0x68bba5		4489c8			MOVL R9, AX				
+  color.go:85		0x68bba8		e813addeff		CALL runtime.panicSliceB(SB)		
+  color.go:85		0x68bbad		e8ceacdeff		CALL runtime.panicSliceAcap(SB)		
+  color.go:44		0x68bbb2		4489c0			MOVL R8, AX				
+  color.go:44		0x68bbb5		89f1			MOVL SI, CX				
+  color.go:44		0x68bbb7		e804addeff		CALL runtime.panicSliceB(SB)		
+  color.go:44		0x68bbbc		89f1			MOVL SI, CX				
+  color.go:44		0x68bbbe		6690			NOPW					
+  color.go:44		0x68bbc0		e8bbacdeff		CALL runtime.panicSliceAcap(SB)		
+  color.go:80		0x68bbc5		89f0			MOVL SI, AX				
+  color.go:80		0x68bbc7		e834acdeff		CALL runtime.panicIndex(SB)		
+  color.go:80		0x68bbcc		90			NOPL					
+  color.go:76		0x68bbcd		4889442408		MOVQ AX, 0x8(SP)			
+  color.go:76		0x68bbd2		48895c2410		MOVQ BX, 0x10(SP)			
+  color.go:76		0x68bbd7		e84489deff		CALL runtime.morestack_noctxt.abi0(SB)	
+  color.go:76		0x68bbdc		488b442408		MOVQ 0x8(SP), AX			
+  color.go:76		0x68bbe1		488b5c2410		MOVQ 0x10(SP), BX			
+  color.go:76		0x68bbe6		e995fdffff		JMP main.(*Game).MonColor(SB)		
+  :-1			0x68bbeb		cc			INT $0x3				
+  :-1			0x68bbec		cc			INT $0x3				
+  :-1			0x68bbed		cc			INT $0x3				
+  :-1			0x68bbee		cc			INT $0x3				
+  :-1			0x68bbef		cc			INT $0x3				
+  :-1			0x68bbf0		cc			INT $0x3				
+  :-1			0x68bbf1		cc			INT $0x3				
+  :-1			0x68bbf2		cc			INT $0x3				
+  :-1			0x68bbf3		cc			INT $0x3				
+  :-1			0x68bbf4		cc			INT $0x3				
+  :-1			0x68bbf5		cc			INT $0x3				
+  :-1			0x68bbf6		cc			INT $0x3				
+  :-1			0x68bbf7		cc			INT $0x3				
+  :-1			0x68bbf8		cc			INT $0x3				
+  :-1			0x68bbf9		cc			INT $0x3				
+  :-1			0x68bbfa		cc			INT $0x3				
+  :-1			0x68bbfb		cc			INT $0x3				
+  :-1			0x68bbfc		cc			INT $0x3				
+  :-1			0x68bbfd		cc			INT $0x3				
+  :-1			0x68bbfe		cc			INT $0x3				
+  :-1			0x68bbff		cc			INT $0x3				
+
+TEXT main.(*Game).SetMonColor(SB) ijiri/color.go
+  color.go:112		0x68bc00		4c8da42498f7ffff	LEAQ 0xfffff798(SP), R12		
+  color.go:112		0x68bc08		4d3b6610		CMPQ R12, 0x10(R14)			
+  color.go:112		0x68bc0c		0f8618080000		JBE 0x68c42a				
+  color.go:112		0x68bc12		55			PUSHQ BP				
+  color.go:112		0x68bc13		4889e5			MOVQ SP, BP				
+  color.go:112		0x68bc16		4881ece0080000		SUBQ $0x8e0, SP				
+  color.go:113		0x68bc1d		48898424f0080000	MOVQ AX, 0x8f0(SP)			
+  color.go:113		0x68bc25		48899c24f8080000	MOVQ BX, 0x8f8(SP)			
+  color.go:113		0x68bc2d		4889b42410090000	MOVQ SI, 0x910(SP)			
+  color.go:113		0x68bc35		4889bc2408090000	MOVQ DI, 0x908(SP)			
+  color.go:113		0x68bc3d		48898c2400090000	MOVQ CX, 0x900(SP)			
+  color.go:113		0x68bc45		e876240000		CALL main.(*Game).Validate(SB)		
+  color.go:113		0x68bc4a		4885c0			TESTQ AX, AX				
+  color.go:113		0x68bc4d		0f8532020000		JNE 0x68be85				
+  core.go:151		0x68bc53		4c8b8c24f0080000	MOVQ 0x8f0(SP), R9			
+  core.go:151		0x68bc5b		498b4908		MOVQ 0x8(R9), CX			
+  core.go:151		0x68bc5f		90			NOPL					
+  core.go:151		0x68bc60		4881f9441a2200		CMPQ CX, $0x221a44			
+  core.go:151		0x68bc67		0f82b2070000		JB 0x68c41f				
+  core.go:151		0x68bc6d		4c8d91bce5ddff		LEAQ 0xffdde5bc(CX), R10		
+  binary.go:91		0x68bc74		4983fa03		CMPQ R10, $0x3				
+  binary.go:91		0x68bc78		0f8694070000		JBE 0x68c412				
+  core.go:151		0x68bc7e		498b5110		MOVQ 0x10(R9), DX			
+  core.go:151		0x68bc82		498b01			MOVQ 0(R9), AX				
+  core.go:151		0x68bc85		4c8d92bce5ddff		LEAQ 0xffdde5bc(DX), R10		
+  core.go:151		0x68bc8c		49f7da			NEGQ R10				
+  core.go:151		0x68bc8f		49c1fa3f		SARQ $0x3f, R10				
+  core.go:151		0x68bc93		4181e2441a2200		ANDL $0x221a44, R10			
+  binary.go:92		0x68bc9a		458b1402		MOVL 0(R10)(AX*1), R10			
+  binary.go:92		0x68bc9e		6690			NOPW					
+  binary.go:92		0x68bca0		4181fa52832708		CMPL R10, $0x8278352			
+  color.go:36		0x68bca7		0f85b7010000		JNE 0x68be64				
+  core.go:151		0x68bcad		4881f9c8a32200		CMPQ CX, $0x22a3c8			
+  core.go:151		0x68bcb4		0f824e070000		JB 0x68c408				
+  core.go:151		0x68bcba		4881c1385cddff		ADDQ $-0x22a3c8, CX			
+  binary.go:91		0x68bcc1		4883f903		CMPQ CX, $0x3				
+  binary.go:91		0x68bcc5		0f8633070000		JBE 0x68c3fe				
+  core.go:151		0x68bccb		4c8d92385cddff		LEAQ 0xffdd5c38(DX), R10		
+  core.go:151		0x68bcd2		49f7da			NEGQ R10				
+  core.go:151		0x68bcd5		49c1fa3f		SARQ $0x3f, R10				
+  core.go:151		0x68bcd9		4181e2c8a32200		ANDL $0x22a3c8, R10			
+  binary.go:92		0x68bce0		458b1402		MOVL 0(R10)(AX*1), R10			
+  binary.go:92		0x68bce4		4181fa6c832708		CMPL R10, $0x827836c			
+  color.go:116		0x68bceb		0f8573010000		JNE 0x68be64				
+  color.go:119		0x68bcf1		4c8b9424f8080000	MOVQ 0x8f8(SP), R10			
+  color.go:119		0x68bcf9		4d8d5aff		LEAQ -0x1(R10), R11			
+  color.go:119		0x68bcfd		0f1f00			NOPL 0(AX)				
+  color.go:119		0x68bd00		4981fbff000000		CMPQ R11, $0xff				
+  color.go:119		0x68bd07		0f8336010000		JAE 0x68be43				
+  color.go:122		0x68bd0d		4881fa00209e00		CMPQ DX, $0x9e2000			
+  color.go:122		0x68bd14		0f82da060000		JB 0x68c3f4				
+  color.go:122		0x68bd1a		660f1f440000		NOPW 0(AX)(AX*1)			
+  color.go:122		0x68bd20		4881fa00409f00		CMPQ DX, $0x9f4000			
+  color.go:122		0x68bd27		0f82bd060000		JB 0x68c3ea				
+  color.go:122		0x68bd2d		488d8a00e161ff		LEAQ 0xff61e100(DX), CX			
+  color.go:122		0x68bd34		4c8d88001f9e00		LEAQ 0x9e1f00(AX), R9			
+  color.go:122		0x68bd3b		4c8d8200e061ff		LEAQ 0xff61e000(DX), R8			
+  color.go:122		0x68bd42		488db800209e00		LEAQ 0x9e2000(AX), DI			
+  color.go:122		0x68bd49		4c89c8			MOVQ R9, AX				
+  color.go:122		0x68bd4c		bb00010000		MOVL $0x100, BX				
+  color.go:122		0x68bd51		be00200100		MOVL $0x12000, SI			
+  color.go:122		0x68bd56		e825f9ffff		CALL main.checkColor(SB)		
+  color.go:122		0x68bd5b		0f1f440000		NOPL 0(AX)(AX*1)			
+  color.go:122		0x68bd60		4885c0			TESTQ AX, AX				
+  color.go:122		0x68bd63		0f8591000000		JNE 0x68bdfa				
+  color.go:125		0x68bd69		4c8b8424f0080000	MOVQ 0x8f0(SP), R8			
+  color.go:125		0x68bd71		498b4808		MOVQ 0x8(R8), CX			
+  color.go:125		0x68bd75		488b8424f8080000	MOVQ 0x8f8(SP), AX			
+  color.go:125		0x68bd7d		05001f9e00		ADDL $0x9e1f00, AX			
+  color.go:125		0x68bd82		4839c1			CMPQ CX, AX				
+  color.go:125		0x68bd85		0f865a060000		JBE 0x68c3e5				
+  color.go:125		0x68bd8b		4d8b08			MOVQ 0(R8), R9				
+  color.go:125		0x68bd8e		450fb61401		MOVZX 0(R9)(AX*1), R10			
+  color.go:125		0x68bd93		4d8d5af0		LEAQ -0x10(R10), R11			
+  color.go:126		0x68bd97		4c8ba42400090000	MOVQ 0x900(SP), R12			
+  color.go:126		0x68bd9f		90			NOPL					
+  color.go:126		0x68bda0		4d85e4			TESTQ R12, R12				
+  color.go:126		0x68bda3		743b			JE 0x68bde0				
+  color.go:136		0x68bda5		4c8bac2408090000	MOVQ 0x908(SP), R13			
+  color.go:136		0x68bdad		4981fd00040000		CMPQ R13, $0x400			
+  color.go:136		0x68bdb4		7507			JNE 0x68bdbd				
+  color.go:136		0x68bdb6		31d2			XORL DX, DX				
+  color.go:136		0x68bdb8		e9c3010000		JMP 0x68bf80				
+  color.go:137		0x68bdbd		488d05554e1500		LEAQ go:string.*+76641(SB), AX		
+  color.go:137		0x68bdc4		bb2a000000		MOVL $0x2a, BX				
+  color.go:137		0x68bdc9		31c9			XORL CX, CX				
+  color.go:137		0x68bdcb		31ff			XORL DI, DI				
+  color.go:137		0x68bdcd		4889fe			MOVQ DI, SI				
+  color.go:137		0x68bdd0		e8cbf4e4ff		CALL fmt.Errorf(SB)			
+  color.go:137		0x68bdd5		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:137		0x68bddc		5d			POPQ BP					
+  color.go:137		0x68bddd		c3			RET					
+  color.go:137		0x68bdde		6690			NOPW					
+  color.go:127		0x68bde0		4d85db			TESTQ R11, R11				
+  color.go:127		0x68bde3		0f8ca5000000		JL 0x68be8e				
+  color.go:128		0x68bde9		41c6040100		MOVB $0x0, 0(R9)(AX*1)			
+  color.go:129		0x68bdee		b801000000		MOVL $0x1, AX				
+  color.go:129		0x68bdf3		31c9			XORL CX, CX				
+  color.go:103		0x68bdf5		e9b7000000		JMP 0x68beb1				
+  color.go:123		0x68bdfa		440f11bc24d0080000	MOVUPS X15, 0x8d0(SP)			
+  color.go:123		0x68be03		7404			JE 0x68be09				
+  color.go:123		0x68be05		488b4008		MOVQ 0x8(AX), AX			
+  color.go:123		0x68be09		48898424d0080000	MOVQ AX, 0x8d0(SP)			
+  color.go:123		0x68be11		48899c24d8080000	MOVQ BX, 0x8d8(SP)			
+  color.go:123		0x68be19		488d057e151600		LEAQ go:string.*+127718(SB), AX		
+  color.go:123		0x68be20		bb77000000		MOVL $0x77, BX				
+  color.go:123		0x68be25		488d8c24d0080000	LEAQ 0x8d0(SP), CX			
+  color.go:123		0x68be2d		bf01000000		MOVL $0x1, DI				
+  color.go:123		0x68be32		4889fe			MOVQ DI, SI				
+  color.go:123		0x68be35		e866f4e4ff		CALL fmt.Errorf(SB)			
+  color.go:123		0x68be3a		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:123		0x68be41		5d			POPQ BP					
+  color.go:123		0x68be42		c3			RET					
+  color.go:120		0x68be43		488d05f94d1500		LEAQ go:string.*+76683(SB), AX		
+  color.go:120		0x68be4a		bb2a000000		MOVL $0x2a, BX				
+  color.go:120		0x68be4f		31c9			XORL CX, CX				
+  color.go:120		0x68be51		31ff			XORL DI, DI				
+  color.go:120		0x68be53		4889fe			MOVQ DI, SI				
+  color.go:120		0x68be56		e845f4e4ff		CALL fmt.Errorf(SB)			
+  color.go:120		0x68be5b		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:120		0x68be62		5d			POPQ BP					
+  color.go:120		0x68be63		c3			RET					
+  color.go:117		0x68be64		488d0543031600		LEAQ go:string.*+123126(SB), AX		
+  color.go:117		0x68be6b		bb5f000000		MOVL $0x5f, BX				
+  color.go:117		0x68be70		31c9			XORL CX, CX				
+  color.go:117		0x68be72		31ff			XORL DI, DI				
+  color.go:117		0x68be74		4889fe			MOVQ DI, SI				
+  color.go:117		0x68be77		e824f4e4ff		CALL fmt.Errorf(SB)			
+  color.go:117		0x68be7c		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:117		0x68be83		5d			POPQ BP					
+  color.go:117		0x68be84		c3			RET					
+  color.go:114		0x68be85		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:114		0x68be8c		5d			POPQ BP					
+  color.go:114		0x68be8d		c3			RET					
+  color.go:134		0x68be8e		31c0			XORL AX, AX				
+  color.go:134		0x68be90		31db			XORL BX, BX				
+  color.go:134		0x68be92		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:134		0x68be99		5d			POPQ BP					
+  color.go:134		0x68be9a		c3			RET					
+  color.go:104		0x68be9b		498b30			MOVQ 0(R8), SI				
+  color.go:104		0x68be9e		410fb63431		MOVZX 0(R9)(SI*1), SI			
+  color.go:105		0x68bea3		4c8d4901		LEAQ 0x1(CX), R9			
+  color.go:103		0x68bea7		48ffc0			INCQ AX					
+  color.go:104		0x68beaa		4c39d6			CMPQ SI, R10				
+  color.go:105		0x68bead		490f44c9		CMOVE R9, CX				
+  color.go:103		0x68beb1		483d00010000		CMPQ AX, $0x100				
+  color.go:103		0x68beb7		7d15			JGE 0x68bece				
+  color.go:104		0x68beb9		498b7008		MOVQ 0x8(R8), SI			
+  color.go:104		0x68bebd		448d88001f9e00		LEAL 0x9e1f00(AX), R9			
+  color.go:104		0x68bec4		4c39ce			CMPQ SI, R9				
+  color.go:104		0x68bec7		77d2			JA 0x68be9b				
+  color.go:104		0x68bec9		e99e000000		JMP 0x68bf6c				
+  color.go:129		0x68bece		4885c9			TESTQ CX, CX				
+  color.go:129		0x68bed1		75bb			JNE 0x68be8e				
+  color.go:131		0x68bed3		498b5010		MOVQ 0x10(R8), DX			
+  color.go:39		0x68bed7		438d0cdb		LEAL 0(R11)(R11*8), CX			
+  color.go:39		0x68bedb		c1e107			SHLL $0x7, CX				
+  color.go:131		0x68bede		8db180249e00		LEAL 0x9e2480(CX), SI			
+  color.go:130		0x68bee4		90			NOPL					
+  color.go:131		0x68bee5		4839f2			CMPQ DX, SI				
+  color.go:131		0x68bee8		727b			JB 0x68bf65				
+  color.go:39		0x68beea		8d8100209e00		LEAL 0x9e2000(CX), AX			
+  color.go:131		0x68bef0		4839f0			CMPQ AX, SI				
+  color.go:131		0x68bef3		7764			JA 0x68bf59				
+  color.go:131		0x68bef5		4d8b00			MOVQ 0(R8), R8				
+  color.go:131		0x68bef8		4829c6			SUBQ AX, SI				
+  color.go:131		0x68befb		4189c1			MOVL AX, R9				
+  color.go:131		0x68befe		4829d0			SUBQ DX, AX				
+  color.go:131		0x68bf01		48c1f83f		SARQ $0x3f, AX				
+  color.go:131		0x68bf05		4921c1			ANDQ AX, R9				
+  color.go:131		0x68bf08		4b8d1401		LEAQ 0(R9)(R8*1), DX			
+  color.go:131		0x68bf0c		488dbc2434040000	LEAQ 0x434(SP), DI			
+  color.go:131		0x68bf14		b990000000		MOVL $0x90, CX				
+  color.go:131		0x68bf19		31c0			XORL AX, AX				
+  color.go:131		0x68bf1b		f348ab			REP; STOSQ AX, ES:0(DI)			
+  color.go:131		0x68bf1e		4881fe80040000		CMPQ SI, $0x480				
+  color.go:131		0x68bf25		41b880040000		MOVL $0x480, R8				
+  color.go:131		0x68bf2b		490f4ff0		CMOVG R8, SI				
+  color.go:131		0x68bf2f		488d9c2434040000	LEAQ 0x434(SP), BX			
+  color.go:131		0x68bf37		660f1f840000000000	NOPW 0(AX)(AX*1)			
+  color.go:131		0x68bf40		4839d3			CMPQ BX, DX				
+  color.go:131		0x68bf43		0f8445ffffff		JE 0x68be8e				
+  color.go:131		0x68bf49		4889d0			MOVQ DX, AX				
+  color.go:131		0x68bf4c		4889f1			MOVQ SI, CX				
+  color.go:131		0x68bf4f		e86cb2deff		CALL runtime.memmove(SB)		
+  color.go:131		0x68bf54		e935ffffff		JMP 0x68be8e				
+  color.go:131		0x68bf59		89f1			MOVL SI, CX				
+  color.go:131		0x68bf5b		0f1f440000		NOPL 0(AX)(AX*1)			
+  color.go:131		0x68bf60		e85ba9deff		CALL runtime.panicSliceB(SB)		
+  color.go:131		0x68bf65		89f1			MOVL SI, CX				
+  color.go:131		0x68bf67		e814a9deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:104		0x68bf6c		4489c8			MOVL R9, AX				
+  color.go:104		0x68bf6f		4889f1			MOVQ SI, CX				
+  color.go:104		0x68bf72		e889a8deff		CALL runtime.panicIndex(SB)		
+  color.go:139		0x68bf77		48ffc2			INCQ DX					
+  color.go:139		0x68bf7a		660f1f440000		NOPW 0(AX)(AX*1)			
+  color.go:139		0x68bf80		4881fa00010000		CMPQ DX, $0x100				
+  color.go:139		0x68bf87		7d30			JGE 0x68bfb9				
+  color.go:140		0x68bf89		4d8d2c94		LEAQ 0(R12)(DX*4), R13			
+  color.go:140		0x68bf8d		4d8d6d03		LEAQ 0x3(R13), R13			
+  color.go:140		0x68bf91		41807d0080		CMPB 0(R13), $0x80			
+  color.go:140		0x68bf96		76df			JBE 0x68bf77				
+  color.go:141		0x68bf98		488d055ce91500		LEAQ go:string.*+116803(SB), AX		
+  color.go:141		0x68bf9f		bb50000000		MOVL $0x50, BX				
+  color.go:141		0x68bfa4		31c9			XORL CX, CX				
+  color.go:141		0x68bfa6		31ff			XORL DI, DI				
+  color.go:141		0x68bfa8		4889fe			MOVQ DI, SI				
+  color.go:141		0x68bfab		e8f0f2e4ff		CALL fmt.Errorf(SB)			
+  color.go:141		0x68bfb0		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:141		0x68bfb7		5d			POPQ BP					
+  color.go:141		0x68bfb8		c3			RET					
+  color.go:125		0x68bfb9		898424bc080000		MOVL AX, 0x8bc(SP)			
+  color.go:145		0x68bfc0		4d85db			TESTQ R11, R11				
+  color.go:145		0x68bfc3		7c41			JL 0x68c006				
+  color.go:145		0x68bfc5		ba01000000		MOVL $0x1, DX				
+  color.go:145		0x68bfca		31db			XORL BX, BX				
+  color.go:103		0x68bfcc		eb13			JMP 0x68bfe1				
+  color.go:104		0x68bfce		470fb62c29		MOVZX 0(R9)(R13*1), R13			
+  color.go:105		0x68bfd3		4c8d7b01		LEAQ 0x1(BX), R15			
+  color.go:103		0x68bfd7		48ffc2			INCQ DX					
+  color.go:104		0x68bfda		4d39d5			CMPQ R13, R10				
+  color.go:105		0x68bfdd		490f44df		CMOVE R15, BX				
+  color.go:103		0x68bfe1		4881fa00010000		CMPQ DX, $0x100				
+  color.go:103		0x68bfe8		7d16			JGE 0x68c000				
+  color.go:104		0x68bfea		448daa001f9e00		LEAL 0x9e1f00(DX), R13			
+  color.go:104		0x68bff1		4c39e9			CMPQ CX, R13				
+  color.go:104		0x68bff4		77d8			JA 0x68bfce				
+  color.go:104		0x68bff6		e9e0030000		JMP 0x68c3db				
+  color.go:104		0x68bffb		0f1f440000		NOPL 0(AX)(AX*1)			
+  color.go:145		0x68c000		4883fb01		CMPQ BX, $0x1				
+  color.go:145		0x68c004		7e07			JLE 0x68c00d				
+  color.go:145		0x68c006		31c9			XORL CX, CX				
+  color.go:145		0x68c008		e953020000		JMP 0x68c260				
+  color.go:158		0x68c00d		498b5010		MOVQ 0x10(R8), DX			
+  color.go:39		0x68c011		438d0cdb		LEAL 0(R11)(R11*8), CX			
+  color.go:39		0x68c015		c1e107			SHLL $0x7, CX				
+  color.go:158		0x68c018		8db180249e00		LEAL 0x9e2480(CX), SI			
+  color.go:158		0x68c01e		6690			NOPW					
+  color.go:158		0x68c020		4839f2			CMPQ DX, SI				
+  color.go:158		0x68c023		0f8226020000		JB 0x68c24f				
+  color.go:158		0x68c029		448d8980209e00		LEAL 0x9e2080(CX), R9			
+  color.go:158		0x68c030		4939f1			CMPQ R9, SI				
+  color.go:158		0x68c033		0f870c020000		JA 0x68c245				
+  color.go:157		0x68c039		4c899c24c0080000	MOVQ R11, 0x8c0(SP)			
+  color.go:158		0x68c041		4d8b10			MOVQ 0(R8), R10				
+  color.go:158		0x68c044		4589cd			MOVL R9, R13				
+  color.go:158		0x68c047		4929d1			SUBQ DX, R9				
+  color.go:158		0x68c04a		49c1f93f		SARQ $0x3f, R9				
+  color.go:158		0x68c04e		4d21e9			ANDQ R13, R9				
+  color.go:158		0x68c051		4c29ee			SUBQ R13, SI				
+  color.go:158		0x68c054		4d01d1			ADDQ R10, R9				
+  color.go:90		0x68c057		488d7c2434		LEAQ 0x34(SP), DI			
+  color.go:90		0x68c05c		0f1f4000		NOPL 0(AX)				
+  color.go:90		0x68c060		48896c24f0		MOVQ BP, -0x10(SP)			
+  color.go:90		0x68c065		488d6c24f0		LEAQ -0x10(SP), BP			
+  color.go:90		0x68c06a		e831a9deff		CALL runtime.duffzero(SB)		
+  color.go:90		0x68c06f		488b6d00		MOVQ 0(BP), BP				
+  color.go:91		0x68c073		488b942410090000	MOVQ 0x910(SP), DX			
+  color.go:91		0x68c07b		31db			XORL BX, BX				
+  color.go:91		0x68c07d		eb0c			JMP 0x68c08b				
+  color.go:91		0x68c07f		498d5a01		LEAQ 0x1(R10), BX			
+  color.go:160		0x68c083		4c8b9c24c0080000	MOVQ 0x8c0(SP), R11			
+  color.go:91		0x68c08b		4881fb00010000		CMPQ BX, $0x100				
+  color.go:91		0x68c092		0f8d8d000000		JGE 0x68c125				
+  color.go:93		0x68c098		4889df			MOVQ BX, DI				
+  color.go:93		0x68c09b		83e318			ANDL $0x18, BX				
+  color.go:93		0x68c09e		6690			NOPW					
+  color.go:93		0x68c0a0		4883fb08		CMPQ BX, $0x8				
+  color.go:93		0x68c0a4		7406			JE 0x68c0ac				
+  color.go:93		0x68c0a6		4883fb10		CMPQ BX, $0x10				
+  color.go:93		0x68c0aa		7509			JNE 0x68c0b5				
+  color.go:94		0x68c0ac		4889fb			MOVQ DI, BX				
+  color.go:94		0x68c0af		4883f318		XORQ $0x18, BX				
+  color.go:94		0x68c0b3		eb03			JMP 0x68c0b8				
+  color.go:96		0x68c0b5		4889fb			MOVQ DI, BX				
+  color.go:96		0x68c0b8		4989fa			MOVQ DI, R10				
+  color.go:96		0x68c0bb		48c1e702		SHLQ $0x2, DI				
+  color.go:96		0x68c0bf		4c8d7f04		LEAQ 0x4(DI), R15			
+  color.go:96		0x68c0c3		4c39ff			CMPQ DI, R15				
+  color.go:96		0x68c0c6		0f876c010000		JA 0x68c238				
+  color.go:96		0x68c0cc		4c8dbf00fcffff		LEAQ 0xfffffc00(DI), R15		
+  color.go:96		0x68c0d3		49c1ff3f		SARQ $0x3f, R15				
+  color.go:96		0x68c0d7		48c1e302		SHLQ $0x2, BX				
+  color.go:96		0x68c0db		4c8d5b04		LEAQ 0x4(BX), R11			
+  color.go:96		0x68c0df		4921ff			ANDQ DI, R15				
+  color.go:96		0x68c0e2		4c39da			CMPQ DX, R11				
+  color.go:96		0x68c0e5		0f8245010000		JB 0x68c230				
+  color.go:96		0x68c0eb		4c39db			CMPQ BX, R11				
+  color.go:96		0x68c0ee		0f8731010000		JA 0x68c225				
+  color.go:96		0x68c0f4		4a8d7c3c34		LEAQ 0x34(SP)(R15*1), DI		
+  color.go:96		0x68c0f9		4989db			MOVQ BX, R11				
+  color.go:96		0x68c0fc		4829d3			SUBQ DX, BX				
+  color.go:96		0x68c0ff		48c1fb3f		SARQ $0x3f, BX				
+  color.go:96		0x68c103		4921db			ANDQ BX, R11				
+  color.go:96		0x68c106		4b8d1c1c		LEAQ 0(R12)(R11*1), BX			
+  color.go:96		0x68c10a		4839df			CMPQ DI, BX				
+  color.go:96		0x68c10d		0f846cffffff		JE 0x68c07f				
+  color.go:96		0x68c113		438b3c1c		MOVL 0(R12)(R11*1), DI			
+  color.go:96		0x68c117		42897c3c34		MOVL DI, 0x34(SP)(R15*1)		
+  color.go:96		0x68c11c		0f1f4000		NOPL 0(AX)				
+  color.go:96		0x68c120		e95affffff		JMP 0x68c07f				
+  color.go:158		0x68c125		4881fe00040000		CMPQ SI, $0x400				
+  color.go:158		0x68c12c		bf00040000		MOVL $0x400, DI				
+  color.go:158		0x68c131		480f4ff7		CMOVG DI, SI				
+  color.go:158		0x68c135		488d5c2434		LEAQ 0x34(SP), BX			
+  color.go:158		0x68c13a		4c39cb			CMPQ BX, R9				
+  color.go:158		0x68c13d		7440			JE 0x68c17f				
+  color.go:39		0x68c13f		898c24b8080000		MOVL CX, 0x8b8(SP)			
+  color.go:158		0x68c146		4489ac24b4080000	MOVL R13, 0x8b4(SP)			
+  color.go:158		0x68c14e		4c89c8			MOVQ R9, AX				
+  color.go:158		0x68c151		4889f1			MOVQ SI, CX				
+  color.go:158		0x68c154		e867b0deff		CALL runtime.memmove(SB)		
+  color.go:160		0x68c159		8b8424bc080000		MOVL 0x8bc(SP), AX			
+  color.go:39		0x68c160		8b8c24b8080000		MOVL 0x8b8(SP), CX			
+  color.go:159		0x68c167		4c8b8424f0080000	MOVQ 0x8f0(SP), R8			
+  color.go:160		0x68c16f		4c8b9c24c0080000	MOVQ 0x8c0(SP), R11			
+  color.go:159		0x68c177		448bac24b4080000	MOVL 0x8b4(SP), R13			
+  color.go:159		0x68c17f		498b5010		MOVQ 0x10(R8), DX			
+  color.go:159		0x68c183		4c39ea			CMPQ DX, R13				
+  color.go:159		0x68c186		0f828d000000		JB 0x68c219				
+  color.go:39		0x68c18c		8db100209e00		LEAL 0x9e2000(CX), SI			
+  color.go:159		0x68c192		4c39ee			CMPQ SI, R13				
+  color.go:159		0x68c195		7778			JA 0x68c20f				
+  color.go:159		0x68c197		488b1d02604a00		MOVQ main.colHdr(SB), BX		
+  color.go:159		0x68c19e		488b3d03604a00		MOVQ main.colHdr+8(SB), DI		
+  color.go:159		0x68c1a5		4d8b08			MOVQ 0(R8), R9				
+  color.go:159		0x68c1a8		4929f5			SUBQ SI, R13				
+  color.go:159		0x68c1ab		4189f2			MOVL SI, R10				
+  color.go:159		0x68c1ae		4829d6			SUBQ DX, SI				
+  color.go:159		0x68c1b1		48c1fe3f		SARQ $0x3f, SI				
+  color.go:159		0x68c1b5		4921f2			ANDQ SI, R10				
+  color.go:159		0x68c1b8		4b8d1411		LEAQ 0(R9)(R10*1), DX			
+  color.go:159		0x68c1bc		4c39ef			CMPQ DI, R13				
+  color.go:159		0x68c1bf		4c0f4cef		CMOVL DI, R13				
+  color.go:159		0x68c1c3		4839d3			CMPQ BX, DX				
+  color.go:159		0x68c1c6		7422			JE 0x68c1ea				
+  color.go:159		0x68c1c8		4889d0			MOVQ DX, AX				
+  color.go:159		0x68c1cb		4c89e9			MOVQ R13, CX				
+  color.go:159		0x68c1ce		e8edafdeff		CALL runtime.memmove(SB)		
+  color.go:160		0x68c1d3		8b8424bc080000		MOVL 0x8bc(SP), AX			
+  color.go:160		0x68c1da		4c8b8424f0080000	MOVQ 0x8f0(SP), R8			
+  color.go:160		0x68c1e2		4c8b9c24c0080000	MOVQ 0x8c0(SP), R11			
+  color.go:160		0x68c1ea		498b4808		MOVQ 0x8(R8), CX			
+  color.go:160		0x68c1ee		4839c1			CMPQ CX, AX				
+  color.go:160		0x68c1f1		7617			JBE 0x68c20a				
+  color.go:160		0x68c1f3		498b08			MOVQ 0(R8), CX				
+  color.go:160		0x68c1f6		498d5310		LEAQ 0x10(R11), DX			
+  color.go:160		0x68c1fa		881401			MOVB DL, 0(CX)(AX*1)			
+  color.go:161		0x68c1fd		31c0			XORL AX, AX				
+  color.go:161		0x68c1ff		31db			XORL BX, BX				
+  color.go:161		0x68c201		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:161		0x68c208		5d			POPQ BP					
+  color.go:161		0x68c209		c3			RET					
+  color.go:160		0x68c20a		e8f1a5deff		CALL runtime.panicIndex(SB)		
+  color.go:159		0x68c20f		89f0			MOVL SI, AX				
+  color.go:159		0x68c211		4489e9			MOVL R13, CX				
+  color.go:159		0x68c214		e8a7a6deff		CALL runtime.panicSliceB(SB)		
+  color.go:159		0x68c219		4489e9			MOVL R13, CX				
+  color.go:159		0x68c21c		0f1f4000		NOPL 0(AX)				
+  color.go:159		0x68c220		e85ba6deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:96		0x68c225		4889d8			MOVQ BX, AX				
+  color.go:96		0x68c228		4c89d9			MOVQ R11, CX				
+  color.go:96		0x68c22b		e890a6deff		CALL runtime.panicSliceB(SB)		
+  color.go:96		0x68c230		4c89d9			MOVQ R11, CX				
+  color.go:96		0x68c233		e848a6deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:96		0x68c238		4889f8			MOVQ DI, AX				
+  color.go:96		0x68c23b		4c89f9			MOVQ R15, CX				
+  color.go:96		0x68c23e		6690			NOPW					
+  color.go:96		0x68c240		e87ba6deff		CALL runtime.panicSliceB(SB)		
+  color.go:158		0x68c245		4489c8			MOVL R9, AX				
+  color.go:158		0x68c248		89f1			MOVL SI, CX				
+  color.go:158		0x68c24a		e871a6deff		CALL runtime.panicSliceB(SB)		
+  color.go:158		0x68c24f		89f1			MOVL SI, CX				
+  color.go:158		0x68c251		e82aa6deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:147		0x68c256		48ffc1			INCQ CX					
+  color.go:147		0x68c259		0f1f8000000000		NOPL 0(AX)				
+  color.go:147		0x68c260		4883f940		CMPQ CX, $0x40				
+  color.go:147		0x68c264		0f8db5000000		JGE 0x68c31f				
+  color.go:44		0x68c26a		498b5010		MOVQ 0x10(R8), DX			
+  color.go:39		0x68c26e		448d0cc9		LEAL 0(CX)(CX*8), R9			
+  color.go:39		0x68c272		41c1e107		SHLL $0x7, R9				
+  color.go:44		0x68c276		458d9180209e00		LEAL 0x9e2080(R9), R10			
+  color.go:43		0x68c27d		90			NOPL					
+  color.go:43		0x68c27e		6690			NOPW					
+  color.go:44		0x68c280		4c39d2			CMPQ DX, R10				
+  color.go:44		0x68c283		0f824a010000		JB 0x68c3d3				
+  color.go:39		0x68c289		4181c100209e00		ADDL $0x9e2000, R9			
+  color.go:44		0x68c290		4d39d1			CMPQ R9, R10				
+  color.go:44		0x68c293		0f872f010000		JA 0x68c3c8				
+  color.go:44		0x68c299		4d8b18			MOVQ 0(R8), R11				
+  color.go:44		0x68c29c		4d29ca			SUBQ R9, R10				
+  color.go:44		0x68c29f		4589cd			MOVL R9, R13				
+  color.go:44		0x68c2a2		4929d1			SUBQ DX, R9				
+  color.go:44		0x68c2a5		49c1f93f		SARQ $0x3f, R9				
+  color.go:44		0x68c2a9		4d21cd			ANDQ R9, R13				
+  color.go:44		0x68c2ac		4f8d4c1d00		LEAQ 0(R13)(R11*1), R9			
+  bytes.go:22		0x68c2b1		4c3915f05e4a00		CMPQ main.colHdr+8(SB), R10		
+  bytes.go:22		0x68c2b8		7404			JE 0x68c2be				
+  bytes.go:22		0x68c2ba		31d2			XORL DX, DX				
+  bytes.go:22		0x68c2bc		eb42			JMP 0x68c300				
+  color.go:147		0x68c2be		48898c24c8080000	MOVQ CX, 0x8c8(SP)			
+  color.go:44		0x68c2c6		488b1dd35e4a00		MOVQ main.colHdr(SB), BX		
+  bytes.go:22		0x68c2cd		4c89c8			MOVQ R9, AX				
+  bytes.go:22		0x68c2d0		4c89d1			MOVQ R10, CX				
+  bytes.go:22		0x68c2d3		e8a873d7ff		CALL runtime.memequal(SB)		
+  color.go:147		0x68c2d8		488b8c24c8080000	MOVQ 0x8c8(SP), CX			
+  color.go:104		0x68c2e0		4c8b8424f0080000	MOVQ 0x8f0(SP), R8			
+  color.go:96		0x68c2e8		4c8ba42400090000	MOVQ 0x900(SP), R12			
+  bytes.go:22		0x68c2f0		89c2			MOVL AX, DX				
+  color.go:160		0x68c2f2		8b8424bc080000		MOVL 0x8bc(SP), AX			
+  color.go:160		0x68c2f9		0f1f8000000000		NOPL 0(AX)				
+  bytes.go:22		0x68c300		84d2			TESTL DL, DL				
+  color.go:148		0x68c302		0f854effffff		JNE 0x68c256				
+  color.go:148		0x68c308		ba01000000		MOVL $0x1, DX				
+  color.go:148		0x68c30d		31db			XORL BX, BX				
+  color.go:103		0x68c30f		e98c000000		JMP 0x68c3a0				
+  color.go:148		0x68c314		4885db			TESTQ BX, BX				
+  color.go:148		0x68c317		0f8539ffffff		JNE 0x68c256				
+  color.go:148		0x68c31d		eb07			JMP 0x68c326				
+  color.go:148		0x68c31f		48c7c1ffffffff		MOVQ $-0x1, CX				
+  color.go:153		0x68c326		4885c9			TESTQ CX, CX				
+  color.go:153		0x68c329		7c08			JL 0x68c333				
+  color.go:157		0x68c32b		4989cb			MOVQ CX, R11				
+  color.go:153		0x68c32e		e9dafcffff		JMP 0x68c00d				
+  color.go:154		0x68c333		488d1546010d00		LEAQ type:*+164992(SB), DX		
+  color.go:154		0x68c33a		48899424d0080000	MOVQ DX, 0x8d0(SP)			
+  color.go:154		0x68c342		488d1537581d00		LEAQ runtime.gcbits.*+136(SB), DX	
+  color.go:154		0x68c349		48899424d8080000	MOVQ DX, 0x8d8(SP)			
+  color.go:154		0x68c351		488d05041a1600		LEAQ go:string.*+130212(SB), AX		
+  color.go:154		0x68c358		bb84000000		MOVL $0x84, BX				
+  color.go:154		0x68c35d		488d8c24d0080000	LEAQ 0x8d0(SP), CX			
+  color.go:154		0x68c365		bf01000000		MOVL $0x1, DI				
+  color.go:154		0x68c36a		4889fe			MOVQ DI, SI				
+  color.go:154		0x68c36d		e82eefe4ff		CALL fmt.Errorf(SB)			
+  color.go:154		0x68c372		4881c4e0080000		ADDQ $0x8e0, SP				
+  color.go:154		0x68c379		5d			POPQ BP					
+  color.go:154		0x68c37a		c3			RET					
+  color.go:104		0x68c37b		4d8b08			MOVQ 0(R8), R9				
+  color.go:104		0x68c37e		470fb60c0a		MOVZX 0(R10)(R9*1), R9			
+  color.go:104		0x68c383		4c8d5110		LEAQ 0x10(CX), R10			
+  color.go:105		0x68c387		4c8d5b01		LEAQ 0x1(BX), R11			
+  color.go:103		0x68c38b		48ffc2			INCQ DX					
+  color.go:104		0x68c38e		4d39d1			CMPQ R9, R10				
+  color.go:105		0x68c391		490f44db		CMOVE R11, BX				
+  color.go:105		0x68c395		660f1f840000000000	NOPW 0(AX)(AX*1)			
+  color.go:105		0x68c39e		6690			NOPW					
+  color.go:103		0x68c3a0		4881fa00010000		CMPQ DX, $0x100				
+  color.go:103		0x68c3a7		0f8d67ffffff		JGE 0x68c314				
+  color.go:104		0x68c3ad		4d8b4808		MOVQ 0x8(R8), R9			
+  color.go:104		0x68c3b1		448d92001f9e00		LEAL 0x9e1f00(DX), R10			
+  color.go:104		0x68c3b8		4d39d1			CMPQ R9, R10				
+  color.go:104		0x68c3bb		77be			JA 0x68c37b				
+  color.go:104		0x68c3bd		4489d0			MOVL R10, AX				
+  color.go:104		0x68c3c0		4c89c9			MOVQ R9, CX				
+  color.go:104		0x68c3c3		e838a4deff		CALL runtime.panicIndex(SB)		
+  color.go:44		0x68c3c8		4489c8			MOVL R9, AX				
+  color.go:44		0x68c3cb		4489d1			MOVL R10, CX				
+  color.go:44		0x68c3ce		e8eda4deff		CALL runtime.panicSliceB(SB)		
+  color.go:44		0x68c3d3		4489d1			MOVL R10, CX				
+  color.go:44		0x68c3d6		e8a5a4deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:104		0x68c3db		4489e8			MOVL R13, AX				
+  color.go:104		0x68c3de		6690			NOPW					
+  color.go:104		0x68c3e0		e81ba4deff		CALL runtime.panicIndex(SB)		
+  color.go:125		0x68c3e5		e816a4deff		CALL runtime.panicIndex(SB)		
+  color.go:122		0x68c3ea		b900409f00		MOVL $runtime.esymtab+1544992(SB), CX	
+  color.go:122		0x68c3ef		e88ca4deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:122		0x68c3f4		b900209e00		MOVL $runtime.esymtab+1471264(SB), CX	
+  color.go:122		0x68c3f9		e882a4deff		CALL runtime.panicSliceAcap(SB)		
+  binary.go:91		0x68c3fe		b803000000		MOVL $0x3, AX				
+  binary.go:91		0x68c403		e8f8a3deff		CALL runtime.panicIndex(SB)		
+  core.go:151		0x68c408		b8c8a32200		MOVL $0x22a3c8, AX			
+  core.go:151		0x68c40d		e8aea4deff		CALL runtime.panicSliceB(SB)		
+  binary.go:91		0x68c412		b803000000		MOVL $0x3, AX				
+  binary.go:91		0x68c417		4c89d1			MOVQ R10, CX				
+  binary.go:91		0x68c41a		e8e1a3deff		CALL runtime.panicIndex(SB)		
+  core.go:151		0x68c41f		b8441a2200		MOVL $0x221a44, AX			
+  core.go:151		0x68c424		e897a4deff		CALL runtime.panicSliceB(SB)		
+  core.go:151		0x68c429		90			NOPL					
+  color.go:112		0x68c42a		4889442408		MOVQ AX, 0x8(SP)			
+  color.go:112		0x68c42f		48895c2410		MOVQ BX, 0x10(SP)			
+  color.go:112		0x68c434		48894c2418		MOVQ CX, 0x18(SP)			
+  color.go:112		0x68c439		48897c2420		MOVQ DI, 0x20(SP)			
+  color.go:112		0x68c43e		4889742428		MOVQ SI, 0x28(SP)			
+  color.go:112		0x68c443		e8d880deff		CALL runtime.morestack_noctxt.abi0(SB)	
+  color.go:112		0x68c448		488b442408		MOVQ 0x8(SP), AX			
+  color.go:112		0x68c44d		488b5c2410		MOVQ 0x10(SP), BX			
+  color.go:112		0x68c452		488b4c2418		MOVQ 0x18(SP), CX			
+  color.go:112		0x68c457		488b7c2420		MOVQ 0x20(SP), DI			
+  color.go:112		0x68c45c		488b742428		MOVQ 0x28(SP), SI			
+  color.go:112		0x68c461		e99af7ffff		JMP main.(*Game).SetMonColor(SB)	
+  :-1			0x68c466		cc			INT $0x3				
+  :-1			0x68c467		cc			INT $0x3				
+  :-1			0x68c468		cc			INT $0x3				
+  :-1			0x68c469		cc			INT $0x3				
+  :-1			0x68c46a		cc			INT $0x3				
+  :-1			0x68c46b		cc			INT $0x3				
+  :-1			0x68c46c		cc			INT $0x3				
+  :-1			0x68c46d		cc			INT $0x3				
+  :-1			0x68c46e		cc			INT $0x3				
+  :-1			0x68c46f		cc			INT $0x3				
+  :-1			0x68c470		cc			INT $0x3				
+  :-1			0x68c471		cc			INT $0x3				
+  :-1			0x68c472		cc			INT $0x3				
+  :-1			0x68c473		cc			INT $0x3				
+  :-1			0x68c474		cc			INT $0x3				
+  :-1			0x68c475		cc			INT $0x3				
+  :-1			0x68c476		cc			INT $0x3				
+  :-1			0x68c477		cc			INT $0x3				
+  :-1			0x68c478		cc			INT $0x3				
+  :-1			0x68c479		cc			INT $0x3				
+  :-1			0x68c47a		cc			INT $0x3				
+  :-1			0x68c47b		cc			INT $0x3				
+  :-1			0x68c47c		cc			INT $0x3				
+  :-1			0x68c47d		cc			INT $0x3				
+  :-1			0x68c47e		cc			INT $0x3				
+  :-1			0x68c47f		cc			INT $0x3				
+
+TEXT main.(*Game).copyMonColor(SB) ijiri/color.go
+  color.go:165		0x68c480		493b6610		CMPQ SP, 0x10(R14)			
+  color.go:165		0x68c484		0f86c3010000		JBE 0x68c64d				
+  color.go:165		0x68c48a		55			PUSHQ BP				
+  color.go:165		0x68c48b		4889e5			MOVQ SP, BP				
+  color.go:165		0x68c48e		4883ec48		SUBQ $0x48, SP				
+  core.go:151		0x68c492		4c8b4808		MOVQ 0x8(AX), R9			
+  core.go:151		0x68c496		660f1f840000000000	NOPW 0(AX)(AX*1)			
+  core.go:151		0x68c49f		90			NOPL					
+  core.go:151		0x68c4a0		4981f9441a2200		CMPQ R9, $0x221a44			
+  core.go:151		0x68c4a7		0f8292010000		JB 0x68c63f				
+  core.go:151		0x68c4ad		4d8d91bce5ddff		LEAQ 0xffdde5bc(R9), R10		
+  binary.go:91		0x68c4b4		4983fa03		CMPQ R10, $0x3				
+  binary.go:91		0x68c4b8		0f8674010000		JBE 0x68c632				
+  core.go:151		0x68c4be		488b5010		MOVQ 0x10(AX), DX			
+  core.go:151		0x68c4c2		488b38			MOVQ 0(AX), DI				
+  core.go:151		0x68c4c5		4c8d92bce5ddff		LEAQ 0xffdde5bc(DX), R10		
+  core.go:151		0x68c4cc		49f7da			NEGQ R10				
+  core.go:151		0x68c4cf		49c1fa3f		SARQ $0x3f, R10				
+  core.go:151		0x68c4d3		4181e2441a2200		ANDL $0x221a44, R10			
+  binary.go:92		0x68c4da		468b1417		MOVL 0(DI)(R10*1), R10			
+  binary.go:92		0x68c4de		6690			NOPW					
+  binary.go:92		0x68c4e0		4181fa52832708		CMPL R10, $0x8278352			
+  color.go:36		0x68c4e7		0f850c010000		JNE 0x68c5f9				
+  core.go:151		0x68c4ed		4981f9c8a32200		CMPQ R9, $0x22a3c8			
+  core.go:151		0x68c4f4		0f822b010000		JB 0x68c625				
+  core.go:151		0x68c4fa		4981c1385cddff		ADDQ $-0x22a3c8, R9			
+  binary.go:91		0x68c501		4983f903		CMPQ R9, $0x3				
+  binary.go:91		0x68c505		0f8608010000		JBE 0x68c613				
+  core.go:151		0x68c50b		4c8d8a385cddff		LEAQ 0xffdd5c38(DX), R9			
+  core.go:151		0x68c512		49f7d9			NEGQ R9					
+  core.go:151		0x68c515		49c1f93f		SARQ $0x3f, R9				
+  core.go:151		0x68c519		4181e1c8a32200		ANDL $0x22a3c8, R9			
+  binary.go:92		0x68c520		458b0c39		MOVL 0(R9)(DI*1), R9			
+  binary.go:92		0x68c524		4181f96c832708		CMPL R9, $0x827836c			
+  color.go:166		0x68c52b		0f85c8000000		JNE 0x68c5f9				
+  color.go:166		0x68c531		4881fa00209e00		CMPQ DX, $0x9e2000			
+  color.go:166		0x68c538		0f82cb000000		JB 0x68c609				
+  color.go:166		0x68c53e		6690			NOPW					
+  color.go:166		0x68c540		4881fa00409f00		CMPQ DX, $0x9f4000			
+  color.go:166		0x68c547		0f82b2000000		JB 0x68c5ff				
+  core.go:151		0x68c54d		4889442458		MOVQ AX, 0x58(SP)			
+  core.go:151		0x68c552		48895c2460		MOVQ BX, 0x60(SP)			
+  core.go:151		0x68c557		48894c2468		MOVQ CX, 0x68(SP)			
+  color.go:166		0x68c55c		488d8a00e161ff		LEAQ 0xff61e100(DX), CX			
+  color.go:166		0x68c563		488d87001f9e00		LEAQ 0x9e1f00(DI), AX			
+  color.go:166		0x68c56a		4c8d8200e061ff		LEAQ 0xff61e000(DX), R8			
+  color.go:166		0x68c571		4881c700209e00		ADDQ $0x9e2000, DI			
+  color.go:166		0x68c578		bb00010000		MOVL $0x100, BX				
+  color.go:166		0x68c57d		be00200100		MOVL $0x12000, SI			
+  color.go:166		0x68c582		e8f9f0ffff		CALL main.checkColor(SB)		
+  color.go:166		0x68c587		4885c0			TESTQ AX, AX				
+  color.go:166		0x68c58a		756d			JNE 0x68c5f9				
+  color.go:169		0x68c58c		488b442458		MOVQ 0x58(SP), AX			
+  color.go:169		0x68c591		488b5c2460		MOVQ 0x60(SP), BX			
+  color.go:169		0x68c596		e8e5f3ffff		CALL main.(*Game).MonColor(SB)		
+  color.go:169		0x68c59b		4889442440		MOVQ AX, 0x40(SP)			
+  color.go:169		0x68c5a0		48895c2430		MOVQ BX, 0x30(SP)			
+  color.go:169		0x68c5a5		48894c2438		MOVQ CX, 0x38(SP)			
+  color.go:170		0x68c5aa		488b442458		MOVQ 0x58(SP), AX			
+  color.go:170		0x68c5af		488b5c2468		MOVQ 0x68(SP), BX			
+  color.go:170		0x68c5b4		31c9			XORL CX, CX				
+  color.go:170		0x68c5b6		31ff			XORL DI, DI				
+  color.go:170		0x68c5b8		4889fe			MOVQ DI, SI				
+  color.go:170		0x68c5bb		0f1f440000		NOPL 0(AX)(AX*1)			
+  color.go:170		0x68c5c0		e83bf6ffff		CALL main.(*Game).SetMonColor(SB)	
+  color.go:170		0x68c5c5		4885c0			TESTQ AX, AX				
+  color.go:170		0x68c5c8		750a			JNE 0x68c5d4				
+  color.go:170		0x68c5ca		488b4c2440		MOVQ 0x40(SP), CX			
+  color.go:170		0x68c5cf		4885c9			TESTQ CX, CX				
+  color.go:170		0x68c5d2		7506			JNE 0x68c5da				
+  color.go:171		0x68c5d4		4883c448		ADDQ $0x48, SP				
+  color.go:171		0x68c5d8		5d			POPQ BP					
+  color.go:171		0x68c5d9		c3			RET					
+  color.go:173		0x68c5da		488b442458		MOVQ 0x58(SP), AX			
+  color.go:173		0x68c5df		488b5c2468		MOVQ 0x68(SP), BX			
+  color.go:173		0x68c5e4		488b7c2430		MOVQ 0x30(SP), DI			
+  color.go:173		0x68c5e9		488b742438		MOVQ 0x38(SP), SI			
+  color.go:173		0x68c5ee		e80df6ffff		CALL main.(*Game).SetMonColor(SB)	
+  color.go:174		0x68c5f3		4883c448		ADDQ $0x48, SP				
+  color.go:174		0x68c5f7		5d			POPQ BP					
+  color.go:174		0x68c5f8		c3			RET					
+  color.go:167		0x68c5f9		4883c448		ADDQ $0x48, SP				
+  color.go:167		0x68c5fd		5d			POPQ BP					
+  color.go:167		0x68c5fe		c3			RET					
+  color.go:166		0x68c5ff		b900409f00		MOVL $runtime.esymtab+1544992(SB), CX	
+  color.go:166		0x68c604		e877a2deff		CALL runtime.panicSliceAcap(SB)		
+  color.go:166		0x68c609		b900209e00		MOVL $runtime.esymtab+1471264(SB), CX	
+  color.go:166		0x68c60e		e86da2deff		CALL runtime.panicSliceAcap(SB)		
+  binary.go:91		0x68c613		b803000000		MOVL $0x3, AX				
+  binary.go:91		0x68c618		4c89c9			MOVQ R9, CX				
+  binary.go:91		0x68c61b		0f1f440000		NOPL 0(AX)(AX*1)			
+  binary.go:91		0x68c620		e8dba1deff		CALL runtime.panicIndex(SB)		
+  core.go:151		0x68c625		b8c8a32200		MOVL $0x22a3c8, AX			
+  core.go:151		0x68c62a		4c89c9			MOVQ R9, CX				
+  core.go:151		0x68c62d		e88ea2deff		CALL runtime.panicSliceB(SB)		
+  binary.go:91		0x68c632		b803000000		MOVL $0x3, AX				
+  binary.go:91		0x68c637		4c89d1			MOVQ R10, CX				
+  binary.go:91		0x68c63a		e8c1a1deff		CALL runtime.panicIndex(SB)		
+  core.go:151		0x68c63f		b8441a2200		MOVL $0x221a44, AX			
+  core.go:151		0x68c644		4c89c9			MOVQ R9, CX				
+  core.go:151		0x68c647		e874a2deff		CALL runtime.panicSliceB(SB)		
+  core.go:151		0x68c64c		90			NOPL					
+  color.go:165		0x68c64d		4889442408		MOVQ AX, 0x8(SP)			
+  color.go:165		0x68c652		48895c2410		MOVQ BX, 0x10(SP)			
+  color.go:165		0x68c657		48894c2418		MOVQ CX, 0x18(SP)			
+  color.go:165		0x68c65c		0f1f4000		NOPL 0(AX)				
+  color.go:165		0x68c660		e8bb7edeff		CALL runtime.morestack_noctxt.abi0(SB)	
+  color.go:165		0x68c665		488b442408		MOVQ 0x8(SP), AX			
+  color.go:165		0x68c66a		488b5c2410		MOVQ 0x10(SP), BX			
+  color.go:165		0x68c66f		488b4c2418		MOVQ 0x18(SP), CX			
+  color.go:165		0x68c674		e907feffff		JMP main.(*Game).copyMonColor(SB)	
+  :-1			0x68c679		cc			INT $0x3				
+  :-1			0x68c67a		cc			INT $0x3				
+  :-1			0x68c67b		cc			INT $0x3				
+  :-1			0x68c67c		cc			INT $0x3				
+  :-1			0x68c67d		cc			INT $0x3				
+  :-1			0x68c67e		cc			INT $0x3				
+  :-1			0x68c67f		cc			INT $0x3				
+
+TEXT main.(*Game).ColoredMons(SB) ijiri/color.go
+  color.go:177		0x68c680		493b6610		CMPQ SP, 0x10(R14)			
+  color.go:177		0x68c684		0f86c3000000		JBE 0x68c74d				
+  color.go:177		0x68c68a		55			PUSHQ BP				
+  color.go:177		0x68c68b		4889e5			MOVQ SP, BP				
+  color.go:177		0x68c68e		4883ec60		SUBQ $0x60, SP				
+  color.go:179		0x68c692		4889442470		MOVQ AX, 0x70(SP)			
+  color.go:179		0x68c697		b901000000		MOVL $0x1, CX				
+  color.go:179		0x68c69c		31d2			XORL DX, DX				
+  color.go:178		0x68c69e		488d1ddb075000		LEAQ regexp.arrayNoInts(SB), BX		
+  color.go:178		0x68c6a5		31f6			XORL SI, SI				
+  color.go:179		0x68c6a7		eb17			JMP 0x68c6c0				
+  color.go:179		0x68c6a9		48ffc7			INCQ DI					
+  color.go:181		0x68c6ac		4889ca			MOVQ CX, DX				
+  color.go:181		0x68c6af		4889de			MOVQ BX, SI				
+  color.go:179		0x68c6b2		4889f9			MOVQ DI, CX				
+  color.go:181		0x68c6b5		4889c3			MOVQ AX, BX				
+  color.go:180		0x68c6b8		488b442470		MOVQ 0x70(SP), AX			
+  color.go:180		0x68c6bd		0f1f00			NOPL 0(AX)				
+  color.go:179		0x68c6c0		4881f900010000		CMPQ CX, $0x100				
+  color.go:179		0x68c6c7		7d75			JGE 0x68c73e				
+  color.go:181		0x68c6c9		4889542448		MOVQ DX, 0x48(SP)			
+  color.go:181		0x68c6ce		4889742440		MOVQ SI, 0x40(SP)			
+  color.go:181		0x68c6d3		48895c2458		MOVQ BX, 0x58(SP)			
+  color.go:179		0x68c6d8		48894c2450		MOVQ CX, 0x50(SP)			
+  color.go:180		0x68c6dd		4889cb			MOVQ CX, BX				
+  color.go:180		0x68c6e0		e89bf2ffff		CALL main.(*Game).MonColor(SB)		
+  color.go:180		0x68c6e5		4885c0			TESTQ AX, AX				
+  color.go:180		0x68c6e8		743b			JE 0x68c725				
+  color.go:181		0x68c6ea		488b5c2440		MOVQ 0x40(SP), BX			
+  color.go:181		0x68c6ef		48ffc3			INCQ BX					
+  color.go:181		0x68c6f2		488b4c2448		MOVQ 0x48(SP), CX			
+  color.go:181		0x68c6f7		4839d9			CMPQ CX, BX				
+  color.go:181		0x68c6fa		7207			JB 0x68c703				
+  color.go:181		0x68c6fc		488b442458		MOVQ 0x58(SP), AX			
+  color.go:181		0x68c701		eb16			JMP 0x68c719				
+  color.go:181		0x68c703		488b442458		MOVQ 0x58(SP), AX			
+  color.go:181		0x68c708		bf01000000		MOVL $0x1, DI				
+  color.go:181		0x68c70d		488d356cfd0c00		LEAQ type:*+164992(SB), SI		
+  color.go:181		0x68c714		e8c73cdeff		CALL runtime.growslice(SB)		
+  color.go:181		0x68c719		488b7c2450		MOVQ 0x50(SP), DI			
+  color.go:181		0x68c71e		48897cd8f8		MOVQ DI, -0x8(AX)(BX*8)			
+  color.go:181		0x68c723		eb84			JMP 0x68c6a9				
+  color.go:179		0x68c725		488b7c2450		MOVQ 0x50(SP), DI			
+  color.go:181		0x68c72a		488b5c2440		MOVQ 0x40(SP), BX			
+  color.go:181		0x68c72f		488b4c2448		MOVQ 0x48(SP), CX			
+  color.go:181		0x68c734		488b442458		MOVQ 0x58(SP), AX			
+  color.go:180		0x68c739		e96bffffff		JMP 0x68c6a9				
+  color.go:184		0x68c73e		4889d8			MOVQ BX, AX				
+  color.go:184		0x68c741		4889f3			MOVQ SI, BX				
+  color.go:184		0x68c744		4889d1			MOVQ DX, CX				
+  color.go:184		0x68c747		4883c460		ADDQ $0x60, SP				
+  color.go:184		0x68c74b		5d			POPQ BP					
+  color.go:184		0x68c74c		c3			RET					
+  color.go:177		0x68c74d		4889442408		MOVQ AX, 0x8(SP)			
+  color.go:177		0x68c752		e8c97ddeff		CALL runtime.morestack_noctxt.abi0(SB)	
+  color.go:177		0x68c757		488b442408		MOVQ 0x8(SP), AX			
+  color.go:177		0x68c75c		0f1f4000		NOPL 0(AX)				
+  color.go:177		0x68c760		e91bffffff		JMP main.(*Game).ColoredMons(SB)	
+  :-1			0x68c765		cc			INT $0x3				
+  :-1			0x68c766		cc			INT $0x3				
+  :-1			0x68c767		cc			INT $0x3				
+  :-1			0x68c768		cc			INT $0x3				
+  :-1			0x68c769		cc			INT $0x3				
+  :-1			0x68c76a		cc			INT $0x3				
+  :-1			0x68c76b		cc			INT $0x3				
+  :-1			0x68c76c		cc			INT $0x3				
+  :-1			0x68c76d		cc			INT $0x3				
+  :-1			0x68c76e		cc			INT $0x3				
+  :-1			0x68c76f		cc			INT $0x3				
+  :-1			0x68c770		cc			INT $0x3				
+  :-1			0x68c771		cc			INT $0x3				
+  :-1			0x68c772		cc			INT $0x3				
+  :-1			0x68c773		cc			INT $0x3				
+  :-1			0x68c774		cc			INT $0x3				
+  :-1			0x68c775		cc			INT $0x3				
+  :-1			0x68c776		cc			INT $0x3				
+  :-1			0x68c777		cc			INT $0x3				
+  :-1			0x68c778		cc			INT $0x3				
+  :-1			0x68c779		cc			INT $0x3				
+  :-1			0x68c77a		cc			INT $0x3				
+  :-1			0x68c77b		cc			INT $0x3				
+  :-1			0x68c77c		cc			INT $0x3				
+  :-1			0x68c77d		cc			INT $0x3				
+  :-1			0x68c77e		cc			INT $0x3				
+  :-1			0x68c77f		cc			INT $0x3				
