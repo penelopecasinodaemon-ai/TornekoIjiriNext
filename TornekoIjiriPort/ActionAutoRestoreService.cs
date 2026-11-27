@@ -1121,8 +1121,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x258C0001u,
             0xAD6C0008u,
 
-            // 今回の特技マーカーを初期化
-            0xAD60000Cu,
+            // イオナズン確定マーカーはtrace[3]（traceAddress+0x0C）を使用する。
+            // 味方専用の行動IDフックは、対象味方のときだけ同じ位置へ0xFFを書き込む。
+            // 旧コードはここで無条件に0を書き、味方側が設定した0xFFを消していた。
+            // 個体データ+0x1D3は0=味方、0以外=敵。
+            // 味方ならマーカーを保持し、敵だけ従来どおり0へ初期化する。
+            0x904901D3u, // lbu t1,0x1D3(v0): faction
+            0x11200002u, // beq t1,zero,skipClear（味方は保持）
+            0x00000000u, // delay slot
+            0xAD60000Cu, // sw zero,0x0C(t3): 敵側だけマーカーを初期化
 
             // 特技テーブル検索へ
             EncodeIonazunRepeatJump(
