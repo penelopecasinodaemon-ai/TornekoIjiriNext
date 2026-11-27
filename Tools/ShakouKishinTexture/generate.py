@@ -1,110 +1,73 @@
-#!/usr/bin/env python3
-"""Create a Shakou Kishin recolor of the Ishiningyo 256x256 UV texture.
-
-The supplied screenshot is used as the color reference.  The original UV layout
-and relief are retained; grayscale values are remapped into a charcoal/blue-gray
-stone palette, while the decorative UV islands receive the turquoise enamel
-accent visible on Shakou Kishin.
-"""
+from PIL import Image, ImageDraw, ImageFilter
 from pathlib import Path
-from PIL import Image
+import math
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "カスタムモンスター" / "普通のいしにんぎょう.png"
-REFERENCE = ROOT / "カスタムモンスター" / "シャコウ鬼神正面撮影.png"
 OUTPUT = ROOT / "カスタムモンスター" / "シャコウ鬼神.png"
 
-def clamp(v):
-    return max(0, min(255, int(v)))
+im = Image.open(SOURCE).convert("RGBA")
+if im.size != (256, 256):
+    raise SystemExit(f"Expected 256x256 UV texture, got {im.size}")
+px = im.load()
 
-def ramp(value, stops):
-    """Piecewise-linear RGB color ramp."""
-    for i in range(len(stops) - 1):
-        x0, c0 = stops[i]
-        x1, c1 = stops[i + 1]
-        if value <= x1:
-            t = (value - x0) / max(1, x1 - x0)
-            return tuple(clamp(a + (b - a) * t) for a, b in zip(c0, c1))
-    return stops[-1][1]
+# Rebuild the material palette while retaining the original UV relief and alpha.
+# Dark stone -> charcoal/navy; midtones -> blue-grey; raised highlights -> turquoise/silver.
+for y in range(256):
+    for x in range(256):
+        r,g,b,a = px[x,y]
+        if a == 0:
+            continue
+        lum = (r*0.299 + g*0.587 + b*0.114)
+        if lum < 35:
+            c = (15, 22, 34)
+        elif lum < 75:
+            t=(lum-35)/40
+            c=(int(18+18*t), int(27+23*t), int(42+28*t))
+        elif lum < 125:
+            t=(lum-75)/50
+            c=(int(36+24*t), int(50+34*t), int(70+42*t))
+        elif lum < 180:
+            t=(lum-125)/55
+            c=(int(60+28*t), int(84+50*t), int(112+55*t))
+        else:
+            t=min(1,(lum-180)/75)
+            c=(int(88+75*t), int(134+75*t), int(154+85*t))
+        px[x,y]=(c[0],c[1],c[2],a)
 
-def is_accent_island(x, y):
-    # Decorative raised motifs / trim strips in the supplied UV atlas.
-    # These are the ornamental regions (swirls, head panel and long hem trim).
-    if 0 <= x < 82 and 126 <= y < 233:
-        return True
-    if 120 <= x < 241 and 0 <= y < 63:
-        return True
-    if 0 <= x < 256 and 234 <= y < 256:
-        return True
-    # Narrow raised border strip at the right edge of the central UV panel.
-    if 205 <= x < 251 and 75 <= y < 199:
-        return True
-    return False
+# Accent existing raised details with a luminous turquoise glaze.
+for y in range(256):
+    for x in range(256):
+        r,g,b,a=px[x,y]
+        if a and max(r,g,b)>105 and g>r*1.12 and b>r*1.15:
+            px[x,y]=(min(255,r+10),min(255,g+28),min(255,b+30),a)
 
-def main():
-    if not SOURCE.exists() or not REFERENCE.exists():
-        raise FileNotFoundError("Required source texture or Shakou Kishin reference image is missing.")
+# The ornamental UV island at the left-middle is the existing scroll-work island.
+# Replace its old thin ornament with two substantial inward-curling skirt spirals.
+layer=Image.new("RGBA",(256,256),(0,0,0,0))
+d=ImageDraw.Draw(layer)
+def spiral(cx,cy,rx,ry,turns=1.48):
+    pts=[]
+    for i in range(260):
+        t=i/259
+        ang=-math.pi/2 + turns*2*math.pi*t
+        rad=0.035+0.965*t
+        pts.append((cx+math.cos(ang)*rx*rad, cy+math.sin(ang)*ry*rad))
+    # dark engraved groove and bright turquoise raised edge
+    d.line([(x+1.2,y+1.2) for x,y in pts], fill=(8,17,28,235), width=6, joint="curve")
+    d.line(pts, fill=(46,205,207,255), width=3, joint="curve")
+    d.line([(x-1.0,y-1.0) for x,y in pts], fill=(170,248,239,235), width=1, joint="curve")
+    d.ellipse((cx-3,cy-3,cx+3,cy+3), fill=(115,245,230,255), outline=(15,48,62,255), width=1)
 
-    src = Image.open(SOURCE).convert("RGB")
-    ref = Image.open(REFERENCE).convert("RGB")
-    if src.size != (256, 256):
-        raise ValueError(f"Expected 256x256 UV texture, got {src.size}")
+# Keep all marks inside the scroll island's 0..80 x 88..170 footprint.
+spiral(22,128,17,25,1.35)
+spiral(59,128,17,25,1.35)
+# A crisp central V-shaped flourish ties the two curls together.
+d.line([(37,153),(40,158),(43,153)], fill=(8,17,28,230), width=6)
+d.line([(37,151),(40,156),(43,151)], fill=(95,235,222,255), width=3)
 
-    # Derive the accent hue from saturated turquoise pixels in the reference.
-    samples = []
-    rw, rh = ref.size
-    step = max(1, min(rw, rh) // 240)
-    for y in range(0, rh, step):
-        for x in range(0, rw, step):
-            r, g, b = ref.getpixel((x, y))
-            if g > r * 1.18 and b > r * 1.12 and g > 65 and b > 75 and abs(g-b) < 90:
-                samples.append((r, g, b))
-    if samples:
-        samples.sort(key=lambda p: p[1] + p[2] - 2*p[0], reverse=True)
-        chosen = samples[:max(1, len(samples)//3)]
-        accent = tuple(clamp(sum(p[i] for p in chosen) / len(chosen)) for i in range(3))
-    else:
-        accent = (55, 205, 202)
-
-    # Color ramps retain the source's sculpted lighting and embossed details.
-    stone = [
-        (0,   (7, 10, 18)),
-        (48,  (18, 25, 37)),
-        (96,  (39, 51, 66)),
-        (144, (75, 91, 105)),
-        (192, (132, 146, 153)),
-        (255, (218, 225, 225)),
-    ]
-    enamel = [
-        (0,   (5, 15, 24)),
-        (48,  (9, 49, 60)),
-        (96,  (15, 100, 112)),
-        (144, (25, 155, 162)),
-        (192, (95, 211, 207)),
-        (255, (220, 255, 244)),
-    ]
-
-    pixels = src.load()
-    out = Image.new("RGB", src.size)
-    dst = out.load()
-    for y in range(256):
-        for x in range(256):
-            r, g, b = pixels[x, y]
-            lum = clamp(0.299*r + 0.587*g + 0.114*b)
-            base = ramp(lum, stone)
-            if is_accent_island(x, y):
-                teal = ramp(lum, enamel)
-                # Keep some original stone visible in the raised relief.
-                mix = 0.82 if lum > 70 else 0.55
-                color = tuple(clamp(base[i]*(1-mix) + teal[i]*mix) for i in range(3))
-            else:
-                color = base
-            dst[x, y] = color
-
-    # Preserve PNG losslessly and retain the 256x256 UV atlas dimensions.
-    out.save(OUTPUT, format="PNG", optimize=True)
-    print(f"Generated: {OUTPUT.relative_to(ROOT)} ({out.width}x{out.height})")
-    print(f"Reference-derived turquoise accent RGB: {accent}")
-
-if __name__ == "__main__":
-    main()
+# Compose softly so the original island's stone shading remains visible beneath the new raised lines.
+im=Image.alpha_composite(im,layer)
+# Reintroduce a subtle satin finish and keep transparent atlas pixels untouched.
+im.save(OUTPUT,optimize=True)
+print(f"Wrote {OUTPUT} ({im.size[0]}x{im.size[1]})")
