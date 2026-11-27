@@ -200,7 +200,9 @@ internal sealed class ActionAutoRestoreService : IDisposable
     };
 
     private static readonly PineClient SharedPine = new PineClient();
-    private static readonly object SharedPineAccessSync = new object();
+    // 複数サービスが同じEE RAMとPINE接続を使うため、複数命令から成る更新処理全体を直列化する。
+    // PineClient自身も1要求単位のロックを持つが、ここでは更新トランザクション間の割り込みを防ぐ。
+    internal static readonly object SharedPineAccessSync = new object();
     private readonly PineClient _pine = SharedPine;
     private readonly System.Threading.Timer _timer;
 
@@ -660,6 +662,51 @@ internal sealed class ActionAutoRestoreService : IDisposable
         };
     }
 
+    // フック設置前のコード領域へ命令語を書き込む。既に同じ値なら書き込みを省略する。
+    // 呼び出し元はSharedPineAccessSyncを保持し、他サービスのEE更新と交差させない。
+    private void WriteCodeWordsIfNeeded(uint address, uint[] words, string label)
+    {
+        for (int i = 0; i < words.Length; i++)
+        {
+            uint target = address + (uint)(i * 4);
+            uint expected = words[i];
+
+            if (_pine.Read32(target) != expected)
+                _pine.Write32(target, expected);
+
+            uint actual = _pine.Read32(target);
+            if (actual != expected)
+            {
+                throw new InvalidOperationException(
+                    label + "コードの書き込み検証に失敗しました。位置=0x" +
+                    target.ToString("X8") +
+                    " 期待値=0x" + expected.ToString("X8") +
+                    " 実際値=0x" + actual.ToString("X8"));
+            }
+        }
+    }
+
+    // 既にフックから参照されている実行コードは書き換えず、読み取り検証だけ行う。
+    // 不一致なら実行中コードを修復目的で上書きせず、異常として処理を止める。
+    private void VerifyCodeWords(uint address, uint[] words, string label)
+    {
+        for (int i = 0; i < words.Length; i++)
+        {
+            uint target = address + (uint)(i * 4);
+            uint expected = words[i];
+            uint actual = _pine.Read32(target);
+
+            if (actual != expected)
+            {
+                throw new InvalidOperationException(
+                    label + "コードが設置後に変化しています。実行中コードは上書きしません。" +
+                    " 位置=0x" + target.ToString("X8") +
+                    " 期待値=0x" + expected.ToString("X8") +
+                    " 実際値=0x" + actual.ToString("X8"));
+            }
+        }
+    }
+
     private void ApplyIonazunRepeatPatch(
         List<(byte SpeciesId, byte Marker, byte ActualAction)> normalEntries,
         List<(byte SpeciesId, byte Marker, byte ActualAction)> allyOverrideEntries)
@@ -776,38 +823,23 @@ internal sealed class ActionAutoRestoreService : IDisposable
         uint repeatAddress = _codeCaveAddress + 0x58u;
         uint compareAddress = _codeCaveAddress + 0x90u;
 
-        for (int i = 0; i < repeatCode.Length; i++)
-        {
-            _pine.Write32(
-                repeatAddress + (uint)(i * 4),
-                repeatCode[i]);
-        }
+        // いずれかのフックが既に有効なら、参照中のコードは検証のみ行う。
+        // 旧実装のように500msごとに実行中の命令列を書き直すことを防ぐ。
+        bool repeatCodeMayBeExecuting =
+            currentUsed == usedJump ||
+            currentCompare == compareJump ||
+            currentCompareBranch == 0u;
 
-        for (int i = 0; i < compareCode.Length; i++)
+        if (repeatCodeMayBeExecuting)
         {
-            _pine.Write32(
-                compareAddress + (uint)(i * 4),
-                compareCode[i]);
+            VerifyCodeWords(repeatAddress, repeatCode, "イオナズン連発");
+            VerifyCodeWords(compareAddress, compareCode, "イオナズン確率判定");
         }
-
-        for (int i = 0; i < repeatCode.Length; i++)
+        else
         {
-            if (_pine.Read32(
-                repeatAddress + (uint)(i * 4)) != repeatCode[i])
-            {
-                throw new InvalidOperationException(
-                    "イオナズン連発コードの検証に失敗しました。");
-            }
-        }
-
-        for (int i = 0; i < compareCode.Length; i++)
-        {
-            if (_pine.Read32(
-                compareAddress + (uint)(i * 4)) != compareCode[i])
-            {
-                throw new InvalidOperationException(
-                    "イオナズン確率判定コードの検証に失敗しました。");
-            }
+            // フック設置前だけコードを書き込む。書き込み後は全命令語を読み戻す。
+            WriteCodeWordsIfNeeded(repeatAddress, repeatCode, "イオナズン連発");
+            WriteCodeWordsIfNeeded(compareAddress, compareCode, "イオナズン確率判定");
         }
 
         // 比較命令の次の命令を先にNOPにする。
@@ -2153,6 +2185,11 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     private void ApplyRuntime(Dictionary<int, ushort> actions)
     {
+        // 共有EEページへの複数命令の更新を一つのトランザクションとして扱う。
+        // 指輪の特技率フック更新と種族別行動フック更新が途中で交差しないようにする。
+        lock (SharedPineAccessSync)
+        {
+
         Dictionary<int, ushort> allyRingActions;
         HashSet<int> allyRingIonazunForce;
         lock (_stateSync)
@@ -2232,7 +2269,10 @@ internal sealed class ActionAutoRestoreService : IDisposable
         }
 
         uint newCall = EncodeJal(_codeCaveAddress);
-        _pine.Write32(PatchAddress, newCall);
+        // 監視タイマーは500ms周期でApplyRuntimeを呼ぶ。
+        // 既に同じJALが設置されている場合は、実行中の命令を書き直さない。
+        if (currentCall != newCall)
+            _pine.Write32(PatchAddress, newCall);
         uint verifyCall = _pine.Read32(PatchAddress);
         if (verifyCall != newCall)
             throw new InvalidOperationException(
@@ -2241,6 +2281,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         ApplyIonazunRepeatPatch(normalEntries, allyOverrideEntries);
         ApplyAllyActionHooks(_codeCaveAddress, allyOverrideEntries.Count);
+    
+        }
     }
 
     internal static string ReadActionTrace()
