@@ -1587,8 +1587,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
     // 状態11ハンドラ(0x002D0424)の分岐直前で、味方・対象種族だけv1を指輪設定へ置換する。
     // 0x002D045C以降の2/7判定と、その先のゲーム本来の処理は変更しない。
-    // この位置は関数途中へのフックなので、作業用t1～t4を128bit単位で退避・復元する。
-    // v0は元の継続先(0x002D045C)で必ず再設定されるため、戻り先選択用に使用する。
+    // 関数途中へのフックなので、作業用t1～t4を128bit単位で退避・復元する。
+    // v0を含む他のレジスタは変更しない。v1だけが本来の行動ID置換先。
     private static uint[] BuildAllyActionExecutionStub(uint caveAddress, int entryCount)
     {
         var code = new List<uint>();
@@ -1596,8 +1596,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
 
         uint dataAddress = caveAddress + 0x200u;
 
-        // 元の関数内で生存している可能性がある一時レジスタを完全に退避する。
-        Emit(0x27BDFFB0u);                    // addiu sp,sp,-0x50
+        // 作業用レジスタ4本を退避。
+        Emit(0x27BDFFC0u);                    // addiu sp,sp,-0x40
         Emit(0x7FA90000u);                    // sq t1,0(sp)
         Emit(0x7FAA0010u);                    // sq t2,0x10(sp)
         Emit(0x7FAB0020u);                    // sq t3,0x20(sp)
@@ -1607,42 +1607,37 @@ internal sealed class ActionAutoRestoreService : IDisposable
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu))); // ori t3,t3,lo(data)
         Emit(EncodeI(0x23, 11, 12, (int)(AllyHookActiveOffset - 0x200u))); // lw t4,active(data)
 
+        int restoreRegisters = -1;
+
         int inactive = code.Count;
-        Emit(EncodeI(0x04, 12, 0, 0));         // beq t4,zero,branchDecision
+        Emit(EncodeI(0x04, 12, 0, 0));         // beq t4,zero,restoreRegisters
         Emit(EncodeI(0x24, 16, 9, 0x1D3));    // delay: lbu t1,0x1D3(s0)
 
         int enemy = code.Count;
-        Emit(EncodeI(0x05, 9, 0, 0));         // bne t1,zero,branchDecision
+        Emit(EncodeI(0x05, 9, 0, 0));         // bne t1,zero,restoreRegisters
         Emit(EncodeI(0x24, 16, 10, 4));       // delay: lbu t2,4(s0)
 
-        Emit(EncodeI(0x09, 0, 2, entryCount)); // addiu v0,zero,entryCount
+        Emit(EncodeI(0x09, 0, 2, entryCount)); // addiu v0,zero,entryCount (loop counter only)
 
         int loop = code.Count;
         Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3): table species ID
         int found = code.Count;
-        Emit(EncodeI(0x14, 9, 10, 0));        // beql t1,t2,branchDecision
+        Emit(EncodeI(0x14, 9, 10, 0));        // beql t1,t2,restoreRegisters
         Emit(EncodeI(0x24, 11, 3, 2));        // delay: lbu v1,2(t3), only on match
         Emit(EncodeI(0x09, 2, 2, -1));        // addiu v0,v0,-1
         int repeat = code.Count;
         Emit(EncodeI(0x05, 2, 0, 0));         // bne v0,zero,loop
         Emit(EncodeI(0x09, 11, 11, 3));       // delay: addiu t3,t3,3
 
-        int branchDecision = code.Count;
-        Emit(EncodeI(0x09, 0, 2, 1));         // addiu v0,zero,1: default nonzero path
-        int zeroAction = code.Count;
-        Emit(EncodeI(0x05, 3, 0, 0));         // bne v1,zero,restoreRegisters
-        Emit(0u);
-        Emit(EncodeI(0x09, 0, 2, 0));         // zero action: select original 0x002D0470 path
-
-        int restoreRegisters = code.Count;
+        restoreRegisters = code.Count;
         Emit(0x7BA90000u);                    // lq t1,0(sp)
         Emit(0x7BAA0010u);                    // lq t2,0x10(sp)
         Emit(0x7BAB0020u);                    // lq t3,0x20(sp)
         Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
-        Emit(0x27BD0050u);                    // addiu sp,sp,0x50
+        Emit(0x27BD0040u);                    // addiu sp,sp,0x40
 
         int chooseZeroPath = code.Count;
-        Emit(EncodeI(0x04, 2, 0, 0));         // beq v0,zero,zeroLabel
+        Emit(EncodeI(0x04, 3, 0, 0));         // beq v1,zero,zeroLabel
         Emit(0u);
         Emit(EncodeJFrom(
             caveAddress + AllyActionExecutionStubOffset + (uint)(code.Count * 4),
@@ -1655,16 +1650,15 @@ internal sealed class ActionAutoRestoreService : IDisposable
             0x002D0470u));                    // j original zero-action path
         Emit(0u);
 
-        PatchBranch(code, inactive, branchDecision);
-        PatchBranch(code, enemy, branchDecision);
-        PatchBranch(code, found, branchDecision);
+        PatchBranch(code, inactive, restoreRegisters);
+        PatchBranch(code, enemy, restoreRegisters);
+        PatchBranch(code, found, restoreRegisters);
         PatchBranch(code, repeat, loop);
-        PatchBranch(code, zeroAction, restoreRegisters);
         PatchBranch(code, chooseZeroPath, zeroLabel);
 
-        if ((uint)code.Count * 4u != AllyHookActiveOffset - AllyActionExecutionStubOffset)
+        if ((uint)code.Count * 4u > AllyHookActiveOffset - AllyActionExecutionStubOffset)
             throw new InvalidOperationException(
-                "味方行動実行分岐スタブのサイズが予約領域と一致しません。");
+                "味方行動実行分岐スタブが予約領域を超えています。");
 
         return code.ToArray();
     }
