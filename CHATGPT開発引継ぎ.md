@@ -501,13 +501,16 @@ ELFの実命令を確認した。行動者データには陣営フラグ `+0x1D3
 - `ActionAutoRestoreService.ApplyRuntime` と `SlimeRingSkillStatRuntimeService.Apply/RestoreHook` の複数命令更新を共有ロックで直列化した。PineClient自身は1要求単位のロックを持つが、ここでは複数要求から成る更新トランザクションの交差を防ぐ。
 - 稼働中のイオナズン連発・確率判定コードは、フック設置後に再書き込みせず読み取り検証のみ行う。初回フック設置前だけ書き込む。
 - 500ms監視周期で同一の敵ディスパッチャーJALを繰り返し書かない。
+- 以前のPollは500msごとにアクションデータ1,530 bytesを383 DWORDに分けて二重読み取りし、さらに複数回コード全体を検証していた。現行Pollは通常周期ではフック命令と味方有効フラグだけを確認し、設定変更・フック消失時または30秒ごとにフル検証する。
+- `WriteDispatcherData` は最初の走査で差分DWORDだけを収集し、変更がない場合は即時returnする。変更時も差分DWORDだけを書き込み、読み戻す。
+- `ApplyRuntime` 内の重複コード検証を1回に統合し、イオナズン処理は呼び出し元で検証済みのコードを再走査しない。
 - 上記の安全化後、`SlimeRingRuntimeService.Poll` から味方専用の段階3行動IDフックを再有効化した。
 - イオナズン確定チェックの設定・分岐ロジックは削除していない。
 
 ### 13-8. 実機検証状態
 
 - 段階2のみの状態で味方スライムが通常攻撃することはユーザー確認済み。
-- 2026-11-27のコード更新コミットは `3e9806c8`（ActionAutoRestoreService）、`b0746683`（SlimeRingSkillStatRuntimeService）、`3d29b3ba`（SlimeRingRuntimeService）。それぞれGitHub Actions Windows .NET buildがsuccess。文書更新は `fe1604aa`。
+- 2026-11-27のコード更新コミットは `3e9806c8`（ActionAutoRestoreService）、`b0746683`（SlimeRingSkillStatRuntimeService）、`3d29b3ba`（SlimeRingRuntimeService）、`aa924a9d`（監視負荷削減）。GitHub Actions Windows .NET buildはそれぞれsuccess。監視負荷削減のrunは `45925309981`。文書更新は `fe1604aa`。
 - 段階3再有効化後の実機挙動は未確認。GitHub Actionsのビルド成功は実機動作成功を意味しない。
 - 次の実機確認では、まずフリーズしないこと、次に味方対象スライムの行動ID、最後に敵スライムがモンスタークリエイター設定のままであることを個別に確認する。問題があれば新しいメモリダンプを取得し、フック命令・遅延スロット・有効フラグ・コードページを照合する。
 
