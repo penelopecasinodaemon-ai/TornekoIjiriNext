@@ -70,7 +70,7 @@ def main():
     # White is the atlas background. The binary mask keeps only the actual
     # mapped UV islands; the source's grayscale artwork is never sampled.
     gray=src.convert("L")
-    mask=gray.point(lambda p: 255 if p < 247 else 0).resize((SW,SH),Image.Resampling.NEAREST)
+    mask=gray.point(lambda p: 255 if p < 255 else 0).resize((SW,SH),Image.Resampling.NEAREST)
 
     # Fresh procedural material: independent of the source's brightness/relief.
     base=Image.new("RGB",(SW,SH),(255,255,255))
