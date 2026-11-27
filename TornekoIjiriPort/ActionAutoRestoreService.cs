@@ -47,8 +47,8 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint AllyTargetCheckStubOffset = 0x970u;
     private const uint AllyActionExecutionStubOffset = 0xA28u;
     // 5か所すべてのフック設置が完了するまで、各スタブは元処理へ素通しする。
-    private const uint AllyHookActiveOffset = 0xA78u;
-    private const uint AllyHookMarkerOffset = 0xA7Cu;
+    private const uint AllyHookActiveOffset = 0xAB0u;
+    private const uint AllyHookMarkerOffset = 0xAB4u;
 
     // 旧版の配置を復元時だけ認識する。
     // 旧版1: Jで0x8A0/0x960、さらに旧版: JALで0x880/0x940。
@@ -57,7 +57,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint OlderLegacyAllyActionLoadStubOffset = 0x880u;
     private const uint OlderLegacyAllyTargetCheckStubOffset = 0x940u;
     private const uint AllyHookMarker = 0x534C4148u;
-    private const uint AllyHookReservedSize = 0xA80u;
+    private const uint AllyHookReservedSize = 0xAB8u;
     private const int MaxSpeciesActionEntries = 255;
 
     // 旧版の全敵共通パッチ ori s1,zero,actionId
@@ -77,7 +77,7 @@ internal sealed class ActionAutoRestoreService : IDisposable
     private const uint SharedRingCaveMarker = 0x534C5254u;
     private const uint RingSkillStatHookAddress = 0x0021D6CCu;
     private const uint RingSkillStatOriginalInstruction = 0x8D080010u;
-    private const uint SharedActionCaveMarkerOffset = SharedActionCaveOffset + 0xA7Cu;
+    private const uint SharedActionCaveMarkerOffset = SharedActionCaveOffset + AllyHookMarkerOffset;
     private const uint SharedActionCaveMarker = 0x534C4148u;
     private const uint SharedActionAddressMax = CaveSearchStart + SharedActionCaveOffset;
     private static readonly object SharedRuntimeCaveSync = new object();
@@ -1583,69 +1583,86 @@ internal sealed class ActionAutoRestoreService : IDisposable
         return code.ToArray();
     }
 
-    // 状態11ハンドラ(0x002D0424)は、0x002D0450で個体データ+0x3Aを読み、
-    // 0/2/7かどうかで処理経路を分ける。行動ID読込フックだけではこの値は変わらないため、
-    // 分岐命令の直前で味方・対象種族に限ってv1を指輪設定IDへ置換する。
-    // 0なら元の0x002D0470へ、それ以外なら元の0x002D045Cへ戻し、
-    // 0x002D045C以降の2/7判定はゲーム本来の命令に任せる。
-    // 状態11ハンドラ(0x002D0424)は、0x002D0450で個体データ+0x3Aを読み、
-    // 0/2/7かどうかで処理経路を分ける。行動ID読込フックだけではこの値は変わらないため、
-    // 分岐命令の直前で味方・対象種族に限ってv1を指輪設定IDへ置換する。
-    // 0なら元の0x002D0470へ、それ以外なら元の0x002D045Cへ戻す。
-    // 既存の対象判定スタブ直後に配置するため、20命令・0x50バイトに圧縮している。
+    // 状態11ハンドラ(0x002D0424)の分岐直前で、味方・対象種族だけv1を指輪設定へ置換する。
+    // 0x002D045C以降の2/7判定と、その先のゲーム本来の処理は変更しない。
+    // この位置は関数途中へのフックなので、作業用t1～t4を128bit単位で退避・復元する。
+    // v0は元の継続先(0x002D045C)で必ず再設定されるため、戻り先選択用に使用する。
     private static uint[] BuildAllyActionExecutionStub(uint caveAddress, int entryCount)
     {
-        uint activeAddress = caveAddress + AllyHookActiveOffset;
         var code = new List<uint>();
         void Emit(uint x) => code.Add(x);
 
         uint dataAddress = caveAddress + 0x200u;
+
+        // 元の関数内で生存している可能性がある一時レジスタを完全に退避する。
+        Emit(0x27BDFFB0u);                    // addiu sp,sp,-0x50
+        Emit(0x7FA90000u);                    // sq t1,0(sp)
+        Emit(0x7FAA0010u);                    // sq t2,0x10(sp)
+        Emit(0x7FAB0020u);                    // sq t3,0x20(sp)
+        Emit(0x7FAC0030u);                    // sq t4,0x30(sp)
+
         Emit(EncodeI(0x0F, 0, 11, (int)(dataAddress >> 16))); // lui t3,hi(data)
         Emit(EncodeI(0x0D, 11, 11, (int)(dataAddress & 0xFFFFu))); // ori t3,t3,lo(data)
-        Emit(EncodeI(0x23, 11, 12, 0x878)); // lw t4,0x878(t3): active flag
+        Emit(EncodeI(0x23, 11, 12, (int)(AllyHookActiveOffset - 0x200u))); // lw t4,active(data)
+
         int inactive = code.Count;
-        Emit(EncodeI(0x04, 12, 0, 0)); // beq t4,zero,branchDecision
-        Emit(EncodeI(0x24, 16, 9, 0x1D3)); // delay: lbu t1,0x1D3(s0)
+        Emit(EncodeI(0x04, 12, 0, 0));         // beq t4,zero,branchDecision
+        Emit(EncodeI(0x24, 16, 9, 0x1D3));    // delay: lbu t1,0x1D3(s0)
 
         int enemy = code.Count;
-        Emit(EncodeI(0x05, 9, 0, 0)); // bne t1,zero,branchDecision
-        Emit(EncodeI(0x24, 16, 10, 4)); // delay: lbu t2,4(s0)
+        Emit(EncodeI(0x05, 9, 0, 0));         // bne t1,zero,branchDecision
+        Emit(EncodeI(0x24, 16, 10, 4));       // delay: lbu t2,4(s0)
 
         Emit(EncodeI(0x09, 0, 2, entryCount)); // addiu v0,zero,entryCount
 
         int loop = code.Count;
-        Emit(EncodeI(0x24, 11, 9, 0)); // lbu t1,0(t3): table species ID
+        Emit(EncodeI(0x24, 11, 9, 0));        // lbu t1,0(t3): table species ID
         int found = code.Count;
-        Emit(EncodeI(0x14, 9, 10, 0)); // beql t1,t2,branchDecision
-        Emit(EncodeI(0x24, 11, 3, 2)); // delay: lbu v1,2(t3), only on match
-        Emit(EncodeI(0x09, 2, 2, -1)); // addiu v0,v0,-1
+        Emit(EncodeI(0x14, 9, 10, 0));        // beql t1,t2,branchDecision
+        Emit(EncodeI(0x24, 11, 3, 2));        // delay: lbu v1,2(t3), only on match
+        Emit(EncodeI(0x09, 2, 2, -1));        // addiu v0,v0,-1
         int repeat = code.Count;
-        Emit(EncodeI(0x05, 2, 0, 0)); // bne v0,zero,loop
-        Emit(EncodeI(0x09, 11, 11, 3)); // delay: addiu t3,t3,3
+        Emit(EncodeI(0x05, 2, 0, 0));         // bne v0,zero,loop
+        Emit(EncodeI(0x09, 11, 11, 3));       // delay: addiu t3,t3,3
 
         int branchDecision = code.Count;
+        Emit(EncodeI(0x09, 0, 2, 1));         // addiu v0,zero,1: default nonzero path
         int zeroAction = code.Count;
-        Emit(EncodeI(0x04, 3, 0, 0)); // beq v1,zero,zeroLabel
+        Emit(EncodeI(0x05, 3, 0, 0));         // bne v1,zero,restoreRegisters
+        Emit(0u);
+        Emit(EncodeI(0x09, 0, 2, 0));         // zero action: select original 0x002D0470 path
+
+        int restoreRegisters = code.Count;
+        Emit(0x7BA90000u);                    // lq t1,0(sp)
+        Emit(0x7BAA0010u);                    // lq t2,0x10(sp)
+        Emit(0x7BAB0020u);                    // lq t3,0x20(sp)
+        Emit(0x7BAC0030u);                    // lq t4,0x30(sp)
+        Emit(0x27BD0050u);                    // addiu sp,sp,0x50
+
+        int chooseZeroPath = code.Count;
+        Emit(EncodeI(0x04, 2, 0, 0));         // beq v0,zero,zeroLabel
         Emit(0u);
         Emit(EncodeJFrom(
             caveAddress + AllyActionExecutionStubOffset + (uint)(code.Count * 4),
-            0x002D045Cu)); // j original continuation (2/7 checks)
+            0x002D045Cu));                    // j original continuation (2/7 checks)
         Emit(0u);
 
         int zeroLabel = code.Count;
         Emit(EncodeJFrom(
             caveAddress + AllyActionExecutionStubOffset + (uint)(code.Count * 4),
-            0x002D0470u)); // j original zero-action path
+            0x002D0470u));                    // j original zero-action path
         Emit(0u);
 
         PatchBranch(code, inactive, branchDecision);
         PatchBranch(code, enemy, branchDecision);
         PatchBranch(code, found, branchDecision);
         PatchBranch(code, repeat, loop);
-        PatchBranch(code, zeroAction, zeroLabel);
+        PatchBranch(code, zeroAction, restoreRegisters);
+        PatchBranch(code, chooseZeroPath, zeroLabel);
 
         if ((uint)code.Count * 4u != AllyHookActiveOffset - AllyActionExecutionStubOffset)
-            throw new InvalidOperationException("味方行動実行分岐スタブのサイズが予約領域と一致しません。");
+            throw new InvalidOperationException(
+                "味方行動実行分岐スタブのサイズが予約領域と一致しません。");
 
         return code.ToArray();
     }
