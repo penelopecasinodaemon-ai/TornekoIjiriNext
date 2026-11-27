@@ -55,8 +55,8 @@ internal sealed class SlimeRingRuntimeService : IDisposable
     private bool _disposed;
     private int _processId;
     private bool? _lastObservedEquipped;
-    private bool _diagnosticAllyItemDataApplied;
-    private bool _diagnosticSkillStatApplied;
+    private bool _ringAllyItemDataApplied;
+    private bool _ringSkillStatApplied;
     private bool _ringAllyActionHooksApplied;
     private bool _ringActionSettingsSubmitted;
     private DateTime _settingsWriteTime = DateTime.MinValue;
@@ -108,7 +108,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                 _processId = 0;
                 _lastObservedEquipped = null;
-                _diagnosticAllyItemDataApplied = false;
+                _ringAllyItemDataApplied = false;
                 _ringAllyActionHooksApplied = false;
                 _overlayActive = false;
                 SetOverlaySpeciesIds(Array.Empty<int>());
@@ -130,7 +130,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
                 _processId = pid;
                 _lastObservedEquipped = null;
-                _diagnosticAllyItemDataApplied = false;
+                _ringAllyItemDataApplied = false;
                 _ringAllyActionHooksApplied = false;
             }
 
@@ -151,9 +151,11 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     // 段階2：特技使用率・範囲フック。
                     ApplyRingSkillStatOnly();
 
-                    // 段階3：味方専用の特技判定・行動ID読込・対象判定を一括適用。
+                    // 段階3：味方専用の特技判定・行動ID読込・対象判定を一括適用する。
+                    // 行動者の陣営フラグと種族IDを読み取り、味方の対象スライムだけ指輪の行動IDを返す。
+                    // 敵側では元の行動IDを返し、共有AIテーブル全体の入れ替えは行わない。
                     // 4か所のフックがすべて検証されるまで共有有効フラグは0のまま。
-                    // 段階3は通常攻撃停止の原因が未解決のため無効化。行動フックは設置しない。
+                    ApplyRingAllyActionOnly(true);
                 }
                 else
                 {
@@ -161,20 +163,20 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                     ApplyRingAllyActionOnly(false);
 
                     // 次に特技率フックを元へ戻し、その後に投擲データを復元する。
-                    if (_diagnosticSkillStatApplied)
+                    if (_ringSkillStatApplied)
                     {
                         SlimeRingSkillStatRuntimeService.RestoreHook();
-                        _diagnosticSkillStatApplied = false;
+                        _ringSkillStatApplied = false;
                     }
 
-                    if (_diagnosticAllyItemDataApplied)
+                    if (_ringAllyItemDataApplied)
                         ApplyRingAllyItemDataOnly(false);
                 }
 
                 _lastObservedEquipped = equipped;
 
                 RaiseStatus(equipped
-                    ? "スライムの指輪：段階2適用済み（味方専用データ＋特技使用率・範囲／行動判定フック停止）"
+                    ? "スライムの指輪：段階3適用済み（味方専用データ＋特技使用率・範囲＋味方専用行動ID）"
                     : "スライムの指輪：未装備（指輪専用処理を解除）");
             }
         }
@@ -264,7 +266,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
         RaiseStatus(message);
     }
 
-    // 診断段階2：特技使用率・範囲フックだけを設置する。
+    // 段階2：特技使用率・範囲フックだけを設置する。
     // 味方の特技率・範囲を指輪設定へ切り替えるが、行動IDは変更しない。
     private void ApplyRingSkillStatOnly()
     {
@@ -274,7 +276,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         if (source == null || source.Length != 524288)
             throw new InvalidOperationException(
-                "診断段階2：基準BINがありません。");
+                "段階2：基準BINがありません。");
 
         int recordTableOffset = ResolveMonsterRecordTableOffset(source);
         HashSet<int> slimeFamilyIds =
@@ -290,9 +292,9 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 settings,
                 slimeFamilyIds);
 
-            _diagnosticSkillStatApplied = true;
+            _ringSkillStatApplied = true;
             RaiseStatus(
-                "スライムの指輪：診断段階2・特技使用率／範囲フック適用済み" +
+                "スライムの指輪：段階2・特技使用率／範囲フック適用済み" +
                 Environment.NewLine +
                 "行動IDディスパッチャー：未設置" +
                 Environment.NewLine +
@@ -310,13 +312,13 @@ internal sealed class SlimeRingRuntimeService : IDisposable
                 // 元命令への復元に失敗した場合は、元の例外を優先して通知する。
             }
 
-            _diagnosticSkillStatApplied = false;
+            _ringSkillStatApplied = false;
             throw;
         }
     }
 
 
-    // 診断段階1専用。指輪の味方専用投擲データだけを更新する。
+    // 段階1専用。指輪の味方専用投擲データだけを更新する。
     // 特技使用率フック、行動ディスパッチャー、イオナズン分岐、バリアには触れない。
     private void ApplyRingAllyItemDataOnly(bool equipped)
     {
@@ -326,13 +328,13 @@ internal sealed class SlimeRingRuntimeService : IDisposable
 
         if (source == null || source.Length != 524288)
             throw new InvalidOperationException(
-                "診断段階1：基準BINがありません。先にPCSX2からバニラBINを取得してください。");
+                "段階1：基準BINがありません。先にPCSX2からバニラBINを取得してください。");
 
         if (Pcsx2LiveSession.MemoryLayout == null ||
             Pcsx2LiveSession.ProcessId <= 0)
         {
             throw new InvalidOperationException(
-                "診断段階1：PCSX2のメモリ接続情報がありません。");
+                "段階1：PCSX2のメモリ接続情報がありません。");
         }
 
         SlimeRingSettings settings =
@@ -374,7 +376,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             writes.Add(Tuple.Create(
                 allyOffset,
                 Slice(work, allyOffset, 8),
-                "診断段階1・味方専用投擲データ ID=" + speciesId));
+                "段階1・味方専用投擲データ ID=" + speciesId));
         }
 
         Pcsx2BinApplier.ApplyRanges(
@@ -382,7 +384,7 @@ internal sealed class SlimeRingRuntimeService : IDisposable
             Pcsx2LiveSession.MemoryLayout!,
             writes);
 
-        _diagnosticAllyItemDataApplied = equipped;
+        _ringAllyItemDataApplied = equipped;
     }
 
     private static uint CalculateCreatorSkillSettingsFingerprint(
