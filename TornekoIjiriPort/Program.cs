@@ -4720,7 +4720,7 @@ internal sealed class MainForm : Form
 
     public MainForm()
     {
-        Text = "トルネコいじりネクストv2.1";
+        Text = "トルネコいじりネクストv2.2";
         StartPosition = FormStartPosition.CenterScreen;
         Width = 1050;
         Height = 760;
@@ -4817,7 +4817,7 @@ internal sealed class MainForm : Form
 
         var title = new Label
         {
-            Text = "トルネコいじりネクストv2.1",
+            Text = "トルネコいじりネクストv2.2",
             Font = new Font("Yu Gothic UI", 22, FontStyle.Bold),
             AutoSize = true,
             Location = new Point(8, 4)
@@ -4867,12 +4867,15 @@ internal sealed class MainForm : Form
 
         buttons.Controls.Add(UiFactory.Button(
             "改造データを.Torneko4保存", (_, _) => SaveTorneko4()));
-        buttons.Controls.Add(UiFactory.Button(
-            "スライムの指輪編集", (_, _) =>
-            {
-                using var slimeRingForm = new SlimeRingEditorForm();
-                slimeRingForm.ShowDialog(this);
-            }));
+/*
+         * v2.2 開発者引き渡し用：未完成のスライムの指輪編集画面をメニューから一時除外。
+         *         buttons.Controls.Add(UiFactory.Button(
+         *             "スライムの指輪編集", (_, _) =>
+         *             {
+         *                 using var slimeRingForm = new SlimeRingEditorForm();
+         *                 slimeRingForm.ShowDialog(this);
+         *             }));
+         */
         buttons.Controls.Add(UiFactory.Button(
             "モンスターを編集", (_, _) =>
             {
@@ -4882,12 +4885,15 @@ internal sealed class MainForm : Form
                     _actionRestore);
                 monsterForm.ShowDialog(this);
             }));
-buttons.Controls.Add(UiFactory.Button(
-            "味方特技トレース", (_, _) =>
-            {
-                using var traceForm = new AllyActionTraceForm();
-                traceForm.ShowDialog(this);
-            }));
+/*
+         * v2.2 開発者引き渡し用：診断・トレース系メニューを一時除外。
+         * buttons.Controls.Add(UiFactory.Button(
+         *             "味方特技トレース", (_, _) =>
+         *             {
+         *                 using var traceForm = new AllyActionTraceForm();
+         *                 traceForm.ShowDialog(this);
+         *             }));
+         */
 buttons.Controls.Add(UiFactory.Button(
             "モンスター名変更", (_, _) =>
             {
@@ -4917,34 +4923,40 @@ buttons.Controls.Add(UiFactory.Button(
                     Pcsx2LiveSession.ProcessId);
                 extendedNameForm.ShowDialog(this);
             }));
-        buttons.Controls.Add(UiFactory.Button(
-            "アイテム名表示・メモリ差分診断", (_, _) =>
-            {
-                if (!Pcsx2LiveSession.IsConnected ||
-                    Pcsx2LiveSession.ProcessId <= 0)
-                {
-                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
-                    return;
-                }
-
-                using var liveSnapshotForm = new ExtendedItemNameLiveSnapshotForm(
-                    Pcsx2LiveSession.ProcessId);
-                liveSnapshotForm.ShowDialog(this);
-            }));
-        buttons.Controls.Add(UiFactory.Button(
-            "拡張名前メモリ診断（読み取り専用）", (_, _) =>
-            {
-                if (!Pcsx2LiveSession.IsConnected ||
-                    Pcsx2LiveSession.ProcessId <= 0)
-                {
-                    MessageBox.Show(this, "先にPCSX2へ接続してください。");
-                    return;
-                }
-
-                using var diagnosticsForm = new ExtendedItemNameMemoryDiagnosticsForm(
-                    Pcsx2LiveSession.ProcessId);
-                diagnosticsForm.ShowDialog(this);
-            }));
+/*
+         * v2.2 開発者引き渡し用：診断系メニューを一時除外。
+         *         buttons.Controls.Add(UiFactory.Button(
+         *             "アイテム名表示・メモリ差分診断", (_, _) =>
+         *             {
+         *                 if (!Pcsx2LiveSession.IsConnected ||
+         *                     Pcsx2LiveSession.ProcessId <= 0)
+         *                 {
+         *                     MessageBox.Show(this, "先にPCSX2へ接続してください。");
+         *                     return;
+         *                 }
+         * 
+         *                 using var liveSnapshotForm = new ExtendedItemNameLiveSnapshotForm(
+         *                     Pcsx2LiveSession.ProcessId);
+         *                 liveSnapshotForm.ShowDialog(this);
+         *             }));
+         */
+/*
+         * v2.2 開発者引き渡し用：診断系メニューを一時除外。
+         *         buttons.Controls.Add(UiFactory.Button(
+         *             "拡張名前メモリ診断（読み取り専用）", (_, _) =>
+         *             {
+         *                 if (!Pcsx2LiveSession.IsConnected ||
+         *                     Pcsx2LiveSession.ProcessId <= 0)
+         *                 {
+         *                     MessageBox.Show(this, "先にPCSX2へ接続してください。");
+         *                     return;
+         *                 }
+         * 
+         *                 using var diagnosticsForm = new ExtendedItemNameMemoryDiagnosticsForm(
+         *                     Pcsx2LiveSession.ProcessId);
+         *                 diagnosticsForm.ShowDialog(this);
+         *             }));
+         */
 
 
 
