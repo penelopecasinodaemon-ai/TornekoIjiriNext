@@ -1,0 +1,5 @@
+  68b980 T main.(*Game).MonColor
+  6bbda0 T main.(*Game).Pixels
+  68bc00 T main.(*Game).SetMonColor
+  6bc1e0 T main.(*Game).SetPixels
+  68c480 T main.(*Game).copyMonColor

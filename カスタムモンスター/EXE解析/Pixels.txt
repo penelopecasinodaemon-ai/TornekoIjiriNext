@@ -1,0 +1,1160 @@
+TEXT main.(*Game).Pixels(SB) ijiri/pixel.go
+  pixel.go:219		0x6bbda0		4c8d6424c8		LEAQ -0x38(SP), R12			
+  pixel.go:219		0x6bbda5		4d3b6610		CMPQ R12, 0x10(R14)			
+  pixel.go:219		0x6bbda9		0f86cb020000		JBE 0x6bc07a				
+  pixel.go:219		0x6bbdaf		55			PUSHQ BP				
+  pixel.go:219		0x6bbdb0		4889e5			MOVQ SP, BP				
+  pixel.go:219		0x6bbdb3		4881ecb0000000		SUBQ $0xb0, SP				
+  pixel.go:220		0x6bbdba		48898424c0000000	MOVQ AX, 0xc0(SP)			
+  pixel.go:220		0x6bbdc2		48899c24c8000000	MOVQ BX, 0xc8(SP)			
+  pixel.go:220		0x6bbdca		e8f122fdff		CALL main.(*Game).Validate(SB)		
+  pixel.go:220		0x6bbdcf		4885c0			TESTQ AX, AX				
+  pixel.go:220		0x6bbdd2		0f8541010000		JNE 0x6bbf19				
+  pixel.go:223		0x6bbdd8		488b8424c0000000	MOVQ 0xc0(SP), AX			
+  pixel.go:223		0x6bbde0		488b9c24c8000000	MOVQ 0xc8(SP), BX			
+  pixel.go:223		0x6bbde8		e8f3faffff		CALL main.(*Game).modelName(SB)		
+  pixel.go:224		0x6bbded		4885c9			TESTQ CX, CX				
+  pixel.go:224		0x6bbdf0		0f8512010000		JNE 0x6bbf08				
+  pixel.go:223		0x6bbdf6		48895c2460		MOVQ BX, 0x60(SP)			
+  pixel.go:223		0x6bbdfb		4889842488000000	MOVQ AX, 0x88(SP)			
+  pixel.go:227		0x6bbe03		488b8424c0000000	MOVQ 0xc0(SP), AX			
+  pixel.go:227		0x6bbe0b		e890220000		CALL main.(*Game).pxRead(SB)		
+  pixel.go:228		0x6bbe10		4885f6			TESTQ SI, SI				
+  pixel.go:228		0x6bbe13		0f859c000000		JNE 0x6bbeb5				
+  pixel.go:227		0x6bbe19		4889842490000000	MOVQ AX, 0x90(SP)			
+  pixel.go:76		0x6bbe21		48c744243700000000	MOVQ $0x0, 0x37(SP)			
+  pixel.go:77		0x6bbe2a		488d442440		LEAQ 0x40(SP), AX			
+  pixel.go:77		0x6bbe2f		488b9c2488000000	MOVQ 0x88(SP), BX			
+  pixel.go:77		0x6bbe37		488b4c2460		MOVQ 0x60(SP), CX			
+  pixel.go:77		0x6bbe3c		488d3dd3341100		LEAQ go:string.*+4702(SB), DI		
+  pixel.go:77		0x6bbe43		be08000000		MOVL $0x8, SI				
+  pixel.go:77		0x6bbe48		e813a9d9ff		CALL runtime.concatstring2(SB)		
+  pixel.go:77		0x6bbe4d		4883fb08		CMPQ BX, $0x8				
+  pixel.go:77		0x6bbe51		b908000000		MOVL $0x8, CX				
+  pixel.go:77		0x6bbe56		480f4ccb		CMOVL BX, CX				
+  pixel.go:77		0x6bbe5a		488d542437		LEAQ 0x37(SP), DX			
+  pixel.go:77		0x6bbe5f		90			NOPL					
+  pixel.go:77		0x6bbe60		4839d0			CMPQ AX, DX				
+  pixel.go:77		0x6bbe63		740b			JE 0x6bbe70				
+  pixel.go:77		0x6bbe65		4889c3			MOVQ AX, BX				
+  pixel.go:77		0x6bbe68		4889d0			MOVQ DX, AX				
+  pixel.go:77		0x6bbe6b		e850b3dbff		CALL runtime.memmove(SB)		
+  pixel.go:231		0x6bbe70		488b542437		MOVQ 0x37(SP), DX			
+  pixel.go:231		0x6bbe75		488954242f		MOVQ DX, 0x2f(SP)			
+  pixel.go:231		0x6bbe7a		488b4c242f		MOVQ 0x2f(SP), CX			
+  pixel.go:231		0x6bbe7f		488d053ad60b00		LEAQ type:*+283840(SB), AX		
+  pixel.go:231		0x6bbe86		488b9c2490000000	MOVQ 0x90(SP), BX			
+  pixel.go:231		0x6bbe8e		e8edb9d4ff		CALL runtime.mapaccess1_fast64(SB)	
+  pixel.go:43		0x6bbe93		488b15a6644700		MOVQ main.pxSites(SB), DX		
+  pixel.go:43		0x6bbe9a		488b35a7644700		MOVQ main.pxSites+8(SB), SI		
+  pixel.go:43		0x6bbea1		4889b42480000000	MOVQ SI, 0x80(SP)			
+  pixel.go:43		0x6bbea9		488bbc24c0000000	MOVQ 0xc0(SP), DI			
+  pixel.go:43		0x6bbeb1		31c9			XORL CX, CX				
+  pixel.go:43		0x6bbeb3		eb78			JMP 0x6bbf2d				
+  pixel.go:229		0x6bbeb5		440f11bc24a0000000	MOVUPS X15, 0xa0(SP)			
+  pixel.go:229		0x6bbebe		6690			NOPW					
+  pixel.go:229		0x6bbec0		7404			JE 0x6bbec6				
+  pixel.go:229		0x6bbec2		488b7608		MOVQ 0x8(SI), SI			
+  pixel.go:229		0x6bbec6		4889b424a0000000	MOVQ SI, 0xa0(SP)			
+  pixel.go:229		0x6bbece		4c898424a8000000	MOVQ R8, 0xa8(SP)			
+  pixel.go:229		0x6bbed6		488d0581191300		LEAQ go:string.*+128934(SB), AX		
+  pixel.go:229		0x6bbedd		bb7d000000		MOVL $0x7d, BX				
+  pixel.go:229		0x6bbee2		488d8c24a0000000	LEAQ 0xa0(SP), CX			
+  pixel.go:229		0x6bbeea		bf01000000		MOVL $0x1, DI				
+  pixel.go:229		0x6bbeef		4889fe			MOVQ DI, SI				
+  pixel.go:229		0x6bbef2		e8a9f3e1ff		CALL fmt.Errorf(SB)			
+  pixel.go:229		0x6bbef7		4889d9			MOVQ BX, CX				
+  pixel.go:229		0x6bbefa		4889c3			MOVQ AX, BX				
+  pixel.go:229		0x6bbefd		31c0			XORL AX, AX				
+  pixel.go:229		0x6bbeff		4881c4b0000000		ADDQ $0xb0, SP				
+  pixel.go:229		0x6bbf06		5d			POPQ BP					
+  pixel.go:229		0x6bbf07		c3			RET					
+  pixel.go:225		0x6bbf08		31c0			XORL AX, AX				
+  pixel.go:225		0x6bbf0a		4889cb			MOVQ CX, BX				
+  pixel.go:225		0x6bbf0d		4889f9			MOVQ DI, CX				
+  pixel.go:225		0x6bbf10		4881c4b0000000		ADDQ $0xb0, SP				
+  pixel.go:225		0x6bbf17		5d			POPQ BP					
+  pixel.go:225		0x6bbf18		c3			RET					
+  pixel.go:221		0x6bbf19		4889d9			MOVQ BX, CX				
+  pixel.go:221		0x6bbf1c		4889c3			MOVQ AX, BX				
+  pixel.go:221		0x6bbf1f		31c0			XORL AX, AX				
+  pixel.go:221		0x6bbf21		4881c4b0000000		ADDQ $0xb0, SP				
+  pixel.go:221		0x6bbf28		5d			POPQ BP					
+  pixel.go:221		0x6bbf29		c3			RET					
+  pixel.go:43		0x6bbf2a		48ffc1			INCQ CX					
+  pixel.go:43		0x6bbf2d		48894c2478		MOVQ CX, 0x78(SP)			
+  pixel.go:43		0x6bbf32		4839f1			CMPQ CX, SI				
+  pixel.go:43		0x6bbf35		7d42			JGE 0x6bbf79				
+  pixel.go:43		0x6bbf37		8b1c8a			MOVL 0(DX)(CX*4), BX			
+  core.go:151		0x6bbf3a		4c8b4708		MOVQ 0x8(DI), R8			
+  core.go:151		0x6bbf3e		6690			NOPW					
+  core.go:151		0x6bbf40		4939d8			CMPQ R8, BX				
+  core.go:151		0x6bbf43		0f8225010000		JB 0x6bc06e				
+  core.go:151		0x6bbf49		4c8b4f10		MOVQ 0x10(DI), R9			
+  core.go:151		0x6bbf4d		4929d8			SUBQ BX, R8				
+  core.go:151		0x6bbf50		4989da			MOVQ BX, R10				
+  core.go:151		0x6bbf53		4c29cb			SUBQ R9, BX				
+  core.go:151		0x6bbf56		48c1fb3f		SARQ $0x3f, BX				
+  core.go:151		0x6bbf5a		4921da			ANDQ BX, R10				
+  core.go:151		0x6bbf5d		0f1f00			NOPL 0(AX)				
+  binary.go:91		0x6bbf60		4983f803		CMPQ R8, $0x3				
+  binary.go:91		0x6bbf64		0f86f7000000		JBE 0x6bc061				
+  core.go:151		0x6bbf6a		488b1f			MOVQ 0(DI), BX				
+  binary.go:92		0x6bbf6d		428b1c13		MOVL 0(BX)(R10*1), BX			
+  binary.go:92		0x6bbf71		81fb7783270c		CMPL BX, $0xc278377			
+  pixel.go:44		0x6bbf77		74b1			JE 0x6bbf2a				
+  pixel.go:231		0x6bbf79		488b08			MOVQ 0(AX), CX				
+  pixel.go:231		0x6bbf7c		48898c2498000000	MOVQ CX, 0x98(SP)			
+  pixel.go:232		0x6bbf84		4889f8			MOVQ DI, AX				
+  pixel.go:232		0x6bbf87		e874ebffff		CALL main.(*Game).hasPxFill(SB)		
+  pixel.go:232		0x6bbf8c		8844243f		MOVB AL, 0x3f(SP)			
+  pixel.go:232		0x6bbf90		488b842498000000	MOVQ 0x98(SP), AX			
+  pixel.go:232		0x6bbf98		e803370000		CALL main.(*PxBlk).size(SB)		
+  pixel.go:232		0x6bbf9d		4889442470		MOVQ AX, 0x70(SP)			
+  pixel.go:232		0x6bbfa2		488b8c2490000000	MOVQ 0x90(SP), CX			
+  pixel.go:232		0x6bbfaa		4885c9			TESTQ CX, CX				
+  pixel.go:232		0x6bbfad		7405			JE 0x6bbfb4				
+  pixel.go:232		0x6bbfaf		488b11			MOVQ 0(CX), DX				
+  pixel.go:232		0x6bbfb2		eb02			JMP 0x6bbfb6				
+  pixel.go:232		0x6bbfb4		31d2			XORL DX, DX				
+  pixel.go:232		0x6bbfb6		4889542468		MOVQ DX, 0x68(SP)			
+  pixel.go:232		0x6bbfbb		488d05befe0f00		LEAQ type:*+556672(SB), AX		
+  pixel.go:232		0x6bbfc2		e8999ad5ff		CALL runtime.newobject(SB)		
+  pixel.go:43		0x6bbfc7		488b4c2478		MOVQ 0x78(SP), CX			
+  pixel.go:43		0x6bbfcc		488b942480000000	MOVQ 0x80(SP), DX			
+  pixel.go:43		0x6bbfd4		4839d1			CMPQ CX, DX				
+  pixel.go:232		0x6bbfd7		0f9d00			SETGE 0(AX)				
+  pixel.go:232		0x6bbfda		0fb64c243f		MOVZX 0x3f(SP), CX			
+  pixel.go:232		0x6bbfdf		884801			MOVB CL, 0x1(AX)			
+  pixel.go:232		0x6bbfe2		488b4c2460		MOVQ 0x60(SP), CX			
+  pixel.go:232		0x6bbfe7		48894810		MOVQ CX, 0x10(AX)			
+  pixel.go:232		0x6bbfeb		833d5e134d0000		CMPL runtime.writeBarrier(SB), $0x0	
+  pixel.go:232		0x6bbff2		7512			JNE 0x6bc006				
+  pixel.go:232		0x6bbff4		488b942488000000	MOVQ 0x88(SP), DX			
+  pixel.go:232		0x6bbffc		488bb42498000000	MOVQ 0x98(SP), SI			
+  pixel.go:232		0x6bc004		eb1c			JMP 0x6bc022				
+  pixel.go:232		0x6bc006		e855a4dbff		CALL runtime.gcWriteBarrier2(SB)	
+  pixel.go:232		0x6bc00b		488b942488000000	MOVQ 0x88(SP), DX			
+  pixel.go:232		0x6bc013		498913			MOVQ DX, 0(R11)				
+  pixel.go:232		0x6bc016		488bb42498000000	MOVQ 0x98(SP), SI			
+  pixel.go:232		0x6bc01e		49897308		MOVQ SI, 0x8(R11)			
+  pixel.go:232		0x6bc022		48895008		MOVQ DX, 0x8(AX)			
+  pixel.go:232		0x6bc026		48897018		MOVQ SI, 0x18(AX)			
+  pixel.go:232		0x6bc02a		488b542470		MOVQ 0x70(SP), DX			
+  pixel.go:232		0x6bc02f		48895020		MOVQ DX, 0x20(AX)			
+  pixel.go:232		0x6bc033		488b542468		MOVQ 0x68(SP), DX			
+  pixel.go:232		0x6bc038		48895040		MOVQ DX, 0x40(AX)			
+  pixel.go:232		0x6bc03c		4889c3			MOVQ AX, BX				
+  pixel.go:232		0x6bc03f		488b8c2490000000	MOVQ 0x90(SP), CX			
+  pixel.go:232		0x6bc047		488b8424c0000000	MOVQ 0xc0(SP), AX			
+  pixel.go:232		0x6bc04f		e82cfbffff		CALL main.(*Game).pxInfo(SB)		
+  pixel.go:232		0x6bc054		31db			XORL BX, BX				
+  pixel.go:232		0x6bc056		31c9			XORL CX, CX				
+  pixel.go:232		0x6bc058		4881c4b0000000		ADDQ $0xb0, SP				
+  pixel.go:232		0x6bc05f		5d			POPQ BP					
+  pixel.go:232		0x6bc060		c3			RET					
+  binary.go:91		0x6bc061		b803000000		MOVL $0x3, AX				
+  binary.go:91		0x6bc066		4c89c1			MOVQ R8, CX				
+  binary.go:91		0x6bc069		e892a7dbff		CALL runtime.panicIndex(SB)		
+  core.go:151		0x6bc06e		4889d8			MOVQ BX, AX				
+  core.go:151		0x6bc071		4c89c1			MOVQ R8, CX				
+  core.go:151		0x6bc074		e847a8dbff		CALL runtime.panicSliceB(SB)		
+  core.go:151		0x6bc079		90			NOPL					
+  pixel.go:219		0x6bc07a		4889442408		MOVQ AX, 0x8(SP)			
+  pixel.go:219		0x6bc07f		48895c2410		MOVQ BX, 0x10(SP)			
+  pixel.go:219		0x6bc084		e89784dbff		CALL runtime.morestack_noctxt.abi0(SB)	
+  pixel.go:219		0x6bc089		488b442408		MOVQ 0x8(SP), AX			
+  pixel.go:219		0x6bc08e		488b5c2410		MOVQ 0x10(SP), BX			
+  pixel.go:219		0x6bc093		e908fdffff		JMP main.(*Game).Pixels(SB)		
+  :-1			0x6bc098		cc			INT $0x3				
+  :-1			0x6bc099		cc			INT $0x3				
+  :-1			0x6bc09a		cc			INT $0x3				
+  :-1			0x6bc09b		cc			INT $0x3				
+  :-1			0x6bc09c		cc			INT $0x3				
+  :-1			0x6bc09d		cc			INT $0x3				
+  :-1			0x6bc09e		cc			INT $0x3				
+  :-1			0x6bc09f		cc			INT $0x3				
+
+TEXT main.(*Game).SetPixels(SB) ijiri/pixel.go
+  pixel.go:250		0x6bc1e0		4989e4				MOVQ SP, R12				
+  pixel.go:250		0x6bc1e3		4981ec80050100			SUBQ $0x10580, R12			
+  pixel.go:250		0x6bc1ea		0f82f6100000			JB 0x6bd2e6				
+  pixel.go:250		0x6bc1f0		4d3b6610			CMPQ R12, 0x10(R14)			
+  pixel.go:250		0x6bc1f4		0f86ec100000			JBE 0x6bd2e6				
+  pixel.go:250		0x6bc1fa		55				PUSHQ BP				
+  pixel.go:250		0x6bc1fb		4889e5				MOVQ SP, BP				
+  pixel.go:250		0x6bc1fe		4881ecf8050100			SUBQ $0x105f8, SP			
+  pixel.go:251		0x6bc205		4889842438060100		MOVQ AX, 0x10638(SP)			
+  pixel.go:251		0x6bc20d		48899c2440060100		MOVQ BX, 0x10640(SP)			
+  pixel.go:251		0x6bc215		4c89842460060100		MOVQ R8, 0x10660(SP)			
+  pixel.go:251		0x6bc21d		4c89942470060100		MOVQ R10, 0x10670(SP)			
+  pixel.go:251		0x6bc225		4c898c2468060100		MOVQ R9, 0x10668(SP)			
+  pixel.go:251		0x6bc22d		4889bc2450060100		MOVQ DI, 0x10650(SP)			
+  pixel.go:251		0x6bc235		48898c2448060100		MOVQ CX, 0x10648(SP)			
+  pixel.go:251		0x6bc23d		0f1f00				NOPL 0(AX)				
+  pixel.go:251		0x6bc240		e87b1efdff			CALL main.(*Game).Validate(SB)		
+  pixel.go:251		0x6bc245		4885c0				TESTQ AX, AX				
+  pixel.go:251		0x6bc248		751b				JNE 0x6bc265				
+  pixel.go:254		0x6bc24a		90				NOPL					
+  pixel.go:43		0x6bc24b		488b15ee604700			MOVQ main.pxSites(SB), DX		
+  pixel.go:43		0x6bc252		4c8b05ef604700			MOVQ main.pxSites+8(SB), R8		
+  pixel.go:43		0x6bc259		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:43		0x6bc261		31c9				XORL CX, CX				
+  pixel.go:43		0x6bc263		eb14				JMP 0x6bc279				
+  pixel.go:252		0x6bc265		4889d9				MOVQ BX, CX				
+  pixel.go:252		0x6bc268		4889c3				MOVQ AX, BX				
+  pixel.go:252		0x6bc26b		31c0				XORL AX, AX				
+  pixel.go:252		0x6bc26d		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:252		0x6bc274		5d				POPQ BP					
+  pixel.go:252		0x6bc275		c3				RET					
+  pixel.go:43		0x6bc276		48ffc1				INCQ CX					
+  pixel.go:43		0x6bc279		4c39c1				CMPQ CX, R8				
+  pixel.go:43		0x6bc27c		7d68				JGE 0x6bc2e6				
+  pixel.go:43		0x6bc27e		448b0c8a			MOVL 0(DX)(CX*4), R9			
+  core.go:151		0x6bc282		4c8b5008			MOVQ 0x8(AX), R10			
+  core.go:151		0x6bc286		4d39ca				CMPQ R10, R9				
+  core.go:151		0x6bc289		0f824b100000			JB 0x6bd2da				
+  core.go:151		0x6bc28f		4c8b5810			MOVQ 0x10(AX), R11			
+  core.go:151		0x6bc293		4d29ca				SUBQ R9, R10				
+  core.go:151		0x6bc296		4d89cc				MOVQ R9, R12				
+  core.go:151		0x6bc299		4d29d9				SUBQ R11, R9				
+  core.go:151		0x6bc29c		49c1f93f			SARQ $0x3f, R9				
+  core.go:151		0x6bc2a0		4d21cc				ANDQ R9, R12				
+  binary.go:91		0x6bc2a3		4983fa03			CMPQ R10, $0x3				
+  binary.go:91		0x6bc2a7		0f8620100000			JBE 0x6bd2cd				
+  core.go:151		0x6bc2ad		4c8b08				MOVQ 0(AX), R9				
+  binary.go:92		0x6bc2b0		478b0c0c			MOVL 0(R12)(R9*1), R9			
+  binary.go:92		0x6bc2b4		4181f97783270c			CMPL R9, $0xc278377			
+  pixel.go:44		0x6bc2bb		74b9				JE 0x6bc276				
+  pixel.go:255		0x6bc2bd		488d0507d91200			LEAQ go:string.*+113427(SB), AX		
+  pixel.go:255		0x6bc2c4		bb4a000000			MOVL $0x4a, BX				
+  pixel.go:255		0x6bc2c9		31c9				XORL CX, CX				
+  pixel.go:255		0x6bc2cb		31ff				XORL DI, DI				
+  pixel.go:255		0x6bc2cd		4889fe				MOVQ DI, SI				
+  pixel.go:255		0x6bc2d0		e8cbefe1ff			CALL fmt.Errorf(SB)			
+  pixel.go:255		0x6bc2d5		4889d9				MOVQ BX, CX				
+  pixel.go:255		0x6bc2d8		4889c3				MOVQ AX, BX				
+  pixel.go:255		0x6bc2db		31c0				XORL AX, AX				
+  pixel.go:255		0x6bc2dd		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:255		0x6bc2e4		5d				POPQ BP					
+  pixel.go:255		0x6bc2e5		c3				RET					
+  pixel.go:257		0x6bc2e6		488b9c2440060100		MOVQ 0x10640(SP), BX			
+  pixel.go:257		0x6bc2ee		e8edf5ffff			CALL main.(*Game).modelName(SB)		
+  pixel.go:258		0x6bc2f3		4885c9				TESTQ CX, CX				
+  pixel.go:258		0x6bc2f6		0f8521010000			JNE 0x6bc41d				
+  pixel.go:257		0x6bc2fc		48899c2480040100		MOVQ BX, 0x10480(SP)			
+  pixel.go:257		0x6bc304		48898424f0040100		MOVQ AX, 0x104f0(SP)			
+  pixel.go:261		0x6bc30c		488b155d8d4800			MOVQ main.pxOdd(SB), DX			
+  pixel.go:261		0x6bc313		4889c1				MOVQ AX, CX				
+  pixel.go:261		0x6bc316		4889df				MOVQ BX, DI				
+  pixel.go:261		0x6bc319		488d05a0d60b00			LEAQ type:*+285120(SB), AX		
+  pixel.go:261		0x6bc320		4889d3				MOVQ DX, BX				
+  pixel.go:261		0x6bc323		e8d8c0d4ff			CALL runtime.mapaccess1_faststr(SB)	
+  pixel.go:261		0x6bc328		803800				CMPB 0(AX), $0x0			
+  pixel.go:261		0x6bc32b		0f8585000000			JNE 0x6bc3b6				
+  pixel.go:264		0x6bc331		4c8b842468060100		MOVQ 0x10668(SP), R8			
+  pixel.go:264		0x6bc339		0f1f8000000000			NOPL 0(AX)				
+  pixel.go:264		0x6bc340		4981f800000100			CMPQ R8, $0x10000			
+  pixel.go:264		0x6bc347		7544				JNE 0x6bc38d				
+  pixel.go:268		0x6bc349		488dbc2478040000		LEAQ 0x478(SP), DI			
+  pixel.go:268		0x6bc351		b900200000			MOVL $0x2000, CX			
+  pixel.go:268		0x6bc356		31c0				XORL AX, AX				
+  pixel.go:268		0x6bc358		f348ab				REP; STOSQ AX, ES:0(DI)			
+  pixel.go:269		0x6bc35b		4c8b8c2448060100		MOVQ 0x10648(SP), R9			
+  pixel.go:269		0x6bc363		4d89ca				MOVQ R9, R10				
+  pixel.go:269		0x6bc366		4c8b9c2460060100		MOVQ 0x10660(SP), R11			
+  pixel.go:269		0x6bc36e		488b942470060100		MOVQ 0x10670(SP), DX			
+  pixel.go:269		0x6bc376		4c8ba42450060100		MOVQ 0x10650(SP), R12			
+  pixel.go:251		0x6bc37e		4c89e0				MOVQ R12, AX				
+  pixel.go:251		0x6bc381		48c7c1ffffffff			MOVQ $-0x1, CX				
+  pixel.go:269		0x6bc388		e9f3000000			JMP 0x6bc480				
+  pixel.go:265		0x6bc38d		488d05ff491200			LEAQ go:string.*+77019(SB), AX		
+  pixel.go:265		0x6bc394		bb2a000000			MOVL $0x2a, BX				
+  pixel.go:265		0x6bc399		31c9				XORL CX, CX				
+  pixel.go:265		0x6bc39b		31ff				XORL DI, DI				
+  pixel.go:265		0x6bc39d		4889fe				MOVQ DI, SI				
+  pixel.go:265		0x6bc3a0		e8fbeee1ff			CALL fmt.Errorf(SB)			
+  pixel.go:265		0x6bc3a5		4889d9				MOVQ BX, CX				
+  pixel.go:265		0x6bc3a8		4889c3				MOVQ AX, BX				
+  pixel.go:265		0x6bc3ab		31c0				XORL AX, AX				
+  pixel.go:265		0x6bc3ad		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:265		0x6bc3b4		5d				POPQ BP					
+  pixel.go:265		0x6bc3b5		c3				RET					
+  pixel.go:262		0x6bc3b6		440f11bc2410050100		MOVUPS X15, 0x10510(SP)			
+  pixel.go:262		0x6bc3bf		488b8424f0040100		MOVQ 0x104f0(SP), AX			
+  pixel.go:262		0x6bc3c7		488b9c2480040100		MOVQ 0x10480(SP), BX			
+  pixel.go:262		0x6bc3cf		e86cfedaff			CALL runtime.convTstring(SB)		
+  pixel.go:262		0x6bc3d4		488d0d65fe0900			LEAQ type:*+164416(SB), CX		
+  pixel.go:262		0x6bc3db		48898c2410050100		MOVQ CX, 0x10510(SP)			
+  pixel.go:262		0x6bc3e3		4889842418050100		MOVQ AX, 0x10518(SP)			
+  pixel.go:262		0x6bc3eb		488d0538f31200			LEAQ go:string.*+120434(SB), AX		
+  pixel.go:262		0x6bc3f2		bb56000000			MOVL $0x56, BX				
+  pixel.go:262		0x6bc3f7		488d8c2410050100		LEAQ 0x10510(SP), CX			
+  pixel.go:262		0x6bc3ff		bf01000000			MOVL $0x1, DI				
+  pixel.go:262		0x6bc404		4889fe				MOVQ DI, SI				
+  pixel.go:262		0x6bc407		e894eee1ff			CALL fmt.Errorf(SB)			
+  pixel.go:262		0x6bc40c		4889d9				MOVQ BX, CX				
+  pixel.go:262		0x6bc40f		4889c3				MOVQ AX, BX				
+  pixel.go:262		0x6bc412		31c0				XORL AX, AX				
+  pixel.go:262		0x6bc414		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:262		0x6bc41b		5d				POPQ BP					
+  pixel.go:262		0x6bc41c		c3				RET					
+  pixel.go:259		0x6bc41d		31c0				XORL AX, AX				
+  pixel.go:259		0x6bc41f		4889cb				MOVQ CX, BX				
+  pixel.go:259		0x6bc422		4889f9				MOVQ DI, CX				
+  pixel.go:259		0x6bc425		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:259		0x6bc42c		5d				POPQ BP					
+  pixel.go:259		0x6bc42d		c3				RET					
+  pixel.go:269		0x6bc42e		4c8b8c2440050100		MOVQ 0x10540(SP), R9			
+  pixel.go:269		0x6bc436		4983c120			ADDQ $0x20, R9				
+  pixel.go:269		0x6bc43a		4c8ba424d8040100		MOVQ 0x104d8(SP), R12			
+  pixel.go:269		0x6bc442		49ffcc				DECQ R12				
+  pixel.go:279		0x6bc445		4c8bac2498040100		MOVQ 0x10498(SP), R13			
+  pixel.go:279		0x6bc44d		4a8d0c28			LEAQ 0(AX)(R13*1), CX			
+  pixel.go:279		0x6bc451		488d49ff			LEAQ -0x1(CX), CX			
+  pixel.go:269		0x6bc455		4c8b9c2460060100		MOVQ 0x10660(SP), R11			
+  pixel.go:269		0x6bc45d		488b942470060100		MOVQ 0x10670(SP), DX			
+  pxenc.go:72		0x6bc465		488b842450060100		MOVQ 0x10650(SP), AX			
+  pixel.go:291		0x6bc46d		4c8b842468060100		MOVQ 0x10668(SP), R8			
+  pxenc.go:76		0x6bc475		4c8b942448060100		MOVQ 0x10648(SP), R10			
+  pxenc.go:76		0x6bc47d		0f1f00				NOPL 0(AX)				
+  pixel.go:269		0x6bc480		4d85e4				TESTQ R12, R12				
+  pixel.go:269		0x6bc483		0f8e0e010000			JLE 0x6bc597				
+  pixel.go:270		0x6bc489		4d8b6910			MOVQ 0x10(R9), R13			
+  pixel.go:270		0x6bc48d		4d85ed				TESTQ R13, R13				
+  pixel.go:270		0x6bc490		0f84d8000000			JE 0x6bc56e				
+  pixel.go:269		0x6bc496		4d8b39				MOVQ 0(R9), R15				
+  pixel.go:269		0x6bc499		0f1f8000000000			NOPL 0(AX)				
+  pixel.go:270		0x6bc4a0		4d85ff				TESTQ R15, R15				
+  pixel.go:270		0x6bc4a3		0f8cc5000000			JL 0x6bc56e				
+  pixel.go:270		0x6bc4a9		4b8d1c2f			LEAQ 0(R15)(R13*1), BX			
+  pixel.go:270		0x6bc4ad		4881fb00000100			CMPQ BX, $0x10000			
+  pixel.go:270		0x6bc4b4		0f8fb4000000			JG 0x6bc56e				
+  pixel.go:270		0x6bc4ba		660f1f440000			NOPW 0(AX)(AX*1)			
+  pixel.go:270		0x6bc4c0		4c39f9				CMPQ CX, R15				
+  pixel.go:270		0x6bc4c3		0f8da5000000			JGE 0x6bc56e				
+  pixel.go:273		0x6bc4c9		4839da				CMPQ DX, BX				
+  pixel.go:273		0x6bc4cc		0f82f30d0000			JB 0x6bd2c5				
+  pixel.go:273		0x6bc4d2		4939df				CMPQ R15, BX				
+  pixel.go:273		0x6bc4d5		0f87dc0d0000			JA 0x6bd2b7				
+  pixel.go:269		0x6bc4db		4c89a424d8040100		MOVQ R12, 0x104d8(SP)			
+  pixel.go:269		0x6bc4e3		4c898c2440050100		MOVQ R9, 0x10540(SP)			
+  pixel.go:270		0x6bc4eb		48899c24d0040100		MOVQ BX, 0x104d0(SP)			
+  pixel.go:270		0x6bc4f3		4c89ac2498040100		MOVQ R13, 0x10498(SP)			
+  pixel.go:269		0x6bc4fb		4c89bc24c8040100		MOVQ R15, 0x104c8(SP)			
+  pixel.go:269		0x6bc503		498b5908			MOVQ 0x8(R9), BX			
+  pixel.go:273		0x6bc507		4c89fe				MOVQ R15, SI				
+  pixel.go:273		0x6bc50a		4929d7				SUBQ DX, R15				
+  pixel.go:273		0x6bc50d		49c1ff3f			SARQ $0x3f, R15				
+  pixel.go:273		0x6bc511		4921f7				ANDQ SI, R15				
+  pixel.go:273		0x6bc514		4b8d043b			LEAQ 0(R11)(R15*1), AX			
+  bytes.go:22		0x6bc518		4c89e9				MOVQ R13, CX				
+  bytes.go:22		0x6bc51b		0f1f440000			NOPL 0(AX)(AX*1)			
+  bytes.go:22		0x6bc520		e85b71d4ff			CALL runtime.memequal(SB)		
+  bytes.go:22		0x6bc525		84c0				TESTL AL, AL				
+  pixel.go:273		0x6bc527		741c				JE 0x6bc545				
+  pixel.go:276		0x6bc529		4c8b8424d0040100		MOVQ 0x104d0(SP), R8			
+  pixel.go:276		0x6bc531		4c8bbc24c8040100		MOVQ 0x104c8(SP), R15			
+  pixel.go:269		0x6bc539		4c89f8				MOVQ R15, AX				
+  pixel.go:269		0x6bc53c		0f1f4000			NOPL 0(AX)				
+  pixel.go:276		0x6bc540		e9680d0000			JMP 0x6bd2ad				
+  pixel.go:274		0x6bc545		488d0593811200			LEAQ go:string.*+91687(SB), AX		
+  pixel.go:274		0x6bc54c		bb33000000			MOVL $0x33, BX				
+  pixel.go:274		0x6bc551		31c9				XORL CX, CX				
+  pixel.go:274		0x6bc553		31ff				XORL DI, DI				
+  pixel.go:274		0x6bc555		4889fe				MOVQ DI, SI				
+  pixel.go:274		0x6bc558		e843ede1ff			CALL fmt.Errorf(SB)			
+  pixel.go:274		0x6bc55d		4889d9				MOVQ BX, CX				
+  pixel.go:274		0x6bc560		4889c3				MOVQ AX, BX				
+  pixel.go:274		0x6bc563		31c0				XORL AX, AX				
+  pixel.go:274		0x6bc565		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:274		0x6bc56c		5d				POPQ BP					
+  pixel.go:274		0x6bc56d		c3				RET					
+  pixel.go:271		0x6bc56e		488d0558b11200			LEAQ go:string.*+103957(SB), AX		
+  pixel.go:271		0x6bc575		bb3f000000			MOVL $0x3f, BX				
+  pixel.go:271		0x6bc57a		31c9				XORL CX, CX				
+  pixel.go:271		0x6bc57c		31ff				XORL DI, DI				
+  pixel.go:271		0x6bc57e		4889fe				MOVQ DI, SI				
+  pixel.go:271		0x6bc581		e81aede1ff			CALL fmt.Errorf(SB)			
+  pixel.go:271		0x6bc586		4889d9				MOVQ BX, CX				
+  pixel.go:271		0x6bc589		4889c3				MOVQ AX, BX				
+  pixel.go:271		0x6bc58c		31c0				XORL AX, AX				
+  pixel.go:271		0x6bc58e		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:271		0x6bc595		5d				POPQ BP					
+  pixel.go:271		0x6bc596		c3				RET					
+  pixel.go:282		0x6bc597		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:282		0x6bc59f		90				NOPL					
+  pixel.go:282		0x6bc5a0		e85be5ffff			CALL main.(*Game).hasPxFill(SB)		
+  pixel.go:282		0x6bc5a5		84c0				TESTL AL, AL				
+  pixel.go:282		0x6bc5a7		7458				JE 0x6bc601				
+  pixel.go:282		0x6bc5a9		488b842420060100		MOVQ 0x10620(SP), AX			
+  pixel.go:282		0x6bc5b1		4885c0				TESTQ AX, AX				
+  pixel.go:282		0x6bc5b4		744b				JE 0x6bc601				
+  pixel.go:283		0x6bc5b6		488b9c2428060100		MOVQ 0x10628(SP), BX			
+  pixel.go:283		0x6bc5be		6690				NOPW					
+  pixel.go:283		0x6bc5c0		4881fb00000100			CMPQ BX, $0x10000			
+  pixel.go:283		0x6bc5c7		750f				JNE 0x6bc5d8				
+  pixel.go:286		0x6bc5c9		488bbc2460060100		MOVQ 0x10660(SP), DI			
+  pixel.go:286		0x6bc5d1		31c9				XORL CX, CX				
+  pixel.go:286		0x6bc5d3		e9940b0000			JMP 0x6bd16c				
+  pixel.go:284		0x6bc5d8		488d057e701200			LEAQ go:string.*+87461(SB), AX		
+  pixel.go:284		0x6bc5df		bb30000000			MOVL $0x30, BX				
+  pixel.go:284		0x6bc5e4		31c9				XORL CX, CX				
+  pixel.go:284		0x6bc5e6		31ff				XORL DI, DI				
+  pixel.go:284		0x6bc5e8		4889fe				MOVQ DI, SI				
+  pixel.go:284		0x6bc5eb		e8b0ece1ff			CALL fmt.Errorf(SB)			
+  pixel.go:284		0x6bc5f0		4889d9				MOVQ BX, CX				
+  pixel.go:284		0x6bc5f3		4889c3				MOVQ AX, BX				
+  pixel.go:284		0x6bc5f6		31c0				XORL AX, AX				
+  pixel.go:284		0x6bc5f8		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:284		0x6bc5ff		5d				POPQ BP					
+  pixel.go:284		0x6bc600		c3				RET					
+  pixel.go:301		0x6bc601		90				NOPL					
+  pxenc.go:72		0x6bc602		488b8c2450060100		MOVQ 0x10650(SP), CX			
+  pxenc.go:72		0x6bc60a		4885c9				TESTQ CX, CX				
+  pxenc.go:72		0x6bc60d		7429				JE 0x6bc638				
+  pxenc.go:75		0x6bc60f		488d050a1a0d00			LEAQ type:*+368672(SB), AX		
+  pxenc.go:75		0x6bc616		e84594d5ff			CALL runtime.newobject(SB)		
+  pxenc.go:75		0x6bc61b		48898424e8040100		MOVQ AX, 0x104e8(SP)			
+  pxenc.go:76		0x6bc623		488b8c2448060100		MOVQ 0x10648(SP), CX			
+  pxenc.go:76		0x6bc62b		488b942450060100		MOVQ 0x10650(SP), DX			
+  pxenc.go:76		0x6bc633		e976080000			JMP 0x6bceae				
+  pxenc.go:76		0x6bc638		31c0				XORL AX, AX				
+  pixel.go:308		0x6bc63a		4889842408050100		MOVQ AX, 0x10508(SP)			
+  pixel.go:303		0x6bc642		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:303		0x6bc64a		e8511a0000			CALL main.(*Game).pxRead(SB)		
+  pixel.go:304		0x6bc64f		4885f6				TESTQ SI, SI				
+  pixel.go:304		0x6bc652		7451				JE 0x6bc6a5				
+  pixel.go:305		0x6bc654		440f11bc2410050100		MOVUPS X15, 0x10510(SP)			
+  pixel.go:305		0x6bc65d		7404				JE 0x6bc663				
+  pixel.go:305		0x6bc65f		488b7608			MOVQ 0x8(SI), SI			
+  pixel.go:305		0x6bc663		4889b42410050100		MOVQ SI, 0x10510(SP)			
+  pixel.go:305		0x6bc66b		4c89842418050100		MOVQ R8, 0x10518(SP)			
+  pixel.go:305		0x6bc673		488d05e4111300			LEAQ go:string.*+128934(SB), AX		
+  pixel.go:305		0x6bc67a		bb7d000000			MOVL $0x7d, BX				
+  pixel.go:305		0x6bc67f		488d8c2410050100		LEAQ 0x10510(SP), CX			
+  pixel.go:305		0x6bc687		bf01000000			MOVL $0x1, DI				
+  pixel.go:305		0x6bc68c		4889fe				MOVQ DI, SI				
+  pixel.go:305		0x6bc68f		e80cece1ff			CALL fmt.Errorf(SB)			
+  pixel.go:305		0x6bc694		4889d9				MOVQ BX, CX				
+  pixel.go:305		0x6bc697		4889c3				MOVQ AX, BX				
+  pixel.go:305		0x6bc69a		31c0				XORL AX, AX				
+  pixel.go:305		0x6bc69c		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:305		0x6bc6a3		5d				POPQ BP					
+  pixel.go:305		0x6bc6a4		c3				RET					
+  pixel.go:303		0x6bc6a5		48898424f8040100		MOVQ AX, 0x104f8(SP)			
+  pixel.go:76		0x6bc6ad		48c744244700000000		MOVQ $0x0, 0x47(SP)			
+  pixel.go:77		0x6bc6b6		488d842458040000		LEAQ 0x458(SP), AX			
+  pixel.go:77		0x6bc6be		488b9c24f0040100		MOVQ 0x104f0(SP), BX			
+  pixel.go:77		0x6bc6c6		488b8c2480040100		MOVQ 0x10480(SP), CX			
+  pixel.go:77		0x6bc6ce		488d3d412c1100			LEAQ go:string.*+4702(SB), DI		
+  pixel.go:77		0x6bc6d5		be08000000			MOVL $0x8, SI				
+  pixel.go:77		0x6bc6da		e881a0d9ff			CALL runtime.concatstring2(SB)		
+  pixel.go:77		0x6bc6df		4883fb08			CMPQ BX, $0x8				
+  pixel.go:77		0x6bc6e3		b908000000			MOVL $0x8, CX				
+  pixel.go:77		0x6bc6e8		480f4ccb			CMOVL BX, CX				
+  pixel.go:77		0x6bc6ec		488d542447			LEAQ 0x47(SP), DX			
+  pixel.go:77		0x6bc6f1		4839d0				CMPQ AX, DX				
+  pixel.go:77		0x6bc6f4		740f				JE 0x6bc705				
+  pixel.go:77		0x6bc6f6		4889c3				MOVQ AX, BX				
+  pixel.go:77		0x6bc6f9		4889d0				MOVQ DX, AX				
+  pixel.go:77		0x6bc6fc		0f1f4000			NOPL 0(AX)				
+  pixel.go:77		0x6bc700		e8bbaadbff			CALL runtime.memmove(SB)		
+  pixel.go:307		0x6bc705		488b542447			MOVQ 0x47(SP), DX			
+  pixel.go:307		0x6bc70a		488954244f			MOVQ DX, 0x4f(SP)			
+  pixel.go:308		0x6bc70f		488b942408050100		MOVQ 0x10508(SP), DX			
+  pixel.go:308		0x6bc717		4885d2				TESTQ DX, DX				
+  pixel.go:308		0x6bc71a		7460				JE 0x6bc77c				
+  pixel.go:311		0x6bc71c		48c78424e004010000000000	MOVQ $0x0, 0x104e0(SP)			
+  pixel.go:311		0x6bc728		488b4c244f			MOVQ 0x4f(SP), CX			
+  pixel.go:311		0x6bc72d		48898c24e0040100		MOVQ CX, 0x104e0(SP)			
+  pixel.go:311		0x6bc735		488d0584cd0b00			LEAQ type:*+283840(SB), AX		
+  pixel.go:311		0x6bc73c		488b9c24f8040100		MOVQ 0x104f8(SP), BX			
+  pixel.go:311		0x6bc744		e857b5d4ff			CALL runtime.mapassign_fast64(SB)	
+  pixel.go:311		0x6bc749		8400				TESTB AL, 0(AX)				
+  pixel.go:311		0x6bc74b		833dfe0b4d0000			CMPL runtime.writeBarrier(SB), $0x0	
+  pixel.go:311		0x6bc752		750c				JNE 0x6bc760				
+  pixel.go:311		0x6bc754		488b8c2408050100		MOVQ 0x10508(SP), CX			
+  pixel.go:311		0x6bc75c		eb19				JMP 0x6bc777				
+  pixel.go:311		0x6bc75e		6690				NOPW					
+  pixel.go:311		0x6bc760		e8fb9cdbff			CALL runtime.gcWriteBarrier2(SB)	
+  pixel.go:311		0x6bc765		488b8c2408050100		MOVQ 0x10508(SP), CX			
+  pixel.go:311		0x6bc76d		49890b				MOVQ CX, 0(R11)				
+  pixel.go:311		0x6bc770		488b10				MOVQ 0(AX), DX				
+  pixel.go:311		0x6bc773		49895308			MOVQ DX, 0x8(R11)			
+  pixel.go:311		0x6bc777		488908				MOVQ CX, 0(AX)				
+  pixel.go:311		0x6bc77a		eb2d				JMP 0x6bc7a9				
+  pixel.go:309		0x6bc77c		48c78424e004010000000000	MOVQ $0x0, 0x104e0(SP)			
+  pixel.go:309		0x6bc788		488b4c244f			MOVQ 0x4f(SP), CX			
+  pixel.go:309		0x6bc78d		48898c24e0040100		MOVQ CX, 0x104e0(SP)			
+  pixel.go:309		0x6bc795		488d0524cd0b00			LEAQ type:*+283840(SB), AX		
+  pixel.go:309		0x6bc79c		488b9c24f8040100		MOVQ 0x104f8(SP), BX			
+  pixel.go:309		0x6bc7a4		e8d7bbd4ff			CALL runtime.mapdelete_fast64(SB)	
+  pixel.go:313		0x6bc7a9		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:313		0x6bc7b1		e84ae3ffff			CALL main.(*Game).hasPxFill(SB)		
+  pixel.go:313		0x6bc7b6		84c0				TESTL AL, AL				
+  pixel.go:313		0x6bc7b8		7540				JNE 0x6bc7fa				
+  pixel.go:314		0x6bc7ba		488dbc2498050100		LEAQ 0x10598(SP), DI			
+  pixel.go:314		0x6bc7c2		488d7fe0			LEAQ -0x20(DI), DI			
+  pixel.go:314		0x6bc7c6		48896c24f0			MOVQ BP, -0x10(SP)			
+  pixel.go:314		0x6bc7cb		488d6c24f0			LEAQ -0x10(SP), BP			
+  pixel.go:314		0x6bc7d0		e816a3dbff			CALL 0x476aeb				
+  pixel.go:314		0x6bc7d5		488b6d00			MOVQ 0(BP), BP				
+  pixel.go:314		0x6bc7d9		488d05e0cc0b00			LEAQ type:*+283840(SB), AX		
+  pixel.go:314		0x6bc7e0		488b9c24f8040100		MOVQ 0x104f8(SP), BX			
+  pixel.go:314		0x6bc7e8		488d8c2498050100		LEAQ 0x10598(SP), CX			
+  pixel.go:314		0x6bc7f0		e82b99d5ff			CALL runtime.mapIterStart(SB)		
+  pixel.go:314		0x6bc7f5		e910060000			JMP 0x6bce0a				
+  pixel.go:320		0x6bc7fa		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:320		0x6bc802		488b9c24f8040100		MOVQ 0x104f8(SP), BX			
+  pixel.go:320		0x6bc80a		e891190000			CALL main.(*Game).pxWrite(SB)		
+  pixel.go:320		0x6bc80f		4885c0				TESTQ AX, AX				
+  pixel.go:320		0x6bc812		750e				JNE 0x6bc822				
+  pixel.go:320		0x6bc814		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:320		0x6bc81c		31c9				XORL CX, CX				
+  pixel.go:320		0x6bc81e		31d2				XORL DX, DX				
+  pixel.go:320		0x6bc820		eb19				JMP 0x6bc83b				
+  pixel.go:321		0x6bc822		4889d9				MOVQ BX, CX				
+  pixel.go:321		0x6bc825		4889c3				MOVQ AX, BX				
+  pixel.go:321		0x6bc828		31c0				XORL AX, AX				
+  pixel.go:321		0x6bc82a		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:321		0x6bc831		5d				POPQ BP					
+  pixel.go:321		0x6bc832		c3				RET					
+  pixel.go:325		0x6bc833		418d7801			LEAL 0x1(R8), DI			
+  pixel.go:347		0x6bc837		89ca				MOVL CX, DX				
+  pixel.go:325		0x6bc839		89f9				MOVL DI, CX				
+  pixel.go:347		0x6bc83b		88542446			MOVB DL, 0x46(SP)			
+  pixel.go:347		0x6bc83f		90				NOPL					
+  pixel.go:325		0x6bc840		83f90d				CMPL CX, $0xd				
+  pixel.go:325		0x6bc843		0f834c020000			JAE 0x6bca95				
+  pixel.go:327		0x6bc849		8d3409				LEAL 0(CX)(CX*1), SI			
+  pixel.go:327		0x6bc84c		8db660a35f00			LEAL 0x5fa360(SI), SI			
+  core.go:150		0x6bc852		488b7808			MOVQ 0x8(AX), DI			
+  core.go:150		0x6bc856		89f6				MOVL SI, SI				
+  core.go:150		0x6bc858		0f1f840000000000		NOPL 0(AX)(AX*1)			
+  core.go:150		0x6bc860		4839f7				CMPQ DI, SI				
+  core.go:150		0x6bc863		0f8289050000			JB 0x6bcdf2				
+  core.go:150		0x6bc869		4c8b00				MOVQ 0(AX), R8				
+  core.go:150		0x6bc86c		4c8b4810			MOVQ 0x10(AX), R9			
+  core.go:150		0x6bc870		4829f7				SUBQ SI, DI				
+  core.go:150		0x6bc873		4989f2				MOVQ SI, R10				
+  core.go:150		0x6bc876		4c29ce				SUBQ R9, SI				
+  core.go:150		0x6bc879		48c1fe3f			SARQ $0x3f, SI				
+  core.go:150		0x6bc87d		4921f2				ANDQ SI, R10				
+  core.go:150		0x6bc880		4b8d3410			LEAQ 0(R8)(R10*1), SI			
+  binary.go:70		0x6bc884		4883ff01			CMPQ DI, $0x1				
+  binary.go:70		0x6bc888		0f8657050000			JBE 0x6bcde5				
+  pixel.go:325		0x6bc88e		898c2478040100			MOVL CX, 0x10478(SP)			
+  binary.go:71		0x6bc895		480fbf1e			MOVSX 0(SI), BX				
+  pixel.go:327		0x6bc899		e842f0ffff			CALL main.(*Game).modelName(SB)		
+  pixel.go:327		0x6bc89e		6690				NOPW					
+  pixel.go:327		0x6bc8a0		4885c9				TESTQ CX, CX				
+  pixel.go:327		0x6bc8a3		740f				JE 0x6bc8b4				
+  pixel.go:327		0x6bc8a5		488bb42480040100		MOVQ 0x10480(SP), SI			
+  pixel.go:327		0x6bc8ad		b801000000			MOVL $0x1, AX				
+  pixel.go:327		0x6bc8b2		eb33				JMP 0x6bc8e7				
+  pixel.go:327		0x6bc8b4		488bb42480040100		MOVQ 0x10480(SP), SI			
+  pixel.go:327		0x6bc8bc		0f1f4000			NOPL 0(AX)				
+  pixel.go:327		0x6bc8c0		4839f3				CMPQ BX, SI				
+  pixel.go:327		0x6bc8c3		7407				JE 0x6bc8cc				
+  pixel.go:327		0x6bc8c5		b801000000			MOVL $0x1, AX				
+  pixel.go:327		0x6bc8ca		eb1b				JMP 0x6bc8e7				
+  pixel.go:327		0x6bc8cc		4889d9				MOVQ BX, CX				
+  pixel.go:327		0x6bc8cf		488b9c24f0040100		MOVQ 0x104f0(SP), BX			
+  pixel.go:327		0x6bc8d7		e8a46dd4ff			CALL runtime.memequal(SB)		
+  pixel.go:327		0x6bc8dc		83f001				XORL $0x1, AX				
+  pixel.go:327		0x6bc8df		488bb42480040100		MOVQ 0x10480(SP), SI			
+  pixel.go:327		0x6bc8e7		84c0				TESTL AL, AL				
+  pixel.go:327		0x6bc8e9		741a				JE 0x6bc905				
+  core.go:150		0x6bc8eb		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:325		0x6bc8f3		448b842478040100		MOVL 0x10478(SP), R8			
+  pixel.go:347		0x6bc8fb		0fb64c2446			MOVZX 0x46(SP), CX			
+  pixel.go:328		0x6bc900		e92effffff			JMP 0x6bc833				
+  pixel.go:330		0x6bc905		448b842478040100		MOVL 0x10478(SP), R8			
+  pixel.go:330		0x6bc90d		438d0c80			LEAL 0(R8)(R8*4), CX			
+  pixel.go:330		0x6bc911		c1e111				SHLL $0x11, CX				
+  pixel.go:331		0x6bc914		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:331		0x6bc91c		488b5010			MOVQ 0x10(AX), DX			
+  pixel.go:331		0x6bc920		448d891b00f000			LEAL 0xf0001b(CX), R9			
+  pixel.go:331		0x6bc927		4c39ca				CMPQ DX, R9				
+  pixel.go:331		0x6bc92a		0f82ac040000			JB 0x6bcddc				
+  pixel.go:331		0x6bc930		448d911000f000			LEAL 0xf00010(CX), R10			
+  pixel.go:331		0x6bc937		660f1f840000000000		NOPW 0(AX)(AX*1)			
+  pixel.go:331		0x6bc940		4d39ca				CMPQ R10, R9				
+  pixel.go:331		0x6bc943		0f8788040000			JA 0x6bcdd1				
+  pixel.go:330		0x6bc949		898c247c040100			MOVL CX, 0x1047c(SP)			
+  pixel.go:331		0x6bc950		4c8b18				MOVQ 0(AX), R11				
+  pixel.go:331		0x6bc953		4589d4				MOVL R10, R12				
+  pixel.go:331		0x6bc956		4929d2				SUBQ DX, R10				
+  pixel.go:331		0x6bc959		4d29e1				SUBQ R12, R9				
+  pixel.go:331		0x6bc95c		49c1fa3f			SARQ $0x3f, R10				
+  pixel.go:331		0x6bc960		4d21d4				ANDQ R10, R12				
+  pixel.go:331		0x6bc963		4f8d1423			LEAQ 0(R11)(R12*1), R10			
+  bytes.go:22		0x6bc967		4983f90b			CMPQ R9, $0xb				
+  bytes.go:22		0x6bc96b		7404				JE 0x6bc971				
+  bytes.go:22		0x6bc96d		31d2				XORL DX, DX				
+  bytes.go:22		0x6bc96f		eb35				JMP 0x6bc9a6				
+  bytes.go:22		0x6bc971		4c89d0				MOVQ R10, AX				
+  bytes.go:22		0x6bc974		488d1dd23b1100			LEAQ go:string.*+9365(SB), BX		
+  bytes.go:22		0x6bc97b		b90b000000			MOVL $0xb, CX				
+  bytes.go:22		0x6bc980		e8fb6cd4ff			CALL runtime.memequal(SB)		
+  pixel.go:330		0x6bc985		8b8c247c040100			MOVL 0x1047c(SP), CX			
+  pixel.go:327		0x6bc98c		488bb42480040100		MOVQ 0x10480(SP), SI			
+  pixel.go:325		0x6bc994		448b842478040100		MOVL 0x10478(SP), R8			
+  bytes.go:22		0x6bc99c		89c2				MOVL AX, DX				
+  core.go:151		0x6bc99e		488b842438060100		MOVQ 0x10638(SP), AX			
+  bytes.go:22		0x6bc9a6		84d2				TESTL DL, DL				
+  pixel.go:331		0x6bc9a8		0f84dd000000			JE 0x6bca8b				
+  pixel.go:330		0x6bc9ae		448d890000f000			LEAL 0xf00000(CX), R9			
+  core.go:151		0x6bc9b5		4c8b5008			MOVQ 0x8(AX), R10			
+  core.go:151		0x6bc9b9		0f1f8000000000			NOPL 0(AX)				
+  core.go:151		0x6bc9c0		4d39ca				CMPQ R10, R9				
+  core.go:151		0x6bc9c3		0f82fd030000			JB 0x6bcdc6				
+  core.go:151		0x6bc9c9		488b5010			MOVQ 0x10(AX), DX			
+  core.go:151		0x6bc9cd		4d29ca				SUBQ R9, R10				
+  core.go:151		0x6bc9d0		4589cb				MOVL R9, R11				
+  core.go:151		0x6bc9d3		4929d1				SUBQ DX, R9				
+  core.go:151		0x6bc9d6		49c1f93f			SARQ $0x3f, R9				
+  core.go:151		0x6bc9da		4d21cb				ANDQ R9, R11				
+  core.go:151		0x6bc9dd		0f1f00				NOPL 0(AX)				
+  binary.go:91		0x6bc9e0		4983fa03			CMPQ R10, $0x3				
+  binary.go:91		0x6bc9e4		0f86cf030000			JBE 0x6bcdb9				
+  core.go:151		0x6bc9ea		4c8b08				MOVQ 0(AX), R9				
+  binary.go:92		0x6bc9ed		478b140b			MOVL 0(R11)(R9*1), R10			
+  binary.go:92		0x6bc9f1		4183fa10			CMPL R10, $0x10				
+  pixel.go:331		0x6bc9f5		0f8590000000			JNE 0x6bca8b				
+  pixel.go:336		0x6bc9fb		4c8b942410060100		MOVQ 0x10610(SP), R10			
+  pixel.go:336		0x6bca03		4981fa00040000			CMPQ R10, $0x400			
+  pixel.go:336		0x6bca0a		741a				JE 0x6bca26				
+  color.go:96		0x6bca0c		488b942418060100		MOVQ 0x10618(SP), DX			
+  color.go:96		0x6bca14		4c8ba42408060100		MOVQ 0x10608(SP), R12			
+  color.go:96		0x6bca1c		bb01000000			MOVL $0x1, BX				
+  pixel.go:336		0x6bca21		e9bb020000			JMP 0x6bcce1				
+  pixel.go:336		0x6bca26		448d991006f100			LEAL 0xf10610(CX), R11			
+  pixel.go:336		0x6bca2d		4c39da				CMPQ DX, R11				
+  pixel.go:336		0x6bca30		0f827b030000			JB 0x6bcdb1				
+  pixel.go:336		0x6bca36		448da11002f100			LEAL 0xf10210(CX), R12			
+  pixel.go:336		0x6bca3d		0f1f00				NOPL 0(AX)				
+  pixel.go:336		0x6bca40		4d39dc				CMPQ R12, R11				
+  pixel.go:336		0x6bca43		0f875d030000			JA 0x6bcda6				
+  pixel.go:336		0x6bca49		4589e5				MOVL R12, R13				
+  pixel.go:336		0x6bca4c		4929d4				SUBQ DX, R12				
+  pixel.go:336		0x6bca4f		49c1fc3f			SARQ $0x3f, R12				
+  pixel.go:336		0x6bca53		4d21ec				ANDQ R13, R12				
+  pixel.go:336		0x6bca56		4d29eb				SUBQ R13, R11				
+  pixel.go:336		0x6bca59		4d01e1				ADDQ R12, R9				
+  color.go:90		0x6bca5c		488d7c2458			LEAQ 0x58(SP), DI			
+  color.go:90		0x6bca61		48896c24f0			MOVQ BP, -0x10(SP)			
+  color.go:90		0x6bca66		488d6c24f0			LEAQ -0x10(SP), BP			
+  color.go:90		0x6bca6b		e8309fdbff			CALL runtime.duffzero(SB)		
+  color.go:90		0x6bca70		488b6d00			MOVQ 0(BP), BP				
+  color.go:91		0x6bca74		488b942418060100		MOVQ 0x10618(SP), DX			
+  color.go:91		0x6bca7c		4c8ba42408060100		MOVQ 0x10608(SP), R12			
+  color.go:91		0x6bca84		31db				XORL BX, BX				
+  color.go:91		0x6bca86		e962010000			JMP 0x6bcbed				
+  pixel.go:347		0x6bca8b		0fb64c2446			MOVZX 0x46(SP), CX			
+  pixel.go:332		0x6bca90		e99efdffff			JMP 0x6bc833				
+  pixel.go:347		0x6bca95		e866e0ffff			CALL main.(*Game).hasPxFill(SB)		
+  pixel.go:347		0x6bca9a		88442457			MOVB AL, 0x57(SP)			
+  pixel.go:347		0x6bca9e		48c78424e004010000000000	MOVQ $0x0, 0x104e0(SP)			
+  pixel.go:347		0x6bcaaa		488b4c244f			MOVQ 0x4f(SP), CX			
+  pixel.go:347		0x6bcaaf		48898c24e0040100		MOVQ CX, 0x104e0(SP)			
+  pixel.go:347		0x6bcab7		488b4c244f			MOVQ 0x4f(SP), CX			
+  pixel.go:347		0x6bcabc		488d05fdc90b00			LEAQ type:*+283840(SB), AX		
+  pixel.go:347		0x6bcac3		488b9c24f8040100		MOVQ 0x104f8(SP), BX			
+  pixel.go:347		0x6bcacb		e8b0add4ff			CALL runtime.mapaccess1_fast64(SB)	
+  pixel.go:347		0x6bcad0		488b00				MOVQ 0(AX), AX				
+  pixel.go:347		0x6bcad3		e8c82b0000			CALL main.(*PxBlk).size(SB)		
+  pixel.go:347		0x6bcad8		48898424d8040100		MOVQ AX, 0x104d8(SP)			
+  pixel.go:347		0x6bcae0		488b8c24f8040100		MOVQ 0x104f8(SP), CX			
+  pixel.go:347		0x6bcae8		4885c9				TESTQ CX, CX				
+  pixel.go:347		0x6bcaeb		7405				JE 0x6bcaf2				
+  pixel.go:347		0x6bcaed		488b11				MOVQ 0(CX), DX				
+  pixel.go:347		0x6bcaf0		eb02				JMP 0x6bcaf4				
+  pixel.go:347		0x6bcaf2		31d2				XORL DX, DX				
+  pixel.go:347		0x6bcaf4		48899424d0040100		MOVQ DX, 0x104d0(SP)			
+  pixel.go:347		0x6bcafc		488d057df30f00			LEAQ type:*+556672(SB), AX		
+  pixel.go:347		0x6bcb03		e8588fd5ff			CALL runtime.newobject(SB)		
+  pixel.go:347		0x6bcb08		c60001				MOVB $0x1, 0(AX)			
+  pixel.go:347		0x6bcb0b		0fb64c2457			MOVZX 0x57(SP), CX			
+  pixel.go:347		0x6bcb10		884801				MOVB CL, 0x1(AX)			
+  pixel.go:347		0x6bcb13		488b8c2480040100		MOVQ 0x10480(SP), CX			
+  pixel.go:347		0x6bcb1b		48894810			MOVQ CX, 0x10(AX)			
+  pixel.go:347		0x6bcb1f		833d2a084d0000			CMPL runtime.writeBarrier(SB), $0x0	
+  pixel.go:347		0x6bcb26		750a				JNE 0x6bcb32				
+  pixel.go:347		0x6bcb28		488b9424f0040100		MOVQ 0x104f0(SP), DX			
+  pixel.go:347		0x6bcb30		eb10				JMP 0x6bcb42				
+  pixel.go:347		0x6bcb32		e80999dbff			CALL runtime.gcWriteBarrier1(SB)	
+  pixel.go:347		0x6bcb37		488b9424f0040100		MOVQ 0x104f0(SP), DX			
+  pixel.go:347		0x6bcb3f		498913				MOVQ DX, 0(R11)				
+  pixel.go:347		0x6bcb42		4889842438050100		MOVQ AX, 0x10538(SP)			
+  pixel.go:347		0x6bcb4a		48895008			MOVQ DX, 0x8(AX)			
+  pixel.go:347		0x6bcb4e		488b8c24e0040100		MOVQ 0x104e0(SP), CX			
+  pixel.go:347		0x6bcb56		488d0563c90b00			LEAQ type:*+283840(SB), AX		
+  pixel.go:347		0x6bcb5d		488b9c24f8040100		MOVQ 0x104f8(SP), BX			
+  pixel.go:347		0x6bcb65		e816add4ff			CALL runtime.mapaccess1_fast64(SB)	
+  pixel.go:347		0x6bcb6a		488b10				MOVQ 0(AX), DX				
+  pixel.go:347		0x6bcb6d		833ddc074d0000			CMPL runtime.writeBarrier(SB), $0x0	
+  pixel.go:347		0x6bcb74		750c				JNE 0x6bcb82				
+  pixel.go:347		0x6bcb76		488b9c2438050100		MOVQ 0x10538(SP), BX			
+  pixel.go:347		0x6bcb7e		6690				NOPW					
+  pixel.go:347		0x6bcb80		eb18				JMP 0x6bcb9a				
+  pixel.go:347		0x6bcb82		e8d998dbff			CALL runtime.gcWriteBarrier2(SB)	
+  pixel.go:347		0x6bcb87		498913				MOVQ DX, 0(R11)				
+  pixel.go:347		0x6bcb8a		488b9c2438050100		MOVQ 0x10538(SP), BX			
+  pixel.go:347		0x6bcb92		488b7318			MOVQ 0x18(BX), SI			
+  pixel.go:347		0x6bcb96		49897308			MOVQ SI, 0x8(R11)			
+  pixel.go:347		0x6bcb9a		48895318			MOVQ DX, 0x18(BX)			
+  pixel.go:347		0x6bcb9e		488b9424d8040100		MOVQ 0x104d8(SP), DX			
+  pixel.go:347		0x6bcba6		48895320			MOVQ DX, 0x20(BX)			
+  pixel.go:347		0x6bcbaa		0fb6542446			MOVZX 0x46(SP), DX			
+  pixel.go:347		0x6bcbaf		885338				MOVB DL, 0x38(BX)			
+  pixel.go:347		0x6bcbb2		488b9424d0040100		MOVQ 0x104d0(SP), DX			
+  pixel.go:347		0x6bcbba		48895340			MOVQ DX, 0x40(BX)			
+  pixel.go:347		0x6bcbbe		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:347		0x6bcbc6		488b8c24f8040100		MOVQ 0x104f8(SP), CX			
+  pixel.go:347		0x6bcbce		e8adefffff			CALL main.(*Game).pxInfo(SB)		
+  pixel.go:347		0x6bcbd3		31db				XORL BX, BX				
+  pixel.go:347		0x6bcbd5		31c9				XORL CX, CX				
+  pixel.go:347		0x6bcbd7		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:347		0x6bcbde		5d				POPQ BP					
+  pixel.go:347		0x6bcbdf		90				NOPL					
+  pixel.go:347		0x6bcbe0		c3				RET					
+  color.go:91		0x6bcbe1		498d5d01			LEAQ 0x1(R13), BX			
+  pixel.go:336		0x6bcbe5		4c8b942410060100		MOVQ 0x10610(SP), R10			
+  color.go:91		0x6bcbed		4881fb00010000			CMPQ BX, $0x100				
+  color.go:91		0x6bcbf4		0f8d8b000000			JGE 0x6bcc85				
+  color.go:93		0x6bcbfa		4889df				MOVQ BX, DI				
+  color.go:93		0x6bcbfd		83e318				ANDL $0x18, BX				
+  color.go:93		0x6bcc00		4883fb08			CMPQ BX, $0x8				
+  color.go:93		0x6bcc04		7406				JE 0x6bcc0c				
+  color.go:93		0x6bcc06		4883fb10			CMPQ BX, $0x10				
+  color.go:93		0x6bcc0a		7509				JNE 0x6bcc15				
+  color.go:94		0x6bcc0c		4889fb				MOVQ DI, BX				
+  color.go:94		0x6bcc0f		4883f318			XORQ $0x18, BX				
+  color.go:94		0x6bcc13		eb03				JMP 0x6bcc18				
+  color.go:96		0x6bcc15		4889fb				MOVQ DI, BX				
+  color.go:96		0x6bcc18		4989fd				MOVQ DI, R13				
+  color.go:96		0x6bcc1b		48c1e702			SHLQ $0x2, DI				
+  color.go:96		0x6bcc1f		4c8d7f04			LEAQ 0x4(DI), R15			
+  color.go:96		0x6bcc23		4c39ff				CMPQ DI, R15				
+  color.go:96		0x6bcc26		0f876f010000			JA 0x6bcd9b				
+  color.go:96		0x6bcc2c		4c8dbf00fcffff			LEAQ 0xfffffc00(DI), R15		
+  color.go:96		0x6bcc33		49c1ff3f			SARQ $0x3f, R15				
+  color.go:96		0x6bcc37		48c1e302			SHLQ $0x2, BX				
+  color.go:96		0x6bcc3b		4c8d5304			LEAQ 0x4(BX), R10			
+  color.go:96		0x6bcc3f		4921ff				ANDQ DI, R15				
+  color.go:96		0x6bcc42		4c39d2				CMPQ DX, R10				
+  color.go:96		0x6bcc45		0f8248010000			JB 0x6bcd93				
+  color.go:96		0x6bcc4b		4c39d3				CMPQ BX, R10				
+  color.go:96		0x6bcc4e		0f8734010000			JA 0x6bcd88				
+  color.go:96		0x6bcc54		4a8d7c3c58			LEAQ 0x58(SP)(R15*1), DI		
+  color.go:96		0x6bcc59		4989da				MOVQ BX, R10				
+  color.go:96		0x6bcc5c		4829d3				SUBQ DX, BX				
+  color.go:96		0x6bcc5f		48c1fb3f			SARQ $0x3f, BX				
+  color.go:96		0x6bcc63		4921da				ANDQ BX, R10				
+  color.go:96		0x6bcc66		4b8d1c14			LEAQ 0(R12)(R10*1), BX			
+  color.go:96		0x6bcc6a		4839df				CMPQ DI, BX				
+  color.go:96		0x6bcc6d		0f846effffff			JE 0x6bcbe1				
+  color.go:96		0x6bcc73		438b3c14			MOVL 0(R12)(R10*1), DI			
+  color.go:96		0x6bcc77		42897c3c58			MOVL DI, 0x58(SP)(R15*1)		
+  color.go:96		0x6bcc7c		0f1f4000			NOPL 0(AX)				
+  color.go:96		0x6bcc80		e95cffffff			JMP 0x6bcbe1				
+  bytes.go:22		0x6bcc85		4981fb00040000			CMPQ R11, $0x400			
+  bytes.go:22		0x6bcc8c		7404				JE 0x6bcc92				
+  bytes.go:22		0x6bcc8e		31db				XORL BX, BX				
+  bytes.go:22		0x6bcc90		eb4c				JMP 0x6bccde				
+  bytes.go:22		0x6bcc92		4c89c8				MOVQ R9, AX				
+  bytes.go:22		0x6bcc95		488d5c2458			LEAQ 0x58(SP), BX			
+  bytes.go:22		0x6bcc9a		b900040000			MOVL $0x400, CX				
+  bytes.go:22		0x6bcc9f		90				NOPL					
+  bytes.go:22		0x6bcca0		e8db69d4ff			CALL runtime.memequal(SB)		
+  pixel.go:339		0x6bcca5		8b8c247c040100			MOVL 0x1047c(SP), CX			
+  color.go:96		0x6bccac		488b942418060100		MOVQ 0x10618(SP), DX			
+  pixel.go:327		0x6bccb4		488bb42480040100		MOVQ 0x10480(SP), SI			
+  pixel.go:325		0x6bccbc		448b842478040100		MOVL 0x10478(SP), R8			
+  pixel.go:336		0x6bccc4		4c8b942410060100		MOVQ 0x10610(SP), R10			
+  color.go:96		0x6bcccc		4c8ba42408060100		MOVQ 0x10608(SP), R12			
+  bytes.go:22		0x6bccd4		89c3				MOVL AX, BX				
+  pixel.go:339		0x6bccd6		488b842438060100		MOVQ 0x10638(SP), AX			
+  pixel.go:336		0x6bccde		83f301				XORL $0x1, BX				
+  pixel.go:336		0x6bcce1		84db				TESTL BL, BL				
+  pixel.go:336		0x6bcce3		740a				JE 0x6bccef				
+  pixel.go:347		0x6bcce5		0fb64c2446			MOVZX 0x46(SP), CX			
+  pixel.go:337		0x6bccea		e944fbffff			JMP 0x6bc833				
+  pixel.go:339		0x6bccef		488b7810			MOVQ 0x10(AX), DI			
+  pixel.go:339		0x6bccf3		448d891001f100			LEAL 0xf10110(CX), R9			
+  pixel.go:339		0x6bccfa		4c39cf				CMPQ DI, R9				
+  pixel.go:339		0x6bccfd		727e				JB 0x6bcd7d				
+  pixel.go:339		0x6bccff		448d991001f000			LEAL 0xf00110(CX), R11			
+  pixel.go:339		0x6bcd06		4d39cb				CMPQ R11, R9				
+  pixel.go:339		0x6bcd09		7767				JA 0x6bcd72				
+  pixel.go:339		0x6bcd0b		4c8b28				MOVQ 0(AX), R13				
+  pixel.go:339		0x6bcd0e		4589df				MOVL R11, R15				
+  pixel.go:339		0x6bcd11		4929fb				SUBQ DI, R11				
+  pixel.go:339		0x6bcd14		49c1fb3f			SARQ $0x3f, R11				
+  pixel.go:339		0x6bcd18		4d21fb				ANDQ R15, R11				
+  pixel.go:339		0x6bcd1b		4b8d7c1d00			LEAQ 0(R13)(R11*1), DI			
+  pixel.go:339		0x6bcd20		4d29f9				SUBQ R15, R9				
+  pixel.go:340		0x6bcd23		4c8b9c2460060100		MOVQ 0x10660(SP), R11			
+  pixel.go:340		0x6bcd2b		31c9				XORL CX, CX				
+  pixel.go:340		0x6bcd2d		eb03				JMP 0x6bcd32				
+  pixel.go:340		0x6bcd2f		48ffc1				INCQ CX					
+  pixel.go:340		0x6bcd32		4c39c9				CMPQ CX, R9				
+  pixel.go:340		0x6bcd35		7d22				JGE 0x6bcd59				
+  pixel.go:341		0x6bcd37		440fb62c39			MOVZX 0(CX)(DI*1), R13			
+  pixel.go:341		0x6bcd3c		0f1f4000			NOPL 0(AX)				
+  pixel.go:341		0x6bcd40		4881f900000100			CMPQ CX, $0x10000			
+  pixel.go:341		0x6bcd47		731c				JAE 0x6bcd65				
+  pixel.go:341		0x6bcd49		450fb63c0b			MOVZX 0(R11)(CX*1), R15			
+  pixel.go:341		0x6bcd4e		4538ef				CMPL R15, R13				
+  pixel.go:341		0x6bcd51		74dc				JE 0x6bcd2f				
+  pixel.go:342		0x6bcd53		44883c0f			MOVB R15, 0(DI)(CX*1)			
+  pixel.go:342		0x6bcd57		ebd6				JMP 0x6bcd2f				
+  pixel.go:342		0x6bcd59		b901000000			MOVL $0x1, CX				
+  pixel.go:342		0x6bcd5e		6690				NOPW					
+  pixel.go:340		0x6bcd60		e9cefaffff			JMP 0x6bc833				
+  pixel.go:341		0x6bcd65		4889c8				MOVQ CX, AX				
+  pixel.go:341		0x6bcd68		b900000100			MOVL $0x10000, CX			
+  pixel.go:341		0x6bcd6d		e88e9adbff			CALL runtime.panicIndex(SB)		
+  pixel.go:339		0x6bcd72		4489d8				MOVL R11, AX				
+  pixel.go:339		0x6bcd75		4489c9				MOVL R9, CX				
+  pixel.go:339		0x6bcd78		e8439bdbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:339		0x6bcd7d		4489c9				MOVL R9, CX				
+  pixel.go:339		0x6bcd80		4889fa				MOVQ DI, DX				
+  pixel.go:339		0x6bcd83		e8f89adbff			CALL runtime.panicSliceAcap(SB)		
+  color.go:96		0x6bcd88		4889d8				MOVQ BX, AX				
+  color.go:96		0x6bcd8b		4c89d1				MOVQ R10, CX				
+  color.go:96		0x6bcd8e		e82d9bdbff			CALL runtime.panicSliceB(SB)		
+  color.go:96		0x6bcd93		4c89d1				MOVQ R10, CX				
+  color.go:96		0x6bcd96		e8e59adbff			CALL runtime.panicSliceAcap(SB)		
+  color.go:96		0x6bcd9b		4889f8				MOVQ DI, AX				
+  color.go:96		0x6bcd9e		4c89f9				MOVQ R15, CX				
+  color.go:96		0x6bcda1		e81a9bdbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:336		0x6bcda6		4489e0				MOVL R12, AX				
+  pixel.go:336		0x6bcda9		4489d9				MOVL R11, CX				
+  pixel.go:336		0x6bcdac		e80f9bdbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:336		0x6bcdb1		4489d9				MOVL R11, CX				
+  pixel.go:336		0x6bcdb4		e8c79adbff			CALL runtime.panicSliceAcap(SB)		
+  binary.go:91		0x6bcdb9		b803000000			MOVL $0x3, AX				
+  binary.go:91		0x6bcdbe		4c89d1				MOVQ R10, CX				
+  binary.go:91		0x6bcdc1		e83a9adbff			CALL runtime.panicIndex(SB)		
+  core.go:151		0x6bcdc6		4489c8				MOVL R9, AX				
+  core.go:151		0x6bcdc9		4c89d1				MOVQ R10, CX				
+  core.go:151		0x6bcdcc		e8ef9adbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:331		0x6bcdd1		4489d0				MOVL R10, AX				
+  pixel.go:331		0x6bcdd4		4489c9				MOVL R9, CX				
+  pixel.go:331		0x6bcdd7		e8e49adbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:331		0x6bcddc		4489c9				MOVL R9, CX				
+  pixel.go:331		0x6bcddf		90				NOPL					
+  pixel.go:331		0x6bcde0		e89b9adbff			CALL runtime.panicSliceAcap(SB)		
+  binary.go:70		0x6bcde5		b801000000			MOVL $0x1, AX				
+  binary.go:70		0x6bcdea		4889f9				MOVQ DI, CX				
+  binary.go:70		0x6bcded		e80e9adbff			CALL runtime.panicIndex(SB)		
+  core.go:150		0x6bcdf2		4889f0				MOVQ SI, AX				
+  core.go:150		0x6bcdf5		4889f9				MOVQ DI, CX				
+  core.go:150		0x6bcdf8		e8c39adbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:314		0x6bcdfd		488d842498050100		LEAQ 0x10598(SP), AX			
+  pixel.go:314		0x6bce05		e87693d5ff			CALL runtime.mapIterNext(SB)		
+  pixel.go:314		0x6bce0a		4883bc249805010000		CMPQ 0x10598(SP), $0x0			
+  pixel.go:314		0x6bce13		0f84e1f9ffff			JE 0x6bc7fa				
+  pixel.go:314		0x6bce19		488b9424a0050100		MOVQ 0x105a0(SP), DX			
+  pixel.go:314		0x6bce21		488b12				MOVQ 0(DX), DX				
+  pxenc.go:86		0x6bce24		4c8b4218			MOVQ 0x18(DX), R8			
+  pxenc.go:86		0x6bce28		4c8b4a20			MOVQ 0x20(DX), R9			
+  pxenc.go:86		0x6bce2c		eb12				JMP 0x6bce40				
+  pxenc.go:91		0x6bce2e		48837a0800			CMPQ 0x8(DX), $0x0			
+  pixel.go:315		0x6bce33		74c8				JE 0x6bcdfd				
+  pixel.go:315		0x6bce35		eb47				JMP 0x6bce7e				
+  pxenc.go:86		0x6bce37		4983c050			ADDQ $0x50, R8				
+  pxenc.go:86		0x6bce3b		49ffc9				DECQ R9					
+  pxenc.go:86		0x6bce3e		6690				NOPW					
+  pxenc.go:86		0x6bce40		4d85c9				TESTQ R9, R9				
+  pxenc.go:86		0x6bce43		7ee9				JLE 0x6bce2e				
+  pxenc.go:86		0x6bce45		488dbc2448050100		LEAQ 0x10548(SP), DI			
+  pxenc.go:86		0x6bce4d		4c89c6				MOVQ R8, SI				
+  pxenc.go:86		0x6bce50		660f1f840000000000		NOPW 0(AX)(AX*1)			
+  pxenc.go:86		0x6bce59		0f1f8000000000			NOPL 0(AX)				
+  pxenc.go:86		0x6bce60		48896c24f0			MOVQ BP, -0x10(SP)			
+  pxenc.go:86		0x6bce65		488d6c24f0			LEAQ -0x10(SP), BP			
+  pxenc.go:86		0x6bce6a		e8eb9fdbff			CALL 0x476e5a				
+  pxenc.go:86		0x6bce6f		488b6d00			MOVQ 0(BP), BP				
+  pxenc.go:87		0x6bce73		4883bc244805010000		CMPQ 0x10548(SP), $0x0			
+  pxenc.go:87		0x6bce7c		74b9				JE 0x6bce37				
+  pixel.go:316		0x6bce7e		488d05abff1200			LEAQ go:string.*+126328(SB), AX		
+  pixel.go:316		0x6bce85		bb70000000			MOVL $0x70, BX				
+  pixel.go:316		0x6bce8a		31c9				XORL CX, CX				
+  pixel.go:316		0x6bce8c		31ff				XORL DI, DI				
+  pixel.go:316		0x6bce8e		4889fe				MOVQ DI, SI				
+  pixel.go:316		0x6bce91		e80ae4e1ff			CALL fmt.Errorf(SB)			
+  pixel.go:316		0x6bce96		4889d9				MOVQ BX, CX				
+  pixel.go:316		0x6bce99		4889c3				MOVQ AX, BX				
+  pixel.go:316		0x6bce9c		31c0				XORL AX, AX				
+  pixel.go:316		0x6bce9e		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:316		0x6bcea5		5d				POPQ BP					
+  pixel.go:316		0x6bcea6		c3				RET					
+  pxenc.go:76		0x6bcea7		4883c120			ADDQ $0x20, CX				
+  pxenc.go:76		0x6bceab		48ffca				DECQ DX					
+  pxenc.go:76		0x6bceae		4885d2				TESTQ DX, DX				
+  pxenc.go:76		0x6bceb1		0f8e83f7ffff			JLE 0x6bc63a				
+  pxenc.go:76		0x6bceb7		48899424d8040100		MOVQ DX, 0x104d8(SP)			
+  pxenc.go:76		0x6bcebf		48898c2440050100		MOVQ CX, 0x10540(SP)			
+  pxenc.go:76		0x6bcec7		4c8b4110			MOVQ 0x10(CX), R8			
+  pxenc.go:76		0x6bcecb		4c898424d0040100		MOVQ R8, 0x104d0(SP)			
+  pxenc.go:76		0x6bced3		4c8b4918			MOVQ 0x18(CX), R9			
+  pxenc.go:76		0x6bced7		4c898c24c8040100		MOVQ R9, 0x104c8(SP)			
+  pxenc.go:76		0x6bcedf		4c8b11				MOVQ 0(CX), R10				
+  pxenc.go:76		0x6bcee2		4c899424c0040100		MOVQ R10, 0x104c0(SP)			
+  pxenc.go:76		0x6bceea		4c8b5908			MOVQ 0x8(CX), R11			
+  pxenc.go:76		0x6bceee		4c899c2430050100		MOVQ R11, 0x10530(SP)			
+  pxenc.go:76		0x6bcef6		31db				XORL BX, BX				
+  pxenc.go:77		0x6bcef8		eb56				JMP 0x6bcf50				
+  pxenc.go:75		0x6bcefa		4889f0				MOVQ SI, AX				
+  pxenc.go:79		0x6bcefd		488db42448050100		LEAQ 0x10548(SP), SI			
+  pxenc.go:79		0x6bcf05		48896c24f0			MOVQ BP, -0x10(SP)			
+  pxenc.go:79		0x6bcf0a		488d6c24f0			LEAQ -0x10(SP), BP			
+  pxenc.go:79		0x6bcf0f		e8469fdbff			CALL 0x476e5a				
+  pxenc.go:79		0x6bcf14		488b6d00			MOVQ 0(BP), BP				
+  pxenc.go:77		0x6bcf18		4c8b8c24c8040100		MOVQ 0x104c8(SP), R9			
+  pxenc.go:77		0x6bcf20		4c8b9c2430050100		MOVQ 0x10530(SP), R11			
+  pxenc.go:77		0x6bcf28		4c8b8424d0040100		MOVQ 0x104d0(SP), R8			
+  pxenc.go:77		0x6bcf30		488b9c24b8040100		MOVQ 0x104b8(SP), BX			
+  pxenc.go:76		0x6bcf38		488b8c2440050100		MOVQ 0x10540(SP), CX			
+  pxenc.go:76		0x6bcf40		488b9424d8040100		MOVQ 0x104d8(SP), DX			
+  pxenc.go:79		0x6bcf48		4c8b9424c0040100		MOVQ 0x104c0(SP), R10			
+  pxenc.go:77		0x6bcf50		4c39c3				CMPQ BX, R8				
+  pxenc.go:77		0x6bcf53		0f8d4effffff			JGE 0x6bcea7				
+  pxenc.go:78		0x6bcf59		488dbbfc7f0000			LEAQ 0x7ffc(BX), DI			
+  pxenc.go:78		0x6bcf60		4939f8				CMPQ R8, DI				
+  pxenc.go:78		0x6bcf63		4989fc				MOVQ DI, R12				
+  pxenc.go:78		0x6bcf66		4d0f4ce0			CMOVL R8, R12				
+  pxenc.go:79		0x6bcf6a		4d39e1				CMPQ R9, R12				
+  pxenc.go:78		0x6bcf6d		0f82eb010000			JB 0x6bd15e				
+  pxenc.go:79		0x6bcf73		4c39e3				CMPQ BX, R12				
+  pxenc.go:79		0x6bcf76		0f87d7010000			JA 0x6bd153				
+  pxenc.go:77		0x6bcf7c		48899c2488040100		MOVQ BX, 0x10488(SP)			
+  pxenc.go:78		0x6bcf84		4889bc24b8040100		MOVQ DI, 0x104b8(SP)			
+  pxenc.go:79		0x6bcf8c		4929dc				SUBQ BX, R12				
+  pxenc.go:79		0x6bcf8f		4c89a424b0040100		MOVQ R12, 0x104b0(SP)			
+  pxenc.go:79		0x6bcf97		4989dd				MOVQ BX, R13				
+  pxenc.go:79		0x6bcf9a		4c29cb				SUBQ R9, BX				
+  pxenc.go:79		0x6bcf9d		48c1fb3f			SARQ $0x3f, BX				
+  pxenc.go:79		0x6bcfa1		4c21eb				ANDQ R13, BX				
+  pxenc.go:79		0x6bcfa4		4c01db				ADDQ R11, BX				
+  pxenc.go:79		0x6bcfa7		4d85e4				TESTQ R12, R12				
+  pxenc.go:79		0x6bcfaa		7513				JNE 0x6bcfbf				
+  pxenc.go:79		0x6bcfac		31f6				XORL SI, SI				
+  pxenc.go:79		0x6bcfae		4531ff				XORL R15, R15				
+  pxenc.go:79		0x6bcfb1		31f6				XORL SI, SI				
+  pxenc.go:79		0x6bcfb3		4889b424a8040100		MOVQ SI, 0x104a8(SP)			
+  pxenc.go:79		0x6bcfbb		31f6				XORL SI, SI				
+  pxenc.go:79		0x6bcfbd		eb3c				JMP 0x6bcffb				
+  pxenc.go:79		0x6bcfbf		48899c2428050100		MOVQ BX, 0x10528(SP)			
+  pxenc.go:79		0x6bcfc7		31c0				XORL AX, AX				
+  pxenc.go:79		0x6bcfc9		4c89e3				MOVQ R12, BX				
+  pxenc.go:79		0x6bcfcc		31c9				XORL CX, CX				
+  pxenc.go:79		0x6bcfce		4889df				MOVQ BX, DI				
+  pxenc.go:79		0x6bcfd1		488d35e8f20900			LEAQ type:*+164544(SB), SI		
+  pxenc.go:79		0x6bcfd8		e80334dbff			CALL runtime.growslice(SB)		
+  pxenc.go:79		0x6bcfdd		4c8ba424b0040100		MOVQ 0x104b0(SP), R12			
+  pxenc.go:79		0x6bcfe5		4889c6				MOVQ AX, SI				
+  pxenc.go:79		0x6bcfe8		4989cf				MOVQ CX, R15				
+  pxenc.go:79		0x6bcfeb		48899c24a8040100		MOVQ BX, 0x104a8(SP)			
+  pxenc.go:79		0x6bcff3		488b9c2428050100		MOVQ 0x10528(SP), BX			
+  pxenc.go:79		0x6bcffb		4c89bc24a0040100		MOVQ R15, 0x104a0(SP)			
+  pxenc.go:79		0x6bd003		4889b42428050100		MOVQ SI, 0x10528(SP)			
+  pxenc.go:79		0x6bd00b		4889f0				MOVQ SI, AX				
+  pxenc.go:79		0x6bd00e		4c89e1				MOVQ R12, CX				
+  pxenc.go:79		0x6bd011		e8aaa1dbff			CALL runtime.memmove(SB)		
+  pxenc.go:79		0x6bd016		488dbc2448050100		LEAQ 0x10548(SP), DI			
+  pxenc.go:79		0x6bd01e		488d7fd0			LEAQ -0x30(DI), DI			
+  pxenc.go:79		0x6bd022		48896c24f0			MOVQ BP, -0x10(SP)			
+  pxenc.go:79		0x6bd027		488d6c24f0			LEAQ -0x10(SP), BP			
+  pxenc.go:79		0x6bd02c		e8bf9adbff			CALL 0x476af0				
+  pxenc.go:79		0x6bd031		488b6d00			MOVQ 0(BP), BP				
+  pxenc.go:79		0x6bd035		488b9424c0040100		MOVQ 0x104c0(SP), DX			
+  pxenc.go:79		0x6bd03d		488bb42488040100		MOVQ 0x10488(SP), SI			
+  pxenc.go:79		0x6bd045		4801d6				ADDQ DX, SI				
+  pxenc.go:79		0x6bd048		4889b42450050100		MOVQ SI, 0x10550(SP)			
+  pxenc.go:79		0x6bd050		488bb424b0040100		MOVQ 0x104b0(SP), SI			
+  pxenc.go:79		0x6bd058		4889b42458050100		MOVQ SI, 0x10558(SP)			
+  pxenc.go:79		0x6bd060		488bb42428050100		MOVQ 0x10528(SP), SI			
+  pxenc.go:79		0x6bd068		4889b42468050100		MOVQ SI, 0x10568(SP)			
+  pxenc.go:79		0x6bd070		488bb424a8040100		MOVQ 0x104a8(SP), SI			
+  pxenc.go:79		0x6bd078		4889b42470050100		MOVQ SI, 0x10570(SP)			
+  pxenc.go:79		0x6bd080		488bb424a0040100		MOVQ 0x104a0(SP), SI			
+  pxenc.go:79		0x6bd088		4889b42478050100		MOVQ SI, 0x10578(SP)			
+  pxenc.go:79		0x6bd090		488bb424e8040100		MOVQ 0x104e8(SP), SI			
+  pxenc.go:79		0x6bd098		488b4e28			MOVQ 0x28(SI), CX			
+  pxenc.go:79		0x6bd09c		488b5e20			MOVQ 0x20(SI), BX			
+  pxenc.go:79		0x6bd0a0		48ffc3				INCQ BX					
+  pxenc.go:79		0x6bd0a3		488b4618			MOVQ 0x18(SI), AX			
+  pxenc.go:79		0x6bd0a7		4839d9				CMPQ CX, BX				
+  pxenc.go:79		0x6bd0aa		734a				JAE 0x6bd0f6				
+  pxenc.go:79		0x6bd0ac		bf01000000			MOVL $0x1, DI				
+  pxenc.go:79		0x6bd0b1		488d3568150f00			LEAQ type:*+501280(SB), SI		
+  pxenc.go:79		0x6bd0b8		e82333dbff			CALL runtime.growslice(SB)		
+  pxenc.go:79		0x6bd0bd		488b9424e8040100		MOVQ 0x104e8(SP), DX			
+  pxenc.go:79		0x6bd0c5		48894a28			MOVQ CX, 0x28(DX)			
+  pxenc.go:79		0x6bd0c9		833d80024d0000			CMPL runtime.writeBarrier(SB), $0x0	
+  pxenc.go:79		0x6bd0d0		7410				JE 0x6bd0e2				
+  pxenc.go:79		0x6bd0d2		e88993dbff			CALL runtime.gcWriteBarrier2(SB)	
+  pxenc.go:79		0x6bd0d7		498903				MOVQ AX, 0(R11)				
+  pxenc.go:79		0x6bd0da		4c8b4218			MOVQ 0x18(DX), R8			
+  pxenc.go:79		0x6bd0de		4d894308			MOVQ R8, 0x8(R11)			
+  pxenc.go:79		0x6bd0e2		48894218			MOVQ AX, 0x18(DX)			
+  pxenc.go:79		0x6bd0e6		488b9424c0040100		MOVQ 0x104c0(SP), DX			
+  pxenc.go:79		0x6bd0ee		488bb424e8040100		MOVQ 0x104e8(SP), SI			
+  pxenc.go:79		0x6bd0f6		48895e20			MOVQ BX, 0x20(SI)			
+  pxenc.go:79		0x6bd0fa		4c8d049b			LEAQ 0(BX)(BX*4), R8			
+  pxenc.go:79		0x6bd0fe		49c1e004			SHLQ $0x4, R8				
+  pxenc.go:79		0x6bd102		498d3c00			LEAQ 0(R8)(AX*1), DI			
+  pxenc.go:79		0x6bd106		488d7fb0			LEAQ -0x50(DI), DI			
+  pxenc.go:79		0x6bd10a		833d3f024d0000			CMPL runtime.writeBarrier(SB), $0x0	
+  pxenc.go:79		0x6bd111		0f84e3fdffff			JE 0x6bcefa				
+  pxenc.go:79		0x6bd117		4889bc2420050100		MOVQ DI, 0x10520(SP)			
+  pxenc.go:79		0x6bd11f		488d05fa140f00			LEAQ type:*+501280(SB), AX		
+  pxenc.go:79		0x6bd126		4889fb				MOVQ DI, BX				
+  pxenc.go:79		0x6bd129		488d8c2448050100		LEAQ 0x10548(SP), CX			
+  pxenc.go:79		0x6bd131		e8aa91d5ff			CALL runtime.wbMove(SB)			
+  pxenc.go:79		0x6bd136		488b9424c0040100		MOVQ 0x104c0(SP), DX			
+  pxenc.go:79		0x6bd13e		488bb424e8040100		MOVQ 0x104e8(SP), SI			
+  pxenc.go:79		0x6bd146		488bbc2420050100		MOVQ 0x10520(SP), DI			
+  pxenc.go:79		0x6bd14e		e9a7fdffff			JMP 0x6bcefa				
+  pxenc.go:79		0x6bd153		4889d8				MOVQ BX, AX				
+  pxenc.go:79		0x6bd156		4c89e1				MOVQ R12, CX				
+  pxenc.go:79		0x6bd159		e86297dbff			CALL runtime.panicSliceB(SB)		
+  pxenc.go:79		0x6bd15e		4c89e1				MOVQ R12, CX				
+  pxenc.go:79		0x6bd161		4c89ca				MOVQ R9, DX				
+  pxenc.go:79		0x6bd164		e81797dbff			CALL runtime.panicSliceAcap(SB)		
+  pixel.go:286		0x6bd169		48ffc1				INCQ CX					
+  pixel.go:286		0x6bd16c		4881f900000100			CMPQ CX, $0x10000			
+  pixel.go:286		0x6bd173		7d46				JGE 0x6bd1bb				
+  pixel.go:287		0x6bd175		0fb6940c78040000		MOVZX 0x478(SP)(CX*1), DX		
+  pixel.go:287		0x6bd17d		0f1f00				NOPL 0(AX)				
+  pixel.go:287		0x6bd180		84d2				TESTL DL, DL				
+  pixel.go:287		0x6bd182		75e5				JNE 0x6bd169				
+  pixel.go:287		0x6bd184		0fb6140f			MOVZX 0(DI)(CX*1), DX			
+  pixel.go:287		0x6bd188		440fb60c08			MOVZX 0(AX)(CX*1), R9			
+  pixel.go:287		0x6bd18d		4138d1				CMPL R9, DL				
+  pixel.go:287		0x6bd190		74d7				JE 0x6bd169				
+  pixel.go:288		0x6bd192		488d05c8921200			LEAQ go:string.*+99241(SB), AX		
+  pixel.go:288		0x6bd199		bb39000000			MOVL $0x39, BX				
+  pixel.go:288		0x6bd19e		31c9				XORL CX, CX				
+  pixel.go:288		0x6bd1a0		31ff				XORL DI, DI				
+  pixel.go:288		0x6bd1a2		4889fe				MOVQ DI, SI				
+  pixel.go:288		0x6bd1a5		e8f6e0e1ff			CALL fmt.Errorf(SB)			
+  pixel.go:288		0x6bd1aa		4889d9				MOVQ BX, CX				
+  pixel.go:288		0x6bd1ad		4889c3				MOVQ AX, BX				
+  pixel.go:288		0x6bd1b0		31c0				XORL AX, AX				
+  pixel.go:288		0x6bd1b2		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:288		0x6bd1b9		5d				POPQ BP					
+  pixel.go:288		0x6bd1ba		c3				RET					
+  pixel.go:291		0x6bd1bb		488b8c2430060100		MOVQ 0x10630(SP), CX			
+  pixel.go:291		0x6bd1c3		488bb42468060100		MOVQ 0x10668(SP), SI			
+  pixel.go:291		0x6bd1cb		4c8b842470060100		MOVQ 0x10670(SP), R8			
+  pixel.go:291		0x6bd1d3		e8c8880000			CALL main.encPx(SB)			
+  pixel.go:291		0x6bd1d8		0f1f840000000000		NOPL 0(AX)(AX*1)			
+  pixel.go:293		0x6bd1e0		4885c0				TESTQ AX, AX				
+  pixel.go:293		0x6bd1e3		0f8451f4ffff			JE 0x6bc63a				
+  pixel.go:291		0x6bd1e9		4889842408050100		MOVQ AX, 0x10508(SP)			
+  pixel.go:294		0x6bd1f1		31c0				XORL AX, AX				
+  pixel.go:294		0x6bd1f3		bb00000100			MOVL $0x10000, BX			
+  pixel.go:294		0x6bd1f8		31c9				XORL CX, CX				
+  pixel.go:294		0x6bd1fa		4889df				MOVQ BX, DI				
+  pixel.go:294		0x6bd1fd		488d35bcf00900			LEAQ type:*+164544(SB), SI		
+  pixel.go:294		0x6bd204		e8d731dbff			CALL runtime.growslice(SB)		
+  pixel.go:294		0x6bd209		4889842400050100		MOVQ AX, 0x10500(SP)			
+  pixel.go:294		0x6bd211		48898c2490040100		MOVQ CX, 0x10490(SP)			
+  pixel.go:294		0x6bd219		488b9c2420060100		MOVQ 0x10620(SP), BX			
+  pixel.go:294		0x6bd221		b900000100			MOVL $0x10000, CX			
+  pixel.go:294		0x6bd226		e8959fdbff			CALL runtime.memmove(SB)		
+  pixel.go:295		0x6bd22b		488b842408050100		MOVQ 0x10508(SP), AX			
+  pixel.go:295		0x6bd233		488b9c2400050100		MOVQ 0x10500(SP), BX			
+  pixel.go:295		0x6bd23b		b900000100			MOVL $0x10000, CX			
+  pixel.go:295		0x6bd240		488bbc2490040100		MOVQ 0x10490(SP), DI			
+  pixel.go:295		0x6bd248		e833260000			CALL main.(*PxBlk).apply(SB)		
+  bytes.go:22		0x6bd24d		488b842400050100		MOVQ 0x10500(SP), AX			
+  bytes.go:22		0x6bd255		488b9c2460060100		MOVQ 0x10660(SP), BX			
+  bytes.go:22		0x6bd25d		b900000100			MOVL $0x10000, CX			
+  bytes.go:22		0x6bd262		e81964d4ff			CALL runtime.memequal(SB)		
+  bytes.go:22		0x6bd267		84c0				TESTL AL, AL				
+  pixel.go:296		0x6bd269		740d				JE 0x6bd278				
+  pixel.go:308		0x6bd26b		488b842408050100		MOVQ 0x10508(SP), AX			
+  pixel.go:296		0x6bd273		e9c2f3ffff			JMP 0x6bc63a				
+  pixel.go:297		0x6bd278		488d05edef1200			LEAQ go:string.*+123316(SB), AX		
+  pixel.go:297		0x6bd27f		bb5f000000			MOVL $0x5f, BX				
+  pixel.go:297		0x6bd284		31c9				XORL CX, CX				
+  pixel.go:297		0x6bd286		31ff				XORL DI, DI				
+  pixel.go:297		0x6bd288		4889fe				MOVQ DI, SI				
+  pixel.go:297		0x6bd28b		e810e0e1ff			CALL fmt.Errorf(SB)			
+  pixel.go:297		0x6bd290		4889d9				MOVQ BX, CX				
+  pixel.go:297		0x6bd293		4889c3				MOVQ AX, BX				
+  pixel.go:297		0x6bd296		31c0				XORL AX, AX				
+  pixel.go:297		0x6bd298		4881c4f8050100			ADDQ $0x105f8, SP			
+  pixel.go:297		0x6bd29f		5d				POPQ BP					
+  pixel.go:297		0x6bd2a0		c3				RET					
+  pixel.go:277		0x6bd2a1		42c6843c7804000001		MOVB $0x1, 0x478(SP)(R15*1)		
+  pixel.go:276		0x6bd2aa		49ffc7				INCQ R15				
+  pixel.go:276		0x6bd2ad		4d39c7				CMPQ R15, R8				
+  pixel.go:276		0x6bd2b0		7cef				JL 0x6bd2a1				
+  pixel.go:276		0x6bd2b2		e977f1ffff			JMP 0x6bc42e				
+  pixel.go:273		0x6bd2b7		4c89f8				MOVQ R15, AX				
+  pixel.go:273		0x6bd2ba		4889d9				MOVQ BX, CX				
+  pixel.go:273		0x6bd2bd		0f1f00				NOPL 0(AX)				
+  pixel.go:273		0x6bd2c0		e8fb95dbff			CALL runtime.panicSliceB(SB)		
+  pixel.go:273		0x6bd2c5		4889d9				MOVQ BX, CX				
+  pixel.go:273		0x6bd2c8		e8b395dbff			CALL runtime.panicSliceAcap(SB)		
+  binary.go:91		0x6bd2cd		b803000000			MOVL $0x3, AX				
+  binary.go:91		0x6bd2d2		4c89d1				MOVQ R10, CX				
+  binary.go:91		0x6bd2d5		e82695dbff			CALL runtime.panicIndex(SB)		
+  core.go:151		0x6bd2da		4c89c8				MOVQ R9, AX				
+  core.go:151		0x6bd2dd		4c89d1				MOVQ R10, CX				
+  core.go:151		0x6bd2e0		e8db95dbff			CALL runtime.panicSliceB(SB)		
+  core.go:151		0x6bd2e5		90				NOPL					
+  pixel.go:250		0x6bd2e6		4889442438			MOVQ AX, 0x38(SP)			
+  pixel.go:250		0x6bd2eb		48895c2440			MOVQ BX, 0x40(SP)			
+  pixel.go:250		0x6bd2f0		48894c2448			MOVQ CX, 0x48(SP)			
+  pixel.go:250		0x6bd2f5		48897c2450			MOVQ DI, 0x50(SP)			
+  pixel.go:250		0x6bd2fa		4889742458			MOVQ SI, 0x58(SP)			
+  pixel.go:250		0x6bd2ff		4c89442460			MOVQ R8, 0x60(SP)			
+  pixel.go:250		0x6bd304		4c894c2468			MOVQ R9, 0x68(SP)			
+  pixel.go:250		0x6bd309		4c89542470			MOVQ R10, 0x70(SP)			
+  pixel.go:250		0x6bd30e		e80d72dbff			CALL runtime.morestack_noctxt.abi0(SB)	
+  pixel.go:250		0x6bd313		488b442438			MOVQ 0x38(SP), AX			
+  pixel.go:250		0x6bd318		488b5c2440			MOVQ 0x40(SP), BX			
+  pixel.go:250		0x6bd31d		488b4c2448			MOVQ 0x48(SP), CX			
+  pixel.go:250		0x6bd322		488b7c2450			MOVQ 0x50(SP), DI			
+  pixel.go:250		0x6bd327		488b742458			MOVQ 0x58(SP), SI			
+  pixel.go:250		0x6bd32c		4c8b442460			MOVQ 0x60(SP), R8			
+  pixel.go:250		0x6bd331		4c8b4c2468			MOVQ 0x68(SP), R9			
+  pixel.go:250		0x6bd336		4c8b542470			MOVQ 0x70(SP), R10			
+  pixel.go:250		0x6bd33b		0f1f440000			NOPL 0(AX)(AX*1)			
+  pixel.go:250		0x6bd340		e99beeffff			JMP main.(*Game).SetPixels(SB)		
+  :-1			0x6bd345		cc				INT $0x3				
+  :-1			0x6bd346		cc				INT $0x3				
+  :-1			0x6bd347		cc				INT $0x3				
+  :-1			0x6bd348		cc				INT $0x3				
+  :-1			0x6bd349		cc				INT $0x3				
+  :-1			0x6bd34a		cc				INT $0x3				
+  :-1			0x6bd34b		cc				INT $0x3				
+  :-1			0x6bd34c		cc				INT $0x3				
+  :-1			0x6bd34d		cc				INT $0x3				
+  :-1			0x6bd34e		cc				INT $0x3				
+  :-1			0x6bd34f		cc				INT $0x3				
+  :-1			0x6bd350		cc				INT $0x3				
+  :-1			0x6bd351		cc				INT $0x3				
+  :-1			0x6bd352		cc				INT $0x3				
+  :-1			0x6bd353		cc				INT $0x3				
+  :-1			0x6bd354		cc				INT $0x3				
+  :-1			0x6bd355		cc				INT $0x3				
+  :-1			0x6bd356		cc				INT $0x3				
+  :-1			0x6bd357		cc				INT $0x3				
+  :-1			0x6bd358		cc				INT $0x3				
+  :-1			0x6bd359		cc				INT $0x3				
+  :-1			0x6bd35a		cc				INT $0x3				
+  :-1			0x6bd35b		cc				INT $0x3				
+  :-1			0x6bd35c		cc				INT $0x3				
+  :-1			0x6bd35d		cc				INT $0x3				
+  :-1			0x6bd35e		cc				INT $0x3				
+  :-1			0x6bd35f		cc				INT $0x3				
